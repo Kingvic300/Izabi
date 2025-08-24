@@ -1,7 +1,0 @@
-{
-  "name": "Izabi",
-  "description": "An AI-powered, multilingual student assistant that helps students study faster, smarter, and in their own way by generating summaries and quizzes from uploaded course materials.",
-  "requestFramePermissions": [
-    "microphone"
-  ]
-}
