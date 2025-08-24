@@ -26,16 +26,16 @@ interface StudyQuestion {
   id: string;
   question: string;
   options: string[];
-  answer: string;
-  difficulty: string;
-  questionType: string;
+  correctAnswer: string;   // ✅ match backend field
+  difficulty?: string;
+  questionType?: string;
 }
 
 interface StudyMaterialResponse {
   summary: string;
   keyPoints: string[];
-  studyQuestions: StudyQuestion[];
-  fileName: string;
+  questions: StudyQuestion[];   // ✅ match backend field
+  fileName?: string;
   createdAt?: string;
   id?: string;
 }
@@ -81,43 +81,43 @@ const DashboardHistory = () => {
 
   const filteredMaterials = studyMaterials.filter(material => {
     const matchesSearch =
-        material.fileName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (material.fileName || "Study Material").toLowerCase().includes(searchQuery.toLowerCase()) ||
         material.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
         material.keyPoints.some(point => point.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesDifficulty =
         filterDifficulty === "all" ||
-        material.studyQuestions.some(q => q.difficulty.toLowerCase() === filterDifficulty.toLowerCase());
+        material.questions.some(q => q.difficulty?.toLowerCase() === filterDifficulty.toLowerCase());
 
     return matchesSearch && matchesDifficulty;
   });
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty?: string) => {
     switch (difficulty?.toLowerCase()) {
-      case 'easy':
-        return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400';
-      case 'hard':
-        return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400';
+      case "easy":
+        return "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400";
+      case "hard":
+        return "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400";
       default:
-        return 'bg-muted text-muted-foreground';
+        return "bg-muted text-muted-foreground";
     }
   };
 
-  const getQuestionTypeIcon = (questionType: string) => {
+  const getQuestionTypeIcon = (questionType?: string) => {
     switch (questionType?.toLowerCase()) {
-      case 'multiple_choice':
-      case 'multiple choice':
-        return '🔘';
-      case 'true_false':
-      case 'true false':
-        return '✓/✗';
-      case 'short_answer':
-      case 'short answer':
-        return '✍️';
+      case "multiple_choice":
+      case "multiple choice":
+        return "🔘";
+      case "true_false":
+      case "true false":
+        return "✓/✗";
+      case "short_answer":
+      case "short answer":
+        return "✍️";
       default:
-        return '❓';
+        return "❓";
     }
   };
 
@@ -139,6 +139,7 @@ const DashboardHistory = () => {
           </p>
         </div>
 
+        {/* Search + Filter */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -171,10 +172,12 @@ const DashboardHistory = () => {
           </CardContent>
         </Card>
 
+        {/* Results */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">
-              {filteredMaterials.length} study material{filteredMaterials.length !== 1 ? 's' : ''} found
+              {filteredMaterials.length} study material
+              {filteredMaterials.length !== 1 ? "s" : ""} found
             </h2>
           </div>
 
@@ -195,6 +198,7 @@ const DashboardHistory = () => {
                 {filteredMaterials.map((material, index) => (
                     <Card key={material.id || index} className="hover:shadow-card transition-all duration-200">
                       <CardContent className="p-0">
+                        {/* Header */}
                         <div className="p-6 border-b">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
@@ -212,7 +216,7 @@ const DashboardHistory = () => {
                                   )}
                                   <Badge variant="secondary" className="flex items-center space-x-1">
                                     <HelpCircle className="h-3 w-3" />
-                                    <span>{material.studyQuestions.length} questions</span>
+                                    <span>{material.questions.length} questions</span>
                                   </Badge>
                                   <Badge variant="secondary" className="flex items-center space-x-1">
                                     <List className="h-3 w-3" />
@@ -221,13 +225,10 @@ const DashboardHistory = () => {
                                 </div>
                               </div>
                             </div>
+
                             <div className="flex items-center space-x-3">
                               <Button size="sm" variant="ghost" onClick={() => toggleExpanded(index)}>
-                                {expandedItems.has(index) ? (
-                                    <ChevronUp className="h-4 w-4" />
-                                ) : (
-                                    <ChevronDown className="h-4 w-4" />
-                                )}
+                                {expandedItems.has(index) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                               </Button>
                               <Button size="sm" variant="ghost">
                                 <Eye className="h-4 w-4" />
@@ -242,10 +243,11 @@ const DashboardHistory = () => {
                           </div>
                         </div>
 
+                        {/* Collapsible Content */}
                         <Collapsible open={expandedItems.has(index)}>
                           <CollapsibleContent>
                             <div className="p-6 space-y-6">
-                              {/* Summary Section */}
+                              {/* Summary */}
                               {material.summary && (
                                   <div>
                                     <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
@@ -258,7 +260,7 @@ const DashboardHistory = () => {
                                   </div>
                               )}
 
-                              {/* Key Points Section */}
+                              {/* Key Points */}
                               {material.keyPoints && material.keyPoints.length > 0 && (
                                   <div>
                                     <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
@@ -278,15 +280,15 @@ const DashboardHistory = () => {
                                   </div>
                               )}
 
-                              {/* Questions Section */}
-                              {material.studyQuestions && material.studyQuestions.length > 0 && (
+                              {/* Questions */}
+                              {material.questions && material.questions.length > 0 && (
                                   <div>
                                     <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
                                       <HelpCircle className="h-4 w-4" />
                                       <span>STUDY QUESTIONS</span>
                                     </h4>
                                     <div className="space-y-3">
-                                      {material.studyQuestions.map((question, qIndex) => (
+                                      {material.questions.map((question, qIndex) => (
                                           <div
                                               key={question.id || qIndex}
                                               className="bg-muted/30 rounded-lg p-4 border-l-4 border-primary"
@@ -297,8 +299,8 @@ const DashboardHistory = () => {
                                               </p>
                                               <div className="flex items-center space-x-2 ml-4">
                                                 <span className="text-xs">{getQuestionTypeIcon(question.questionType)}</span>
-                                                <Badge size="sm" className={getDifficultyColor(question.difficulty)}>
-                                                  {question.difficulty}
+                                                <Badge className={getDifficultyColor(question.difficulty)}>
+                                                  {question.difficulty || "N/A"}
                                                 </Badge>
                                               </div>
                                             </div>
@@ -318,11 +320,11 @@ const DashboardHistory = () => {
                                                 </div>
                                             )}
 
-                                            {question.answer && (
+                                            {question.correctAnswer && (
                                                 <div className="bg-green-50 dark:bg-green-900/20 rounded p-2 border-l-2 border-green-500">
                                                   <p className="text-xs">
                                                     <span className="font-medium text-green-700 dark:text-green-400">Answer: </span>
-                                                    <span className="text-green-800 dark:text-green-300">{question.answer}</span>
+                                                    <span className="text-green-800 dark:text-green-300">{question.correctAnswer}</span>
                                                   </p>
                                                 </div>
                                             )}
