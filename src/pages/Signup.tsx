@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,7 +41,7 @@ const Signup = () => {
       state: {
         email: formData.email,
         password: formData.password,
-        mode: "verification", // for OTP page to know this is for signup
+        mode: "verification",
       },
     });
   };
