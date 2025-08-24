@@ -33,6 +33,7 @@ const Login = () => {
 
       localStorage.setItem("userId", userId);
       localStorage.setItem("authToken", authToken);
+      localStorage.setItem("userEmail", email);
 
       console.log("Login successful:", response.data);
       navigate("/dashboard"); // redirect to dashboard after login
