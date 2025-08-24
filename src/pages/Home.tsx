@@ -153,9 +153,6 @@ const Home = () => {
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
-              AI-Powered Student Assistant
-            </p>
-            <p className="text-sm text-muted-foreground">
               &copy; {currentYear} Izabi. All rights reserved.
             </p>
           </div>
