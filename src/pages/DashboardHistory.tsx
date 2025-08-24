@@ -29,7 +29,7 @@ const DashboardHistory = () => {
     const fetchHistory = async () => {
       try {
         const userId = localStorage.getItem("userId"); // replace with your auth userId
-        const response = await axios.get(`${BASE_URL}/api/history?userId=${userId}`);
+        const response = await axios.get(`${BASE_URL}/api/study/history?userId=${userId}`);
         console.log("Backend study history:", response.data);
         setBackendFiles(response.data); // you can use this later to replace mockFiles
       } catch (err) {
