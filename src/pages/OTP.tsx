@@ -40,14 +40,29 @@ const OTP = () => {
         }
     };
 
-    const handleOtpSubmit = (e: React.FormEvent) => {
+    const handleOtpSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const otpCode = otp.join("");
         console.log("OTP submitted:", otpCode);
-        // Temporarily mock verification
-        toast.info("OTP verification will be implemented soon. Check your email for the code.");
-    };
 
+        if (!otpCode) {
+            toast.error("Please enter the OTP");
+            return;
+        }
+
+        try {
+            const response = await axios.post(`${BASE_URL}/users/register`, {
+                email: location.state?.email,  // assuming you passed email via navigate state
+                otp: otpCode,
+                role: "USER",
+            });
+
+            toast.success("Account verified successfully!");
+            navigate("/login"); // redirect to login after success
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || "OTP verification failed");
+        }
+    };
     const handleResendOtp = async () => {
         try {
             if (mode === "verification") {
