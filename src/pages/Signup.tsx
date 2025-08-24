@@ -11,6 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Brain } from "lucide-react";
+import axios from "axios";
+import { BASE_URL } from "@/contants/contants.ts";
 import { toast } from "sonner";
 
 const Signup = () => {
@@ -19,6 +21,7 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +31,7 @@ const Signup = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -36,14 +39,30 @@ const Signup = () => {
       return;
     }
 
-    // ✅ Redirect to OTP page with user data; OTP will be sent there
-    navigate("/otp", {
-      state: {
+    setIsLoading(true);
+    try {
+      // ✅ Send OTP to backend
+      await axios.post(`${BASE_URL}/users/send-verification-otp`, {
         email: formData.email,
         password: formData.password,
-        mode: "verification",
-      },
-    });
+        role: "USER",
+      });
+
+      toast.success("OTP sent to your email");
+
+      // ✅ Navigate to OTP page
+      navigate("/otp", {
+        state: {
+          email: formData.email,
+          password: formData.password,
+          mode: "verification",
+        },
+      });
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -111,9 +130,9 @@ const Signup = () => {
                     type="submit"
                     className="w-full"
                     variant="hero"
-                    disabled={!formData.email || !formData.password || !formData.confirmPassword}
+                    disabled={isLoading || !formData.email || !formData.password || !formData.confirmPassword}
                 >
-                  Request OTP
+                  {isLoading ? "Sending OTP..." : "Request OTP"}
                 </Button>
               </form>
 
