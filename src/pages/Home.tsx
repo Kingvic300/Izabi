@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import React from "react";
 import { Brain, FileText, Mic, Users, Zap, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 

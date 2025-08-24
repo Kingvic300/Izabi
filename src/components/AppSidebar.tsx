@@ -1,4 +1,5 @@
 import { Home, History, User, LogOut, Brain } from "lucide-react";
+import React from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
