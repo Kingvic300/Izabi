@@ -77,8 +77,7 @@ const Home = () => {
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Transform PDFs into quizzes, summaries, and voice-guided learning experiences.
-              Study smarter in English & Pidgin with Izabi's AI assistant.
+              Instantly create quizzes, summaries, and audio lessons from your PDFs. Master any subject in English & Pidgin.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/signup">
