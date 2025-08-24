@@ -6,20 +6,19 @@ import { BASE_URL } from "@/contants/contants.ts";
 import { Upload, FileText, Brain, Zap, ChevronDown, ChevronUp } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-interface AIQuestion {
+interface StudyQuestionResponse {
   question: string;
-  answer?: string;
-  options?: string[];
-  type?: string;
-  difficulty?: string;
-  explanation?: string;
+  options: string[];
+  answer: string;
+  difficulty: string;
+  questionType: string;
 }
 
 const DashboardHome = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [summary, setSummary] = useState<string>("");
-  const [questions, setQuestions] = useState<AIQuestion[]>([]);
+  const [questions, setQuestions] = useState<StudyQuestionResponse[]>([]);
   const [showSummary, setShowSummary] = useState(false);
   const [showQuestions, setShowQuestions] = useState(false);
 
@@ -43,31 +42,66 @@ const DashboardHome = () => {
       formData.append("userId", userId);
       if (includeQuestions) formData.append("numberOfQuestions", "5");
 
-      const response = await axios.post(`${BASE_URL}/api/study/${endpoint}`, formData, {
+      const { data } = await axios.post(`${BASE_URL}/api/study/${endpoint}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      if (response.data.summary) {
-        setSummary(response.data.summary);
+      console.log(`[${endpoint}] response:`, data);
+
+      // Handle summary
+      if (data.summary) {
+        setSummary(data.summary);
         setShowSummary(true);
       }
 
-      if (response.data.questions) {
-        const aiQuestions: AIQuestion[] = response.data.questions.map((q: any) => ({
-          question: q.question || "",
-          answer: q.answer || "",
-          options: q.options || [],
-          type: q.type || q.questionType || "",
-          difficulty: q.difficulty || "",
-          explanation: q.explanation || "",
-        }));
-        setQuestions(aiQuestions);
-        setShowQuestions(true);
+      // Handle questions
+      let questionsData: StudyQuestionResponse[] = [];
+
+      if (Array.isArray(data)) {
+        // backend returns array directly
+        questionsData = data;
+      } else if (Array.isArray(data.questions)) {
+        questionsData = data.questions;
+      } else if (Array.isArray(data.studyQuestions)) {
+        // in case backend wraps differently
+        questionsData = data.studyQuestions;
       }
+
+      if (questionsData.length > 0) {
+        setQuestions(questionsData);
+        setShowQuestions(true);
+      } else if (includeQuestions) {
+        console.warn("No questions returned from backend", data);
+        setQuestions([]);
+        setShowQuestions(false);
+      }
+
     } catch (err) {
       console.error(`Error calling ${endpoint}:`, err);
+      alert(`Error: ${err}`);
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty?.toLowerCase()) {
+      case 'easy': return 'text-green-600';
+      case 'medium': return 'text-yellow-600';
+      case 'hard': return 'text-red-600';
+      default: return 'text-muted-foreground';
+    }
+  };
+
+  const getQuestionTypeIcon = (questionType: string) => {
+    switch (questionType?.toLowerCase()) {
+      case 'multiple_choice':
+      case 'multiple choice': return '🔘';
+      case 'true_false':
+      case 'true false': return '✓/✗';
+      case 'short_answer':
+      case 'short answer': return '✍️';
+      default: return '❓';
     }
   };
 
@@ -186,7 +220,7 @@ const DashboardHome = () => {
                           <CardTitle className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                               <Zap className="h-5 w-5 text-learning-green" />
-                              <span>Generated Questions</span>
+                              <span>Generated Questions ({questions.length})</span>
                             </div>
                             {showQuestions ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                           </CardTitle>
@@ -194,23 +228,49 @@ const DashboardHome = () => {
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <CardContent>
-                          <div className="space-y-3">
+                          <div className="space-y-4">
                             {questions.map((q, index) => (
                                 <div key={index} className="p-4 bg-muted/30 rounded-lg border-l-4 border-primary">
-                                  <p className="font-medium text-foreground">
-                                    {index + 1}. {q.question}
-                                  </p>
-                                  {q.options && q.options.length > 0 && (
-                                      <ul className="ml-4 mt-2 list-disc text-sm">
-                                        {q.options.map((opt, i) => (
-                                            <li key={i}>{opt}</li>
-                                        ))}
-                                      </ul>
+                                  <div className="flex items-start justify-between mb-3">
+                                    <p className="font-medium text-foreground flex-1">
+                                      {index + 1}. {q.question}
+                                    </p>
+                                    <div className="flex items-center space-x-2 ml-4">
+                                      <span className="text-xs">{getQuestionTypeIcon(q.questionType)}</span>
+                                      <span className={`text-xs font-medium ${getDifficultyColor(q.difficulty)}`}>
+                                {q.difficulty}
+                              </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="text-xs text-muted-foreground mb-2">
+                                    Type: {q.questionType?.replace('_', ' ') || 'Unknown'}
+                                  </div>
+
+                                  {q.options?.length > 0 && (
+                                      <div className="mb-3">
+                                        <p className="text-sm font-medium text-muted-foreground mb-1">Options:</p>
+                                        <ul className="space-y-1">
+                                          {q.options.map((option, idx) => (
+                                              <li key={idx} className="text-sm flex items-center">
+                                    <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium mr-2">
+                                      {String.fromCharCode(65 + idx)}
+                                    </span>
+                                                {option}
+                                              </li>
+                                          ))}
+                                        </ul>
+                                      </div>
                                   )}
-                                  {q.answer && <p className="text-success text-sm mt-1">Answer: {q.answer}</p>}
-                                  {q.explanation && <p className="text-muted-foreground text-sm mt-1">Explanation: {q.explanation}</p>}
-                                  {q.type && <p className="text-muted-foreground text-xs mt-1">Type: {q.type}</p>}
-                                  {q.difficulty && <p className="text-muted-foreground text-xs mt-1">Difficulty: {q.difficulty}</p>}
+
+                                  {q.answer && (
+                                      <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-2 border-green-500">
+                                        <p className="text-sm">
+                                          <span className="font-medium text-green-700 dark:text-green-400">Answer: </span>
+                                          <span className="text-green-800 dark:text-green-300">{q.answer}</span>
+                                        </p>
+                                      </div>
+                                  )}
                                 </div>
                             ))}
                           </div>
