@@ -23,8 +23,7 @@ const DashboardProfile = () => {
   const [profileData, setProfileData] = useState({
     firstName: "John",
     lastName: "Doe",
-    email: "john.doe@example.com",
-    phoneNumber: "",
+    email: localStorage.getItem("userEmail") || "john.doe@example.com",    phoneNumber: "",
     institution: "",
     major: "",
     location: "",
