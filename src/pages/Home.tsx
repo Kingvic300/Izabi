@@ -37,6 +37,7 @@ const Home = () => {
       description: "Switch between English and Pidgin anytime"
     }
   ];
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="min-h-screen bg-background">
@@ -136,22 +137,32 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-8 bg-card/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-primary rounded flex items-center justify-center">
-              <Brain className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-bold bg-gradient-hero bg-clip-text text-transparent">
-              Izabi
-            </span>
-            <span className="text-muted-foreground">- AI-Powered Student Assistant</span>
-            <span> &copy; 2025 </span>
-          </div>
+  
+
+{/* Footer */}
+<footer className="border-t border-border bg-card/50">
+  <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="flex flex-col items-center justify-center gap-y-4 sm:flex-row sm:justify-between">
+      <div className="flex items-center space-x-2">
+        <div 
+          className="flex h-6 w-6 items-center justify-center rounded bg-gradient-primary"
+          aria-label="Izabi Logo"
+        >
+          <Brain className="h-4 w-4 text-primary-foreground" />
         </div>
-      </footer>
+        <span className="bg-gradient-hero bg-clip-text text-lg font-bold text-transparent">
+          Izabi
+        </span>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        AI-Powered Student Assistant
+      </p>
+      <p className="text-sm text-muted-foreground">
+        &copy; {currentYear} Izabi. All rights reserved.
+      </p>
     </div>
+  </div>
+</footer>
   );
 };
 
