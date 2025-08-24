@@ -34,7 +34,7 @@ const DashboardHome = () => {
       formData.append("file", uploadedFile);
       formData.append("userId", userId);
 
-      const response = await axios.post(`${BASE_URL}/api/summarize`, formData, {
+      const response = await axios.post(`${BASE_URL}/api/study/summarize`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
@@ -57,7 +57,7 @@ const DashboardHome = () => {
       formData.append("userId", userId);
       formData.append("numberOfQuestions", "5");
 
-      const response = await axios.post(`${BASE_URL}/api/generate-questions`, formData, {
+      const response = await axios.post(`${BASE_URL}/api/study/generate-questions`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
@@ -80,7 +80,7 @@ const DashboardHome = () => {
       formData.append("userId", userId);
       formData.append("numberOfQuestions", "5");
 
-      const response = await axios.post(`${BASE_URL}/api/generate-study-material`, formData, {
+      const response = await axios.post(`${BASE_URL}/api/study/generate-study-material`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
