@@ -19,7 +19,7 @@ const Home = () => {
     {
       icon: <Zap className="h-8 w-8" />,
       title: "Auto Quiz Generator",
-      description: "Generate quizzes automatically from your content"
+      description: "Auto-generate quizzes from any document"
     },
     {
       icon: <Users className="h-8 w-8" />,
@@ -55,7 +55,7 @@ const Home = () => {
             </div>
             <div className="flex items-center space-x-4">
               <Link to="/login">
-                <Button variant="ghost"  className="text-white border-white hover:bg-white/10">Login</Button>
+                <Button variant="ghost" className="text-white border-white hover:bg-white/10">Login</Button>
               </Link>
               <Link to="/signup">
                 <Button variant="hero">Get Started</Button>
@@ -77,7 +77,7 @@ const Home = () => {
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Transform PDFs into quizzes, summaries, and voice-guided learning experiences. 
+              Transform PDFs into quizzes, summaries, and voice-guided learning experiences.
               Study smarter in English & Pidgin with Izabi's AI assistant.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -86,9 +86,11 @@ const Home = () => {
                   Start Learning Free
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="text-white min-w-[200px]">
-                Watch Demo
-              </Button>
+              <Link to="/demo">
+                <Button variant="outline" size="lg" className="text-white min-w-[200px]">
+                  Watch Demo
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -109,8 +111,8 @@ const Home = () => {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="p-6 hover:shadow-card transition-all duration-300 border-0 bg-card shadow-sm">
+            {features.map((feature) => (
+              <Card key={feature.title} className="p-6 hover:shadow-card transition-all duration-300 border-0 bg-card shadow-sm">
                 <div className="text-primary mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
@@ -124,10 +126,10 @@ const Home = () => {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Ready to revolutionize your studying?
+            Ready to Study Smarter?
           </h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Join thousands of students already using Izabi to improve their academic performance
+            Join thousands of students improving their grades with Izabi
           </p>
           <Link to="/signup">
             <Button variant="hero" size="lg" className="min-w-[250px]">
@@ -142,7 +144,7 @@ const Home = () => {
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-center gap-y-4 sm:flex-row sm:justify-between">
             <div className="flex items-center space-x-2">
-              <div 
+              <div
                 className="flex h-6 w-6 items-center justify-center rounded bg-gradient-primary"
                 aria-label="Izabi Logo"
               >
@@ -158,8 +160,8 @@ const Home = () => {
           </div>
         </div>
       </footer>
-      </div>
-        );
-      };
+    </div>
+  );
+};
 
 export default Home;
