@@ -11,19 +11,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/components/ui/use-toast"; // ✅ import toast hook
-import { User, Lock, Camera, Save, Edit, KeyRound, ArrowRight } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { User, Lock, Camera, Save, Edit, KeyRound } from "lucide-react";
 import ChangePassword from "@/pages/ChangePassword.tsx";
-import {BASE_URL} from "@/contants/contants.ts";
+import { BASE_URL } from "@/contants/contants.ts";
 
 const DashboardProfile = () => {
-  const { toast } = useToast(); // ✅ initialize toast
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState({
     firstName: "John",
     lastName: "Doe",
-    email: localStorage.getItem("userEmail") || "john.doe@example.com",    phoneNumber: "",
+    email: localStorage.getItem("userEmail") || "john.doe@example.com",
+    phoneNumber: "",
     institution: "",
     major: "",
     location: "",
@@ -34,11 +35,16 @@ const DashboardProfile = () => {
     const loadProfile = async () => {
       try {
         const savedProfile = localStorage.getItem("userProfile");
-        if (savedProfile) {
-          setProfileData(JSON.parse(savedProfile));
-        }
+        let profile = savedProfile ? JSON.parse(savedProfile) : {};
+
+        // Always set email from localStorage
+        const storedEmail = localStorage.getItem("userEmail");
+        if (storedEmail) profile.email = storedEmail;
+
+        setProfileData({ ...profileData, ...profile });
 
         const userId = localStorage.getItem("userId");
+        if (!userId) return;
 
         const response = await fetch(`${BASE_URL}/users/${userId}`, {
           method: "GET",
@@ -47,25 +53,20 @@ const DashboardProfile = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setProfileData(data);
-          localStorage.setItem("userProfile", JSON.stringify(data));
+          if (storedEmail) data.email = storedEmail; // Ensure email is correct
+          setProfileData({ ...profileData, ...data });
+          localStorage.setItem("userProfile", JSON.stringify({ ...profileData, ...data }));
         }
-
       } catch (error) {
         console.error("Error loading profile:", error);
       }
     };
 
-    loadProfile().then((result) => {
-      console.log("Profile loaded:", result);
-    });
+    loadProfile();
   }, []);
 
   const handleInputChange = (field: string, value: string) => {
-    const updatedData = {
-      ...profileData,
-      [field]: value,
-    };
+    const updatedData = { ...profileData, [field]: value };
     setProfileData(updatedData);
     localStorage.setItem("userProfile", JSON.stringify(updatedData));
   };
@@ -73,15 +74,21 @@ const DashboardProfile = () => {
   const handleSaveProfile = async () => {
     setLoading(true);
     try {
+      // Always include email from localStorage to prevent overwriting
+      const updatedProfileData = { ...profileData, email: localStorage.getItem("userEmail") };
+
       const response = await fetch(`${BASE_URL}/users/update-profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profileData),
+        body: JSON.stringify(updatedProfileData),
       });
 
       if (!response.ok) throw new Error("Failed to update profile");
 
       const updatedProfile = await response.json();
+      // Keep email from localStorage
+      updatedProfile.email = localStorage.getItem("userEmail") || updatedProfile.email;
+
       localStorage.setItem("userProfile", JSON.stringify(updatedProfile));
       setProfileData(updatedProfile);
       setIsEditing(false);
@@ -119,12 +126,10 @@ const DashboardProfile = () => {
   };
 
   const handleChangePassword = () => {
-    // ✅ Replace alert with toast
     toast({
       title: "Redirecting...",
       description: "You are being redirected to the Change Password page.",
     });
-
     console.log("Navigate to /change-password");
   };
 
@@ -133,12 +138,10 @@ const DashboardProfile = () => {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold mb-2">Profile Settings</h1>
-          <p className="text-muted-foreground">
-            Manage your account information and preferences
-          </p>
+          <p className="text-muted-foreground">Manage your account information and preferences</p>
         </div>
 
-        {/* Profile Information */}
+        {/* Profile Card */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -147,21 +150,15 @@ const DashboardProfile = () => {
                   <User className="h-5 w-5 text-primary" />
                   <span>Personal Information</span>
                 </CardTitle>
-                <CardDescription>
-                  Update your profile details and photo
-                </CardDescription>
+                <CardDescription>Update your profile details and photo</CardDescription>
               </div>
-              <Button
-                  variant="secondary"
-                  onClick={() => setIsEditing(!isEditing)}
-              >
+              <Button variant="secondary" onClick={() => setIsEditing(!isEditing)}>
                 <Edit className="h-4 w-4 mr-2" />
                 {isEditing ? "Cancel" : "Edit"}
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Avatar Section */}
             <div className="flex items-center space-x-6">
               <div className="relative">
                 <Avatar className="w-24 h-24">
@@ -187,12 +184,11 @@ const DashboardProfile = () => {
                 <h3 className="text-lg font-medium">
                   {profileData.firstName || "John"} {profileData.lastName || "Doe"}
                 </h3>
-
                 <p className="text-muted-foreground">{profileData.email}</p>
               </div>
             </div>
 
-            <Separator/>
+            <Separator />
 
             {/* Form Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -219,9 +215,7 @@ const DashboardProfile = () => {
                 <Input
                     id="phoneNumber"
                     value={profileData.phoneNumber}
-                    onChange={(e) =>
-                        handleInputChange("phoneNumber", e.target.value)
-                    }
+                    onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
                     disabled={!isEditing}
                 />
               </div>
@@ -230,9 +224,7 @@ const DashboardProfile = () => {
                 <Input
                     id="institution"
                     value={profileData.institution}
-                    onChange={(e) =>
-                        handleInputChange("institution", e.target.value)
-                    }
+                    onChange={(e) => handleInputChange("institution", e.target.value)}
                     disabled={!isEditing}
                 />
               </div>
@@ -274,14 +266,12 @@ const DashboardProfile = () => {
               <Lock className="h-5 w-5 text-primary" />
               <span>Account Security</span>
             </CardTitle>
-            <CardDescription>
-              Manage your password and security settings
-            </CardDescription>
+            <CardDescription>Manage your password and security settings</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div className="flex items-center space-x-3">
-                <KeyRound className="h-5 w-5 text-muted-foreground"/>
+                <KeyRound className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="font-medium">Change Password</p>
                   <p className="text-sm text-muted-foreground">
@@ -290,7 +280,7 @@ const DashboardProfile = () => {
                 </div>
               </div>
 
-              <ChangePassword/>
+              <ChangePassword />
             </div>
           </CardContent>
         </Card>
