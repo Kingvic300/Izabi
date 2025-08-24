@@ -2,16 +2,24 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {BASE_URL} from "@/contants/contants.ts";
+import { BASE_URL } from "@/contants/contants.ts";
 import { Upload, FileText, Brain, Zap, ChevronDown, ChevronUp } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
+interface AIQuestion {
+  question: string;
+  answer?: string;
+  options?: string[];
+  type?: string;
+  difficulty?: string;
+  explanation?: string;
+}
 
 const DashboardHome = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [summary, setSummary] = useState<string>("");
-  const [questions, setQuestions] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<AIQuestion[]>([]);
   const [showSummary, setShowSummary] = useState(false);
   const [showQuestions, setShowQuestions] = useState(false);
 
@@ -25,7 +33,7 @@ const DashboardHome = () => {
     }
   };
 
-  const handleSummarize = async () => {
+  const handleRequest = async (endpoint: string, includeQuestions = false) => {
     if (!uploadedFile || !userId) return;
     setIsProcessing(true);
 
@@ -33,63 +41,31 @@ const DashboardHome = () => {
       const formData = new FormData();
       formData.append("file", uploadedFile);
       formData.append("userId", userId);
+      if (includeQuestions) formData.append("numberOfQuestions", "5");
 
-      const response = await axios.post(`${BASE_URL}/api/study/summarize`, formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+      const response = await axios.post(`${BASE_URL}/api/study/${endpoint}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setSummary(response.data.summary);
-      setShowSummary(true);
+      if (response.data.summary) {
+        setSummary(response.data.summary);
+        setShowSummary(true);
+      }
+
+      if (response.data.questions) {
+        const aiQuestions: AIQuestion[] = response.data.questions.map((q: any) => ({
+          question: q.question || "",
+          answer: q.answer || "",
+          options: q.options || [],
+          type: q.type || q.questionType || "",
+          difficulty: q.difficulty || "",
+          explanation: q.explanation || "",
+        }));
+        setQuestions(aiQuestions);
+        setShowQuestions(true);
+      }
     } catch (err) {
-      console.error("Error generating summary:", err);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleGenerateQuestions = async () => {
-    if (!uploadedFile || !userId) return;
-    setIsProcessing(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", uploadedFile);
-      formData.append("userId", userId);
-      formData.append("numberOfQuestions", "5");
-
-      const response = await axios.post(`${BASE_URL}/api/study/generate-questions`, formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-
-      setQuestions(response.data.map((q: any) => q.question));
-      setShowQuestions(true);
-    } catch (err) {
-      console.error("Error generating questions:", err);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleGenerateStudyMaterial = async () => {
-    if (!uploadedFile || !userId) return;
-    setIsProcessing(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", uploadedFile);
-      formData.append("userId", userId);
-      formData.append("numberOfQuestions", "5");
-
-      const response = await axios.post(`${BASE_URL}/api/study/generate-study-material`, formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-
-      setSummary(response.data.summary);
-      setQuestions(response.data.questions.map((q: any) => q.question));
-      setShowSummary(true);
-      setShowQuestions(true);
-    } catch (err) {
-      console.error("Error generating study material:", err);
+      console.error(`Error calling ${endpoint}:`, err);
     } finally {
       setIsProcessing(false);
     }
@@ -138,7 +114,7 @@ const DashboardHome = () => {
             {uploadedFile && (
                 <div className="mt-6 flex flex-col sm:flex-row gap-4">
                   <Button
-                      onClick={handleSummarize}
+                      onClick={() => handleRequest("summarize")}
                       disabled={isProcessing}
                       variant="hero"
                       className="flex-1"
@@ -148,7 +124,7 @@ const DashboardHome = () => {
                   </Button>
 
                   <Button
-                      onClick={handleGenerateQuestions}
+                      onClick={() => handleRequest("generate-questions", true)}
                       disabled={isProcessing}
                       variant="secondary"
                       className="flex-1"
@@ -158,7 +134,7 @@ const DashboardHome = () => {
                   </Button>
 
                   <Button
-                      onClick={handleGenerateStudyMaterial}
+                      onClick={() => handleRequest("generate-study-material", true)}
                       disabled={isProcessing}
                       variant="outline"
                       className="flex-1"
@@ -219,14 +195,22 @@ const DashboardHome = () => {
                       <CollapsibleContent>
                         <CardContent>
                           <div className="space-y-3">
-                            {questions.map((question, index) => (
-                                <div
-                                    key={index}
-                                    className="p-4 bg-muted/30 rounded-lg border-l-4 border-primary"
-                                >
+                            {questions.map((q, index) => (
+                                <div key={index} className="p-4 bg-muted/30 rounded-lg border-l-4 border-primary">
                                   <p className="font-medium text-foreground">
-                                    {index + 1}. {question}
+                                    {index + 1}. {q.question}
                                   </p>
+                                  {q.options && q.options.length > 0 && (
+                                      <ul className="ml-4 mt-2 list-disc text-sm">
+                                        {q.options.map((opt, i) => (
+                                            <li key={i}>{opt}</li>
+                                        ))}
+                                      </ul>
+                                  )}
+                                  {q.answer && <p className="text-success text-sm mt-1">Answer: {q.answer}</p>}
+                                  {q.explanation && <p className="text-muted-foreground text-sm mt-1">Explanation: {q.explanation}</p>}
+                                  {q.type && <p className="text-muted-foreground text-xs mt-1">Type: {q.type}</p>}
+                                  {q.difficulty && <p className="text-muted-foreground text-xs mt-1">Difficulty: {q.difficulty}</p>}
                                 </div>
                             ))}
                           </div>
