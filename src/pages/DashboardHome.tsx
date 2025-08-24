@@ -47,20 +47,28 @@ const DashboardHome = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
+      // Handle summary
       if (response.data.summary) {
         setSummary(response.data.summary);
         setShowSummary(true);
       }
 
+      // Handle questions (strings or objects)
       if (response.data.questions) {
-        const aiQuestions: AIQuestion[] = response.data.questions.map((q: any) => ({
-          question: q.question || "",
-          answer: q.answer || "",
-          options: q.options || [],
-          type: q.type || q.questionType || "",
-          difficulty: q.difficulty || "",
-          explanation: q.explanation || "",
-        }));
+        const aiQuestions: AIQuestion[] = response.data.questions.map((q: any) => {
+          if (typeof q === "string") {
+            return { question: q };
+          } else {
+            return {
+              question: q.question || "",
+              answer: q.answer || "",
+              options: q.options || [],
+              type: q.type || q.questionType || "",
+              difficulty: q.difficulty || "",
+              explanation: q.explanation || "",
+            };
+          }
+        });
         setQuestions(aiQuestions);
         setShowQuestions(true);
       }
