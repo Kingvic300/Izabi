@@ -1,48 +1,50 @@
-import React ,{ useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {BASE_URL} from "@/contants/contants.ts";
+import { BASE_URL } from "@/contants/contants.ts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, FileText, Calendar, Eye, Download, Trash2 } from "lucide-react";
 
-// Mock data for uploaded files
+// Optional mock data
 const mockFiles = [
   { id: 1, name: "Mathematics_Chapter_5.pdf", uploadDate: "2024-01-15", type: "Mathematics", status: "processed", size: "2.3 MB" },
   { id: 2, name: "Physics_Mechanics.pdf", uploadDate: "2024-01-14", type: "Physics", status: "processed", size: "4.1 MB" },
-  { id: 3, name: "Chemistry_Organic.pdf", uploadDate: "2024-01-12", type: "Chemistry", status: "processing", size: "3.7 MB" },
-  { id: 4, name: "English_Literature.pdf", uploadDate: "2024-01-10", type: "English", status: "processed", size: "1.9 MB" },
-  { id: 5, name: "Biology_Genetics.pdf", uploadDate: "2024-01-08", type: "Biology", status: "failed", size: "5.2 MB" }
 ];
 
 const DashboardHistory = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
-
-  // This state will hold backend data when ready
   const [backendFiles, setBackendFiles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const userId = localStorage.getItem("userId"); // replace with your auth userId
+        const userId = localStorage.getItem("userId");
+        if (!userId) return;
+
         const response = await axios.get(`${BASE_URL}/api/study/history?userId=${userId}`);
         console.log("Backend study history:", response.data);
-        setBackendFiles(response.data); // you can use this later to replace mockFiles
+
+        // Ensure response is an array or use fallback
+        const files = Array.isArray(response.data) ? response.data : response.data.files ?? [];
+        setBackendFiles(files);
       } catch (err) {
         console.error("Error fetching study history:", err);
+        setBackendFiles([]);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchHistory().then(() => {
-      console.log("History fetch completed");
-    });
+    fetchHistory();
   }, []);
 
-  const filteredFiles = mockFiles.filter(file => {
+  const filteredFiles = backendFiles.filter(file => {
     const matchesSearch =
         file.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         file.type.toLowerCase().includes(searchQuery.toLowerCase());
@@ -69,6 +71,15 @@ const DashboardHistory = () => {
       default: return "Unknown";
     }
   };
+
+  if (loading) {
+    return (
+        <div className="py-12 text-center">
+          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4 animate-spin" />
+          <p className="text-muted-foreground">Loading your file history...</p>
+        </div>
+    );
+  }
 
   return (
       <div className="space-y-6">
