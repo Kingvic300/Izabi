@@ -168,8 +168,8 @@ const DashboardProfile = () => {
                 <Avatar className="w-24 h-24">
                   <AvatarImage src={profileData.profilePicturePath} />
                   <AvatarFallback className="text-2xl">
-                    {profileData.firstName[0]}
-                    {profileData.lastName[0]}
+                    {profileData.firstName?.[0] || "J"}
+                    {profileData.lastName?.[0] || "D"}
                   </AvatarFallback>
                 </Avatar>
                 {isEditing && (
@@ -186,13 +186,14 @@ const DashboardProfile = () => {
               </div>
               <div>
                 <h3 className="text-lg font-medium">
-                  {profileData.firstName} {profileData.lastName}
+                  {profileData.firstName || "John"} {profileData.lastName || "Doe"}
                 </h3>
+
                 <p className="text-muted-foreground">{profileData.email}</p>
               </div>
             </div>
 
-            <Separator />
+            <Separator/>
 
             {/* Form Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
