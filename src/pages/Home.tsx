@@ -73,7 +73,7 @@ const Home = () => {
             <h1 className="text-4xl sm:text-6xl font-bold mb-6">
               Turn Your Notes Into{" "}
               <span className="bg-gradient-hero bg-clip-text text-transparent">
-                AI-powered Learning
+                AI-Powered Learning
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
