@@ -147,6 +147,7 @@ const Home = () => {
               Izabi
             </span>
             <span className="text-muted-foreground">- AI-Powered Student Assistant</span>
+            <span> &copy; 2025 </span>
           </div>
         </div>
       </footer>
