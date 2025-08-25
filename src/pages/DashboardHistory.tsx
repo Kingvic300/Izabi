@@ -11,12 +11,9 @@ import {
   FileText,
   Calendar,
   Eye,
-  Download,
-  Trash2,
   Brain,
   HelpCircle,
   BookOpen,
-  List,
   X
 } from "lucide-react";
 
@@ -88,35 +85,6 @@ const DashboardHistory = () => {
 
     return matchesSearch && matchesDifficulty;
   });
-
-  const getDifficultyColor = (difficulty?: string) => {
-    switch (difficulty?.toLowerCase()) {
-      case "easy":
-        return "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400";
-      case "hard":
-        return "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
-
-  const getQuestionTypeIcon = (questionType?: string) => {
-    switch (questionType?.toLowerCase()) {
-      case "multiple_choice":
-      case "multiple choice":
-        return "🔘";
-      case "true_false":
-      case "true false":
-        return "✓/✗";
-      case "short_answer":
-      case "short answer":
-        return "✍️";
-      default:
-        return "❓";
-    }
-  };
 
   if (loading) {
     return (
@@ -195,12 +163,8 @@ const DashboardHistory = () => {
                           <span>{new Date(material.createdAt).toLocaleDateString()}</span>
                         </span>
                           )}
-                          <Badge variant="secondary">
-                            {questions.length} questions
-                          </Badge>
-                          <Badge variant="secondary">
-                            {keyPoints.length} key points
-                          </Badge>
+                          <Badge variant="secondary">{questions.length} questions</Badge>
+                          <Badge variant="secondary">{keyPoints.length} key points</Badge>
                         </div>
                       </div>
                     </div>
@@ -213,8 +177,8 @@ const DashboardHistory = () => {
 
         {/* Modal Overlay */}
         {selectedMaterial && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+              <div className="bg-background rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
                 <button
                     className="absolute top-4 right-4 p-2 rounded-full bg-muted hover:bg-muted-foreground/20"
                     onClick={() => setSelectedMaterial(null)}
@@ -222,11 +186,13 @@ const DashboardHistory = () => {
                   <X className="h-5 w-5" />
                 </button>
 
-                <h2 className="text-xl font-semibold mb-4">{selectedMaterial.fileName || "Study Material"}</h2>
+                <h2 className="text-xl font-semibold mb-6">
+                  {selectedMaterial.fileName || "Study Material"}
+                </h2>
 
                 {selectedMaterial.summary && (
-                    <div className="mb-6">
-                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
+                    <div className="mb-6 bg-muted/30 rounded-lg p-4">
+                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-2">
                         <Brain className="h-4 w-4" />
                         <span>AI SUMMARY</span>
                       </h4>
@@ -235,8 +201,8 @@ const DashboardHistory = () => {
                 )}
 
                 {selectedMaterial.keyPoints && selectedMaterial.keyPoints.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
+                    <div className="mb-6 bg-muted/30 rounded-lg p-4">
+                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-2">
                         <BookOpen className="h-4 w-4" />
                         <span>KEY POINTS</span>
                       </h4>
@@ -252,14 +218,17 @@ const DashboardHistory = () => {
                 )}
 
                 {selectedMaterial.questions && selectedMaterial.questions.length > 0 && (
-                    <div>
+                    <div className="bg-muted/30 rounded-lg p-4">
                       <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
                         <HelpCircle className="h-4 w-4" />
                         <span>STUDY QUESTIONS</span>
                       </h4>
                       <div className="space-y-3">
                         {selectedMaterial.questions.map((q, idx) => (
-                            <div key={q.id || idx} className="bg-muted/30 rounded-lg p-4 border-l-4 border-primary">
+                            <div
+                                key={q.id || idx}
+                                className="bg-background rounded-lg p-4 border-l-4 border-primary"
+                            >
                               <p className="font-medium text-sm mb-2">
                                 {idx + 1}. {q.question}
                               </p>
