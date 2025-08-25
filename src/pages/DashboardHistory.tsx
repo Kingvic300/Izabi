@@ -26,15 +26,15 @@ interface StudyQuestion {
   id: string;
   question: string;
   options: string[];
-  correctAnswer: string;   // ✅ match backend field
+  correctAnswer: string;
   difficulty?: string;
   questionType?: string;
 }
 
 interface StudyMaterialResponse {
   summary: string;
-  keyPoints: string[];
-  questions: StudyQuestion[];   // ✅ match backend field
+  keyPoints?: string[];   // make optional
+  questions?: StudyQuestion[];
   fileName?: string;
   createdAt?: string;
   id?: string;
@@ -57,7 +57,14 @@ const DashboardHistory = () => {
         console.log("Backend study history:", response.data);
 
         const materials = Array.isArray(response.data) ? response.data : [];
-        setStudyMaterials(materials);
+        // ✅ normalize data so keyPoints/questions are never undefined
+        const normalized = materials.map((m) => ({
+          ...m,
+          keyPoints: m.keyPoints || [],
+          questions: m.questions || []
+        }));
+
+        setStudyMaterials(normalized);
       } catch (err) {
         console.error("Error fetching study history:", err);
         setStudyMaterials([]);
@@ -71,23 +78,22 @@ const DashboardHistory = () => {
 
   const toggleExpanded = (index: number) => {
     const newExpanded = new Set(expandedItems);
-    if (newExpanded.has(index)) {
-      newExpanded.delete(index);
-    } else {
-      newExpanded.add(index);
-    }
+    newExpanded.has(index) ? newExpanded.delete(index) : newExpanded.add(index);
     setExpandedItems(newExpanded);
   };
 
-  const filteredMaterials = studyMaterials.filter(material => {
+  const filteredMaterials = studyMaterials.filter((material) => {
+    const keyPoints = material.keyPoints || [];
+    const questions = material.questions || [];
+
     const matchesSearch =
         (material.fileName || "Study Material").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        material.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        material.keyPoints.some(point => point.toLowerCase().includes(searchQuery.toLowerCase()));
+        (material.summary || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        keyPoints.some((point) => point.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesDifficulty =
         filterDifficulty === "all" ||
-        material.questions.some(q => q.difficulty?.toLowerCase() === filterDifficulty.toLowerCase());
+        questions.some((q) => q.difficulty?.toLowerCase() === filterDifficulty.toLowerCase());
 
     return matchesSearch && matchesDifficulty;
   });
@@ -195,150 +201,157 @@ const DashboardHistory = () => {
               </Card>
           ) : (
               <div className="space-y-4">
-                {filteredMaterials.map((material, index) => (
-                    <Card key={material.id || index} className="hover:shadow-card transition-all duration-200">
-                      <CardContent className="p-0">
-                        {/* Header */}
-                        <div className="p-6 border-b">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                                <FileText className="h-6 w-6 text-primary" />
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-lg">{material.fileName || "Study Material"}</h3>
-                                <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
-                                  {material.createdAt && (
-                                      <span className="flex items-center space-x-1">
-                                <Calendar className="h-4 w-4" />
-                                <span>{new Date(material.createdAt).toLocaleDateString()}</span>
-                              </span>
-                                  )}
-                                  <Badge variant="secondary" className="flex items-center space-x-1">
-                                    <HelpCircle className="h-3 w-3" />
-                                    <span>{material.questions.length} questions</span>
-                                  </Badge>
-                                  <Badge variant="secondary" className="flex items-center space-x-1">
-                                    <List className="h-3 w-3" />
-                                    <span>{material.keyPoints.length} key points</span>
-                                  </Badge>
+                {filteredMaterials.map((material, index) => {
+                  const keyPoints = material.keyPoints || [];
+                  const questions = material.questions || [];
+
+                  return (
+                      <Card key={material.id || index} className="hover:shadow-card transition-all duration-200">
+                        <CardContent className="p-0">
+                          {/* Header */}
+                          <div className="p-6 border-b">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                  <FileText className="h-6 w-6 text-primary" />
+                                </div>
+                                <div>
+                                  <h3 className="font-medium text-lg">{material.fileName || "Study Material"}</h3>
+                                  <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
+                                    {material.createdAt && (
+                                        <span className="flex items-center space-x-1">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>{new Date(material.createdAt).toLocaleDateString()}</span>
+                                </span>
+                                    )}
+                                    <Badge variant="secondary" className="flex items-center space-x-1">
+                                      <HelpCircle className="h-3 w-3" />
+                                      <span>{questions.length} questions</span>
+                                    </Badge>
+                                    <Badge variant="secondary" className="flex items-center space-x-1">
+                                      <List className="h-3 w-3" />
+                                      <span>{keyPoints.length} key points</span>
+                                    </Badge>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
 
-                            <div className="flex items-center space-x-3">
-                              <Button size="sm" variant="ghost" onClick={() => toggleExpanded(index)}>
-                                {expandedItems.has(index) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                              </Button>
-                              <Button size="sm" variant="ghost">
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button size="sm" variant="ghost">
-                                <Download className="h-4 w-4" />
-                              </Button>
-                              <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <div className="flex items-center space-x-3">
+                                <Button size="sm" variant="ghost" onClick={() => toggleExpanded(index)}>
+                                  {expandedItems.has(index) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                </Button>
+                                <Button size="sm" variant="ghost">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                <Button size="sm" variant="ghost">
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                                <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Collapsible Content */}
-                        <Collapsible open={expandedItems.has(index)}>
-                          <CollapsibleContent>
-                            <div className="p-6 space-y-6">
-                              {/* Summary */}
-                              {material.summary && (
-                                  <div>
-                                    <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
-                                      <Brain className="h-4 w-4" />
-                                      <span>AI SUMMARY</span>
-                                    </h4>
-                                    <div className="bg-muted/30 rounded-lg p-4">
-                                      <p className="text-sm leading-relaxed">{material.summary}</p>
+                          {/* Collapsible Content */}
+                          <Collapsible open={expandedItems.has(index)}>
+                            <CollapsibleContent>
+                              <div className="p-6 space-y-6">
+                                {/* Summary */}
+                                {material.summary && (
+                                    <div>
+                                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
+                                        <Brain className="h-4 w-4" />
+                                        <span>AI SUMMARY</span>
+                                      </h4>
+                                      <div className="bg-muted/30 rounded-lg p-4">
+                                        <p className="text-sm leading-relaxed">{material.summary}</p>
+                                      </div>
                                     </div>
-                                  </div>
-                              )}
+                                )}
 
-                              {/* Key Points */}
-                              {material.keyPoints && material.keyPoints.length > 0 && (
-                                  <div>
-                                    <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
-                                      <BookOpen className="h-4 w-4" />
-                                      <span>KEY POINTS</span>
-                                    </h4>
-                                    <div className="bg-muted/30 rounded-lg p-4">
-                                      <ul className="space-y-2">
-                                        {material.keyPoints.map((point, pointIndex) => (
-                                            <li key={pointIndex} className="text-sm flex items-start space-x-2">
-                                              <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                                              <span>{point}</span>
-                                            </li>
-                                        ))}
-                                      </ul>
+                                {/* Key Points */}
+                                {keyPoints.length > 0 && (
+                                    <div>
+                                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
+                                        <BookOpen className="h-4 w-4" />
+                                        <span>KEY POINTS</span>
+                                      </h4>
+                                      <div className="bg-muted/30 rounded-lg p-4">
+                                        <ul className="space-y-2">
+                                          {keyPoints.map((point, pointIndex) => (
+                                              <li key={pointIndex} className="text-sm flex items-start space-x-2">
+                                                <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
+                                                <span>{point}</span>
+                                              </li>
+                                          ))}
+                                        </ul>
+                                      </div>
                                     </div>
-                                  </div>
-                              )}
+                                )}
 
-                              {/* Questions */}
-                              {material.questions && material.questions.length > 0 && (
-                                  <div>
-                                    <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
-                                      <HelpCircle className="h-4 w-4" />
-                                      <span>STUDY QUESTIONS</span>
-                                    </h4>
-                                    <div className="space-y-3">
-                                      {material.questions.map((question, qIndex) => (
-                                          <div
-                                              key={question.id || qIndex}
-                                              className="bg-muted/30 rounded-lg p-4 border-l-4 border-primary"
-                                          >
-                                            <div className="flex items-start justify-between mb-2">
-                                              <p className="font-medium text-sm flex-1">
-                                                {qIndex + 1}. {question.question}
-                                              </p>
-                                              <div className="flex items-center space-x-2 ml-4">
-                                                <span className="text-xs">{getQuestionTypeIcon(question.questionType)}</span>
-                                                <Badge className={getDifficultyColor(question.difficulty)}>
-                                                  {question.difficulty || "N/A"}
-                                                </Badge>
+                                {/* Questions */}
+                                {questions.length > 0 && (
+                                    <div>
+                                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
+                                        <HelpCircle className="h-4 w-4" />
+                                        <span>STUDY QUESTIONS</span>
+                                      </h4>
+                                      <div className="space-y-3">
+                                        {questions.map((question, qIndex) => (
+                                            <div
+                                                key={question.id || qIndex}
+                                                className="bg-muted/30 rounded-lg p-4 border-l-4 border-primary"
+                                            >
+                                              <div className="flex items-start justify-between mb-2">
+                                                <p className="font-medium text-sm flex-1">
+                                                  {qIndex + 1}. {question.question}
+                                                </p>
+                                                <div className="flex items-center space-x-2 ml-4">
+                                                  <span className="text-xs">{getQuestionTypeIcon(question.questionType)}</span>
+                                                  <Badge className={getDifficultyColor(question.difficulty)}>
+                                                    {question.difficulty || "N/A"}
+                                                  </Badge>
+                                                </div>
                                               </div>
+
+                                              {question.options && question.options.length > 0 && (
+                                                  <div className="mb-2">
+                                                    <ul className="space-y-1 ml-4">
+                                                      {question.options.map((option, optionIndex) => (
+                                                          <li key={optionIndex} className="text-xs flex items-center">
+                                              <span className="w-4 h-4 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium mr-2">
+                                                {String.fromCharCode(65 + optionIndex)}
+                                              </span>
+                                                            {option}
+                                                          </li>
+                                                      ))}
+                                                    </ul>
+                                                  </div>
+                                              )}
+
+                                              {question.correctAnswer && (
+                                                  <div className="bg-green-50 dark:bg-green-900/20 rounded p-2 border-l-2 border-green-500">
+                                                    <p className="text-xs">
+                                                      <span className="font-medium text-green-700 dark:text-green-400">Answer: </span>
+                                                      <span className="text-green-800 dark:text-green-300">
+                                            {question.correctAnswer}
+                                          </span>
+                                                    </p>
+                                                  </div>
+                                              )}
                                             </div>
-
-                                            {question.options && question.options.length > 0 && (
-                                                <div className="mb-2">
-                                                  <ul className="space-y-1 ml-4">
-                                                    {question.options.map((option, optionIndex) => (
-                                                        <li key={optionIndex} className="text-xs flex items-center">
-                                            <span className="w-4 h-4 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium mr-2">
-                                              {String.fromCharCode(65 + optionIndex)}
-                                            </span>
-                                                          {option}
-                                                        </li>
-                                                    ))}
-                                                  </ul>
-                                                </div>
-                                            )}
-
-                                            {question.correctAnswer && (
-                                                <div className="bg-green-50 dark:bg-green-900/20 rounded p-2 border-l-2 border-green-500">
-                                                  <p className="text-xs">
-                                                    <span className="font-medium text-green-700 dark:text-green-400">Answer: </span>
-                                                    <span className="text-green-800 dark:text-green-300">{question.correctAnswer}</span>
-                                                  </p>
-                                                </div>
-                                            )}
-                                          </div>
-                                      ))}
+                                        ))}
+                                      </div>
                                     </div>
-                                  </div>
-                              )}
-                            </div>
-                          </CollapsibleContent>
-                        </Collapsible>
-                      </CardContent>
-                    </Card>
-                ))}
+                                )}
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        </CardContent>
+                      </Card>
+                  );
+                })}
               </div>
           )}
         </div>
