@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BASE_URL } from "@/contants/contants.ts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import {
   Search,
   FileText,
@@ -16,10 +15,9 @@ import {
   Trash2,
   Brain,
   HelpCircle,
-  ChevronDown,
-  ChevronUp,
   BookOpen,
-  List
+  List,
+  X
 } from "lucide-react";
 
 interface StudyQuestion {
@@ -33,7 +31,7 @@ interface StudyQuestion {
 
 interface StudyMaterialResponse {
   summary: string;
-  keyPoints?: string[];   // make optional
+  keyPoints?: string[];
   questions?: StudyQuestion[];
   fileName?: string;
   createdAt?: string;
@@ -45,7 +43,7 @@ const DashboardHistory = () => {
   const [filterDifficulty, setFilterDifficulty] = useState("all");
   const [studyMaterials, setStudyMaterials] = useState<StudyMaterialResponse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
+  const [selectedMaterial, setSelectedMaterial] = useState<StudyMaterialResponse | null>(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -57,7 +55,6 @@ const DashboardHistory = () => {
         console.log("Backend study history:", response.data);
 
         const materials = Array.isArray(response.data) ? response.data : [];
-        // ✅ normalize data so keyPoints/questions are never undefined
         const normalized = materials.map((m) => ({
           ...m,
           keyPoints: m.keyPoints || [],
@@ -75,12 +72,6 @@ const DashboardHistory = () => {
 
     fetchHistory();
   }, []);
-
-  const toggleExpanded = (index: number) => {
-    const newExpanded = new Set(expandedItems);
-    newExpanded.has(index) ? newExpanded.delete(index) : newExpanded.add(index);
-    setExpandedItems(newExpanded);
-  };
 
   const filteredMaterials = studyMaterials.filter((material) => {
     const keyPoints = material.keyPoints || [];
@@ -137,7 +128,7 @@ const DashboardHistory = () => {
   }
 
   return (
-      <div className="space-y-6">
+      <div className="space-y-6 relative">
         <div>
           <h1 className="text-3xl font-bold mb-2">Study History</h1>
           <p className="text-muted-foreground">
@@ -179,182 +170,124 @@ const DashboardHistory = () => {
         </Card>
 
         {/* Results */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">
-              {filteredMaterials.length} study material
-              {filteredMaterials.length !== 1 ? "s" : ""} found
-            </h2>
-          </div>
+        <div className={`space-y-4 ${selectedMaterial ? "blur-sm" : ""}`}>
+          {filteredMaterials.map((material, index) => {
+            const keyPoints = material.keyPoints || [];
+            const questions = material.questions || [];
 
-          {filteredMaterials.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No study materials found</h3>
-                  <p className="text-muted-foreground">
-                    {studyMaterials.length === 0
-                        ? "Start by uploading a PDF to generate your first study material"
-                        : "Try adjusting your search terms or filters"}
-                  </p>
-                </CardContent>
-              </Card>
-          ) : (
-              <div className="space-y-4">
-                {filteredMaterials.map((material, index) => {
-                  const keyPoints = material.keyPoints || [];
-                  const questions = material.questions || [];
-
-                  return (
-                      <Card key={material.id || index} className="hover:shadow-card transition-all duration-200">
-                        <CardContent className="p-0">
-                          {/* Header */}
-                          <div className="p-6 border-b">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4">
-                                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                                  <FileText className="h-6 w-6 text-primary" />
-                                </div>
-                                <div>
-                                  <h3 className="font-medium text-lg">{material.fileName || "Study Material"}</h3>
-                                  <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
-                                    {material.createdAt && (
-                                        <span className="flex items-center space-x-1">
-                                  <Calendar className="h-4 w-4" />
-                                  <span>{new Date(material.createdAt).toLocaleDateString()}</span>
-                                </span>
-                                    )}
-                                    <Badge variant="secondary" className="flex items-center space-x-1">
-                                      <HelpCircle className="h-3 w-3" />
-                                      <span>{questions.length} questions</span>
-                                    </Badge>
-                                    <Badge variant="secondary" className="flex items-center space-x-1">
-                                      <List className="h-3 w-3" />
-                                      <span>{keyPoints.length} key points</span>
-                                    </Badge>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center space-x-3">
-                                <Button size="sm" variant="ghost" onClick={() => toggleExpanded(index)}>
-                                  {expandedItems.has(index) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                                </Button>
-                                <Button size="sm" variant="ghost">
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                                <Button size="sm" variant="ghost">
-                                  <Download className="h-4 w-4" />
-                                </Button>
-                                <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Collapsible Content */}
-                          <Collapsible open={expandedItems.has(index)}>
-                            <CollapsibleContent>
-                              <div className="p-6 space-y-6">
-                                {/* Summary */}
-                                {material.summary && (
-                                    <div>
-                                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
-                                        <Brain className="h-4 w-4" />
-                                        <span>AI SUMMARY</span>
-                                      </h4>
-                                      <div className="bg-muted/30 rounded-lg p-4">
-                                        <p className="text-sm leading-relaxed">{material.summary}</p>
-                                      </div>
-                                    </div>
-                                )}
-
-                                {/* Key Points */}
-                                {keyPoints.length > 0 && (
-                                    <div>
-                                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
-                                        <BookOpen className="h-4 w-4" />
-                                        <span>KEY POINTS</span>
-                                      </h4>
-                                      <div className="bg-muted/30 rounded-lg p-4">
-                                        <ul className="space-y-2">
-                                          {keyPoints.map((point, pointIndex) => (
-                                              <li key={pointIndex} className="text-sm flex items-start space-x-2">
-                                                <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                                                <span>{point}</span>
-                                              </li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    </div>
-                                )}
-
-                                {/* Questions */}
-                                {questions.length > 0 && (
-                                    <div>
-                                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
-                                        <HelpCircle className="h-4 w-4" />
-                                        <span>STUDY QUESTIONS</span>
-                                      </h4>
-                                      <div className="space-y-3">
-                                        {questions.map((question, qIndex) => (
-                                            <div
-                                                key={question.id || qIndex}
-                                                className="bg-muted/30 rounded-lg p-4 border-l-4 border-primary"
-                                            >
-                                              <div className="flex items-start justify-between mb-2">
-                                                <p className="font-medium text-sm flex-1">
-                                                  {qIndex + 1}. {question.question}
-                                                </p>
-                                                <div className="flex items-center space-x-2 ml-4">
-                                                  <span className="text-xs">{getQuestionTypeIcon(question.questionType)}</span>
-                                                  <Badge className={getDifficultyColor(question.difficulty)}>
-                                                    {question.difficulty || "N/A"}
-                                                  </Badge>
-                                                </div>
-                                              </div>
-
-                                              {question.options && question.options.length > 0 && (
-                                                  <div className="mb-2">
-                                                    <ul className="space-y-1 ml-4">
-                                                      {question.options.map((option, optionIndex) => (
-                                                          <li key={optionIndex} className="text-xs flex items-center">
-                                              <span className="w-4 h-4 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium mr-2">
-                                                {String.fromCharCode(65 + optionIndex)}
-                                              </span>
-                                                            {option}
-                                                          </li>
-                                                      ))}
-                                                    </ul>
-                                                  </div>
-                                              )}
-
-                                              {question.correctAnswer && (
-                                                  <div className="bg-green-50 dark:bg-green-900/20 rounded p-2 border-l-2 border-green-500">
-                                                    <p className="text-xs">
-                                                      <span className="font-medium text-green-700 dark:text-green-400">Answer: </span>
-                                                      <span className="text-green-800 dark:text-green-300">
-                                            {question.correctAnswer}
-                                          </span>
-                                                    </p>
-                                                  </div>
-                                              )}
-                                            </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                )}
-                              </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        </CardContent>
-                      </Card>
-                  );
-                })}
-              </div>
-          )}
+            return (
+                <Card
+                    key={material.id || index}
+                    className="hover:shadow-card transition-all duration-200 cursor-pointer"
+                    onClick={() => setSelectedMaterial(material)}
+                >
+                  <CardContent className="p-6 flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <FileText className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-lg">{material.fileName || "Study Material"}</h3>
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
+                          {material.createdAt && (
+                              <span className="flex items-center space-x-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>{new Date(material.createdAt).toLocaleDateString()}</span>
+                        </span>
+                          )}
+                          <Badge variant="secondary">
+                            {questions.length} questions
+                          </Badge>
+                          <Badge variant="secondary">
+                            {keyPoints.length} key points
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <Eye className="h-5 w-5 text-muted-foreground" />
+                  </CardContent>
+                </Card>
+            );
+          })}
         </div>
+
+        {/* Modal Overlay */}
+        {selectedMaterial && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+              <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+                <button
+                    className="absolute top-4 right-4 p-2 rounded-full bg-muted hover:bg-muted-foreground/20"
+                    onClick={() => setSelectedMaterial(null)}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+
+                <h2 className="text-xl font-semibold mb-4">{selectedMaterial.fileName || "Study Material"}</h2>
+
+                {selectedMaterial.summary && (
+                    <div className="mb-6">
+                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
+                        <Brain className="h-4 w-4" />
+                        <span>AI SUMMARY</span>
+                      </h4>
+                      <p className="text-sm leading-relaxed">{selectedMaterial.summary}</p>
+                    </div>
+                )}
+
+                {selectedMaterial.keyPoints && selectedMaterial.keyPoints.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
+                        <BookOpen className="h-4 w-4" />
+                        <span>KEY POINTS</span>
+                      </h4>
+                      <ul className="space-y-2">
+                        {selectedMaterial.keyPoints.map((point, idx) => (
+                            <li key={idx} className="text-sm flex items-start space-x-2">
+                              <span className="w-2 h-2 bg-primary rounded-full mt-2"></span>
+                              <span>{point}</span>
+                            </li>
+                        ))}
+                      </ul>
+                    </div>
+                )}
+
+                {selectedMaterial.questions && selectedMaterial.questions.length > 0 && (
+                    <div>
+                      <h4 className="flex items-center space-x-2 font-semibold text-sm text-muted-foreground mb-3">
+                        <HelpCircle className="h-4 w-4" />
+                        <span>STUDY QUESTIONS</span>
+                      </h4>
+                      <div className="space-y-3">
+                        {selectedMaterial.questions.map((q, idx) => (
+                            <div key={q.id || idx} className="bg-muted/30 rounded-lg p-4 border-l-4 border-primary">
+                              <p className="font-medium text-sm mb-2">
+                                {idx + 1}. {q.question}
+                              </p>
+                              {q.options && q.options.length > 0 && (
+                                  <ul className="ml-4 space-y-1">
+                                    {q.options.map((opt, optIdx) => (
+                                        <li key={optIdx} className="text-xs flex items-center">
+                              <span className="w-4 h-4 rounded-full bg-muted flex items-center justify-center text-[10px] mr-2">
+                                {String.fromCharCode(65 + optIdx)}
+                              </span>
+                                          {opt}
+                                        </li>
+                                    ))}
+                                  </ul>
+                              )}
+                              {q.correctAnswer && (
+                                  <p className="mt-2 text-xs text-green-600">
+                                    <strong>Answer:</strong> {q.correctAnswer}
+                                  </p>
+                              )}
+                            </div>
+                        ))}
+                      </div>
+                    </div>
+                )}
+              </div>
+            </div>
+        )}
       </div>
   );
 };
