@@ -3,8 +3,12 @@ import axios from "axios";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BASE_URL } from "@/contants/contants.ts";
-import { Upload, FileText, Brain, Zap, ChevronDown, ChevronUp } from "lucide-react";
+import { Upload, FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import PDFUploadSection from "@/components/pdf/PDFUploadSection";
+import { PDFSelection } from "@/types/pdf";
+import { ErrorList } from "@/components/ui/error-display";
+import { useApiError } from "@/hooks/useApiError";
 
 interface StudyQuestionResponse {
   question: string;
@@ -15,31 +19,38 @@ interface StudyQuestionResponse {
 }
 
 const DashboardHome = () => {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [summary, setSummary] = useState<string>("");
   const [questions, setQuestions] = useState<StudyQuestionResponse[]>([]);
   const [showSummary, setShowSummary] = useState(false);
   const [showQuestions, setShowQuestions] = useState(false);
+  const [pdfSelection, setPdfSelection] = useState<PDFSelection | null>(null);
 
+  const { errors, addError, clearError } = useApiError();
   const userId = localStorage.getItem("userId");
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type === "application/pdf") {
-      setUploadedFile(file);
-      console.log("File uploaded:", file.name);
-    }
+  const handleSelectionComplete = (selection: PDFSelection) => {
+    setPdfSelection(selection);
+    console.log("PDF selection completed:", selection);
   };
 
   const handleRequest = async (endpoint: string, includeQuestions = false) => {
-    if (!uploadedFile || !userId) return;
+    if (!pdfSelection || !userId) {
+      addError({
+        message: "Please upload and select PDF content first",
+        type: "validation"
+      });
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
       const formData = new FormData();
-      formData.append("file", uploadedFile);
+      // Note: We would need to store the original file to append it here
+      // For now, we'll work with the selection data
       formData.append("userId", userId);
+      formData.append("selectedPages", JSON.stringify(pdfSelection.selectedPages));
       if (includeQuestions) formData.append("numberOfQuestions", "5");
 
       const { data } = await axios.post(`${BASE_URL}/api/study/${endpoint}`, formData, {
@@ -78,7 +89,7 @@ const DashboardHome = () => {
 
     } catch (err) {
       console.error(`Error calling ${endpoint}:`, err);
-      alert(`Error: ${err}`);
+      addError(err);
     } finally {
       setIsProcessing(false);
     }
@@ -107,78 +118,87 @@ const DashboardHome = () => {
 
   return (
       <div className="space-y-6">
+        {/* Error Display */}
+        <ErrorList 
+          errors={errors} 
+          onDismiss={clearError}
+        />
+
         <div>
           <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
           <p className="text-muted-foreground">
-            Upload your PDFs and let AI transform them into summaries and quizzes
+            Upload your PDFs and let AI transform them into personalized study materials
           </p>
         </div>
 
-        {/* Upload Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Upload className="h-5 w-5 text-primary" />
-              <span>Upload PDF</span>
-            </CardTitle>
-            <CardDescription>
-              Select a PDF file to start your AI-powered learning experience
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
-              <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="pdf-upload"
-              />
-              <label htmlFor="pdf-upload" className="cursor-pointer block">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-lg font-medium mb-2">
-                  {uploadedFile ? uploadedFile.name : "Choose PDF file"}
-                </p>
-                <p className="text-muted-foreground">
-                  {uploadedFile ? "File ready for processing" : "Click to browse or drag and drop"}
-                </p>
-              </label>
-            </div>
+        {/* PDF Upload Section */}
+        <PDFUploadSection onSelectionComplete={handleSelectionComplete} />
 
-            {uploadedFile && (
-                <div className="mt-6 flex flex-col sm:flex-row gap-4">
-                  <Button
-                      onClick={() => handleRequest("summarize")}
-                      disabled={isProcessing}
-                      variant="hero"
-                      className="flex-1"
-                  >
-                    <Brain className="h-4 w-4 mr-2" />
-                    {isProcessing ? "Processing..." : "Generate Summary"}
-                  </Button>
+        {/* AI Processing Section */}
+        {pdfSelection && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <span>AI Study Tools</span>
+              </CardTitle>
+              <CardDescription>
+                Generate personalized study materials from your selected content
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button
+                  onClick={() => handleRequest("summarize")}
+                  disabled={isProcessing}
+                  variant="hero"
+                  className="h-20 flex-col space-y-2"
+                >
+                  <Brain className="h-6 w-6" />
+                  <div className="text-center">
+                    <div className="font-medium">Smart Summary</div>
+                    <div className="text-xs opacity-75">Key concepts & insights</div>
+                  </div>
+                </Button>
 
-                  <Button
-                      onClick={() => handleRequest("generate-questions", true)}
-                      disabled={isProcessing}
-                      variant="secondary"
-                      className="flex-1"
-                  >
-                    <Zap className="h-4 w-4 mr-2" />
-                    {isProcessing ? "Processing..." : "Generate Questions"}
-                  </Button>
+                <Button
+                  onClick={() => handleRequest("generate-questions", true)}
+                  disabled={isProcessing}
+                  variant="secondary"
+                  className="h-20 flex-col space-y-2"
+                >
+                  <Zap className="h-6 w-6" />
+                  <div className="text-center">
+                    <div className="font-medium">Practice Quiz</div>
+                    <div className="text-xs opacity-75">Test your knowledge</div>
+                  </div>
+                </Button>
 
-                  <Button
-                      onClick={() => handleRequest("generate-study-material", true)}
-                      disabled={isProcessing}
-                      variant="outline"
-                      className="flex-1"
-                  >
-                    Generate Study Material
-                  </Button>
+                <Button
+                  onClick={() => handleRequest("generate-study-material", true)}
+                  disabled={isProcessing}
+                  variant="outline"
+                  className="h-20 flex-col space-y-2"
+                >
+                  <FileText className="h-6 w-6" />
+                  <div className="text-center">
+                    <div className="font-medium">Study Guide</div>
+                    <div className="text-xs opacity-75">Complete materials</div>
+                  </div>
+                </Button>
+              </div>
+
+              {isProcessing && (
+                <div className="mt-4 p-4 bg-muted/30 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
+                    <span className="text-sm">Processing your content with AI...</span>
+                  </div>
                 </div>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Results Section */}
         {(summary || questions.length > 0) && (
