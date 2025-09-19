@@ -16,6 +16,8 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import PDFUploadSection from "@/components/pdf/PDFUploadSection";
@@ -29,6 +31,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import stringSimilarity from "string-similarity";
 
 const DashboardHome = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -45,13 +50,7 @@ const DashboardHome = () => {
   const { errors, addError, clearError } = useApiError();
   const userId = localStorage.getItem("userId");
 
-  const handleSelectionComplete = ({
-                                     selection,
-                                     file,
-                                   }: {
-    selection: PDFSelection;
-    file: File;
-  }) => {
+  const handleSelectionComplete = ({ selection, file }: { selection: PDFSelection; file: File }) => {
     setPdfSelection(selection);
     setPdfFile(file);
   };
@@ -75,7 +74,6 @@ const DashboardHome = () => {
       if (pdfSelection.selectedPages?.length) {
         formData.append("selectedPages", JSON.stringify(pdfSelection.selectedPages));
       }
-
       if (includeQuestions) {
         formData.append("numberOfQuestions", String(numberOfQuestions));
       }
@@ -90,11 +88,6 @@ const DashboardHome = () => {
       else if (Array.isArray(data.questions)) questionsData = data.questions;
       else if (Array.isArray(data.studyQuestions)) questionsData = data.studyQuestions;
 
-      // Keep only multiple-choice questions
-      questionsData = questionsData.filter(
-          (q) => q.questionType?.toLowerCase() === "multiple_choice"
-      );
-
       setQuestions(questionsData);
       setShowQuestions(questionsData.length > 0);
       setShowSummary(!!data.summary);
@@ -107,31 +100,30 @@ const DashboardHome = () => {
     }
   };
 
-  const handleAnswerSelect = (questionIndex: number, option: string) => {
+  const handleAnswerSelect = (qIndex: number, option: string) => {
     if (!showResults) {
-      setSelectedAnswers((prev) => ({ ...prev, [questionIndex]: option }));
+      setSelectedAnswers((prev) => ({ ...prev, [qIndex]: option }));
     }
   };
 
-  const handleCheckResults = () => setShowResults(true);
-
-  const getDifficultyColor = (difficulty?: string) => {
-    switch (difficulty?.toLowerCase()) {
-      case "easy": return "text-green-600 dark:text-green-400";
-      case "medium": return "text-yellow-600 dark:text-yellow-400";
-      case "hard": return "text-red-600 dark:text-red-400";
-      default: return "text-muted-foreground";
+  const handleShortAnswerChange = (qIndex: number, value: string) => {
+    if (!showResults) {
+      setSelectedAnswers((prev) => ({ ...prev, [qIndex]: value }));
     }
   };
 
-  const scoreQuiz = () => {
-    let correctCount = 0;
-    questions.forEach((q, index) => {
-      const userAnswer = selectedAnswers[index];
-      if (userAnswer === q.answer) correctCount++;
-    });
-    return correctCount;
-  };
+  const isShortAnswerCorrect = (input: string, correctAnswer: string) =>
+      stringSimilarity.compareTwoStrings(input.trim().toLowerCase(), correctAnswer.trim().toLowerCase()) > 0.7;
+
+  const scoreQuiz = () =>
+      questions.reduce((acc, q, i) => {
+        const userAnswer = selectedAnswers[i];
+        if (!userAnswer) return acc;
+        if (q.questionType?.toLowerCase() === "short_answer") {
+          return acc + (isShortAnswerCorrect(userAnswer, q.answer || "") ? 1 : 0);
+        }
+        return acc + (userAnswer === q.answer ? 1 : 0);
+      }, 0);
 
   return (
       <div className="space-y-6">
@@ -140,7 +132,7 @@ const DashboardHome = () => {
         <div>
           <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
           <p className="text-muted-foreground">
-            Upload your PDFs and let AI transform them into personalized study materials
+            Upload your PDFs and let AI transform them into personalized study materials.
           </p>
         </div>
 
@@ -153,55 +145,63 @@ const DashboardHome = () => {
                   <Sparkles className="h-5 w-5 text-primary" />
                   <span>AI Study Tools</span>
                 </CardTitle>
-                <CardDescription>
-                  Generate personalized study materials from your selected content
-                </CardDescription>
+                <CardDescription>Generate study materials from your selected content</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col md:flex-row md:space-x-4 space-y-2 md:space-y-0">
-                  <Button onClick={() => handleRequest("summarize")} disabled={isProcessing} variant="hero" className="h-20 flex-col space-y-2 flex-grow">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <Button
+                      onClick={() => handleRequest("summarize")}
+                      disabled={isProcessing}
+                      variant="hero"
+                      className="h-24 flex flex-col items-center justify-center space-y-1"
+                  >
                     <Brain className="h-6 w-6" />
-                    <div className="text-center">
-                      <div className="font-medium">Smart Summary</div>
-                      <div className="text-xs opacity-75">Key concepts & insights</div>
-                    </div>
+                    <span className="font-medium">Smart Summary</span>
                   </Button>
-                  <Button onClick={() => handleRequest("generate-questions", true)} disabled={isProcessing} variant="secondary" className="h-20 flex-col space-y-2 flex-grow">
+                  <Button
+                      onClick={() => handleRequest("generate-questions", true)}
+                      disabled={isProcessing}
+                      variant="secondary"
+                      className="h-24 flex flex-col items-center justify-center space-y-1"
+                  >
                     <Zap className="h-6 w-6" />
-                    <div className="text-center">
-                      <div className="font-medium">Practice Quiz</div>
-                      <div className="text-xs opacity-75">Test your knowledge</div>
-                    </div>
+                    <span className="font-medium">Practice Quiz</span>
                   </Button>
-                  <Button onClick={() => handleRequest("generate-study-material", true)} disabled={isProcessing} variant="outline" className="h-20 flex-col space-y-2 flex-grow">
+                  <Button
+                      onClick={() => handleRequest("generate-study-material", true)}
+                      disabled={isProcessing}
+                      variant="outline"
+                      className="h-24 flex flex-col items-center justify-center space-y-1"
+                  >
                     <FileText className="h-6 w-6" />
-                    <div className="text-center">
-                      <div className="font-medium">Study Guide</div>
-                      <div className="text-xs opacity-75">Complete materials</div>
-                    </div>
+                    <span className="font-medium">Study Guide</span>
                   </Button>
                 </div>
 
                 <div className="mt-4 flex items-center space-x-2">
                   <span className="text-sm font-medium">Number of Questions:</span>
-                  <Select value={String(numberOfQuestions)} onValueChange={(value) => setNumberOfQuestions(Number(value))} disabled={isProcessing}>
+                  <Select
+                      value={String(numberOfQuestions)}
+                      onValueChange={(val) => setNumberOfQuestions(Number(val))}
+                      disabled={isProcessing}
+                  >
                     <SelectTrigger className="w-[100px]">
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[1,2,3,4,5,6,7,8,9,10].map((num) => (
-                          <SelectItem key={num} value={String(num)}>{num}</SelectItem>
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                          <SelectItem key={num} value={String(num)}>
+                            {num}
+                          </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
 
                 {isProcessing && (
-                    <div className="mt-4 p-4 bg-muted/30 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
-                        <span className="text-sm">Processing your content with AI...</span>
-                      </div>
+                    <div className="mt-4 flex items-center space-x-3 p-3 bg-muted rounded-md">
+                      <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></div>
+                      <span className="text-sm">Processing your content with AI...</span>
                     </div>
                 )}
               </CardContent>
@@ -218,19 +218,16 @@ const DashboardHome = () => {
                       <CollapsibleTrigger asChild>
                         <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
                           <CardTitle className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <Brain className="h-5 w-5 text-learning-blue" />
-                              <span>AI Summary</span>
-                            </div>
+                      <span className="flex items-center space-x-2">
+                        <Brain className="h-5 w-5 text-blue-500" /> <span>AI Summary</span>
+                      </span>
                             {showSummary ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                           </CardTitle>
                         </CardHeader>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <CardContent>
-                          <div className="prose dark:prose-invert max-w-none">
-                            <p className="text-foreground leading-relaxed">{summary}</p>
-                          </div>
+                          <p className="leading-relaxed">{summary}</p>
                         </CardContent>
                       </CollapsibleContent>
                     </Card>
@@ -243,80 +240,89 @@ const DashboardHome = () => {
                       <CollapsibleTrigger asChild>
                         <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
                           <CardTitle className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <Zap className="h-5 w-5 text-learning-green" />
-                              <span>Generated Questions ({questions.length})</span>
-                            </div>
+                      <span className="flex items-center space-x-2">
+                        <Zap className="h-5 w-5 text-green-500" />{" "}
+                        <span>Quiz ({questions.length} questions)</span>
+                      </span>
                             {showQuestions ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                           </CardTitle>
                         </CardHeader>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
-                        <CardContent className="space-y-4">
-                          {questions.map((q, index) => {
-                            const userAnswer = selectedAnswers[index];
-                            const isCorrect = userAnswer === q.answer;
+                        <CardContent className="space-y-6">
+                          {questions.map((q, i) => {
+                            const userAnswer = selectedAnswers[i];
+                            const isShort = q.questionType?.toLowerCase() === "short_answer";
+                            const correct =
+                                isShort && userAnswer
+                                    ? isShortAnswerCorrect(userAnswer, q.answer || "")
+                                    : userAnswer === q.answer;
 
                             return (
-                                <Card key={index} className="border-2 border-purple-200">
-                                  <CardHeader className="pb-3">
-                                    <CardTitle className="text-lg flex justify-between items-center">
-                                      <span className="text-foreground">{index + 1}. {q.question}</span>
-                                      <span className={`px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(q.difficulty)}`}>
-                                {q.difficulty?.toUpperCase() || "N/A"}
-                              </span>
-                                    </CardTitle>
-                                    <CardDescription className="flex items-center space-x-2 text-sm">
-                                      <span>🔘</span>
-                                      <span>Multiple Choice</span>
-                                    </CardDescription>
-                                  </CardHeader>
-                                  <CardContent className="space-y-3">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                      {q.options?.map((option, idx) => (
+                                <div key={i} className="border p-4 rounded-md space-y-3">
+                                  <div className="flex justify-between items-start">
+                                    <p className="font-medium">
+                                      {i + 1}. {q.question}
+                                    </p>
+                                    {showResults &&
+                                        (correct ? (
+                                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                        ) : (
+                                            <XCircle className="h-5 w-5 text-red-500" />
+                                        ))}
+                                  </div>
+
+                                  {!isShort &&
+                                      q.options?.map((opt, idx) => (
                                           <Button
                                               key={idx}
                                               variant={
-                                                !selectedAnswers[index]
-                                                    ? "outline"
-                                                    : option === q.answer
+                                                showResults
+                                                    ? opt === q.answer
                                                         ? "default"
-                                                        : selectedAnswers[index] === option
+                                                        : opt === userAnswer
                                                             ? "destructive"
                                                             : "outline"
+                                                    : userAnswer === opt
+                                                        ? "secondary"
+                                                        : "outline"
                                               }
-                                              className="w-full justify-start text-left h-auto py-2"
-                                              onClick={() => handleAnswerSelect(index, option)}
+                                              onClick={() => handleAnswerSelect(i, opt)}
+                                              className="w-full justify-start"
                                               disabled={showResults}
                                           >
-                                            <span className="font-medium mr-2">{String.fromCharCode(65 + idx)}.</span>
-                                            {option}
+                                            {String.fromCharCode(65 + idx)}. {opt}
                                           </Button>
                                       ))}
-                                    </div>
 
-                                    {showResults && !isCorrect && (
-                                        <Card className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-700 mt-3">
-                                          <CardContent className="p-3 text-sm">
-                                            <p className="font-medium text-green-700 dark:text-green-300">
-                                              Correct Answer: <span className="text-green-800 dark:text-green-200 font-normal">{q.answer}</span>
-                                            </p>
-                                          </CardContent>
-                                        </Card>
-                                    )}
-                                  </CardContent>
-                                </Card>
+                                  {isShort && (
+                                      <Input
+                                          value={userAnswer || ""}
+                                          placeholder="Type your answer..."
+                                          onChange={(e) => handleShortAnswerChange(i, e.target.value)}
+                                          disabled={showResults}
+                                      />
+                                  )}
+
+                                  {showResults && !correct && (
+                                      <p className="text-sm text-red-600">
+                                        Correct answer: <span className="font-semibold">{q.answer}</span>
+                                      </p>
+                                  )}
+                                </div>
                             );
                           })}
 
                           {questions.length > 0 && (
-                              <div className="flex justify-between items-center mt-6 p-4 bg-accent/20 rounded-lg">
+                              <div className="mt-4 text-center">
                                 {!showResults ? (
-                                    <Button onClick={handleCheckResults} disabled={isProcessing} className="w-full">Check Results</Button>
+                                    <Button onClick={() => setShowResults(true)} className="w-full">
+                                      Check Results
+                                    </Button>
                                 ) : (
-                                    <div className="w-full text-center text-lg font-semibold text-primary">
-                                      You scored {scoreQuiz()} out of {questions.length} questions!
-                                    </div>
+                                    <p className="text-lg font-semibold text-primary">
+                                      You scored {scoreQuiz()} / {questions.length}
+                                    </p>
                                 )}
                               </div>
                           )}
