@@ -232,43 +232,41 @@ const DashboardHome = () => {
                         </CardHeader>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-6">
                           {questions.map((q, index) => (
-                              <div key={index} className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
-                                <div className="flex items-start justify-between mb-3">
-                                  <p className="font-medium text-foreground flex-1">
+                              <div
+                                  key={index}
+                                  className="p-6 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl shadow-md"
+                              >
+                                <div className="flex justify-between items-start mb-4">
+                                  <p className="text-lg font-semibold text-foreground">
                                     {index + 1}. {q.question}
                                   </p>
-                                  <div className="flex items-center space-x-2 ml-4">
-                                    <span className="text-xs">{getQuestionTypeIcon(q.questionType)}</span>
-                                    <span className={`text-xs font-medium ${getDifficultyColor(q.difficulty)}`}>
-                              {q.difficulty}
-                            </span>
-                                  </div>
+                                  <span
+                                      className={`px-2 py-1 rounded text-sm font-medium ${getDifficultyColor(
+                                          q.difficulty
+                                      )}`}
+                                  >
+                            {q.difficulty?.toUpperCase() || "N/A"}
+                          </span>
                                 </div>
 
-                                <div className="text-xs text-muted-foreground mb-2">
-                                  Type: {getQuestionTypeDisplay(q.questionType)}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                  {q.options?.map((option, idx) => (
+                                      <button
+                                          key={idx}
+                                          className="w-full py-4 px-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg shadow-lg transition-colors duration-200 text-left"
+                                      >
+                                        {String.fromCharCode(65 + idx)}. {option}
+                                      </button>
+                                  ))}
                                 </div>
-
-                                {q.options?.length > 0 && (
-                                    <div className="mb-3 grid grid-cols-2 gap-2">
-                                      {q.options.map((option, idx) => (
-                                          <button
-                                              key={idx}
-                                              className="p-2 bg-purple-100 hover:bg-purple-200 rounded shadow text-left"
-                                          >
-                                            {String.fromCharCode(65 + idx)}. {option}
-                                          </button>
-                                      ))}
-                                    </div>
-                                )}
 
                                 {q.answer && (
-                                    <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-2 border-green-500">
+                                    <div className="mt-4 p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
                                       <p className="text-sm">
-                                        <span className="font-medium text-green-700 dark:text-green-400">Answer: </span>
-                                        <span className="text-green-800 dark:text-green-300">{q.answer}</span>
+                                        <span className="font-medium text-green-700">Answer: </span>
+                                        <span className="text-green-800">{q.answer}</span>
                                       </p>
                                     </div>
                                 )}
