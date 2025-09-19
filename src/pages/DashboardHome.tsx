@@ -16,8 +16,6 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
-  CheckCircle2,
-  XCircle,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import PDFUploadSection from "@/components/pdf/PDFUploadSection";
@@ -31,9 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import stringSimilarity from "string-similarity"; // For fuzzy short answer matching
 
 const DashboardHome = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -95,6 +90,11 @@ const DashboardHome = () => {
       else if (Array.isArray(data.questions)) questionsData = data.questions;
       else if (Array.isArray(data.studyQuestions)) questionsData = data.studyQuestions;
 
+      // Keep only multiple-choice questions
+      questionsData = questionsData.filter(
+          (q) => q.questionType?.toLowerCase() === "multiple_choice"
+      );
+
       setQuestions(questionsData);
       setShowQuestions(questionsData.length > 0);
       setShowSummary(!!data.summary);
@@ -113,12 +113,6 @@ const DashboardHome = () => {
     }
   };
 
-  const handleShortAnswerChange = (questionIndex: number, value: string) => {
-    if (!showResults) {
-      setSelectedAnswers((prev) => ({ ...prev, [questionIndex]: value }));
-    }
-  };
-
   const handleCheckResults = () => setShowResults(true);
 
   const getDifficultyColor = (difficulty?: string) => {
@@ -130,43 +124,11 @@ const DashboardHome = () => {
     }
   };
 
-  const getQuestionTypeDisplay = (type?: string) => type?.replace(/_/g, " ") || "Unknown";
-
-  const getQuestionTypeIcon = (type?: string) => {
-    switch (type?.toLowerCase()) {
-      case "multiple_choice":
-      case "multiple choice": return "🔘";
-      case "true_false":
-      case "true false": return "✓/✗";
-      case "short_answer":
-      case "short answer": return "✍️";
-      default: return "❓";
-    }
-  };
-
-  const isShortAnswerCorrect = (input: string, correctAnswer: string) => {
-    if (!input || !correctAnswer) return false;
-    return stringSimilarity.compareTwoStrings(input.trim().toLowerCase(), correctAnswer.trim().toLowerCase()) > 0.7;
-  };
-
-  const getOptionVariant = (questionIndex: number, option: string, correctAnswer: string) => {
-    const selected = selectedAnswers[questionIndex];
-    if (!selected) return "outline";
-    if (selected === option && option === correctAnswer) return "default";
-    if (selected === option && option !== correctAnswer) return "destructive";
-    if (selected !== option && option === correctAnswer) return "default";
-    return "outline";
-  };
-
   const scoreQuiz = () => {
     let correctCount = 0;
     questions.forEach((q, index) => {
       const userAnswer = selectedAnswers[index];
-      if (q.questionType?.toLowerCase() === "short_answer") {
-        if (isShortAnswerCorrect(userAnswer || "", q.answer || "")) correctCount++;
-      } else {
-        if (userAnswer === q.answer) correctCount++;
-      }
+      if (userAnswer === q.answer) correctCount++;
     });
     return correctCount;
   };
@@ -293,11 +255,7 @@ const DashboardHome = () => {
                         <CardContent className="space-y-4">
                           {questions.map((q, index) => {
                             const userAnswer = selectedAnswers[index];
-                            const isShortAnswer = q.questionType?.toLowerCase() === "short_answer";
-                            const isMultipleChoiceOrTrueFalse = q.questionType?.toLowerCase() === "multiple_choice" || q.questionType?.toLowerCase() === "true_false";
-                            const isCorrect = isShortAnswer
-                                ? isShortAnswerCorrect(userAnswer || "", q.answer || "")
-                                : userAnswer === q.answer;
+                            const isCorrect = userAnswer === q.answer;
 
                             return (
                                 <Card key={index} className="border-2 border-purple-200">
@@ -309,50 +267,33 @@ const DashboardHome = () => {
                               </span>
                                     </CardTitle>
                                     <CardDescription className="flex items-center space-x-2 text-sm">
-                                      <span>{getQuestionTypeIcon(q.questionType)}</span>
-                                      <span>{getQuestionTypeDisplay(q.questionType)}</span>
+                                      <span>🔘</span>
+                                      <span>Multiple Choice</span>
                                     </CardDescription>
                                   </CardHeader>
                                   <CardContent className="space-y-3">
-                                    {isMultipleChoiceOrTrueFalse && (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                          {q.options?.map((option, idx) => (
-                                              <Button
-                                                  key={idx}
-                                                  variant={getOptionVariant(index, option, q.answer || "")}
-                                                  className="w-full justify-start text-left h-auto py-2"
-                                                  onClick={() => handleAnswerSelect(index, option)}
-                                                  disabled={showResults}
-                                              >
-                                                <span className="font-medium mr-2">{String.fromCharCode(65 + idx)}.</span>
-                                                {option}
-                                              </Button>
-                                          ))}
-                                          {userAnswer && userAnswer !== q.answer && !showResults && (
-                                              <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-                                                ❌ Incorrect. Correct answer: <span className="font-semibold">{q.answer}</span>
-                                              </p>
-                                          )}
-                                        </div>
-                                    )}
-
-                                    {isShortAnswer && (
-                                        <div className="space-y-2">
-                                          <Label htmlFor={`short-answer-${index}`}>Your Answer:</Label>
-                                          <Input
-                                              id={`short-answer-${index}`}
-                                              value={userAnswer || ""}
-                                              onChange={(e) => handleShortAnswerChange(index, e.target.value)}
-                                              placeholder="Type your answer here..."
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      {q.options?.map((option, idx) => (
+                                          <Button
+                                              key={idx}
+                                              variant={
+                                                !selectedAnswers[index]
+                                                    ? "outline"
+                                                    : option === q.answer
+                                                        ? "default"
+                                                        : selectedAnswers[index] === option
+                                                            ? "destructive"
+                                                            : "outline"
+                                              }
+                                              className="w-full justify-start text-left h-auto py-2"
+                                              onClick={() => handleAnswerSelect(index, option)}
                                               disabled={showResults}
-                                          />
-                                          {userAnswer && !isCorrect && !showResults && (
-                                              <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-                                                ❌ Close, try again or check hints!
-                                              </p>
-                                          )}
-                                        </div>
-                                    )}
+                                          >
+                                            <span className="font-medium mr-2">{String.fromCharCode(65 + idx)}.</span>
+                                            {option}
+                                          </Button>
+                                      ))}
+                                    </div>
 
                                     {showResults && !isCorrect && (
                                         <Card className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-700 mt-3">
