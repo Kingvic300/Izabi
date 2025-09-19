@@ -1,5 +1,5 @@
 export interface PDFSelection {
-  selectedPages: number[]; // Pages user selected
+  selectedPages: number[];
   selectedText: Array<{
     text: string;
     page: number;
@@ -12,6 +12,7 @@ export interface PDFSelection {
     fileName: string;
     fileSize: number;
   };
+  numberOfQuestions: number;
 }
 
 export interface ErrorType {
@@ -27,13 +28,12 @@ export interface StudyMaterial {
   title: string;
   subject: string;
   difficulty: 'easy' | 'medium' | 'hard';
-  estimatedTime: number; // in minutes
+  estimatedTime: number;
   previewImage?: string;
   questionCount: number;
-  createdAt: string; // ISO date string
+  createdAt: string;
 }
 
-// Optional: API response types for study questions
 export interface StudyQuestionResponse {
   question: string;
   options: string[];
