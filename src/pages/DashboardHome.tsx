@@ -16,6 +16,8 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import PDFUploadSection from "@/components/pdf/PDFUploadSection";
@@ -29,6 +31,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import stringSimilarity from "string-similarity"; // For fuzzy short answer matching
 
 const DashboardHome = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -40,6 +45,7 @@ const DashboardHome = () => {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [numberOfQuestions, setNumberOfQuestions] = useState<number>(5);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
+  const [showResults, setShowResults] = useState(false);
 
   const { errors, addError, clearError } = useApiError();
   const userId = localStorage.getItem("userId");
@@ -63,7 +69,8 @@ const DashboardHome = () => {
 
     setIsProcessing(true);
     clearError();
-    setSelectedAnswers({}); // Reset answers on new request
+    setSelectedAnswers({});
+    setShowResults(false);
 
     try {
       const formData = new FormData();
@@ -101,19 +108,25 @@ const DashboardHome = () => {
   };
 
   const handleAnswerSelect = (questionIndex: number, option: string) => {
-    setSelectedAnswers((prev) => ({ ...prev, [questionIndex]: option }));
+    if (!showResults) {
+      setSelectedAnswers((prev) => ({ ...prev, [questionIndex]: option }));
+    }
   };
+
+  const handleShortAnswerChange = (questionIndex: number, value: string) => {
+    if (!showResults) {
+      setSelectedAnswers((prev) => ({ ...prev, [questionIndex]: value }));
+    }
+  };
+
+  const handleCheckResults = () => setShowResults(true);
 
   const getDifficultyColor = (difficulty?: string) => {
     switch (difficulty?.toLowerCase()) {
-      case "easy":
-        return "text-green-600 dark:text-green-400";
-      case "medium":
-        return "text-yellow-600 dark:text-yellow-400";
-      case "hard":
-        return "text-red-600 dark:text-red-400";
-      default:
-        return "text-muted-foreground";
+      case "easy": return "text-green-600 dark:text-green-400";
+      case "medium": return "text-yellow-600 dark:text-yellow-400";
+      case "hard": return "text-red-600 dark:text-red-400";
+      default: return "text-muted-foreground";
     }
   };
 
@@ -122,17 +135,40 @@ const DashboardHome = () => {
   const getQuestionTypeIcon = (type?: string) => {
     switch (type?.toLowerCase()) {
       case "multiple_choice":
-      case "multiple choice":
-        return "🔘";
+      case "multiple choice": return "🔘";
       case "true_false":
-      case "true false":
-        return "✓/✗";
+      case "true false": return "✓/✗";
       case "short_answer":
-      case "short answer":
-        return "✍️";
-      default:
-        return "❓";
+      case "short answer": return "✍️";
+      default: return "❓";
     }
+  };
+
+  const isShortAnswerCorrect = (input: string, correctAnswer: string) => {
+    if (!input || !correctAnswer) return false;
+    return stringSimilarity.compareTwoStrings(input.trim().toLowerCase(), correctAnswer.trim().toLowerCase()) > 0.7;
+  };
+
+  const getOptionVariant = (questionIndex: number, option: string, correctAnswer: string) => {
+    const selected = selectedAnswers[questionIndex];
+    if (!selected) return "outline";
+    if (selected === option && option === correctAnswer) return "default";
+    if (selected === option && option !== correctAnswer) return "destructive";
+    if (selected !== option && option === correctAnswer) return "default";
+    return "outline";
+  };
+
+  const scoreQuiz = () => {
+    let correctCount = 0;
+    questions.forEach((q, index) => {
+      const userAnswer = selectedAnswers[index];
+      if (q.questionType?.toLowerCase() === "short_answer") {
+        if (isShortAnswerCorrect(userAnswer || "", q.answer || "")) correctCount++;
+      } else {
+        if (userAnswer === q.answer) correctCount++;
+      }
+    });
+    return correctCount;
   };
 
   return (
@@ -161,38 +197,21 @@ const DashboardHome = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col md:flex-row md:space-x-4 space-y-2 md:space-y-0">
-                  <Button
-                      onClick={() => handleRequest("summarize")}
-                      disabled={isProcessing}
-                      variant="hero"
-                      className="h-20 flex-col space-y-2 flex-grow"
-                  >
+                  <Button onClick={() => handleRequest("summarize")} disabled={isProcessing} variant="hero" className="h-20 flex-col space-y-2 flex-grow">
                     <Brain className="h-6 w-6" />
                     <div className="text-center">
                       <div className="font-medium">Smart Summary</div>
                       <div className="text-xs opacity-75">Key concepts & insights</div>
                     </div>
                   </Button>
-
-                  <Button
-                      onClick={() => handleRequest("generate-questions", true)}
-                      disabled={isProcessing}
-                      variant="secondary"
-                      className="h-20 flex-col space-y-2 flex-grow"
-                  >
+                  <Button onClick={() => handleRequest("generate-questions", true)} disabled={isProcessing} variant="secondary" className="h-20 flex-col space-y-2 flex-grow">
                     <Zap className="h-6 w-6" />
                     <div className="text-center">
                       <div className="font-medium">Practice Quiz</div>
                       <div className="text-xs opacity-75">Test your knowledge</div>
                     </div>
                   </Button>
-
-                  <Button
-                      onClick={() => handleRequest("generate-study-material", true)}
-                      disabled={isProcessing}
-                      variant="outline"
-                      className="h-20 flex-col space-y-2 flex-grow"
-                  >
+                  <Button onClick={() => handleRequest("generate-study-material", true)} disabled={isProcessing} variant="outline" className="h-20 flex-col space-y-2 flex-grow">
                     <FileText className="h-6 w-6" />
                     <div className="text-center">
                       <div className="font-medium">Study Guide</div>
@@ -203,19 +222,13 @@ const DashboardHome = () => {
 
                 <div className="mt-4 flex items-center space-x-2">
                   <span className="text-sm font-medium">Number of Questions:</span>
-                  <Select
-                      value={String(numberOfQuestions)}
-                      onValueChange={(value) => setNumberOfQuestions(Number(value))}
-                      disabled={isProcessing}
-                  >
+                  <Select value={String(numberOfQuestions)} onValueChange={(value) => setNumberOfQuestions(Number(value))} disabled={isProcessing}>
                     <SelectTrigger className="w-[100px]">
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                          <SelectItem key={num} value={String(num)}>
-                            {num}
-                          </SelectItem>
+                      {[1,2,3,4,5,6,7,8,9,10].map((num) => (
+                          <SelectItem key={num} value={String(num)}>{num}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -280,7 +293,11 @@ const DashboardHome = () => {
                         <CardContent className="space-y-4">
                           {questions.map((q, index) => {
                             const userAnswer = selectedAnswers[index];
-                            const isCorrect = userAnswer === q.answer;
+                            const isShortAnswer = q.questionType?.toLowerCase() === "short_answer";
+                            const isMultipleChoiceOrTrueFalse = q.questionType?.toLowerCase() === "multiple_choice" || q.questionType?.toLowerCase() === "true_false";
+                            const isCorrect = isShortAnswer
+                                ? isShortAnswerCorrect(userAnswer || "", q.answer || "")
+                                : userAnswer === q.answer;
 
                             return (
                                 <Card key={index} className="border-2 border-purple-200">
@@ -297,33 +314,71 @@ const DashboardHome = () => {
                                     </CardDescription>
                                   </CardHeader>
                                   <CardContent className="space-y-3">
-                                    {q.options?.map((option, idx) => {
-                                      const isSelected = userAnswer === option;
-                                      const correctAnswer = option === q.answer;
+                                    {isMultipleChoiceOrTrueFalse && (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                          {q.options?.map((option, idx) => (
+                                              <Button
+                                                  key={idx}
+                                                  variant={getOptionVariant(index, option, q.answer || "")}
+                                                  className="w-full justify-start text-left h-auto py-2"
+                                                  onClick={() => handleAnswerSelect(index, option)}
+                                                  disabled={showResults}
+                                              >
+                                                <span className="font-medium mr-2">{String.fromCharCode(65 + idx)}.</span>
+                                                {option}
+                                              </Button>
+                                          ))}
+                                          {userAnswer && userAnswer !== q.answer && !showResults && (
+                                              <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                                                ❌ Incorrect. Correct answer: <span className="font-semibold">{q.answer}</span>
+                                              </p>
+                                          )}
+                                        </div>
+                                    )}
 
-                                      return (
-                                          <Button
-                                              key={idx}
-                                              variant={isSelected ? (correctAnswer ? "default" : "destructive") : "outline"}
-                                              className="w-full justify-start text-left h-auto py-2"
-                                              onClick={() => handleAnswerSelect(index, option)}
-                                              disabled={!!userAnswer} // Prevent changing answer
-                                          >
-                                            <span className="font-medium mr-2">{String.fromCharCode(65 + idx)}.</span>
-                                            {option}
-                                            {isSelected && correctAnswer && (
-                                                <span className="ml-2 text-green-700 font-medium">✓ Correct</span>
-                                            )}
-                                            {isSelected && !correctAnswer && (
-                                                <span className="ml-2 text-red-600 font-medium">✗ Wrong</span>
-                                            )}
-                                          </Button>
-                                      );
-                                    })}
+                                    {isShortAnswer && (
+                                        <div className="space-y-2">
+                                          <Label htmlFor={`short-answer-${index}`}>Your Answer:</Label>
+                                          <Input
+                                              id={`short-answer-${index}`}
+                                              value={userAnswer || ""}
+                                              onChange={(e) => handleShortAnswerChange(index, e.target.value)}
+                                              placeholder="Type your answer here..."
+                                              disabled={showResults}
+                                          />
+                                          {userAnswer && !isCorrect && !showResults && (
+                                              <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                                                ❌ Close, try again or check hints!
+                                              </p>
+                                          )}
+                                        </div>
+                                    )}
+
+                                    {showResults && !isCorrect && (
+                                        <Card className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-700 mt-3">
+                                          <CardContent className="p-3 text-sm">
+                                            <p className="font-medium text-green-700 dark:text-green-300">
+                                              Correct Answer: <span className="text-green-800 dark:text-green-200 font-normal">{q.answer}</span>
+                                            </p>
+                                          </CardContent>
+                                        </Card>
+                                    )}
                                   </CardContent>
                                 </Card>
                             );
                           })}
+
+                          {questions.length > 0 && (
+                              <div className="flex justify-between items-center mt-6 p-4 bg-accent/20 rounded-lg">
+                                {!showResults ? (
+                                    <Button onClick={handleCheckResults} disabled={isProcessing} className="w-full">Check Results</Button>
+                                ) : (
+                                    <div className="w-full text-center text-lg font-semibold text-primary">
+                                      You scored {scoreQuiz()} out of {questions.length} questions!
+                                    </div>
+                                )}
+                              </div>
+                          )}
                         </CardContent>
                       </CollapsibleContent>
                     </Card>
