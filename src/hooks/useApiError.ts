@@ -20,24 +20,18 @@ export const useApiError = () => {
           return error.response?.data?.message || 'An unexpected error occurred.';
       }
     }
-    
+
     if (error.code === 'NETWORK_ERROR' || !navigator.onLine) {
       return 'Connection lost. Please check your internet connection.';
     }
-    
+
     return error.message || 'An unexpected error occurred.';
   };
 
   const categorizeError = (error: any): ErrorType['type'] => {
-    if (error.response?.status >= 400 && error.response?.status < 500) {
-      return 'validation';
-    }
-    if (error.response?.status >= 500) {
-      return 'backend';
-    }
-    if (error.code === 'NETWORK_ERROR' || !navigator.onLine) {
-      return 'network';
-    }
+    if (error.response?.status >= 400 && error.response?.status < 500) return 'validation';
+    if (error.response?.status >= 500) return 'backend';
+    if (error.code === 'NETWORK_ERROR' || !navigator.onLine) return 'network';
     return 'backend';
   };
 
@@ -49,16 +43,21 @@ export const useApiError = () => {
       details: error.stack || JSON.stringify(error, null, 2),
       timestamp: Date.now(),
     };
-    
     setErrors(prev => [...prev, errorObj]);
   }, []);
 
+  // Clears all errors
   const clearErrors = useCallback(() => {
     setErrors([]);
   }, []);
 
-  const clearError = useCallback((id: string) => {
-    setErrors(prev => prev.filter(error => error.id !== id));
+  // Clears a single error by id (optional id)
+  const clearError = useCallback((id?: string) => {
+    if (!id) {
+      setErrors([]); // If no id provided, clear all errors
+    } else {
+      setErrors(prev => prev.filter(error => error.id !== id));
+    }
   }, []);
 
   return {
