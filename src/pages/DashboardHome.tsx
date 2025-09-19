@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BASE_URL } from "@/contants/contants.ts";
 import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
@@ -18,14 +18,20 @@ const DashboardHome = () => {
   const [showQuestions, setShowQuestions] = useState(false);
   const [pdfSelection, setPdfSelection] = useState<PDFSelection | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [numberOfQuestions, setNumberOfQuestions] = useState<number>(5);
 
   const { errors, addError, clearError } = useApiError();
   const userId = localStorage.getItem("userId");
 
-  const handleSelectionComplete = ({ selection, file }: { selection: PDFSelection; file: File }) => {
+  const handleSelectionComplete = ({
+                                     selection,
+                                     file,
+                                   }: {
+    selection: PDFSelection;
+    file: File;
+  }) => {
     setPdfSelection(selection);
     setPdfFile(file);
-    console.log("PDF selection completed:", selection);
   };
 
   const handleRequest = async (endpoint: string, includeQuestions = false) => {
@@ -41,7 +47,7 @@ const DashboardHome = () => {
       formData.append("file", pdfFile);
       formData.append("userId", userId);
       if (includeQuestions) {
-        formData.append("numberOfQuestions", String(pdfSelection.numberOfQuestions || 5));
+        formData.append("numberOfQuestions", String(numberOfQuestions));
       }
 
       const { data } = await axios.post(`${BASE_URL}/api/study/${endpoint}`, formData, {
@@ -54,17 +60,16 @@ const DashboardHome = () => {
       }
 
       let questionsData: StudyQuestionResponse[] = [];
-      if (Array.isArray(data)) questionsData = data;
-      else if (Array.isArray(data.questions)) questionsData = data.questions;
-      else if (Array.isArray(data.studyQuestions)) questionsData = data.studyQuestions;
-
-      if (questionsData.length > 0) {
-        setQuestions(questionsData);
-        setShowQuestions(true);
-      } else if (includeQuestions) {
-        setQuestions([]);
-        setShowQuestions(false);
+      if (Array.isArray(data)) {
+        questionsData = data;
+      } else if (Array.isArray(data.questions)) {
+        questionsData = data.questions;
+      } else if (Array.isArray(data.studyQuestions)) {
+        questionsData = data.studyQuestions;
       }
+
+      setQuestions(questionsData);
+      setShowQuestions(questionsData.length > 0);
     } catch (err) {
       addError(err);
     } finally {
@@ -72,24 +77,36 @@ const DashboardHome = () => {
     }
   };
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty?: string) => {
     switch (difficulty?.toLowerCase()) {
-      case "easy": return "text-green-600";
-      case "medium": return "text-yellow-600";
-      case "hard": return "text-red-600";
-      default: return "text-muted-foreground";
+      case "easy":
+        return "text-green-600";
+      case "medium":
+        return "text-yellow-600";
+      case "hard":
+        return "text-red-600";
+      default:
+        return "text-muted-foreground";
     }
   };
 
-  const getQuestionTypeIcon = (questionType: string) => {
+  const getQuestionTypeDisplay = (questionType?: string) => {
+    return questionType?.replace("_", " ") || "Unknown";
+  };
+
+  const getQuestionTypeIcon = (questionType?: string) => {
     switch (questionType?.toLowerCase()) {
       case "multiple_choice":
-      case "multiple choice": return "🔘";
+      case "multiple choice":
+        return "🔘";
       case "true_false":
-      case "true false": return "✓/✗";
+      case "true false":
+        return "✓/✗";
       case "short_answer":
-      case "short answer": return "✍️";
-      default: return "❓";
+      case "short answer":
+        return "✍️";
+      default:
+        return "❓";
     }
   };
 
@@ -118,7 +135,7 @@ const DashboardHome = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex flex-col md:flex-row md:space-x-4 space-y-2 md:space-y-0">
                   <Button
                       onClick={() => handleRequest("summarize")}
                       disabled={isProcessing}
@@ -215,27 +232,48 @@ const DashboardHome = () => {
                         </CardHeader>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
-                        <CardContent>
-                          <div className="space-y-4">
-                            {questions.map((q, index) => (
-                                <div key={index} className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
-                                  <p className="font-bold text-lg">{index + 1}. {q.question}</p>
-                                  <div className="grid grid-cols-2 gap-2 mt-2">
-                                    {q.options.map((opt, idx) => (
-                                        <button
-                                            key={idx}
-                                            className="p-2 bg-purple-100 hover:bg-purple-200 rounded shadow text-left"
-                                        >
-                                          {String.fromCharCode(65 + idx)}. {opt}
-                                        </button>
-                                    ))}
-                                  </div>
-                                  <div className="mt-2 text-sm text-muted-foreground">
-                                    Difficulty: <span className={getDifficultyColor(q.difficulty)}>{q.difficulty}</span> | Type: {q.questionType.replace('_', ' ')}
+                        <CardContent className="space-y-4">
+                          {questions.map((q, index) => (
+                              <div key={index} className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+                                <div className="flex items-start justify-between mb-3">
+                                  <p className="font-medium text-foreground flex-1">
+                                    {index + 1}. {q.question}
+                                  </p>
+                                  <div className="flex items-center space-x-2 ml-4">
+                                    <span className="text-xs">{getQuestionTypeIcon(q.questionType)}</span>
+                                    <span className={`text-xs font-medium ${getDifficultyColor(q.difficulty)}`}>
+                              {q.difficulty}
+                            </span>
                                   </div>
                                 </div>
-                            ))}
-                          </div>
+
+                                <div className="text-xs text-muted-foreground mb-2">
+                                  Type: {getQuestionTypeDisplay(q.questionType)}
+                                </div>
+
+                                {q.options?.length > 0 && (
+                                    <div className="mb-3 grid grid-cols-2 gap-2">
+                                      {q.options.map((option, idx) => (
+                                          <button
+                                              key={idx}
+                                              className="p-2 bg-purple-100 hover:bg-purple-200 rounded shadow text-left"
+                                          >
+                                            {String.fromCharCode(65 + idx)}. {option}
+                                          </button>
+                                      ))}
+                                    </div>
+                                )}
+
+                                {q.answer && (
+                                    <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded border-l-2 border-green-500">
+                                      <p className="text-sm">
+                                        <span className="font-medium text-green-700 dark:text-green-400">Answer: </span>
+                                        <span className="text-green-800 dark:text-green-300">{q.answer}</span>
+                                      </p>
+                                    </div>
+                                )}
+                              </div>
+                          ))}
                         </CardContent>
                       </CollapsibleContent>
                     </Card>
