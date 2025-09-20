@@ -249,7 +249,7 @@ const DashboardHome = () => {
                         </CardHeader>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
-                        <CardContent className="space-y-6">
+                        <CardContent className="space-y-8">
                           {questions.map((q, i) => {
                             const userAnswer = selectedAnswers[i];
                             const isShort = q.questionType?.toLowerCase() === "short_answer";
@@ -259,65 +259,76 @@ const DashboardHome = () => {
                                     : userAnswer === q.answer;
 
                             return (
-                                <div key={i} className="border p-4 rounded-md space-y-3">
-                                  <div className="flex justify-between items-start">
-                                    <p className="font-medium">
+                                <Card key={i} className="p-4 shadow-sm">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <p className="font-medium text-lg">
                                       {i + 1}. {q.question}
                                     </p>
-                                    {showResults &&
-                                        (correct ? (
-                                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                    {showResults && (
+                                        correct ? (
+                                            <span className="flex items-center text-green-600 text-sm font-semibold">
+                <CheckCircle2 className="h-4 w-4 mr-1" /> Correct
+              </span>
                                         ) : (
-                                            <XCircle className="h-5 w-5 text-red-500" />
-                                        ))}
+                                            <span className="flex items-center text-red-600 text-sm font-semibold">
+                <XCircle className="h-4 w-4 mr-1" /> Incorrect
+              </span>
+                                        )
+                                    )}
                                   </div>
 
-                                  {!isShort &&
-                                      q.options?.map((opt, idx) => (
-                                          <Button
-                                              key={idx}
-                                              variant={
-                                                showResults
-                                                    ? opt === q.answer
-                                                        ? "default"
-                                                        : opt === userAnswer
-                                                            ? "destructive"
-                                                            : "outline"
-                                                    : userAnswer === opt
-                                                        ? "secondary"
-                                                        : "outline"
-                                              }
-                                              onClick={() => handleAnswerSelect(i, opt)}
-                                              className="w-full justify-start"
-                                              disabled={showResults}
-                                          >
-                                            {String.fromCharCode(65 + idx)}. {opt}
-                                          </Button>
-                                      ))}
+                                  {!isShort && (
+                                      <div className="space-y-2">
+                                        {q.options?.map((opt, idx) => {
+                                          const isSelected = userAnswer === opt;
+                                          const isCorrect = showResults && opt === q.answer;
+                                          const isWrong =
+                                              showResults && isSelected && opt !== q.answer;
+
+                                          return (
+                                              <Button
+                                                  key={idx}
+                                                  variant="outline"
+                                                  onClick={() => handleAnswerSelect(i, opt)}
+                                                  disabled={showResults}
+                                                  className={`w-full justify-start text-left
+                    ${isSelected ? "border-primary bg-primary/10" : ""}
+                    ${isCorrect ? "border-green-500 bg-green-50" : ""}
+                    ${isWrong ? "border-red-500 bg-red-50" : ""}
+                  `}
+                                              >
+                                                {String.fromCharCode(65 + idx)}. {opt}
+                                              </Button>
+                                          );
+                                        })}
+                                      </div>
+                                  )}
 
                                   {isShort && (
-                                      <Input
-                                          value={userAnswer || ""}
-                                          placeholder="Type your answer..."
-                                          onChange={(e) => handleShortAnswerChange(i, e.target.value)}
-                                          disabled={showResults}
-                                      />
+                                      <div className="space-y-2">
+                                        <Label>Your Answer</Label>
+                                        <Input
+                                            value={userAnswer || ""}
+                                            placeholder="Type your answer..."
+                                            onChange={(e) => handleShortAnswerChange(i, e.target.value)}
+                                            disabled={showResults}
+                                        />
+                                        {showResults && !correct && (
+                                            <p className="text-sm text-red-600">
+                                              Correct: <span className="font-semibold">{q.answer}</span>
+                                            </p>
+                                        )}
+                                      </div>
                                   )}
-
-                                  {showResults && !correct && (
-                                      <p className="text-sm text-red-600">
-                                        Correct answer: <span className="font-semibold">{q.answer}</span>
-                                      </p>
-                                  )}
-                                </div>
+                                </Card>
                             );
                           })}
 
                           {questions.length > 0 && (
-                              <div className="mt-4 text-center">
+                              <div className="mt-6 text-center">
                                 {!showResults ? (
-                                    <Button onClick={() => setShowResults(true)} className="w-full">
-                                      Check Results
+                                    <Button onClick={() => setShowResults(true)} className="w-full h-12 text-lg">
+                                      Submit Answers
                                     </Button>
                                 ) : (
                                     <p className="text-lg font-semibold text-primary">

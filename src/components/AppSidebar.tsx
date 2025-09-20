@@ -16,55 +16,55 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import {BASE_URL} from "@/contants/contants.ts";
+import { BASE_URL } from "@/contants/contants.ts";
 
 const navigationItems = [
   {
     title: "Home",
     url: "/dashboard",
     icon: Home,
-    description: "Upload and process PDFs"
+    description: "Upload and process PDFs",
   },
   {
     title: "History",
     url: "/dashboard/history",
     icon: History,
-    description: "View uploaded files"
+    description: "View uploaded files",
   },
   {
     title: "Profile",
     url: "/dashboard/profile",
     icon: User,
-    description: "Manage your account"
+    description: "Manage your account",
   },
 ];
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // ✅ put it here, not inside handleLogout
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
 
   const isActive = (path: string) => currentPath === path;
 
   const handleLogout = async () => {
-    const navigate = useNavigate();
-
     try {
-      await axios.post(`${BASE_URL}/users/logout`, {}, {
-        withCredentials: true
-      });
+      navigate("/");
+      await axios.post(`${BASE_URL}/users/logout`, {}, { withCredentials: true });
 
+      // Clear local storage
       localStorage.removeItem("userId");
       localStorage.removeItem("authToken");
 
-      console.log("Logout successful");
-      navigate("/");
+      console.log("Logout successful ✅");
+
+      // Redirect to login/home page
     } catch (error) {
       console.error("Error logging out:", error);
     }
-  }
+  };
+
   return (
       <Sidebar collapsible="icon">
         {/* Header */}
@@ -86,9 +86,8 @@ export function AppSidebar() {
           <SidebarGroup>
             <SidebarGroupLabel>Navigation</SidebarGroupLabel>
             <SidebarGroupContent>
-              {/* Added spacing between items */}
               <SidebarMenu className="mt-4">
-                {navigationItems.map((item, index) => (
+                {navigationItems.map((item) => (
                     <SidebarMenuItem key={item.title} className="mb-6 last:mb-0">
                       <SidebarMenuButton asChild isActive={isActive(item.url)}>
                         <a
@@ -104,7 +103,6 @@ export function AppSidebar() {
                               <div>
                                 <span className="font-medium">{item.title}</span>
                               </div>
-
                           )}
                         </a>
                       </SidebarMenuButton>
