@@ -291,7 +291,7 @@ const DashboardHome = () => {
                                                   variant="outline"
                                                   onClick={() => handleAnswerSelect(i, opt)}
                                                   disabled={showResults}
-                                                  className={`w-full justify-start text-left
+                                                  className={`w-full justify-start text-left text-white
                     ${isSelected ? "border-primary bg-primary/10" : ""}
                     ${isCorrect ? "border-green-500 bg-green-50" : ""}
                     ${isWrong ? "border-red-500 bg-red-50" : ""}
