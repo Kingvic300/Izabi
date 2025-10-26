@@ -9,13 +9,13 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default: "bg-black text-white hover:bg-black/90",
-                destructive: "bg-black text-white hover:bg-black/80",
-                outline: "border border-black text-black hover:bg-black hover:text-white",
-                secondary: "bg-black text-white hover:bg-black/80",
-                ghost: "text-black hover:bg-black/10",
-                link: "text-black underline-offset-4 hover:underline",
-                hero: "bg-black text-white hover:shadow-lg transform hover:scale-105 transition-all duration-200",
+                default: "bg-primary text-primary-foreground hover:bg-primary/90",
+                destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+                outline: "border border-primary text-primary hover:bg-primary hover:text-primary-foreground",
+                secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90",
+                ghost: "text-foreground hover:bg-muted",
+                link: "text-primary underline-offset-4 hover:underline",
+                hero: "bg-gradient-primary text-primary-foreground hover:shadow-lg transform hover:scale-105 transition-all duration-200",
             },
             size: {
                 default: "h-10 px-4 py-2",
@@ -28,7 +28,7 @@ const buttonVariants = cva(
             variant: "default",
             size: "default",
         },
-    }
+    },
 )
 
 export interface ButtonProps
@@ -40,14 +40,8 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className, variant, size, asChild = false, ...props }, ref) => {
         const Comp = asChild ? Slot : "button"
-        return (
-            <Comp
-                className={cn(buttonVariants({ variant, size, className }))}
-                ref={ref}
-                {...props}
-            />
-        )
-    }
+        return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+    },
 )
 Button.displayName = "Button"
 

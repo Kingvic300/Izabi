@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { BASE_URL } from "@/contants/contants.ts"
+import { useAppToast } from "@/hooks/useAppToast"
 
 const navigationItems = [
     {
@@ -71,6 +72,7 @@ export function AppSidebar() {
     const { state } = useSidebar()
     const location = useLocation()
     const navigate = useNavigate()
+    const appToast = useAppToast()
     const currentPath = location.pathname
     const collapsed = state === "collapsed"
 
@@ -78,17 +80,24 @@ export function AppSidebar() {
 
     const handleLogout = async () => {
         try {
-            navigate("/")
             await axios.post(`${BASE_URL}/users/logout`, {}, { withCredentials: true })
 
             // Clear local storage
             localStorage.removeItem("userId")
             localStorage.removeItem("authToken")
+            localStorage.removeItem("userEmail")
 
-            console.log("Logout successful ✅")
+            appToast.success({
+                title: "Logged out",
+                description: "You have been successfully logged out.",
+            })
 
-            // Redirect to login/home page
+            navigate("/")
         } catch (error) {
+            appToast.error({
+                title: "Logout failed",
+                description: "There was an error logging out. Please try again.",
+            })
             console.error("Error logging out:", error)
         }
     }

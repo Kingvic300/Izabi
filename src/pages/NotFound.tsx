@@ -1,29 +1,42 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import React from 'react';
+"use client"
 
+import { useLocation } from "react-router-dom"
+import { useEffect } from "react"
+import { BackButton } from "@/components/BackButton"
+import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 
 const NotFound = () => {
-  const location = useLocation();
+    const location = useLocation()
 
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
+    useEffect(() => {
+        console.error("404 Error: User attempted to access non-existent route:", location.pathname)
+    }, [location.pathname])
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
-      </div>
-    </div>
-  );
-};
+    return (
+        <div className="min-h-screen bg-gradient-hero flex flex-col">
+            <BackButton />
 
-export default NotFound;
+            <div className="flex-1 flex items-center justify-center p-4">
+                <div className="text-center max-w-md">
+                    <h1 className="text-6xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-4">404</h1>
+                    <p className="text-xl text-white/80 mb-8">Oops! The page you're looking for doesn't exist.</p>
+                    <Link to="/">
+                        <Button variant="hero" className="w-full">
+                            Return to Home
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default function NotFoundPage() {
+    return (
+        <ErrorBoundary>
+            <NotFound />
+        </ErrorBoundary>
+    )
+}
