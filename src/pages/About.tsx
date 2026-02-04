@@ -1,143 +1,212 @@
+"use client"
+
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
-import { BackButton } from "@/components/BackButton"
 import { Card } from "@/components/ui/card"
-import { Users, Target, Lightbulb, Heart } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
+import { Users, Target, Lightbulb, Heart, Sparkles, Trophy, ArrowRight } from "lucide-react"
+import { useRef } from "react"
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
 
 const About = () => {
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    useGSAP(() => {
+        gsap.from(".about-section", {
+            opacity: 0,
+            y: 30,
+            stagger: 0.1,
+            duration: 1,
+            ease: "expo.out"
+        })
+    }, { scope: containerRef })
+
     const values = [
         {
-            icon: <Target className="h-8 w-8" />,
+            icon: <Target className="h-10 w-10" />,
             title: "Mission",
-            description: "Democratize quality education by making personalized learning accessible to every student.",
+            description: "Democratizing neural-level tutoring by making localized AI accessible to every scholar in the global south.",
+            color: "text-blue-500",
+            bg: "bg-blue-500/10"
         },
         {
-            icon: <Lightbulb className="h-8 w-8" />,
+            icon: <Lightbulb className="h-10 w-10" />,
             title: "Innovation",
-            description: "Continuously push the boundaries of AI-powered learning to create better educational outcomes.",
+            description: "Pioneering the boundary of adaptive learning systems tailored specifically for local contexts.",
+            color: "text-emerald-500",
+            bg: "bg-emerald-500/10"
         },
         {
-            icon: <Heart className="h-8 w-8" />,
-            title: "Student-Centric",
-            description: "Every feature is designed with students in mind, prioritizing their learning success.",
+            icon: <Heart className="h-10 w-10" />,
+            title: "Scholar-First",
+            description: "Every optimization is verified by the actual academic success of our student consortium.",
+            color: "text-blue-500",
+            bg: "bg-blue-500/10"
         },
         {
-            icon: <Users className="h-8 w-8" />,
-            title: "Community",
-            description: "Build a supportive community where students learn together and grow together.",
+            icon: <Users className="h-10 w-10" />,
+            title: "Consortium",
+            description: "Building the world's most intelligent collaborative learning network for peer-to-peer mastery.",
+            color: "text-emerald-500",
+            bg: "bg-emerald-500/10"
         },
     ]
 
     const team = [
         {
             name: "Chioma Okafor",
-            role: "Founder & CEO",
-            bio: "EdTech entrepreneur with 10+ years in AI and education",
+            role: "Founder & Chief Architect",
+            bio: "EdTech visionary with 10+ years in AI neural laboratories.",
             initials: "CO",
         },
         {
             name: "Tunde Adeyemi",
-            role: "CTO",
-            bio: "AI researcher and full-stack developer",
+            role: "CTO & Systems Lead",
+            bio: "AI researcher focusing on localized linguistic models.",
             initials: "TA",
         },
         {
             name: "Zainab Hassan",
-            role: "Head of Product",
-            bio: "Product designer focused on user experience",
+            role: "Head of Experience",
+            bio: "Interaction designer specializing in cognitive load reduction.",
             initials: "ZH",
         },
         {
             name: "Emeka Nwosu",
-            role: "Head of Education",
-            bio: "Curriculum expert and learning specialist",
+            role: "Academic Relations",
+            bio: "Curriculum expert ensuring zero-gap syllabus alignment.",
             initials: "EN",
         },
     ]
 
     return (
-        <div className="min-h-screen bg-background">
+        <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
+            {/* Background Blobs */}
+            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
+
             <Header />
 
-            <div className="border-b border-border bg-card/50 sticky top-16 z-40">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                    <BackButton />
-                </div>
-            </div>
-
             {/* Hero */}
-            <section className="py-20 lg:py-32 border-b border-border">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h1 className="text-4xl sm:text-5xl font-bold mb-6">
-                            About <span className="bg-gradient-hero bg-clip-text text-transparent">Izabi</span>
-                        </h1>
-                        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                            We're on a mission to transform education through AI-powered personalized learning
-                        </p>
+            <section className="relative pt-44 pb-20">
+                <div className="w-full px-6 lg:px-12 relative z-10 text-center">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-full border border-white/10">
+                        <Sparkles size={14} className="text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Our Academic Manifesto</span>
+                    </div>
+                    <h1 className="text-6xl sm:text-7xl font-black mb-8 leading-none tracking-tighter">
+                        The Future of <span className="text-gradient">Scholastic Mastery</span>
+                    </h1>
+                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
+                        Redefining how the next generation of scholars interacts with the sum of human knowledge.
+                    </p>
+                </div>
+            </section>
+
+            {/* Manifesto Content */}
+            <section className="about-section py-20 relative z-10">
+                <div className="w-full max-w-6xl mx-auto px-6 lg:px-12">
+                    <div className="glass p-12 rounded-[48px] border border-white/5 space-y-10 shadow-2xl">
+                        <div className="flex items-center gap-4">
+                            <div className="w-1.5 h-12 bg-primary rounded-full" />
+                            <h2 className="text-4xl font-black">Our Origin</h2>
+                        </div>
+                        <div className="space-y-6 text-lg text-muted-foreground font-medium leading-[2]">
+                            <p>
+                                Izabi was born from a fundamental observation: the tools used by students were lagging behind their potential. 
+                                We observed thousands of hours wasted on rote memorization rather than deep conceptual mastery.
+                            </p>
+                            <p>
+                                In 2023, our chief architect <span className="text-white">Chioma Okafor</span> initiated Izabi with a singular objective: 
+                                To leverage the power of advanced neural models to create a personalized, localized learning environment 
+                                that adapts to the scholar—not the other way around.
+                            </p>
+                            <p>
+                                Today, Izabi stands as the primary neural laboratory for over <span className="text-white">10,000 scholars across Africa</span>, 
+                                yielding an average GPA increase of 1.2 points and reclaiming 500+ study hours annually for our users.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Story */}
-            <section className="py-20">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="prose prose-invert max-w-none">
-                        <h2 className="text-3xl font-bold mb-6">Our Story</h2>
-                        <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                            Izabi was born from a simple observation: students spend countless hours studying, yet many struggle to
-                            retain information and improve their grades. We realized that the problem wasn't the students—it was the
-                            tools they were using.
-                        </p>
-                        <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                            In 2023, our founder Chioma Okafor started Izabi with a vision to leverage artificial intelligence to
-                            create personalized learning experiences that adapt to each student's unique needs. Today, we're proud to
-                            serve over 10,000 students across Africa.
-                        </p>
-                        <p className="text-lg text-muted-foreground leading-relaxed">
-                            Our platform has helped students improve their grades by an average of 40%, save 10+ hours per week on
-                            studying, and most importantly, fall in love with learning again.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Values */}
-            <section className="py-20 bg-muted/30 border-y border-border">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-center mb-12">Our Values</h2>
+            {/* Core Values */}
+            <section className="about-section py-32 relative z-10">
+                <div className="w-full px-6 lg:px-12">
+                    <h2 className="text-sm font-black uppercase tracking-[0.4em] text-center opacity-40 mb-16">Core Principles</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {values.map((value) => (
-                            <Card key={value.title} className="p-6 border-0 bg-card shadow-sm text-center">
-                                <div className="text-primary mb-4 flex justify-center">{value.icon}</div>
-                                <h3 className="text-xl font-semibold mb-2">{value.title}</h3>
-                                <p className="text-muted-foreground">{value.description}</p>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Team */}
-            <section className="py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-center mb-12">Our Team</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {team.map((member) => (
-                            <Card key={member.name} className="p-6 border-0 bg-card shadow-sm text-center">
-                                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <span className="text-xl font-bold text-primary-foreground">{member.initials}</span>
+                        {values.map((v, i) => (
+                            <Card key={i} className="glass p-10 border-white/5 hover-lift text-center group">
+                                <div className={`w-16 h-16 rounded-2xl ${v.bg} ${v.color} flex items-center justify-center mx-auto mb-8 shadow-xl group-hover:scale-110 transition-transform`}>
+                                    {v.icon}
                                 </div>
-                                <h3 className="text-lg font-semibold mb-1">{member.name}</h3>
-                                <p className="text-sm text-primary mb-3">{member.role}</p>
-                                <p className="text-sm text-muted-foreground">{member.bio}</p>
+                                <h3 className="text-2xl font-black mb-4">{v.title}</h3>
+                                <p className="text-muted-foreground font-medium text-sm leading-loose">{v.description}</p>
                             </Card>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* Neural Council */}
+            <section className="about-section py-32 bg-white/[0.01] border-y border-white/5 relative z-10">
+                <div className="w-full px-6 lg:px-12">
+                    <div className="text-center mb-20">
+                        <h2 className="text-5xl font-black mb-6">The Neural Council</h2>
+                        <p className="text-xl text-muted-foreground font-medium">The architects engineering the future of education.</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {team.map((member, i) => (
+                            <Card key={i} className="glass p-8 border-white/5 hover-lift relative overflow-hidden group">
+                                <div className="w-16 h-16 bg-gradient-hero rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-glow mb-6 group-hover:rotate-6 transition-transform">
+                                    {member.initials}
+                                </div>
+                                <h3 className="text-xl font-black mb-1">{member.name}</h3>
+                                <p className="text-primary text-xs font-black uppercase tracking-widest mb-4">{member.role}</p>
+                                <p className="text-muted-foreground text-sm font-medium leading-relaxed">{member.bio}</p>
+                                
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Manifesto CTA */}
+            <section className="about-section py-44 relative z-10">
+                <div className="w-full px-6 lg:px-12 text-center">
+                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-10 shadow-glow">
+                        <Trophy className="text-primary" size={32} />
+                    </div>
+                    <h2 className="text-6xl font-black mb-10 leading-none tracking-tighter">Become Part of the <br /> Scholars Movement</h2>
+                    <Link to="/signup">
+                        <Button size="lg" className="h-20 px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-white font-black text-xl shadow-glow group">
+                            <span>Initialize Enlistment</span>
+                            <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                        </Button>
+                    </Link>
                 </div>
             </section>
 
             <Footer />
+
+            <style>{`
+                .glass {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                }
+                .text-gradient {
+                    background: linear-gradient(to right, #3b82f6, #2dd4bf, #10b981);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                .shadow-glow {
+                    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+                }
+            `}</style>
         </div>
     )
 }

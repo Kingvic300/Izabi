@@ -96,7 +96,7 @@ const DashboardHistory = () => {
     }
 
     return (
-        <div className="space-y-6 relative">
+        <div className="space-y-6 relative w-full">
             <div>
                 <h1 className="text-3xl font-bold mb-2">Study History</h1>
                 <p className="text-muted-foreground">

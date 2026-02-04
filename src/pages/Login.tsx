@@ -1,29 +1,42 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Brain } from "lucide-react"
+import { Brain, ArrowLeft, Mail, Lock, Sparkles, Loader2, Eye, EyeOff } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import type React from "react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import axios from "axios"
 import { BASE_URL } from "@/contants/contants.ts"
-import { BackButton } from "@/components/BackButton"
 import { useAppToast } from "@/hooks/useAppToast"
 import { formValidation } from "@/lib/formValidation"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const Login = () => {
+    const { t } = useLanguage()
+    const cardRef = useRef<HTMLDivElement>(null)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [emailError, setEmailError] = useState<string | null>(null)
     const [passwordError, setPasswordError] = useState<string | null>(null)
-    const currentYear = new Date().getFullYear()
     const navigate = useNavigate()
     const appToast = useAppToast()
+    const [showPassword, setShowPassword] = useState(false)
+
+    useGSAP(() => {
+        gsap.from(cardRef.current, {
+            opacity: 0,
+            y: 40,
+            duration: 1,
+            ease: "expo.out"
+        })
+    })
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
@@ -52,13 +65,12 @@ const Login = () => {
         const emailValidation = formValidation.email(email)
         if (!emailValidation.isValid) {
             setEmailError(emailValidation.error || null)
-            appToast.validationError("email", emailValidation.error || "Invalid email")
+            appToast.error({ title: "Invalid Email", description: emailValidation.error || "Please check your email formatting." })
             return
         }
 
         if (!password) {
             setPasswordError("Password is required")
-            appToast.validationError("password", "Password is required")
             return
         }
 
@@ -66,7 +78,7 @@ const Login = () => {
 
         try {
             const response = await axios.post(
-                `${BASE_URL}/users/login`,
+                `${BASE_URL}/api/user/login`,
                 { email, password, role: "USER" },
                 { withCredentials: true },
             )
@@ -78,8 +90,8 @@ const Login = () => {
             localStorage.setItem("userEmail", email)
 
             appToast.success({
-                title: "Welcome back!",
-                description: "You've been logged in successfully. Redirecting to your dashboard...",
+                title: "Authentication Successful",
+                description: "Welcome back, Scholar. Initializing workspace...",
             })
 
             setTimeout(() => navigate("/dashboard"), 1000)
@@ -87,126 +99,127 @@ const Login = () => {
             const errorMessage = err.response?.data?.message || "Login failed"
 
             if (err.response?.status === 401) {
-                appToast.loginFailed("Invalid email or password. Please check and try again.")
-            } else if (err.response?.status === 404) {
-                appToast.loginFailed("No account found with this email address.")
+                appToast.error({ title: "Portal Closed", description: "Invalid credentials. Please attempt again." })
             } else if (!navigator.onLine) {
                 appToast.networkError()
             } else {
-                appToast.error({
-                    title: "Login failed",
-                    description: errorMessage,
-                })
+                appToast.error({ title: "System Error", description: errorMessage })
             }
         } finally {
             setLoading(false)
         }
     }
-
     return (
-        <div className="min-h-screen bg-gradient-hero flex flex-col">
-            <BackButton />
+        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-6">
+            {/* Background Blobs */}
+            <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
 
-            <div className="flex-1 flex items-center justify-center p-4">
-                <div className="w-full max-w-md">
-                    {/* Logo */}
-                    <div className="text-center mb-8">
-                        <Link to="/" className="inline-flex items-center space-x-2">
-                            <div className="w-10 h-10 bg-card rounded-xl flex items-center justify-center shadow-glow">
-                                <Brain className="h-6 w-6 text-primary" />
-                            </div>
-                            <span className="text-3xl font-bold text-white">Izabi</span>
-                        </Link>
-                        <p className="text-white/80 mt-2">Welcome back to your learning journey</p>
+            <Link to="/" className="absolute top-8 left-8 group">
+                <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    <span>Return Home</span>
+                </div>
+            </Link>
+
+            <div ref={cardRef} className="w-full max-w-[480px] space-y-8 relative z-10">
+                {/* Branding */}
+                <div className="text-center space-y-4">
+                    <div className="w-16 h-16 bg-gradient-hero rounded-2xl flex items-center justify-center shadow-glow mx-auto animate-pulse">
+                        <Brain className="h-10 w-10 text-white" />
                     </div>
+                    <div>
+                        <h1 className="text-4xl font-black tracking-tighter text-foreground">{t("auth.login").split(' ')[0]} <span className="text-gradient">{t("auth.login").split(' ')[1]}</span></h1>
+                        <p className="text-muted-foreground font-medium">Authenticate to access your neural laboratory.</p>
+                    </div>
+                </div>
 
-                    {/* Login Form */}
-                    <Card className="shadow-float border-0 bg-card/95 backdrop-blur-md">
-                        <CardHeader className="text-center">
-                            <CardTitle className="text-2xl">Sign In</CardTitle>
-                            <CardDescription>Enter your credentials to access your dashboard</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
+                <Card className="glass shadow-2xl border-foreground/10 rounded-[40px] overflow-hidden">
+                    <CardContent className="p-10 space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] uppercase font-black tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
+                                <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
                                     <Input
-                                        id="email"
                                         type="email"
-                                        placeholder="your.email@example.com"
+                                        placeholder="scholar@example.com"
                                         value={email}
                                         onChange={handleEmailChange}
-                                        required
-                                        className={`bg-background/50 ${emailError ? "border-destructive" : ""}`}
-                                        aria-invalid={!!emailError}
-                                        aria-describedby={emailError ? "email-error" : undefined}
+                                        className={`h-14 pl-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${emailError ? "border-destructive/50" : ""}`}
                                     />
-                                    {emailError && (
-                                        <p id="email-error" className="text-sm text-destructive">
-                                            {emailError}
-                                        </p>
-                                    )}
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="password">Password</Label>
+                                {emailError && <p className="text-xs text-destructive font-bold px-1">{emailError}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <div className="flex justify-between px-1">
+                                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-40">{t("auth.password")}</Label>
+                                    <Link to="/forgot-password" title="Feature coming soon" className="text-[10px] uppercase font-black tracking-widest text-primary hover:opacity-80 transition-opacity">Request reset</Link>
+                                </div>
+                                <div className="relative">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
                                     <Input
-                                        id="password"
-                                        type="password"
-                                        placeholder="Enter your password"
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="••••••••"
                                         value={password}
                                         onChange={handlePasswordChange}
-                                        required
-                                        className={`bg-background/50 ${passwordError ? "border-destructive" : ""}`}
-                                        aria-invalid={!!passwordError}
-                                        aria-describedby={passwordError ? "password-error" : undefined}
+                                        className={`h-14 pl-12 pr-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${passwordError ? "border-destructive/50" : ""}`}
                                     />
-                                    {passwordError && (
-                                        <p id="password-error" className="text-sm text-destructive">
-                                            {passwordError}
-                                        </p>
-                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
                                 </div>
-
-                                <Button
-                                    type="submit"
-                                    className="w-full"
-                                    variant="hero"
-                                    disabled={loading || !!emailError || !email || !password}
-                                >
-                                    {loading ? "Signing in..." : "Sign In"}
-                                </Button>
-                            </form>
-
-                            <div className="mt-6 text-center">
-                                <p className="text-muted-foreground">
-                                    Don't have an account?{" "}
-                                    <Link to="/signup" className="text-primary hover:text-primary-glow font-medium">
-                                        Sign Up
-                                    </Link>
-                                </p>
+                                {passwordError && <p className="text-xs text-destructive font-bold px-1">{passwordError}</p>}
                             </div>
-                        </CardContent>
-                    </Card>
-                </div>
+
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full h-16 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 font-black text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
+                            >
+                                {loading ? (
+                                    <Loader2 className="h-6 w-6 animate-spin" />
+                                ) : (
+                                    <>
+                                        <Sparkles className="group-hover:rotate-12 transition-transform" />
+                                        <span>{t("auth.initialize")}</span>
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+
+                        <div className="pt-6 border-t border-foreground/5 text-center">
+                            <p className="text-sm font-bold text-muted-foreground">
+                                No authorization yet?{" "}
+                                <Link to="/signup" className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
+                                    {t("auth.join")}
+                                </Link>
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
-            {/* Footer */}
-            <footer className="border-t border-border bg-card/50">
-                <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                    <div className="flex flex-col items-center justify-center gap-y-4 sm:flex-row sm:justify-between">
-                        <div className="flex items-center space-x-2">
-                            <div
-                                className="flex h-6 w-6 items-center justify-center rounded bg-gradient-primary"
-                                aria-label="Izabi Logo"
-                            >
-                                <Brain className="h-4 w-4 text-primary-foreground" />
-                            </div>
-                            <span className="bg-gradient-hero bg-clip-text text-lg font-bold text-transparent">Izabi</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">&copy; {currentYear} Izabi. All rights reserved.</p>
-                    </div>
-                </div>
-            </footer>
+            <style>{`
+                .glass {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(40px);
+                    -webkit-backdrop-filter: blur(40px);
+                }
+                .text-gradient {
+                    background: linear-gradient(to right, #3b82f6, #2dd4bf, #10b981);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                .shadow-glow {
+                    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+                }
+            `}</style>
         </div>
     )
 }

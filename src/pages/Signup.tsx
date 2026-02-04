@@ -1,21 +1,25 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Brain, Check, X } from "lucide-react"
+import { Brain, Check, X, Mail, Lock, Sparkles, Loader2, ArrowLeft, ShieldCheck, Eye, EyeOff } from "lucide-react"
 import axios from "axios"
 import { BASE_URL } from "@/contants/contants.ts"
-import { BackButton } from "@/components/BackButton"
 import { useAppToast } from "@/hooks/useAppToast"
 import { formValidation } from "@/lib/formValidation"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const Signup = () => {
+    const { t } = useLanguage()
+    const cardRef = useRef<HTMLDivElement>(null)
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -25,6 +29,17 @@ const Signup = () => {
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
     const appToast = useAppToast()
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+    useGSAP(() => {
+        gsap.from(cardRef.current, {
+            opacity: 0,
+            y: 40,
+            duration: 1,
+            ease: "expo.out"
+        })
+    })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -70,23 +85,23 @@ const Signup = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
             appToast.error({
-                title: "Validation failed",
-                description: "Please check the highlighted fields and try again.",
+                title: "Incomplete Protocol",
+                description: "Ensure all neural fields are correctly synchronized.",
             })
             return
         }
 
         setIsLoading(true)
         try {
-            await axios.post(`${BASE_URL}/users/send-verification-otp`, {
+            await axios.post(`${BASE_URL}/api/user/send-verification-otp`, {
                 email: formData.email,
                 password: formData.password,
                 role: "USER",
             })
 
             appToast.success({
-                title: "OTP sent!",
-                description: "Check your email for the verification code. It will expire in 10 minutes.",
+                title: "Gateway Opened",
+                description: "Sent an synchronization code to your inbox. Check your terminal.",
             })
 
             navigate("/otp", {
@@ -101,14 +116,14 @@ const Signup = () => {
 
             if (err.response?.status === 409) {
                 appToast.error({
-                    title: "Email already registered",
-                    description: "This email is already associated with an account. Please sign in instead.",
+                    title: "Entity Exists",
+                    description: "This scholar identity is already established. Access the portal directly.",
                 })
             } else if (!navigator.onLine) {
                 appToast.networkError()
             } else {
                 appToast.error({
-                    title: "Signup failed",
+                    title: "Access Denied",
                     description: errorMessage,
                 })
             }
@@ -117,140 +132,140 @@ const Signup = () => {
         }
     }
 
-    const getPasswordStrength = () => {
-        if (!formData.password) return null
-        const validation = formValidation.password(formData.password)
-        return validation.isValid
-    }
-
     return (
-        <div className="min-h-screen bg-gradient-hero flex flex-col">
-            <BackButton />
+        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-6">
+            {/* Background Blobs */}
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
 
-            <div className="flex-1 flex items-center justify-center p-4">
-                <div className="w-full max-w-md">
-                    {/* Logo */}
-                    <div className="text-center mb-8">
-                        <Link to="/" className="inline-flex items-center space-x-2">
-                            <div className="w-10 h-10 bg-card rounded-xl flex items-center justify-center shadow-glow">
-                                <Brain className="h-6 w-6 text-primary" />
-                            </div>
-                            <span className="text-3xl font-bold text-white">Izabi</span>
-                        </Link>
-                        <p className="text-white/80 mt-2">Start your AI-powered learning journey</p>
+            <Link to="/" className="absolute top-8 left-8 group">
+                <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    <span>Return Home</span>
+                </div>
+            </Link>
+
+            <div ref={cardRef} className="w-full max-w-[520px] space-y-8 relative z-10">
+                {/* Branding */}
+                <div className="text-center space-y-3">
+                    <div className="w-16 h-16 bg-gradient-hero rounded-2xl flex items-center justify-center shadow-glow mx-auto animate-pulse">
+                        <Brain className="h-10 w-10 text-white" />
                     </div>
+                    <div>
+                        <h1 className="text-4xl font-black tracking-tighter text-foreground">{t("auth.signup").split(' ')[0]} <span className="text-gradient">{t("auth.signup").split(' ')[1]}</span></h1>
+                        <p className="text-muted-foreground font-medium">Join the next generation of AI-enhanced scholars.</p>
+                    </div>
+                </div>
 
-                    {/* Signup Form */}
-                    <Card className="shadow-float border-0 bg-card/95 backdrop-blur-md">
-                        <CardHeader className="text-center">
-                            <CardTitle className="text-2xl">Create Account</CardTitle>
-                            <CardDescription>Join thousands of students already using Izabi</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
+                <Card className="glass shadow-2xl border-foreground/10 rounded-[40px] overflow-hidden">
+                    <CardContent className="p-10 space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] uppercase font-black tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
+                                <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
                                     <Input
-                                        id="email"
                                         name="email"
                                         type="email"
-                                        placeholder="your.email@example.com"
+                                        placeholder="scholar@example.com"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        required
-                                        className={`bg-background/50 ${errors.email ? "border-destructive" : ""}`}
-                                        aria-invalid={!!errors.email}
-                                        aria-describedby={errors.email ? "email-error" : undefined}
+                                        className={`h-14 pl-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.email ? "border-destructive/50" : ""}`}
                                     />
-                                    {errors.email && (
-                                        <p id="email-error" className="text-sm text-destructive flex items-center gap-1">
-                                            <X className="h-3 w-3" /> {errors.email}
-                                        </p>
-                                    )}
                                 </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="password">Password</Label>
-                                    <Input
-                                        id="password"
-                                        name="password"
-                                        type="password"
-                                        placeholder="Create a strong password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required
-                                        className={`bg-background/50 ${errors.password ? "border-destructive" : ""}`}
-                                        aria-invalid={!!errors.password}
-                                        aria-describedby={errors.password ? "password-error" : undefined}
-                                    />
-                                    {errors.password && (
-                                        <p id="password-error" className="text-sm text-destructive flex items-center gap-1">
-                                            <X className="h-3 w-3" /> {errors.password}
-                                        </p>
-                                    )}
-                                    {formData.password && !errors.password && (
-                                        <p className="text-sm text-green-600 flex items-center gap-1">
-                                            <Check className="h-3 w-3" /> Password is strong
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="confirmPassword">Confirm Password</Label>
-                                    <Input
-                                        id="confirmPassword"
-                                        name="confirmPassword"
-                                        type="password"
-                                        placeholder="Confirm your password"
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                        required
-                                        className={`bg-background/50 ${errors.confirmPassword ? "border-destructive" : ""}`}
-                                        aria-invalid={!!errors.confirmPassword}
-                                        aria-describedby={errors.confirmPassword ? "confirm-error" : undefined}
-                                    />
-                                    {errors.confirmPassword && (
-                                        <p id="confirm-error" className="text-sm text-destructive flex items-center gap-1">
-                                            <X className="h-3 w-3" /> {errors.confirmPassword}
-                                        </p>
-                                    )}
-                                    {formData.confirmPassword &&
-                                        !errors.confirmPassword &&
-                                        formData.password === formData.confirmPassword && (
-                                            <p className="text-sm text-green-600 flex items-center gap-1">
-                                                <Check className="h-3 w-3" /> Passwords match
-                                            </p>
-                                        )}
-                                </div>
-
-                                <Button
-                                    type="submit"
-                                    className="w-full"
-                                    variant="hero"
-                                    disabled={
-                                        isLoading ||
-                                        !formData.email ||
-                                        !formData.password ||
-                                        !formData.confirmPassword ||
-                                        Object.values(errors).some((e) => e)
-                                    }
-                                >
-                                    {isLoading ? "Sending OTP..." : "Request OTP"}
-                                </Button>
-                            </form>
-
-                            <div className="mt-6 text-center">
-                                <p className="text-muted-foreground">
-                                    Already have an account?{" "}
-                                    <Link to="/login" className="text-primary hover:text-primary-glow font-medium">
-                                        Sign In
-                                    </Link>
-                                </p>
+                                {errors.email && <p className="text-xs text-destructive font-bold px-1">{errors.email}</p>}
                             </div>
-                        </CardContent>
-                    </Card>
-                </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-40 px-1">{t("auth.password")}</Label>
+                                    <div className="relative">
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
+                                        <Input
+                                            name="password"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            className={`h-14 pl-12 pr-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.password ? "border-destructive/50" : ""}`}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
+                                        >
+                                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
+                                    {errors.password && <p className="text-xs text-destructive font-bold px-1">{errors.password}</p>}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-40 px-1">Confirm</Label>
+                                    <div className="relative">
+                                        <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
+                                        <Input
+                                            name="confirmPassword"
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
+                                            className={`h-14 pl-12 pr-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.confirmPassword ? "border-destructive/50" : ""}`}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
+                                        >
+                                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
+                                    {errors.confirmPassword && <p className="text-xs text-destructive font-bold px-1">{errors.confirmPassword}</p>}
+                                </div>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full h-16 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 font-black text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="h-6 w-6 animate-spin" />
+                                ) : (
+                                    <>
+                                        <Sparkles className="group-hover:rotate-12 transition-transform" />
+                                        <span>Initialize Enlistment</span>
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+
+                        <div className="pt-6 border-t border-foreground/5 text-center">
+                            <p className="text-sm font-bold text-muted-foreground">
+                                Already enlisted?{" "}
+                                <Link to="/login" className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
+                                    {t("auth.login")}
+                                </Link>
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
+
+            <style>{`
+                .glass {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(40px);
+                    -webkit-backdrop-filter: blur(40px);
+                }
+                .text-gradient {
+                    background: linear-gradient(to right, #3b82f6, #2dd4bf, #10b981);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                .shadow-glow {
+                    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+                }
+            `}</style>
         </div>
     )
 }

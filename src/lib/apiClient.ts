@@ -1,6 +1,5 @@
 import axios from "axios"
 import { BASE_URL } from "@/contants/contants.ts"
-import { mockApi } from "./mockApi"
 
 // Configure axios instance
 const apiClient = axios.create({
@@ -47,166 +46,110 @@ const handleApiError = (endpoint: string, error: any, context?: any) => {
     }
 }
 
-// Hybrid API wrapper with fallback
-export const apiWithFallback = {
+// Direct API wrapper
+export const api = {
     // Notes API
     async getNotes() {
-        try {
-            const response = await apiClient.get("/api/notes")
-            return response.data
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage("GET /api/notes", "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to fetch notes:", error.message)
-            }
-            return mockApi.getNotes()
-        }
+        const response = await apiClient.get("/api/notes")
+        return response.data
     },
 
     async createNote(note: any) {
-        try {
-            const response = await apiClient.post("/api/notes", note)
-            return response.data
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage("POST /api/notes", "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to create note:", error.message)
-            }
-            return mockApi.createNote(note)
-        }
+        const response = await apiClient.post("/api/notes", note)
+        return response.data
     },
 
     async updateNote(id: string, updates: any) {
-        try {
-            const response = await apiClient.put(`/api/notes/${id}`, updates)
-            return response.data
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage(`PUT /api/notes/${id}`, "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to update note:", error.message)
-            }
-            return mockApi.updateNote(id, updates)
-        }
+        const response = await apiClient.put(`/api/notes/${id}`, updates)
+        return response.data
     },
 
     async deleteNote(id: string) {
-        try {
-            await apiClient.delete(`/api/notes/${id}`)
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage(`DELETE /api/notes/${id}`, "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to delete note:", error.message)
-            }
-            return mockApi.deleteNote(id)
-        }
+        await apiClient.delete(`/api/notes/${id}`)
     },
 
     // Quiz Results API
     async getQuizResults() {
-        try {
-            const response = await apiClient.get("/api/quiz/results")
-            return response.data
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage("GET /api/quiz/results", "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to fetch quiz results:", error.message)
-            }
-            return mockApi.getQuizResults()
-        }
+        const response = await apiClient.get("/api/quiz/results")
+        return response.data
     },
 
     async submitQuizResult(result: any) {
-        try {
-            const response = await apiClient.post("/api/quiz/results", result)
-            return response.data
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage("POST /api/quiz/results", "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to submit quiz result:", error.message)
-            }
-            return mockApi.submitQuizResult(result)
-        }
+        const response = await apiClient.post("/api/quiz/results", result)
+        return response.data
     },
 
     // User Stats API
     async getUserStats() {
-        try {
-            const response = await apiClient.get("/api/user/stats")
-            return response.data
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage("GET /api/user/stats", "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to fetch user stats:", error.message)
-            }
-            return mockApi.getUserStats()
-        }
+        const response = await apiClient.get("/api/user/stats")
+        return response.data
     },
 
-    // AI Assistant API
     async getAIResponse(message: string) {
-        try {
-            const response = await apiClient.post("/api/ai/chat", { message })
-            return response.data.response
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage("POST /api/ai/chat", "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to get AI response:", error.message)
+        const response = await apiClient.post("/api/ai/chat", { message })
+        return response.data.response
+    },
+
+    getAIStream(message: string, userId: string, onChunk: (text: string) => void, onError: (err: any) => void, onComplete?: () => void) {
+        const url = `${BASE_URL}/api/ai/stream?message=${encodeURIComponent(message)}&userId=${encodeURIComponent(userId)}`
+        const eventSource = new EventSource(url, { withCredentials: true })
+
+        eventSource.onmessage = (event) => {
+            if (event.data === "[DONE]") {
+                eventSource.close()
+                if (onComplete) onComplete()
+                return
             }
-            return mockApi.getAIResponse(message)
+
+            try {
+                const data = JSON.parse(event.data)
+                if (data && typeof data === 'object' && data.data) {
+                    onChunk(data.data)
+                } else {
+                    onChunk(event.data)
+                }
+            } catch (e) {
+                onChunk(event.data)
+            }
+        }
+
+        eventSource.onerror = (err) => {
+            console.error("EventSource failed:", err)
+            onError(err)
+            eventSource.close()
+            if (onComplete) onComplete()
+        }
+
+        return eventSource
+    },
+
+    async getChatHistory(userId: string) {
+        try {
+            const response = await apiClient.get(`/api/ai/history?userId=${userId}`)
+            return response.data
+        } catch (error: any) {
+            console.error("[API Error] Failed to fetch chat history:", error.message)
+            return null
         }
     },
 
     // Study History API
     async getStudyHistory(userId: string) {
-        try {
-            const response = await apiClient.get(`/api/study/history?userId=${userId}`)
-            return response.data
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage("GET /api/study/history", "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to fetch study history:", error.message)
-            }
-            return mockApi.getStudyHistory(userId)
-        }
+        const response = await apiClient.get(`/api/study/history?userId=${userId}`)
+        return response.data
     },
 
     // User Profile API
     async getUserProfile(userId: string) {
-        try {
-            const response = await apiClient.get(`/api/user/profile/${userId}`)
-            return response.data
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage("GET /api/user/profile", "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to fetch user profile:", error.message)
-            }
-            return mockApi.getUserProfile(userId)
-        }
+        const response = await apiClient.get(`/api/user/profile/${userId}`)
+        return response.data
     },
 
     async updateUserProfile(userId: string, updates: any) {
-        try {
-            const response = await apiClient.put(`/api/user/profile/${userId}`, updates)
-            return response.data
-        } catch (error: any) {
-            if (isNetworkError(error)) {
-                logMockDataUsage("PUT /api/user/profile", "Network error or server unavailable")
-            } else {
-                console.error("[API Error] Failed to update user profile:", error.message)
-            }
-            return mockApi.updateUserProfile(userId, updates)
-        }
+        const response = await apiClient.put(`/api/user/profile/${userId}`, updates)
+        return response.data
     },
 }
 
 export default apiClient
+

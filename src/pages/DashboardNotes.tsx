@@ -1,16 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect, useRef } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { FileText, Plus, Trash2, Edit2, Save, AlertCircle } from "lucide-react"
+import { FileText, Plus, Trash2, Edit2, Save, AlertCircle, Sparkles, Clock } from "lucide-react"
 import { useAppToast } from "@/hooks/useAppToast"
 import { formValidation } from "@/lib/formValidation"
 import { apiWithFallback } from "@/lib/apiClient"
 import { PageLoader } from "@/components/PageLoader"
+import RichTextEditor from "@/components/RichTextEditor"
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
 
 interface Note {
     id: string
@@ -22,23 +24,37 @@ interface Note {
 }
 
 export default function DashboardNotes() {
+    const containerRef = useRef<HTMLDivElement>(null)
     const appToast = useAppToast()
     const [notes, setNotes] = useState<Note[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [isCreating, setIsCreating] = useState(false)
+    const [isAddingNote, setIsAddingNote] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
     const [newNote, setNewNote] = useState({ title: "", content: "", subject: "" })
-    const [errors, setErrors] = useState<{ title?: string; content?: string }>({})
+    const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({})
+
+    useGSAP(() => {
+        if (!isLoading) {
+            gsap.from(".notes-header", { opacity: 0, y: -20, duration: 0.6, ease: "power2.out" })
+            gsap.from(".note-card", {
+                opacity: 0,
+                y: 20,
+                stagger: 0.1,
+                duration: 0.5,
+                ease: "power2.out"
+            })
+        }
+    }, { scope: containerRef, dependencies: [isLoading] })
 
     useEffect(() => {
         const fetchNotes = async () => {
             try {
-                const loaded = await apiWithFallback.getNotes()
-                setNotes(loaded)
-            } catch (err) {
-                console.error("Error loading notes:", err)
+                const data = await apiWithFallback.getNotes()
+                setNotes(data)
+            } catch (err: any) {
+                console.error("Failed to fetch notes:", err)
                 appToast.error({
                     title: "Failed to load notes",
                     description: "Couldn’t retrieve your notes. Please refresh and try again.",
@@ -63,7 +79,7 @@ export default function DashboardNotes() {
         if (!validateNote()) {
             appToast.error({
                 title: "Invalid input",
-                description: errors.title || errors.content || "Please check your input.",
+                description: "Please check the highlighted fields.",
             })
             return
         }
@@ -71,15 +87,14 @@ export default function DashboardNotes() {
         try {
             const created = await apiWithFallback.createNote({
                 ...newNote,
-                subject: newNote.subject || "General",
                 createdAt: new Date(),
                 updatedAt: new Date(),
             })
             setNotes([created, ...notes])
             setNewNote({ title: "", content: "", subject: "" })
             setErrors({})
-            setIsCreating(false)
-            appToast.noteSaved()
+            setIsAddingNote(false)
+            appToast.success({ title: "Note saved", description: "Your new study note is ready!" })
         } catch (err) {
             console.error("Error creating note:", err)
             appToast.error({
@@ -132,7 +147,7 @@ export default function DashboardNotes() {
     if (isLoading) {
         return (
             <div className="space-y-6">
-                <h1 className="text-3xl font-bold mb-2">My Notes</h1>
+                <h1 className="text-4xl font-extrabold tracking-tight text-gradient">My Notes</h1>
                 <p className="text-muted-foreground">Manage and organize all your study notes in one place.</p>
                 <PageLoader variant="skeleton-cards" itemCount={3} text="Loading your notes..." />
             </div>
@@ -140,65 +155,76 @@ export default function DashboardNotes() {
     }
 
     return (
-        <div className="space-y-6">
-            <header>
-                <h1 className="text-3xl font-bold mb-2">My Notes</h1>
-                <p className="text-muted-foreground">Manage and organize all your study notes in one place.</p>
+        <div ref={containerRef} className="space-y-8 w-full pb-12">
+            <header className="notes-header flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h1 className="text-5xl font-extrabold tracking-tighter mb-2 text-gradient">My Notes</h1>
+                    <p className="text-muted-foreground text-lg">Manage and organize all your study notes in one place.</p>
+                </div>
+                {!isAddingNote && (
+                    <Button onClick={() => setIsAddingNote(true)} className="h-12 px-6 rounded-2xl shadow-glow">
+                        <Plus className="h-5 w-5 mr-2" /> Create New Note
+                    </Button>
+                )}
             </header>
 
-            {isCreating && (
-                <Card className="border-primary/50 bg-primary/5">
-                    <CardHeader>
-                        <CardTitle>Create New Note</CardTitle>
+            {isAddingNote && (
+                <Card className="glass shadow-2xl border-white/10 overflow-hidden stagger-card">
+                    <CardHeader className="bg-white/5 border-b border-white/5">
+                        <CardTitle className="flex items-center gap-2">
+                            <Sparkles className="h-5 w-5 text-primary" />
+                            <span>Create New Note</span>
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="title">Title</Label>
-                            <Input
-                                id="title"
-                                value={newNote.title}
-                                onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
-                                placeholder="Enter note title..."
-                                className={errors.title ? "border-destructive" : ""}
-                            />
-                            {errors.title && (
-                                <p className="text-sm text-destructive flex items-center gap-1">
-                                    <AlertCircle className="h-3 w-3" /> {errors.title}
-                                </p>
-                            )}
+                    <CardContent className="p-6 space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="title" className="text-xs uppercase tracking-widest font-bold opacity-60">Title</Label>
+                                <Input
+                                    id="title"
+                                    value={newNote.title}
+                                    onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
+                                    placeholder="Enter note title..."
+                                    className={`rounded-xl h-12 bg-white/5 border-white/10 ${errors.title ? "border-destructive" : ""}`}
+                                />
+                                {errors.title && (
+                                    <p className="text-xs text-destructive flex items-center gap-1">
+                                        <AlertCircle className="h-3 w-3" /> {errors.title}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="subject" className="text-xs uppercase tracking-widest font-bold opacity-60">Subject</Label>
+                                <Input
+                                    id="subject"
+                                    value={newNote.subject}
+                                    onChange={(e) => setNewNote({ ...newNote, subject: e.target.value })}
+                                    placeholder="e.g., Biology, Math..."
+                                    className="rounded-xl h-12 bg-white/5 border-white/10"
+                                />
+                            </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="subject">Subject (optional)</Label>
-                            <Input
-                                id="subject"
-                                value={newNote.subject}
-                                onChange={(e) => setNewNote({ ...newNote, subject: e.target.value })}
-                                placeholder="e.g., Biology, Math..."
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="content">Content</Label>
-                            <Textarea
-                                id="content"
-                                value={newNote.content}
-                                onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
-                                placeholder="Enter note content..."
-                                rows={6}
-                                className={errors.content ? "border-destructive" : ""}
+                            <Label className="text-xs uppercase tracking-widest font-bold opacity-60">Content</Label>
+                            <RichTextEditor 
+                                content={newNote.content} 
+                                onChange={(val) => setNewNote({ ...newNote, content: val })} 
+                                placeholder="Start writing your thoughts..."
                             />
                             {errors.content && (
-                                <p className="text-sm text-destructive flex items-center gap-1">
+                                <p className="text-xs text-destructive flex items-center gap-1 mt-1">
                                     <AlertCircle className="h-3 w-3" /> {errors.content}
                                 </p>
                             )}
                         </div>
-                        <div className="flex justify-end gap-2">
-                            <Button variant="outline" onClick={() => setIsCreating(false)}>
+                        <div className="flex justify-end gap-3 pt-4">
+                            <Button variant="ghost" onClick={() => setIsAddingNote(false)} className="rounded-xl h-12 px-6">
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleCreateNote}
-                                disabled={!newNote.title || !newNote.content || !!errors.title || !!errors.content}
+                                disabled={!newNote.title.trim() || !newNote.content.trim()}
+                                className="rounded-xl h-12 px-8 shadow-glow"
                             >
                                 <Save className="h-4 w-4 mr-2" />
                                 Save Note
@@ -210,84 +236,88 @@ export default function DashboardNotes() {
 
             {/* Notes list */}
             {notes.length > 0 ? (
-                <div className="space-y-4">
-                    {!isCreating && (
-                        <Button onClick={() => setIsCreating(true)} className="w-full">
-                            <Plus className="h-4 w-4 mr-2" /> Create New Note
-                        </Button>
-                    )}
-
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {notes.map((note) => (
-                        <Card key={note.id} className="hover:shadow-md transition">
-                            <CardContent className="p-6">
+                        <Card key={note.id} className="note-card glass shadow-lg hover-lift border-white/5 flex flex-col group h-[400px]">
+                            <CardContent className="p-6 flex flex-col h-full">
                                 {editingId === note.id ? (
-                                    <div className="space-y-4">
+                                    <div className="space-y-4 flex-1 flex flex-col">
                                         <Input
                                             value={note.title}
+                                            className="rounded-xl bg-white/5 border-white/10"
                                             onChange={(e) =>
                                                 setNotes((prev) =>
                                                     prev.map((n) => (n.id === note.id ? { ...n, title: e.target.value } : n))
                                                 )
                                             }
                                         />
-                                        <Textarea
-                                            rows={4}
-                                            value={note.content}
-                                            onChange={(e) =>
-                                                setNotes((prev) =>
-                                                    prev.map((n) => (n.id === note.id ? { ...n, content: e.target.value } : n))
-                                                )
-                                            }
-                                        />
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="outline" onClick={() => setEditingId(null)}>
+                                        <div className="flex-1 overflow-y-auto">
+                                            <RichTextEditor 
+                                                content={note.content} 
+                                                onChange={(val) => 
+                                                    setNotes((prev) => 
+                                                        prev.map((n) => (n.id === note.id ? { ...n, content: val } : n))
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div className="flex justify-end gap-2 pt-2">
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingId(null)} className="rounded-lg">
                                                 Cancel
                                             </Button>
                                             <Button
+                                                size="sm"
+                                                className="rounded-lg px-4"
                                                 onClick={() => {
                                                     const updated = notes.find((n) => n.id === note.id)
                                                     if (updated) handleUpdateNote(note.id, updated.title, updated.content)
                                                 }}
                                             >
-                                                <Save className="h-4 w-4 mr-2" /> Save
+                                                <Save size={14} className="mr-2" /> Save
                                             </Button>
                                         </div>
                                     </div>
                                 ) : (
-                                    <>
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div>
-                                                <h3 className="text-lg font-semibold">{note.title}</h3>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Updated {new Date(note.updatedAt).toLocaleDateString()}
-                                                </p>
+                                    <div className="flex flex-col h-full">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">
+                                                        {note.subject || "General"}
+                                                    </span>
+                                                </div>
+                                                <h3 className="text-xl font-bold group-hover:text-primary transition-colors line-clamp-1">{note.title}</h3>
                                             </div>
-                                            <div className="flex gap-2">
-                                                <Button variant="ghost" size="sm" onClick={() => setEditingId(note.id)}>
-                                                    <Edit2 className="h-4 w-4" />
+                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setEditingId(note.id)}>
+                                                    <Edit2 size={14} />
                                                 </Button>
-                                                <Button variant="ghost" size="sm" onClick={() => setDeleteConfirm(note.id)}>
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-destructive/60 hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteConfirm(note.id)}>
+                                                    <Trash2 size={14} />
                                                 </Button>
                                             </div>
                                         </div>
-                                        <p className="text-sm leading-relaxed text-muted-foreground">{note.content}</p>
+                                        
+                                        <div 
+                                            className="text-sm leading-relaxed text-muted-foreground prose prose-sm dark:prose-invert max-w-none overflow-hidden mask-fade flex-1"
+                                            dangerouslySetInnerHTML={{ __html: note.content }}
+                                        />
+                                        
+                                        <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-40">
+                                            <Clock size={10} />
+                                            <span>{new Date(note.updatedAt).toLocaleDateString()}</span>
+                                        </div>
 
                                         {deleteConfirm === note.id && (
-                                            <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                                                <p className="text-sm font-medium mb-3">
-                                                    Are you sure you want to delete this note?
-                                                </p>
-                                                <p className="text-xs text-muted-foreground mb-3">
-                                                    This action cannot be undone.
-                                                </p>
+                                            <div className="absolute inset-x-0 bottom-0 p-4 bg-destructive text-white backdrop-blur-md rounded-b-3xl flex flex-col gap-2">
+                                                <p className="text-xs font-bold uppercase tracking-wider text-center">Permanently remove this note?</p>
                                                 <div className="flex gap-2">
-                                                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)}>
+                                                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)} className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20">
                                                         Cancel
                                                     </Button>
                                                     <Button
                                                         size="sm"
-                                                        variant="destructive"
+                                                        className="flex-1 bg-white text-destructive hover:bg-white/90 font-bold"
                                                         onClick={() => handleDeleteNote(note.id)}
                                                     >
                                                         Delete
@@ -295,37 +325,32 @@ export default function DashboardNotes() {
                                                 </div>
                                             </div>
                                         )}
-                                    </>
+                                    </div>
                                 )}
                             </CardContent>
                         </Card>
                     ))}
                 </div>
             ) : (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-primary" />
-                            <span>Your Notes</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                            <FileText className="h-16 w-16 text-muted-foreground/50" />
-                            <div className="text-center">
-                                <h3 className="text-lg font-semibold mb-2">No notes yet</h3>
-                                <p className="text-muted-foreground mb-4">
-                                    Start by creating a new note to get started.
-                                </p>
-                                <Button onClick={() => setIsCreating(true)} className="space-x-2">
-                                    <Plus className="h-4 w-4" />
-                                    <span>Create New Note</span>
-                                </Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                <div className="flex flex-col items-center justify-center py-24 glass rounded-[40px] border-dashed space-y-6">
+                    <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                        <FileText size={48} className="text-muted-foreground/30" />
+                    </div>
+                    <div className="text-center space-y-2">
+                        <h3 className="text-2xl font-bold">Your Slate is Clean</h3>
+                        <p className="text-muted-foreground">Start documenting your brilliance. Create your first note.</p>
+                    </div>
+                    <Button onClick={() => setIsAddingNote(true)} size="lg" className="rounded-2xl h-14 px-10 shadow-glow font-bold text-lg">
+                        <Plus size={20} className="mr-2" /> Get Started
+                    </Button>
+                </div>
             )}
+
+            <style>{`
+                .mask-fade {
+                    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+                }
+            `}</style>
         </div>
     )
 }

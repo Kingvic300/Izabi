@@ -8,12 +8,16 @@ import { Bell, Shield, Palette, Download } from "lucide-react"
 import { useAppToast } from "@/hooks/useAppToast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+import { useTheme } from "@/components/theme-provider"
+
 const DashboardSettings = () => {
     const appToast = useAppToast()
+    const { theme, setTheme: setGlobalTheme } = useTheme()
+    
     const [settings, setSettings] = useState({
         emailNotifications: true,
         studyReminders: true,
-        theme: "dark",
+        theme: theme,
         publicProfile: false,
     })
     const [isSaving, setIsSaving] = useState(false)
@@ -22,25 +26,18 @@ const DashboardSettings = () => {
         const savedSettings = localStorage.getItem("userSettings")
         if (savedSettings) {
             try {
-                setSettings(JSON.parse(savedSettings))
+                const parsed = JSON.parse(savedSettings)
+                setSettings(prev => ({ ...prev, ...parsed, theme: theme as any })) // Sync global theme
             } catch (error) {
                 console.error("Error loading settings:", error)
-                appToast.error({
-                    title: "Failed to load settings",
-                    description: "We couldn't retrieve your settings. Using defaults.",
-                })
             }
         }
-    }, [appToast])
+    }, [theme])
 
     const handleToggle = (key: keyof typeof settings) => {
         const newValue = typeof settings[key] === "boolean" ? !settings[key] : settings[key]
-        setSettings((prev) => ({
-            ...prev,
-            [key]: newValue,
-        }))
-
         const updatedSettings = { ...settings, [key]: newValue }
+        setSettings(updatedSettings)
         localStorage.setItem("userSettings", JSON.stringify(updatedSettings))
 
         const settingNames: Record<string, string> = {
@@ -59,13 +56,13 @@ const DashboardSettings = () => {
     }
 
     const handleThemeChange = (value: string) => {
+        const themeValue = value === "auto" ? "system" : value as any
+        setGlobalTheme(themeValue)
+        
         setSettings((prev) => ({
             ...prev,
-            theme: value,
+            theme: themeValue,
         }))
-
-        const updatedSettings = { ...settings, theme: value }
-        localStorage.setItem("userSettings", JSON.stringify(updatedSettings))
 
         appToast.success({
             title: "Theme updated",

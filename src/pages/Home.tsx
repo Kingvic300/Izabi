@@ -1,5 +1,7 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import {
     Brain,
     FileText,
@@ -14,103 +16,147 @@ import {
     HelpCircle,
     Users2,
     Info,
+    Sparkles,
+    Trophy,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
+import { useEffect, useRef } from "react"
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const Home = () => {
+    const { t } = useLanguage()
+    const containerRef = useRef<HTMLDivElement>(null)
+    useGSAP(() => {
+        const tl = gsap.timeline()
+        tl.from(".hero-content > *", { 
+            opacity: 0, 
+            y: 40, 
+            stagger: 0.15, 
+            duration: 1, 
+            ease: "expo.out" 
+        })
+        tl.from(".hero-stats", { 
+            opacity: 0, 
+            scale: 0.9, 
+            duration: 0.8, 
+            ease: "back.out(1.7)" 
+        }, "-=0.5")
+
+        gsap.from(".feature-card", {
+            scrollTrigger: {
+                trigger: ".features-grid",
+                start: "top 80%",
+            },
+            opacity: 0,
+            y: 30,
+            stagger: 0.1,
+            duration: 0.8,
+            ease: "power2.out"
+        })
+    }, { scope: containerRef })
+
     const features = [
         {
-            icon: <FileText className="h-8 w-8" />,
-            title: "Smart Note Upload",
-            description: "Upload PDFs and notes - AI scans instantly",
+            icon: <FileText size={32} />,
+            title: "Neural Scan",
+            description: "Upload PDFs and notes - our neural engine scans and understands context instantly.",
+            color: "text-blue-400",
+            bg: "bg-blue-400/10"
         },
         {
-            icon: <Brain className="h-8 w-8" />,
-            title: "AI Summaries",
-            description: "Get intelligent summaries and explanations",
+            icon: <Brain size={32} />,
+            title: "Izabi Summaries",
+            description: "Get structured deep-dives that explain the 'Why' behind every concept.",
+            color: "text-emerald-400",
+            bg: "bg-emerald-400/10"
         },
         {
-            icon: <Zap className="h-8 w-8" />,
-            title: "Auto Quiz Generator",
-            description: "Auto-generate quizzes from any document",
+            icon: <Zap size={32} />,
+            title: "Flash Quiz",
+            description: "Auto-generate challenging quizzes with instant feedback tracking.",
+            color: "text-blue-400",
+            bg: "bg-blue-400/10"
         },
         {
-            icon: <Users className="h-8 w-8" />,
-            title: "Kahoot-Style Games",
-            description: "Play quizzes in group battles with friends",
+            icon: <Users size={32} />,
+            title: "Scholar Battles",
+            description: "Engage in real-time knowledge duels with fellow students.",
+            color: "text-emerald-400",
+            bg: "bg-emerald-400/10"
         },
         {
-            icon: <Mic className="h-8 w-8" />,
-            title: "Voice Learning",
-            description: "Hands-free learning with voice input/output",
+            icon: <Mic size={32} />,
+            title: "Audio Lexicon",
+            description: "Convert any lesson into interactive audio tailored to your learning style.",
+            color: "text-blue-400",
+            bg: "bg-blue-400/10"
         },
         {
-            icon: <Globe className="h-8 w-8" />,
-            title: "Multilingual",
-            description: "Switch between English and Pidgin anytime",
+            icon: <Globe size={32} />,
+            title: "Dialect Support",
+            description: "Fluent across Academic English and Local Dialects (Pidgin) for better clarity.",
+            color: "text-emerald-400",
+            bg: "bg-emerald-400/10"
         },
     ]
-
-    const benefits = [
-        "Save 10+ hours per week on studying",
-        "Improve grades by up to 40%",
-        "Learn at your own pace",
-        "Master any subject with AI guidance",
-    ]
-
-    const sections = [
-        { icon: <Zap className="h-5 w-5" />, label: "Features", href: "#features" },
-        { icon: <BookOpen className="h-5 w-5" />, label: "How It Works", href: "#how-it-works" },
-        { icon: <Users2 className="h-5 w-5" />, label: "Testimonials", href: "#testimonials" },
-        { icon: <BarChart3 className="h-5 w-5" />, label: "Pricing", href: "#pricing" },
-        { icon: <HelpCircle className="h-5 w-5" />, label: "FAQ", href: "#faq" },
-        { icon: <Info className="h-5 w-5" />, label: "About", href: "#about" },
-    ]
-
     return (
         <ErrorBoundary>
-            <div className="min-h-screen bg-background">
+            <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
+                {/* Background Blobs */}
+                <div className="fixed top-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[160px] rounded-full pointer-events-none z-0" />
+                <div className="fixed bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-accent/5 blur-[160px] rounded-full pointer-events-none z-0" />
+
                 <Header />
 
                 {/* Hero Section */}
-                <section className="relative overflow-hidden py-20 lg:py-32">
-                    <div className="absolute inset-0 bg-gradient-hero opacity-5" />
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-                        <div className="text-center">
-                            <div className="inline-block mb-6 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
-                                <p className="text-sm font-medium text-primary">Join 10,000+ students learning smarter</p>
+                <section className="relative pt-44 pb-32 lg:pt-56 lg:pb-48">
+                    <div className="w-full px-6 lg:px-12 relative z-10">
+                        <div className="hero-content text-center w-full max-w-[1400px] mx-auto">
+                            <div className="inline-flex items-center gap-2 mb-8 px-5 py-2 glass rounded-full border border-foreground/10 shadow-glow">
+                                <Trophy size={16} className="text-yellow-500" />
+                                <span className="text-xs font-black uppercase tracking-widest text-foreground/60">{t("hero.trusted")}</span>
                             </div>
-                            <h1 className="text-4xl sm:text-6xl font-bold mb-6 leading-tight">
-                                Turn Your Notes Into{" "}
-                                <span className="bg-gradient-hero bg-clip-text text-transparent">AI-Powered Learning</span>
+                            
+                            <h1 className="text-6xl sm:text-8xl font-black mb-8 leading-[0.9] tracking-tighter text-foreground">
+                                {t("hero.title_top")} <br />
+                                <span className="text-gradient">{t("hero.title_bottom")}</span>
                             </h1>
-                            <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-                                Instantly create quizzes, summaries, and audio lessons from your PDFs. Master any subject in English &
-                                Pidgin with personalized learning experiences.
+                            
+                            <p className="text-xl sm:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
+                                {t("hero.tagline").split('. ')[0]}. 
+                                <span className="text-foreground"> {t("hero.tagline").split('. ')[1]}</span>
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                            
+                            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-20">
                                 <Link to="/signup">
-                                    <Button size="lg" className="min-w-[200px] bg-primary hover:bg-primary/90 text-primary-foreground">
-                                        Start Learning Free
-                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    <Button size="lg" className="h-16 px-10 rounded-[20px] bg-primary hover:bg-primary/90 text-primary-foreground font-black text-lg shadow-glow-primary group">
+                                        <span>{t("hero.cta")}</span>
+                                        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </Link>
                                 <a href="#how-it-works">
-                                    <Button variant="outline" size="lg" className="min-w-[200px] bg-transparent">
-                                        Watch Demo
+                                    <Button variant="ghost" size="lg" className="h-16 px-10 rounded-[20px] font-black text-lg glass border border-foreground/10 hover:bg-foreground/5 text-foreground">
+                                        {t("hero.view_env")}
                                     </Button>
                                 </a>
                             </div>
 
-                            {/* Benefits */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-                                {benefits.map((benefit) => (
-                                    <div key={benefit} className="flex items-center gap-2 text-sm">
-                                        <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                                        <span className="text-muted-foreground">{benefit}</span>
+                            {/* Hero Features Bar */}
+                            <div className="hero-stats grid grid-cols-2 md:grid-cols-4 gap-4 glass p-4 rounded-[32px] border border-foreground/10 max-w-4xl mx-auto">
+                                {[
+                                    { val: "Save 10h+", lab: "Weekly Study Time" },
+                                    { val: "40%+", lab: "Grade Improvement" },
+                                    { val: "Any Device", lab: "Responsive Learning" },
+                                    { val: "Pidgin AI", lab: "Localized Support" }
+                                ].map((stat, i) => (
+                                    <div key={i} className="py-2 px-4 border-r border-foreground/5 last:border-0">
+                                        <div className="text-2xl font-black text-foreground">{stat.val}</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-widest opacity-40 text-foreground">{stat.lab}</div>
                                     </div>
                                 ))}
                             </div>
@@ -118,86 +164,84 @@ const Home = () => {
                     </div>
                 </section>
 
-                <section className="py-12 bg-muted/20 border-y border-border">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                            {sections.map((section) => (
-                                <a key={section.href} href={section.href}>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full h-auto flex flex-col items-center justify-center gap-2 py-4 bg-card hover:bg-primary/5 border-border hover:border-primary transition-all"
-                                    >
-                                        <span className="text-primary">{section.icon}</span>
-                                        <span className="text-xs font-medium text-center">{section.label}</span>
-                                    </Button>
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
                 {/* Features Section */}
-                <section id="features" className="py-20 bg-muted/30">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                                Everything you need to{" "}
-                                <span className="bg-gradient-secondary bg-clip-text text-transparent">excel academically</span>
-                            </h2>
-                            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                Designed for university students, college students, and secondary school students preparing for
-                                WAEC/UTME
-                            </p>
+                <section id="features" className="py-32 relative">
+                    <div className="w-full px-6 lg:px-12">
+                        <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8 text-center md:text-left">
+                            <div className="w-full">
+                                <h2 className="text-5xl font-black mb-6 leading-none tracking-tight text-foreground">
+                                    {t("features.title")} <br />
+                                    <span className="text-gradient">{t("features.title_gradient")}</span>
+                                </h2>
+                                <p className="text-lg text-muted-foreground font-medium">
+                                    {t("features.subtitle")}
+                                </p>
+                            </div>
+                            <Link to="/features" className="group">
+                                <div className="flex items-center gap-3 font-bold text-primary group-hover:gap-5 transition-all">
+                                    <span>Explore All Modules</span>
+                                    <ArrowRight size={20} />
+                                </div>
+                            </Link>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {features.map((feature) => (
+
+                        <div className="features-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {features.map((feature, i) => (
                                 <Card
-                                    key={feature.title}
-                                    className="p-6 hover:shadow-card transition-all duration-300 border-0 bg-card shadow-sm hover:shadow-lg"
+                                    key={i}
+                                    className="feature-card glass-card hover-lift border-white/5 p-8 relative group overflow-hidden"
                                 >
-                                    <div className="text-primary mb-4">{feature.icon}</div>
-                                    <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                                    <p className="text-muted-foreground">{feature.description}</p>
+                                    <div className={`w-16 h-16 rounded-[20px] ${feature.bg} ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl`}>
+                                        {feature.icon}
+                                    </div>
+                                    <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
+                                    <p className="text-muted-foreground leading-relaxed font-medium">{feature.description}</p>
+                                    
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </Card>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* How It Works Preview */}
-                <section id="how-it-works" className="py-20">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl sm:text-4xl font-bold mb-4">How It Works</h2>
-                            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Get started in three simple steps</p>
+                {/* How It Works Showcase */}
+                <section id="how-it-works" className="py-32 bg-white/[0.01] border-y border-white/5">
+                    <div className="w-full px-6 lg:px-12 text-center">
+                        <div className="mb-20">
+                            <span className="text-xs font-black uppercase tracking-widest text-primary mb-4 block">{t("how.title")}</span>
+                            <h2 className="text-5xl font-black text-foreground">{t("how.subtitle")}</h2>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 relative">
+                            {/* Connector Line */}
+                            <div className="hidden lg:block absolute top-[60px] left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                            
                             {[
-                                { step: "1", title: "Upload", desc: "Upload your PDF or notes" },
-                                { step: "2", title: "AI Processes", desc: "Our AI analyzes your content" },
-                                { step: "3", title: "Learn", desc: "Get quizzes, summaries & more" },
-                            ].map((item) => (
-                                <div key={item.step} className="text-center">
-                                    <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <span className="text-2xl font-bold text-primary">{item.step}</span>
+                                { step: "01", title: "Ingest", desc: "Feed the AI your PDFs, notes, or raw texts.", icon: <FileText /> },
+                                { step: "02", title: "Analyze", desc: "Izabi identifies key patterns and neural links.", icon: <Zap /> },
+                                { step: "03", title: "Conquer", desc: "Simulate exams and master the curriculum.", icon: <Sparkles /> },
+                            ].map((item, i) => (
+                                <div key={i} className="relative group">
+                                    <div className="w-32 h-32 glass rounded-[40px] border border-white/10 flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:border-primary/50 transition-colors">
+                                        <span className="text-4xl">{item.icon}</span>
+                                        <div className="absolute -top-4 -right-4 w-12 h-12 rounded-full bg-primary flex items-center justify-center font-black text-white shadow-glow text-xl">
+                                            {item.step}
+                                        </div>
                                     </div>
-                                    <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                                    <p className="text-muted-foreground">{item.desc}</p>
+                                    <h3 className="text-2xl font-bold mb-4 text-foreground">{item.title}</h3>
+                                    <p className="text-muted-foreground font-medium max-w-xs mx-auto leading-relaxed">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* Testimonials Section */}
-                <section id="testimonials" className="py-20 bg-muted/30">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                                What Students Say About <span className="bg-gradient-hero bg-clip-text text-transparent">Izabi</span>
-                            </h2>
-                            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                Join thousands of students transforming their learning experience
+                {/* Testimonials */}
+                <section id="testimonials" className="py-32 relative overflow-hidden">
+                    <div className="w-full px-6 lg:px-12 relative z-10">
+                        <div className="text-center mb-24">
+                            <h2 className="text-5xl font-black mb-6">Voice of the <span className="text-gradient">Nex-Gen Scholar</span></h2>
+                            <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">
+                                Join students across the continent transforming their academic legacy.
                             </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -205,206 +249,166 @@ const Home = () => {
                                 {
                                     name: "Chioma Okafor",
                                     role: "University Student",
-                                    quote: "Izabi helped me save 15 hours per week. My grades improved from B to A in just one semester!",
+                                    quote: "Izabi helped me save 15 hours per week. Reduced my study fatigue and spiked my GPA to 4.8!",
                                     avatar: "CO",
+                                    grad: "bg-blue-600"
                                 },
                                 {
                                     name: "Tunde Adeyemi",
-                                    role: "UTME Candidate",
-                                    quote: "The AI-generated quizzes are incredibly accurate. I felt so prepared for my exams.",
+                                    role: "Candidate",
+                                    quote: "The auto-generated mock exams are terrifyingly accurate to actual exam patterns. Worth every kobo.",
                                     avatar: "TA",
+                                    grad: "bg-emerald-600"
                                 },
                                 {
                                     name: "Zainab Hassan",
-                                    role: "Secondary School Student",
-                                    quote: "Learning in Pidgin makes everything so much clearer. Izabi is a game-changer!",
+                                    role: "Secondary Scholar",
+                                    quote: "Swapping between English and Pidgin mode made complex Biology concepts finally click for me.",
                                     avatar: "ZH",
+                                    grad: "bg-blue-700"
                                 },
-                            ].map((testimonial) => (
-                                <Card key={testimonial.name} className="p-6 bg-card border-0 shadow-sm hover:shadow-lg transition-all">
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
+                            ].map((testimonial, i) => (
+                                <Card key={i} className="glass shadow-2xl border-white/5 p-10 hover-lift relative group">
+                                    <div className="flex items-center gap-5 mb-8">
+                                        <div className={`w-14 h-14 rounded-2xl ${testimonial.grad} flex items-center justify-center text-white font-black text-xl shadow-lg`}>
                                             {testimonial.avatar}
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-foreground">{testimonial.name}</h4>
-                                            <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                                            <h4 className="font-black text-lg text-white group-hover:text-primary transition-colors">{testimonial.name}</h4>
+                                            <p className="text-xs uppercase tracking-widest font-bold opacity-40">{testimonial.role}</p>
                                         </div>
                                     </div>
-                                    <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
+                                    <p className="text-muted-foreground font-medium leading-[1.8] italic">"{testimonial.quote}"</p>
                                 </Card>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* Pricing Section */}
-                <section id="pricing" className="py-20">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
-                            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Choose the plan that works best for you</p>
+                {/* Pricing Showcase */}
+                <section id="pricing" className="py-32 relative z-10">
+                    <div className="w-full px-6 lg:px-12">
+                        <div className="text-center mb-24">
+                            <h2 className="text-5xl font-black mb-6 text-foreground">{t("pricing.title")} <span className="text-gradient">{t("pricing.title_gradient")}</span></h2>
+                            <p className="text-xl text-muted-foreground font-medium">{t("pricing.subtitle")}</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center w-full">
                             {[
                                 {
-                                    name: "Free",
+                                    name: "Initiate",
                                     price: "₦0",
-                                    description: "Perfect for trying out",
-                                    features: ["5 uploads/month", "Basic summaries", "Limited quizzes", "English only"],
+                                    desc: "Explore the environment",
+                                    feat: ["5 Neural Scans/month", "Basic Summarization", "Standard Quizzes", "Web Access Only"],
+                                    hot: false
                                 },
                                 {
-                                    name: "Pro",
+                                    name: "Pro Scholar",
                                     price: "₦2,999",
-                                    description: "Most popular",
-                                    features: [
-                                        "Unlimited uploads",
-                                        "AI summaries",
-                                        "Unlimited quizzes",
-                                        "English & Pidgin",
-                                        "Voice learning",
-                                    ],
-                                    highlighted: true,
+                                    desc: "Dominance mode activated",
+                                    feat: ["Unlimited Scans", "Deep-Dive Summaries", "Audio Lessons", "Pidgin AI Integration", "Neural Memory"],
+                                    hot: true
                                 },
                                 {
-                                    name: "Premium",
+                                    name: "Academic Elite",
                                     price: "₦9,999",
-                                    description: "For serious learners",
-                                    features: [
-                                        "Everything in Pro",
-                                        "Priority support",
-                                        "Advanced analytics",
-                                        "Group battles",
-                                        "Custom learning paths",
-                                    ],
+                                    desc: "Maximum knowledge yield",
+                                    feat: ["Everything in Pro", "Scholar Battle Pass", "WAEC/JAMB Predictions", "Priority GPU Access", "1-on-1 AI Tutoring"],
+                                    hot: false
                                 },
-                            ].map((plan) => (
+                            ].map((plan, i) => (
                                 <Card
-                                    key={plan.name}
-                                    className={`p-8 border-0 transition-all ${
-                                        plan.highlighted
-                                            ? "bg-gradient-hero/10 shadow-lg scale-105 ring-2 ring-primary"
-                                            : "bg-card shadow-sm hover:shadow-lg"
+                                    key={i}
+                                    className={`p-10 border-white/5 transition-all relative overflow-hidden flex flex-col ${
+                                        plan.hot
+                                            ? "glass shadow-[0_0_80px_rgba(59,130,246,0.15)] ring-2 ring-primary scale-110 z-20 py-16"
+                                            : "glass bg-white/[0.02] opacity-80"
                                     }`}
                                 >
-                                    <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                                    <p className="text-muted-foreground mb-4">{plan.description}</p>
-                                    <div className="mb-6">
-                                        <span className="text-4xl font-bold">{plan.price}</span>
-                                        <span className="text-muted-foreground">/month</span>
+                                    {plan.hot && (
+                                        <div className="absolute top-6 right-6 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">Most Popular</div>
+                                    )}
+                                    <div className="mb-10">
+                                        <h3 className="text-3xl font-black mb-2 text-foreground">{plan.name}</h3>
+                                        <p className="text-sm font-bold opacity-40 mb-6 uppercase tracking-wider text-foreground">{plan.desc}</p>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-5xl font-black text-foreground">{plan.price}</span>
+                                            <span className="text-xs font-bold opacity-40 text-foreground">/MONTH</span>
+                                        </div>
                                     </div>
-                                    <Button
-                                        className={`w-full mb-6 ${
-                                            plan.highlighted ? "bg-primary hover:bg-primary/90" : "bg-muted text-foreground hover:bg-muted/80"
-                                        }`}
-                                    >
-                                        Get Started
-                                    </Button>
-                                    <ul className="space-y-3">
-                                        {plan.features.map((feature) => (
-                                            <li key={feature} className="flex items-center gap-2 text-sm">
-                                                <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                                                <span>{feature}</span>
+                                    
+                                    <ul className="space-y-4 mb-10 flex-1">
+                                        {plan.feat.map((f, j) => (
+                                            <li key={j} className="flex items-center gap-3 text-sm font-bold opacity-80">
+                                                <CheckCircle size={14} className="text-primary" />
+                                                <span>{f}</span>
                                             </li>
                                         ))}
                                     </ul>
+                                    
+                                    <Button
+                                        className={`w-full h-14 rounded-2xl font-black text-lg transition-all ${
+                                            plan.hot 
+                                                ? "bg-primary hover:bg-primary/90 text-white shadow-glow" 
+                                                : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                                        }`}
+                                    >
+                                        Deploy Now
+                                    </Button>
                                 </Card>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* FAQ Section */}
-                <section id="faq" className="py-20 bg-muted/30">
-                    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
-                            <p className="text-lg text-muted-foreground">Have questions? We've got answers</p>
-                        </div>
-                        <div className="space-y-4">
-                            {[
-                                {
-                                    q: "How does Izabi work?",
-                                    a: "Simply upload your PDF or notes, and our AI instantly analyzes the content to generate summaries, quizzes, and learning materials tailored to your needs.",
-                                },
-                                {
-                                    q: "Is my data secure?",
-                                    a: "Yes, we use enterprise-grade encryption and comply with all data protection regulations. Your notes are never shared with third parties.",
-                                },
-                                {
-                                    q: "Can I use Izabi offline?",
-                                    a: "Currently, Izabi requires an internet connection. However, you can download your generated materials for offline access.",
-                                },
-                                {
-                                    q: "What file formats are supported?",
-                                    a: "We support PDF, DOCX, TXT, and image files (JPG, PNG). You can also paste text directly.",
-                                },
-                                {
-                                    q: "Is there a free trial?",
-                                    a: "Yes! Our Free plan gives you 5 uploads per month to try out all the core features.",
-                                },
-                                {
-                                    q: "Can I cancel anytime?",
-                                    a: "Absolutely. You can cancel your subscription at any time with no penalties or hidden fees.",
-                                },
-                            ].map((item, idx) => (
-                                <Card key={idx} className="p-6 bg-card border-0 shadow-sm hover:shadow-lg transition-all">
-                                    <h4 className="font-semibold text-foreground mb-2">{item.q}</h4>
-                                    <p className="text-muted-foreground">{item.a}</p>
-                                </Card>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* About Section */}
-                <section id="about" className="py-20">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl sm:text-4xl font-bold mb-4">About Izabi</h2>
-                            <p className="text-lg text-muted-foreground">Transforming education through AI-powered learning</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                {/* About Brief */}
+                <section id="about" className="py-32 bg-white/[0.01]">
+                    <div className="w-full px-6 lg:px-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
                             <div>
-                                <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
-                                <p className="text-muted-foreground mb-4 leading-relaxed">
-                                    We believe every student deserves access to personalized, intelligent learning tools. Izabi was
-                                    created to bridge the gap between traditional studying and modern AI technology, making quality
-                                    education accessible to everyone.
+                                <h2 className="text-5xl font-black mb-8 leading-tight">Our Mission: <br /> <span className="text-gradient">Equal Access.</span></h2>
+                                <p className="text-lg text-muted-foreground font-medium leading-[1.8] mb-8">
+                                    We believe that every student in Africa deserves an unfair advantage. 
+                                    Izabi was engineered to democratize elite-level academic tutoring through 
+                                    accessible, localized, and intelligent technology.
                                 </p>
-                                <p className="text-muted-foreground leading-relaxed">
-                                    By combining cutting-edge AI with multilingual support, we're empowering students across Africa to
-                                    learn smarter, not harder.
-                                </p>
+                                <Button variant="ghost" className="font-black p-0 hover:bg-transparent text-primary hover:gap-3 transition-all">
+                                    Read Our Full Manifesto <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 {[
-                                    { number: "10K+", label: "Active Students" },
-                                    { number: "50M+", label: "Pages Processed" },
-                                    { number: "95%", label: "Success Rate" },
-                                    { number: "2", label: "Languages" },
-                                ].map((stat) => (
-                                    <Card key={stat.label} className="p-6 bg-gradient-hero/5 border-0 text-center">
-                                        <div className="text-3xl font-bold text-primary mb-2">{stat.number}</div>
-                                        <p className="text-sm text-muted-foreground">{stat.label}</p>
-                                    </Card>
+                                    { label: "Students", val: "10K+" },
+                                    { label: "Accuracy", val: "99.8%" },
+                                    { label: "Papers", val: "50M+" },
+                                    { label: "Hours Saved", val: "200K" }
+                                ].map((stat, i) => (
+                                    <div key={i} className="glass p-8 rounded-[32px] border border-white/10 text-center hover-lift">
+                                        <div className="text-3xl font-black text-primary mb-1">{stat.val}</div>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{stat.label}</p>
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* CTA Section */}
-                <section className="py-20 bg-gradient-hero/5 border-y border-border">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                        <h2 className="text-3xl sm:text-4xl font-bold mb-6">Ready to Study Smarter?</h2>
-                        <p className="text-lg text-muted-foreground mb-8">
-                            Join thousands of students improving their grades with Izabi. Start your free trial today.
+                {/* Final CTA */}
+                <section className="py-44 relative">
+                    <div className="w-full px-6 lg:px-12 text-center relative z-10">
+                        <div className="inline-block p-1 rounded-full bg-gradient-hero mb-8 shadow-glow transition-transform hover:scale-105">
+                            <div className="bg-background rounded-full px-6 py-2 flex items-center gap-2">
+                                <Sparkles size={14} className="text-primary animate-pulse" />
+                                <span className="text-xs font-black uppercase tracking-widest">Enrollment Open</span>
+                            </div>
+                        </div>
+                        <h2 className="text-6xl sm:text-7xl font-black mb-8 tracking-tighter text-foreground">{t("cta.upgrade")}</h2>
+                        <p className="text-xl text-muted-foreground mb-12 font-medium">
+                            {t("cta.tagline").split('. ').join('. \n')}
                         </p>
                         <Link to="/signup">
-                            <Button size="lg" className="min-w-[250px] bg-primary hover:bg-primary/90 text-primary-foreground">
-                                Get Started Now
-                                <ArrowRight className="ml-2 h-4 w-4" />
+                            <Button size="lg" className="h-20 px-14 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-black text-2xl shadow-glow-primary group">
+                                <span>{t("nav.get_early_access")}</span>
+                                <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                             </Button>
                         </Link>
                     </div>
@@ -412,6 +416,30 @@ const Home = () => {
 
                 <Footer />
             </div>
+
+            <style>{`
+                .glass {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                }
+                .glass-card {
+                    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                }
+                .text-gradient {
+                    background: linear-gradient(to right, #3b82f6, #2dd4bf, #10b981);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                .shadow-glow {
+                    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+                }
+                .shadow-glow-primary {
+                    box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.5);
+                }
+            `}</style>
         </ErrorBoundary>
     )
 }

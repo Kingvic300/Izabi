@@ -1,120 +1,152 @@
+"use client"
+
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
-import { BackButton } from "@/components/BackButton"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Brain, FileText, Mic, Users, Zap, Globe, BarChart3, Lock, Smartphone, ArrowRight } from "lucide-react"
+import { Brain, FileText, Mic, Users, Zap, Globe, BarChart3, Lock, Smartphone, ArrowRight, Sparkles, Trophy } from "lucide-react"
 import { Link } from "react-router-dom"
+import { useRef } from "react"
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
 
 const Features = () => {
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    useGSAP(() => {
+        gsap.from(".feature-card", {
+            opacity: 0,
+            y: 30,
+            stagger: 0.05,
+            duration: 0.8,
+            ease: "expo.out"
+        })
+    }, { scope: containerRef })
+
     const features = [
         {
-            icon: <FileText className="h-12 w-12" />,
-            title: "Smart Note Upload",
-            description:
-                "Upload PDFs, images, or text notes. Our AI instantly analyzes and processes your content with advanced OCR technology.",
-            benefits: ["Supports multiple formats", "Instant processing", "High accuracy OCR"],
+            icon: <FileText size={32} />,
+            title: "Neural Ingestion",
+            description: "Advanced OCR and semantic analysis turns any PDF into a structured knowledge node.",
+            benefits: ["Sub-second processing", "Image text extraction", "Contextual understanding"],
+            bg: "bg-blue-500/10",
+            color: "text-blue-500"
         },
         {
-            icon: <Brain className="h-12 w-12" />,
-            title: "AI-Powered Summaries",
-            description:
-                "Get concise, intelligent summaries of your notes. Perfect for quick reviews and understanding key concepts.",
-            benefits: ["Customizable length", "Key points highlighted", "Multiple formats"],
+            icon: <Brain size={32} />,
+            title: "Concept Synthesis",
+            description: "Izabi doesn't just summarize; it synthesizes key relationships between topics for a 360 view.",
+            benefits: ["Multi-document linking", "Key term extraction", "Flash card generation"],
+            bg: "bg-emerald-500/10",
+            color: "text-emerald-500"
         },
         {
-            icon: <Zap className="h-12 w-12" />,
-            title: "Auto Quiz Generator",
-            description:
-                "Automatically generate quizzes from your notes. Test your knowledge with multiple choice, true/false, and essay questions.",
-            benefits: ["Multiple question types", "Difficulty levels", "Instant feedback"],
+            icon: <Zap size={32} />,
+            title: "Adaptive Testing",
+            description: "Quizzes that adjust difficulty based on your performance to bridge knowledge gaps.",
+            benefits: ["Dynamic difficulty", "Spaced repetition", "Weakness targeting"],
+            bg: "bg-blue-500/10",
+            color: "text-blue-500"
         },
         {
-            icon: <Users className="h-12 w-12" />,
-            title: "Kahoot-Style Games",
-            description:
-                "Challenge your friends in real-time quiz battles. Compete, learn, and have fun with interactive multiplayer games.",
-            benefits: ["Real-time multiplayer", "Leaderboards", "Achievements"],
+            icon: <Users size={32} />,
+            title: "Scholar Duels",
+            description: "Competitive real-time multiplayer environments to test who mastered the material first.",
+            benefits: ["Group leaderboards", "Achievement badges", "Live tournaments"],
+            bg: "bg-emerald-500/10",
+            color: "text-emerald-500"
         },
         {
-            icon: <Mic className="h-12 w-12" />,
-            title: "Voice Learning",
-            description:
-                "Listen to your notes read aloud. Perfect for commuting, exercising, or multitasking while learning.",
-            benefits: ["Natural voice synthesis", "Adjustable speed", "Offline access"],
+            icon: <Mic size={32} />,
+            title: "Sonic Lexicon",
+            description: "High-fidelity AI voices that read your notes with natural inflection, even in local dialects.",
+            benefits: ["Pidgin support", "Variable speeds", "Focus background music"],
+            bg: "bg-blue-500/10",
+            color: "text-blue-500"
         },
         {
-            icon: <Globe className="h-12 w-12" />,
-            title: "Multilingual Support",
-            description: "Switch between English and Pidgin. Learn in your preferred language with full support for both.",
-            benefits: ["English & Pidgin", "Instant translation", "Cultural context"],
+            icon: <Globe size={32} />,
+            title: "Localized Intelligence",
+            description: "Switch seamlessly between Academic English and colloquial Pidgin for deeper clarity.",
+            benefits: ["Instant translation", "Dialectal context", "Pidgin AI assistant"],
+            bg: "bg-emerald-500/10",
+            color: "text-emerald-500"
         },
         {
-            icon: <BarChart3 className="h-12 w-12" />,
-            title: "Progress Tracking",
-            description:
-                "Monitor your learning progress with detailed analytics. See what you've mastered and where to focus.",
-            benefits: ["Detailed analytics", "Performance insights", "Goal tracking"],
+            icon: <BarChart3 size={32} />,
+            title: "Success Analytics",
+            description: "Pinpoint exactly when you are ready for the exam based on your interaction patterns.",
+            benefits: ["Readiness score", "Time tracking", "Milestone prediction"],
+            bg: "bg-blue-500/10",
+            color: "text-blue-500"
         },
         {
-            icon: <Lock className="h-12 w-12" />,
-            title: "Secure & Private",
-            description: "Your notes and data are encrypted and secure. We never share your information with third parties.",
-            benefits: ["End-to-end encryption", "GDPR compliant", "Data privacy"],
+            icon: <Lock size={32} />,
+            title: "Vault Security",
+            description: "Your intellectual property is protected by military-grade encryption systems.",
+            benefits: ["Data sovereignty", "E2EE systems", "No training on your data"],
+            bg: "bg-emerald-500/10",
+            color: "text-emerald-500"
         },
         {
-            icon: <Smartphone className="h-12 w-12" />,
-            title: "Mobile App",
-            description: "Learn on the go with our mobile app. Full functionality on iOS and Android devices.",
-            benefits: ["iOS & Android", "Offline mode", "Sync across devices"],
+            icon: <Smartphone size={32} />,
+            title: "Scholar Hub Mobile",
+            description: "Access your entire neural laboratory from the palm of your hand, even in low bandwidth.",
+            benefits: ["Edge computing", "Sync across devices", "Native experience"],
+            bg: "bg-blue-500/10",
+            color: "text-blue-500"
         },
     ]
 
     return (
-        <div className="min-h-screen bg-background">
+        <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
+            {/* Background Blobs */}
+            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
+
             <Header />
 
-            <div className="border-b border-border bg-card/50 sticky top-16 z-40">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                    <BackButton />
-                </div>
-            </div>
-
             {/* Hero */}
-            <section className="py-20 lg:py-32 border-b border-border">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h1 className="text-4xl sm:text-5xl font-bold mb-6">
-                            Powerful Features for{" "}
-                            <span className="bg-gradient-hero bg-clip-text text-transparent">Smarter Learning</span>
-                        </h1>
-                        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                            Everything you need to transform your notes into personalized learning experiences
-                        </p>
+            <section className="relative pt-44 pb-20">
+                <div className="w-full px-6 lg:px-12 relative z-10 text-center">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-full border border-white/10">
+                        <Trophy size={14} className="text-yellow-500" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Features built for excellence</span>
                     </div>
+                    <h1 className="text-6xl sm:text-7xl font-black mb-8 leading-none tracking-tighter">
+                        Propel Your <span className="text-gradient">Academic Trajectory</span>
+                    </h1>
+                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
+                        A comprehensive ecosystem designed to catalyze how you process, retain, and master information.
+                    </p>
                 </div>
             </section>
 
             {/* Features Grid */}
-            <section className="py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section className="py-20 relative z-10">
+                <div className="w-full px-6 lg:px-12">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {features.map((feature) => (
+                        {features.map((feature, i) => (
                             <Card
-                                key={feature.title}
-                                className="p-8 hover:shadow-card transition-all duration-300 border-0 bg-card shadow-sm hover:shadow-lg"
+                                key={i}
+                                className="feature-card glass shadow-2xl border-white/5 p-10 hover-lift group overflow-hidden"
                             >
-                                <div className="text-primary mb-4">{feature.icon}</div>
-                                <h3 className="text-2xl font-semibold mb-3">{feature.title}</h3>
-                                <p className="text-muted-foreground mb-6">{feature.description}</p>
-                                <ul className="space-y-2">
-                                    {feature.benefits.map((benefit) => (
-                                        <li key={benefit} className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            <div className="w-1.5 h-1.5 bg-secondary rounded-full" />
-                                            {benefit}
-                                        </li>
+                                <div className={`w-16 h-16 rounded-2xl ${feature.bg} ${feature.color} flex items-center justify-center mb-8 shadow-xl group-hover:scale-110 transition-transform duration-500`}>
+                                    {feature.icon}
+                                </div>
+                                <h3 className="text-2xl font-black mb-4">{feature.title}</h3>
+                                <p className="text-muted-foreground font-medium mb-8 leading-relaxed">{feature.description}</p>
+                                
+                                <div className="space-y-3">
+                                    {feature.benefits.map((benefit, j) => (
+                                        <div key={j} className="flex items-center gap-3 text-xs font-bold opacity-60">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                            <span>{benefit}</span>
+                                        </div>
                                     ))}
-                                </ul>
+                                </div>
+                                
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                             </Card>
                         ))}
                     </div>
@@ -122,19 +154,37 @@ const Features = () => {
             </section>
 
             {/* CTA */}
-            <section className="py-20 bg-gradient-hero/5 border-y border-border">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-6">Ready to experience all these features?</h2>
+            <section className="py-32 bg-white/[0.01] border-y border-white/10 relative z-10 overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-primary/10 blur-[120px] rounded-full" />
+                
+                <div className="w-full px-6 lg:px-12 text-center relative z-10">
+                    <h2 className="text-5xl font-black mb-10 leading-none">Ready to deploy these modules?</h2>
                     <Link to="/signup">
-                        <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2">
-                            Start Free Trial
-                            <ArrowRight className="h-4 w-4" />
+                        <Button size="lg" className="h-20 px-12 rounded-[24px] bg-primary hover:bg-primary/90 text-white font-black text-xl shadow-glow group">
+                            <span>Initialize Enlistment</span>
+                            <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                         </Button>
                     </Link>
                 </div>
             </section>
 
             <Footer />
+
+            <style>{`
+                .glass {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                }
+                .text-gradient {
+                    background: linear-gradient(to right, #3b82f6, #2dd4bf, #10b981);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                .shadow-glow {
+                    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+                }
+            `}</style>
         </div>
     )
 }

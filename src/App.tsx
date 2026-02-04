@@ -6,19 +6,26 @@ import AppRouter from "@/router/routes"
 import { ErrorProvider } from "@/contexts/ErrorContext"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 
+import { ThemeProvider } from "@/components/theme-provider"
+import { LanguageProvider } from "@/contexts/LanguageContext"
+
 const queryClient = new QueryClient()
 
 const App = () => (
     <ErrorBoundary>
-        <ErrorProvider>
-            <QueryClientProvider client={queryClient}>
-                <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <AppRouter />
-                </TooltipProvider>
-            </QueryClientProvider>
-        </ErrorProvider>
+        <ThemeProvider defaultTheme="dark" storageKey="izabi-theme">
+            <LanguageProvider>
+                <ErrorProvider>
+                    <QueryClientProvider client={queryClient}>
+                        <TooltipProvider>
+                            <Toaster />
+                            <Sonner />
+                            <AppRouter />
+                        </TooltipProvider>
+                    </QueryClientProvider>
+                </ErrorProvider>
+            </LanguageProvider>
+        </ThemeProvider>
     </ErrorBoundary>
 )
 

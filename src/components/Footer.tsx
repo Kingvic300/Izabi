@@ -1,86 +1,103 @@
-import { Brain, Mail, Linkedin, Twitter } from "lucide-react"
+"use client"
+
+import { Brain, Mail, Linkedin, Twitter, Sparkles } from "lucide-react"
 import { Link } from "react-router-dom"
 
+import { useLanguage } from "@/contexts/LanguageContext"
+
 export const Footer = () => {
+    const { t } = useLanguage()
     const currentYear = new Date().getFullYear()
 
     const footerLinks = {
-        Product: [
-            { label: "Features", href: "/features" },
-            { label: "Pricing", href: "/pricing" },
-            { label: "How It Works", href: "/how-it-works" },
+        [t("nav.features")]: [
+            { label: t("nav.features"), href: "/features" },
+            { label: t("nav.pricing"), href: "/pricing" },
+            { label: t("nav.how_it_works"), href: "/how-it-works" },
+            { label: "Achievements", href: "/dashboard/progress" },
+        ],
+        Resources: [
+            { label: "Study Tips", href: "/blog" },
+            { label: "Documentation", href: "/docs" },
+            { label: "Community", href: "/community" },
         ],
         Company: [
-            { label: "About", href: "/about" },
-            { label: "Blog", href: "/blog" },
+            { label: t("nav.about"), href: "/about" },
             { label: "Contact", href: "/contact" },
+            { label: "Partnerships", href: "/partners" },
         ],
         Legal: [
             { label: "Privacy", href: "/privacy" },
             { label: "Terms", href: "/terms" },
+            { label: "Cookies", href: "/cookies" },
         ],
     }
 
     return (
-        <footer className="border-t border-border bg-card/50">
-            <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
+        <footer className="relative bg-background pt-24 pb-12 overflow-hidden border-t border-foreground/10">
+            {/* Background Glow */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[40%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+
+            <div className="w-full px-6 lg:px-12 relative">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12 mb-20">
                     {/* Brand */}
-                    <div className="md:col-span-1">
-                        <Link to="/" className="flex items-center space-x-2 mb-4">
-                            <div className="flex h-8 w-8 items-center justify-center rounded bg-gradient-primary">
-                                <Brain className="h-5 w-5 text-primary-foreground" />
+                    <div className="col-span-2">
+                        <Link to="/" className="flex items-center space-x-3 mb-6 group">
+                            <div className="w-12 h-12 bg-gradient-hero rounded-2xl flex items-center justify-center shadow-glow group-hover:rotate-6 transition-transform">
+                                <Brain className="h-6 w-6 text-white" />
                             </div>
-                            <span className="bg-gradient-hero bg-clip-text text-lg font-bold text-transparent">Izabi</span>
+                            <div className="flex flex-col">
+                                <span className="text-3xl font-black bg-gradient-hero bg-clip-text text-transparent leading-none">Izabi</span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 text-foreground">AI Scholar Labs</span>
+                            </div>
                         </Link>
-                        <p className="text-sm text-muted-foreground">
-                            Transform your notes into personalized learning experiences with AI.
+                        <p className="text-muted-foreground text-sm max-w-sm leading-relaxed mb-6 font-medium">
+                            The world's most advanced AI-powered learning environment designed specifically for the next generation of scholars.
                         </p>
+                        <div className="flex gap-4">
+                            {[
+                                { icon: Twitter, href: "#" },
+                                { icon: Linkedin, href: "#" },
+                                { icon: Mail, href: "#" }
+                            ].map((social, i) => (
+                                <a key={i} href={social.href} className="w-10 h-10 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground">
+                                    <social.icon size={18} />
+                                </a>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Links */}
                     {Object.entries(footerLinks).map(([category, links]) => (
-                        <div key={category}>
-                            <h3 className="font-semibold text-foreground mb-4">{category}</h3>
-                            <ul className="space-y-2">
+                        <div key={category} className="space-y-6">
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-foreground opacity-40">{category}</h3>
+                            <ul className="space-y-4">
                                 {links.map((link) => (
-                                    <li key={link.href}>
-                                        <Link to={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                            {link.label}
+                                    <li key={link.label}>
+                                        <Link to={link.href} className="text-sm font-bold text-muted-foreground hover:text-primary transition-all flex items-center group">
+                                            <span className="w-0 overflow-hidden group-hover:w-3 transition-all duration-300">•</span>
+                                            <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
                                         </Link>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     ))}
-
-                    {/* Social */}
-                    <div>
-                        <h3 className="font-semibold text-foreground mb-4">Follow Us</h3>
-                        <div className="flex space-x-4">
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Twitter">
-                                <Twitter className="h-5 w-5" />
-                            </a>
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="LinkedIn">
-                                <Linkedin className="h-5 w-5" />
-                            </a>
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Email">
-                                <Mail className="h-5 w-5" />
-                            </a>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Bottom */}
-                <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <p className="text-sm text-muted-foreground">&copy; {currentYear} Izabi. All rights reserved.</p>
-                    <div className="flex gap-6 text-sm text-muted-foreground">
-                        <Link to="/privacy" className="hover:text-primary transition-colors">
-                            Privacy Policy
-                        </Link>
-                        <Link to="/terms" className="hover:text-primary transition-colors">
-                            Terms of Service
-                        </Link>
+                <div className="pt-8 border-t border-foreground/10 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground opacity-60">
+                        <span>{t("footer.copyright")}. Built for excellence.</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-8 bg-foreground/5 px-6 py-2 rounded-full border border-foreground/10 backdrop-blur-md">
+                        <Link to="/privacy" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
+                        <Link to="/terms" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary">
+                            <Sparkles size={10} className="animate-pulse" />
+                            <span>v2.0 Scholar</span>
+                        </div>
                     </div>
                 </div>
             </div>

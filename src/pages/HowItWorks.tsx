@@ -1,104 +1,148 @@
+"use client"
+
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
-import { BackButton } from "@/components/BackButton"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Upload, Zap, BookOpen, Trophy, ArrowRight, CheckCircle } from "lucide-react"
+import { Upload, Zap, BookOpen, Trophy, ArrowRight, CheckCircle, Sparkles, Binary } from "lucide-react"
 import { Link } from "react-router-dom"
+import { useRef } from "react"
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const HowItWorks = () => {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const { t } = useLanguage()
+
+    useGSAP(() => {
+        gsap.from(".step-card", {
+            opacity: 0,
+            x: (i) => i % 2 === 0 ? -40 : 40,
+            duration: 1,
+            stagger: 0.2,
+            ease: "expo.out",
+            scrollTrigger: {
+                trigger: ".steps-container",
+                start: "top 80%"
+            }
+        })
+    }, { scope: containerRef })
+
     const steps = [
         {
-            icon: <Upload className="h-12 w-12" />,
-            title: "Upload Your Notes",
-            description: "Start by uploading your PDF, image, or text notes. Our system supports all common formats.",
+            icon: <Upload size={32} />,
+            title: t("hiw.ingest_title"),
+            description: t("hiw.ingest_desc"),
             details: [
-                "Drag and drop or click to upload",
-                "Supports PDF, images, and text",
-                "Instant file processing",
-                "No file size limits",
+                t("hiw.ingest_d1"),
+                t("hiw.ingest_d2"),
+                t("hiw.ingest_d3"),
+                t("hiw.ingest_d4"),
             ],
+            bg: "bg-blue-500/10",
+            color: "text-blue-500"
         },
         {
-            icon: <Zap className="h-12 w-12" />,
-            title: "AI Analysis",
-            description: "Our advanced AI analyzes your content, extracts key concepts, and understands the material.",
+            icon: <Zap size={32} />,
+            title: t("hiw.neural_title"),
+            description: t("hiw.neural_desc"),
             details: [
-                "Advanced OCR technology",
-                "Natural language processing",
-                "Concept extraction",
-                "Context understanding",
+                t("hiw.neural_d1"),
+                t("hiw.neural_d2"),
+                t("hiw.neural_d3"),
+                t("hiw.neural_d4"),
             ],
+            bg: "bg-purple-500/10",
+            color: "text-purple-500"
         },
         {
-            icon: <BookOpen className="h-12 w-12" />,
-            title: "Generate Learning Materials",
-            description: "Get summaries, quizzes, flashcards, and audio lessons automatically generated.",
-            details: ["AI-powered summaries", "Auto-generated quizzes", "Interactive flashcards", "Voice-over audio"],
+            icon: <BookOpen size={32} />,
+            title: t("hiw.synth_title"),
+            description: t("hiw.synth_desc"),
+            details: [
+                t("hiw.synth_d1"),
+                t("hiw.synth_d2"),
+                t("hiw.synth_d3"),
+                t("hiw.synth_d4"),
+            ],
+            bg: "bg-emerald-500/10",
+            color: "text-emerald-500"
         },
         {
-            icon: <Trophy className="h-12 w-12" />,
-            title: "Learn & Master",
-            description: "Study using your personalized materials, track progress, and compete with friends.",
-            details: ["Personalized learning path", "Progress tracking", "Multiplayer games", "Achievement badges"],
+            icon: <Trophy size={32} />,
+            title: t("hiw.mastery_title"),
+            description: t("hiw.mastery_desc"),
+            details: [
+                t("hiw.mastery_d1"),
+                t("hiw.mastery_d2"),
+                t("hiw.mastery_d3"),
+                t("hiw.mastery_d4"),
+            ],
+            bg: "bg-yellow-500/10",
+            color: "text-yellow-500"
         },
-    ]
-
-    const workflow = [
-        { step: "1", title: "Create Account", time: "2 min" },
-        { step: "2", title: "Upload Notes", time: "1 min" },
-        { step: "3", title: "AI Processes", time: "30 sec" },
-        { step: "4", title: "Start Learning", time: "Instant" },
     ]
 
     return (
-        <div className="min-h-screen bg-background">
+        <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
+            {/* Background Blobs */}
+            <div className="fixed top-[-10%] right-[-10%] w-[55%] h-[55%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="fixed bottom-[-10%] left-[-10%] w-[55%] h-[55%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
+
             <Header />
 
-            <div className="border-b border-border bg-card/50 sticky top-16 z-40">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                    <BackButton />
-                </div>
-            </div>
-
             {/* Hero */}
-            <section className="py-20 lg:py-32 border-b border-border">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h1 className="text-4xl sm:text-5xl font-bold mb-6">
-                            How Izabi <span className="bg-gradient-hero bg-clip-text text-transparent">Works</span>
-                        </h1>
-                        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                            Transform your notes into personalized learning experiences in just 4 simple steps
-                        </p>
+            <section className="relative pt-44 pb-24">
+                <div className="w-full px-6 lg:px-12 relative z-10 text-center">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-full border border-foreground/10">
+                        <Binary size={14} className="text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/60">{t("hiw.hero_tag")}</span>
                     </div>
+                    <h1 className="text-6xl sm:text-7xl font-black mb-8 leading-none tracking-tighter">
+                        {t("hiw.hero_title")} <span className="text-gradient">{t("hiw.hero_title_span")}</span>
+                    </h1>
+                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
+                        {t("hiw.hero_desc")}
+                    </p>
                 </div>
             </section>
 
-            {/* Steps */}
-            <section className="py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="space-y-12">
-                        {steps.map((step, index) => (
-                            <div key={step.title} className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                                <div className={index % 2 === 1 ? "md:order-2" : ""}>
-                                    <div className="text-primary mb-4">{step.icon}</div>
-                                    <h2 className="text-3xl font-bold mb-4">{step.title}</h2>
-                                    <p className="text-lg text-muted-foreground mb-6">{step.description}</p>
-                                    <ul className="space-y-3">
-                                        {step.details.map((detail) => (
-                                            <li key={detail} className="flex items-center gap-3">
-                                                <CheckCircle className="h-5 w-5 text-secondary flex-shrink-0" />
-                                                <span className="text-muted-foreground">{detail}</span>
+            {/* Steps Container */}
+            <section className="steps-container py-20 relative z-10">
+                <div className="w-full px-6 lg:px-12">
+                    <div className="space-y-32">
+                        {steps.map((step, i) => (
+                            <div key={i} className={`step-card flex flex-col ${i % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-20`}>
+                                <div className="flex-1 space-y-8">
+                                    <div className={`w-20 h-20 rounded-3xl ${step.bg} ${step.color} flex items-center justify-center shadow-2xl group`}>
+                                        {step.icon}
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-5xl font-black opacity-10">{i + 1}</span>
+                                            <h2 className="text-4xl font-black text-foreground">{step.title}</h2>
+                                        </div>
+                                        <p className="text-xl text-muted-foreground font-medium leading-relaxed">{step.description}</p>
+                                    </div>
+                                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {step.details.map((detail, j) => (
+                                            <li key={j} className="flex items-center gap-3 glass p-4 rounded-2xl border border-white/5">
+                                                <CheckCircle size={18} className="text-primary flex-shrink-0" />
+                                                <span className="text-sm font-bold opacity-80">{detail}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                                <div
-                                    className={`bg-gradient-hero/10 rounded-lg p-8 border border-primary/20 ${index % 2 === 1 ? "md:order-1" : ""}`}
-                                >
-                                    <div className="aspect-square bg-gradient-primary/20 rounded-lg flex items-center justify-center">
-                                        <div className="text-6xl font-bold text-primary/30">{index + 1}</div>
+                                <div className="flex-1 w-full aspect-square glass rounded-[64px] border border-white/5 relative overflow-hidden group shadow-2xl">
+                                    <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <div className="absolute inset-0 flex items-center justify-center scale-150 opacity-10 blur-2xl group-hover:scale-100 group-hover:opacity-100 group-hover:blur-none transition-all duration-1000">
+                                        {step.icon}
+                                    </div>
+                                    <div className="absolute inset-0 flex items-center justify-center p-20">
+                                       <div className="w-full h-full bg-white/5 rounded-[48px] animate-pulse border border-white/10 flex items-center justify-center">
+                                            <Sparkles className="text-primary/20" size={80} />
+                                       </div>
                                     </div>
                                 </div>
                             </div>
@@ -108,37 +152,56 @@ const HowItWorks = () => {
             </section>
 
             {/* Quick Timeline */}
-            <section className="py-20 bg-muted/30">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-center mb-12">Get Started in Minutes</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {workflow.map((item) => (
-                            <Card key={item.step} className="p-6 text-center border-0 bg-card shadow-sm">
-                                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <span className="text-xl font-bold text-primary">{item.step}</span>
-                                </div>
-                                <h3 className="font-semibold mb-2">{item.title}</h3>
-                                <p className="text-sm text-muted-foreground">{item.time}</p>
+            <section className="py-32 bg-white/[0.01] border-y border-white/5">
+                <div className="w-full px-6 lg:px-12">
+                    <h2 className="text-4xl font-black text-center mb-16">Deployment Latency</h2>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                        {[
+                            { label: t("hiw.lat_setup"), time: "2 min" },
+                            { label: t("hiw.lat_upload"), time: "1 min" },
+                            { label: t("hiw.lat_neural"), time: "30 sec" },
+                            { label: t("hiw.lat_mastery"), time: "Instant" }
+                        ].map((stat, i) => (
+                            <Card key={i} className="glass p-10 border-white/5 hover-lift text-center group">
+                                <div className="text-3xl font-black text-primary mb-2 group-hover:scale-110 transition-transform">{stat.time}</div>
+                                <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{stat.label}</p>
                             </Card>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* CTA */}
-            <section className="py-20 border-t border-border">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-6">Ready to transform your learning?</h2>
+            {/* Final CTA */}
+            <section className="py-44 relative z-10">
+                <div className="w-full px-6 lg:px-12 text-center bg-gradient-hero/5 py-24 rounded-[64px] border border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full" />
+                    <h2 className="text-5xl font-black mb-8 leading-tight text-foreground">{t("hiw.cta_title")}</h2>
                     <Link to="/signup">
-                        <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2">
-                            Start Your Free Trial
-                            <ArrowRight className="h-4 w-4" />
+                        <Button size="lg" className="h-20 px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-black text-xl shadow-glow group">
+                            <span>{t("hiw.cta_btn")}</span>
+                            <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                         </Button>
                     </Link>
                 </div>
             </section>
 
             <Footer />
+
+            <style>{`
+                .glass {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                }
+                .text-gradient {
+                    background: linear-gradient(to right, #60a5fa, #a855f7, #ec4899);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                .shadow-glow {
+                    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+                }
+            `}</style>
         </div>
     )
 }
