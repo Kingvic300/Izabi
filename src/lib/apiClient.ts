@@ -8,6 +8,15 @@ const apiClient = axios.create({
     timeout: 8000,
 })
 
+// Add a request interceptor to attach the auth token
+apiClient.interceptors.request.use((config) => {
+    const token = localStorage.getItem("authToken")
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+})
+
 // Helper to check if error is network-related
 const isNetworkError = (error: any): boolean => {
     return (
@@ -80,8 +89,32 @@ export const apiWithFallback = {
     },
 
     // User Stats API
-    async getUserStats() {
-        const response = await apiClient.get("/api/user/stats")
+    async getUserStats(userId?: string) {
+        const id = userId || localStorage.getItem("userId")
+        const response = await apiClient.get(`/api/user/stats${id ? `?userId=${id}` : ""}`)
+        return response.data
+    },
+
+    // Exams API
+    async getExams(category: string, type?: string, institution?: string, subject?: string) {
+        const params = new URLSearchParams()
+        params.append('category', category)
+        if (type) params.append('type', type)
+        if (institution) params.append('institution', institution)
+        if (subject) params.append('subject', subject)
+        
+        const response = await apiClient.get(`/api/exams/past-questions?${params.toString()}`)
+        return response.data
+    },
+
+    async generateMockExam(topic: string, type: string) {
+        const response = await apiClient.post("/api/exams/generate-mock", { topic, type })
+        return response.data
+    },
+
+    // Leaderboard API
+    async getLeaderboard() {
+        const response = await apiClient.get("/api/study/leaderboard")
         return response.data
     },
 
@@ -150,6 +183,15 @@ export const apiWithFallback = {
         return response.data
     },
 }
+
+// Add a request interceptor to attach the auth token
+apiClient.interceptors.request.use((config) => {
+    const token = localStorage.getItem("authToken")
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+})
 
 export const api = apiWithFallback;
 

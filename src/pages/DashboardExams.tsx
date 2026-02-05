@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BASE_URL } from "@/contants/contants.ts";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import axios from "axios";
+import { api } from "@/lib/apiClient";
 
 const DashboardExams = () => {
   const [activeTab, setActiveTab] = useState<'jamb' | 'university' | 'secondary'>('jamb');
@@ -20,13 +20,16 @@ const DashboardExams = () => {
   const fetchExams = async () => {
     setLoading(true);
     try {
-      const typeMap = {
+      const typeMap: {[key: string]: string} = {
         jamb: 'JAMB',
         university: 'UNI-COURSE',
         secondary: 'WAEC'
       };
-      const response = await axios.get(`${BASE_URL}/api/exams/past-questions?category=${activeTab === 'university' ? 'University' : 'Secondary'}&type=${typeMap[activeTab]}`);
-      setExams(response.data);
+      const response = await api.getExams(
+        activeTab === 'university' ? 'University' : 'Secondary',
+        typeMap[activeTab]
+      );
+      setExams(response);
     } catch (err) {
       console.error("Failed to fetch exams:", err);
     } finally {

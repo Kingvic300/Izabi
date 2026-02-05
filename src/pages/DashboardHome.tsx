@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import axios from "axios"
+import axios from "@/lib/apiClient"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BASE_URL } from "@/contants/contants.ts"
