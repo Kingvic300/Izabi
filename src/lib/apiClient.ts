@@ -55,22 +55,37 @@ apiClient.interceptors.response.use(
                 description: detail,
             })
         } else if (statusCode >= 500) {
-            toast.error("Server Error", {
-                description: "The backend is currently experiencing issues. Please try again later.",
+            toast.error("Engine Overload", {
+                description: "The Izabi core is experiencing high thermal load. It's us, not you! Please wait a moment while we recalibrate.",
             })
         } else if (!navigator.onLine) {
             toast.error("Connection Failed", {
                 description: "Please check your internet connection.",
             })
         } else if (error.code === "ECONNABORTED") {
-            toast.error("Request Timeout", {
-                description: "The server took too long to respond. Please try again.",
+            toast.error("Temporal Anomaly", {
+                description: "The request took too long to synchronize. Our engines are a bit slow today—please try again!",
             })
         } else {
-            // Generic error for other cases (like 400 Bad Request if not handled locally)
-            toast.error("Error", {
-                description: errorMessage,
-            })
+            // Check for daily limit errors
+            if (errorMessage.toLowerCase().includes("daily limit")) {
+                const now = new Date();
+                const midnight = new Date();
+                midnight.setHours(24, 0, 0, 0);
+                const diff = midnight.getTime() - now.getTime();
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                
+                toast.error("Daily Limit Reached", {
+                    description: `${errorMessage} Resets in ${hours}h ${minutes}m.`,
+                    duration: Infinity, // Permanent toast
+                })
+            } else {
+                // Generic error for other cases (like 400 Bad Request if not handled locally)
+                toast.error("Error", {
+                    description: errorMessage,
+                })
+            }
         }
 
         return Promise.reject(error)
@@ -180,6 +195,29 @@ export const api = {
                 eventSource.close()
                 if (onComplete) onComplete()
                 return
+            }
+
+            // Handle Stream Errors
+            if (event.data.startsWith("[ERROR]:")) {
+                const errorMsg = event.data.replace("[ERROR]:", "").trim();
+                if (errorMsg.toLowerCase().includes("daily limit")) {
+                    const now = new Date();
+                    const midnight = new Date();
+                    midnight.setHours(24, 0, 0, 0);
+                    const diff = midnight.getTime() - now.getTime();
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                    toast.error("Daily Limit Reached", {
+                        description: `${errorMsg} Resets in ${hours}h ${minutes}m.`,
+                        duration: Infinity,
+                    });
+                } else {
+                    toast.error("AI Error", { description: errorMsg });
+                }
+                eventSource.close();
+                if (onComplete) onComplete();
+                return;
             }
 
             try {

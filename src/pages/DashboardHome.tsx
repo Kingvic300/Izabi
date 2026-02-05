@@ -5,7 +5,7 @@ import apiClient from "@/lib/apiClient"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BASE_URL } from "@/constants"
-import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal } from "lucide-react"
+import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import PDFUploadSection from "@/components/pdf/PDFUploadSection"
 import type { PDFSelection, StudyQuestionResponse } from "@/types/pdf"
@@ -37,6 +37,10 @@ const DashboardHome = () => {
     const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({})
     const [showResults, setShowResults] = useState(false)
     const [userStats, setUserStats] = useState<any>(null)
+    const [flashcards, setFlashcards] = useState<{ front: string; back: string }[]>([])
+    const [showFlashcards, setShowFlashcards] = useState(false)
+    const [currentCardIndex, setCurrentCardIndex] = useState(0)
+    const [isFlipped, setIsFlipped] = useState(false)
 
     const { errors, addError, clearError } = useApiError()
     const userId = localStorage.getItem("userId")
@@ -126,12 +130,22 @@ const DashboardHome = () => {
             else if (Array.isArray(data.studyQuestions)) questionsData = data.studyQuestions
 
             setQuestions(questionsData)
+            
+            if (data.flashcards) {
+                setFlashcards(data.flashcards)
+                setShowFlashcards(true)
+            } else {
+                setFlashcards([])
+                setShowFlashcards(false)
+            }
+
             setShowQuestions(questionsData.length > 0)
             setShowSummary(!!data.summary)
         } catch (err) {
             addError(err)
             setSummary("")
             setQuestions([])
+            setFlashcards([])
         } finally {
             setIsProcessing(false)
         }
@@ -304,6 +318,19 @@ const DashboardHome = () => {
                                                 <div className="text-[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.mod_guide_desc")}</div>
                                             </div>
                                         </Button>
+                                        <Button
+                                            onClick={() => handleRequest("flashcards")}
+                                            disabled={isProcessing}
+                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-foreground/[0.02] hover:bg-foreground/[0.05] border-foreground/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                        >
+                                            <div className="w-16 h-16 rounded-2xl bg-orange-500/20 text-orange-400 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-orange-500/30 transition-all">
+                                                <Layers size={32} />
+                                            </div>
+                                            <div className="text-center">
+                                                <div className="text-lg font-black text-foreground">{t("dashboard.mod_flashcards")}</div>
+                                                <div className="text-[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.mod_flashcards_desc")}</div>
+                                            </div>
+                                        </Button>
                                     </div>
 
                                     <div className="flex flex-col md:flex-row items-center gap-6 p-8 rounded-[32px] glass border-foreground/5">
@@ -355,7 +382,7 @@ const DashboardHome = () => {
                         )}
 
                         {/* Results Hub */}
-                        {(summary || questions.length > 0) && (
+                        {(summary || questions.length > 0 || flashcards.length > 0) && (
                             <div className="space-y-8 pt-8 stagger-card">
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-4xl font-black flex items-center gap-4 tracking-tighter">
@@ -363,6 +390,88 @@ const DashboardHome = () => {
                                         <span>{t("dashboard.results_title")}</span>
                                     </h2>
                                 </div>
+
+                                {flashcards.length > 0 && (
+                                    <Collapsible open={showFlashcards} onOpenChange={setShowFlashcards}>
+                                        <Card className="glass border-foreground/5 rounded-[32px] overflow-hidden shadow-2xl">
+                                            <CollapsibleTrigger asChild>
+                                                <button className="w-full text-left p-10 flex items-center justify-between group">
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="w-14 h-14 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform"><Layers size={24} /></div>
+                                                        <div>
+                                                            <h3 className="text-2xl font-black leading-tight">{t("dashboard.res_flashcards")}</h3>
+                                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{flashcards.length} {t("dashboard.res_flashcards_desc")}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
+                                                        {showFlashcards ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                                    </div>
+                                                </button>
+                                            </CollapsibleTrigger>
+                                            <CollapsibleContent>
+                                                <CardContent className="p-10 flex flex-col items-center space-y-8">
+                                                    <div 
+                                                        className="relative w-full max-w-md h-64 cursor-pointer perspective-1000"
+                                                        onClick={() => setIsFlipped(!isFlipped)}
+                                                    >
+                                                        <div className={`relative w-full h-full transition-all duration-500 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
+                                                            {/* Front */}
+                                                            <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-8 rounded-[32px] glass bg-foreground/[0.02] border-2 border-primary/20 shadow-xl overflow-hidden">
+                                                                <div className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-widest opacity-30">Front</div>
+                                                                <p className="text-2xl font-black text-center text-foreground">{flashcards[currentCardIndex]?.front}</p>
+                                                            </div>
+                                                            {/* Back */}
+                                                            <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-8 rounded-[32px] glass bg-primary/10 border-2 border-primary/40 shadow-xl overflow-hidden">
+                                                                <div className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-widest opacity-30 text-primary">Back</div>
+                                                                <p className="text-xl font-bold text-center text-foreground/90 leading-relaxed">{flashcards[currentCardIndex]?.back}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-6">
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="icon" 
+                                                            className="h-12 w-12 rounded-2xl glass hover:bg-foreground/10"
+                                                            onClick={() => {
+                                                                setIsFlipped(false)
+                                                                setCurrentCardIndex((prev) => (prev > 0 ? prev - 1 : flashcards.length - 1))
+                                                            }}
+                                                        >
+                                                            <ChevronDown className="rotate-90" />
+                                                        </Button>
+                                                        <span className="text-lg font-black tracking-tighter">
+                                                            {currentCardIndex + 1} / {flashcards.length}
+                                                        </span>
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="icon" 
+                                                            className="h-12 w-12 rounded-2xl glass hover:bg-foreground/10"
+                                                            onClick={() => {
+                                                                setIsFlipped(false)
+                                                                setCurrentCardIndex((prev) => (prev < flashcards.length - 1 ? prev + 1 : 0))
+                                                            }}
+                                                        >
+                                                            <ChevronDown className="-rotate-90" />
+                                                        </Button>
+                                                    </div>
+
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity gap-2"
+                                                        onClick={() => {
+                                                            setCurrentCardIndex(0)
+                                                            setIsFlipped(false)
+                                                        }}
+                                                    >
+                                                        <RotateCcw size={14} />
+                                                        Reset Terminal
+                                                    </Button>
+                                                </CardContent>
+                                            </CollapsibleContent>
+                                        </Card>
+                                    </Collapsible>
+                                )}
 
                                 {summary && (
                                     <Collapsible open={showSummary} onOpenChange={setShowSummary}>
@@ -533,6 +642,18 @@ const DashboardHome = () => {
             <style>{`
                 .shadow-glow {
                     box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+                }
+                .perspective-1000 {
+                    perspective: 1000px;
+                }
+                .preserve-3d {
+                    transform-style: preserve-3d;
+                }
+                .backface-hidden {
+                    backface-visibility: hidden;
+                }
+                .rotate-y-180 {
+                    transform: rotateY(180deg);
                 }
             `}</style>
         </ErrorBoundary>
