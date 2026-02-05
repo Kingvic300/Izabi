@@ -47,7 +47,7 @@ const handleApiError = (endpoint: string, error: any, context?: any) => {
 }
 
 // Direct API wrapper
-export const api = {
+export const apiWithFallback = {
     // Notes API
     async getNotes() {
         const response = await apiClient.get("/api/notes")
@@ -150,6 +150,8 @@ export const api = {
         return response.data
     },
 }
+
+export const api = apiWithFallback;
 
 export default apiClient
 

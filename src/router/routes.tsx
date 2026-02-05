@@ -1,31 +1,35 @@
-import type React from "react"
+import React, { lazy, Suspense } from "react"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import ErrorBoundary from "@/components/ErrorBoundary"
+import { PageLoader } from "@/components/PageLoader"
 
-// Pages
-import Home from "@/pages/Home"
-import Login from "@/pages/Login"
-import Signup from "@/pages/Signup"
-import Dashboard from "@/pages/Dashboard"
-import DashboardHome from "@/pages/DashboardHome"
-import DashboardHistory from "@/pages/DashboardHistory"
-import DashboardProfile from "@/pages/DashboardProfile"
-import DashboardNotes from "@/pages/DashboardNotes"
-import DashboardAIAssistant from "@/pages/DashboardAIAssistant"
-import DashboardProgress from "@/pages/DashboardProgress"
-import DashboardSettings from "@/pages/DashboardSettings"
-import NotFound from "@/pages/NotFound"
-import OTP from "@/pages/OTP.tsx"
-import Features from "@/pages/Features"
-import HowItWorks from "@/pages/HowItWorks"
-import Testimonials from "@/pages/Testimonials"
-import Pricing from "@/pages/Pricing"
-import FAQ from "@/pages/FAQ"
-import About from "@/pages/About"
+// Lazy-loaded Pages
+const Home = lazy(() => import("@/pages/Home"))
+const Login = lazy(() => import("@/pages/Login"))
+const Signup = lazy(() => import("@/pages/Signup"))
+const Dashboard = lazy(() => import("@/pages/Dashboard"))
+const DashboardHome = lazy(() => import("@/pages/DashboardHome"))
+const DashboardHistory = lazy(() => import("@/pages/DashboardHistory"))
+const DashboardProfile = lazy(() => import("@/pages/DashboardProfile"))
+const DashboardNotes = lazy(() => import("@/pages/DashboardNotes"))
+const DashboardAIAssistant = lazy(() => import("@/pages/DashboardAIAssistant"))
+const DashboardProgress = lazy(() => import("@/pages/DashboardProgress"))
+const DashboardSettings = lazy(() => import("@/pages/DashboardSettings"))
+const DashboardExams = lazy(() => import("@/pages/DashboardExams"))
+const NotFound = lazy(() => import("@/pages/NotFound"))
+const OTP = lazy(() => import("@/pages/OTP.tsx"))
+const Features = lazy(() => import("@/pages/Features"))
+const HowItWorks = lazy(() => import("@/pages/HowItWorks"))
+const Testimonials = lazy(() => import("@/pages/Testimonials"))
+const Pricing = lazy(() => import("@/pages/Pricing"))
+const FAQ = lazy(() => import("@/pages/FAQ"))
+const About = lazy(() => import("@/pages/About"))
 
 const withErrorBoundary = (Component: React.ComponentType) => (
     <ErrorBoundary>
-        <Component />
+        <Suspense fallback={<PageLoader variant="spinner" text="Loading page..." />}>
+            <Component />
+        </Suspense>
     </ErrorBoundary>
 )
 
@@ -64,6 +68,7 @@ const routes = () => {
                     <Route path="history" element={withErrorBoundary(DashboardHistory)} />
                     <Route path="profile" element={withErrorBoundary(DashboardProfile)} />
                     <Route path="settings" element={withErrorBoundary(DashboardSettings)} />
+                    <Route path="exams" element={withErrorBoundary(DashboardExams)} />
                 </Route>
 
                 {/* Catch-all route */}

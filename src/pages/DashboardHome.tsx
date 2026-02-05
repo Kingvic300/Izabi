@@ -20,6 +20,8 @@ import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 
 import { useLanguage } from "@/contexts/LanguageContext"
+import StreakPet from "@/components/StreakPet"
+import { useEffect } from "react"
 
 const DashboardHome = () => {
     const { t } = useLanguage()
@@ -34,6 +36,7 @@ const DashboardHome = () => {
     const [numberOfQuestions, setNumberOfQuestions] = useState<number>(5)
     const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({})
     const [showResults, setShowResults] = useState(false)
+    const [userStats, setUserStats] = useState<any>(null)
 
     const { errors, addError, clearError } = useApiError()
     const userId = localStorage.getItem("userId")
@@ -49,6 +52,25 @@ const DashboardHome = () => {
               ease: "expo.out" 
           }, "-=0.4")
     }, { scope: containerRef })
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            if (!userId) return
+            try {
+                const { data } = await axios.get(`${BASE_URL}/api/user/stats?userId=${userId}`)
+                setUserStats(data)
+                
+                // Also get pet details if available
+                const profileRes = await axios.get(`${BASE_URL}/users/${userId}`)
+                if (profileRes.data.pet) {
+                    setUserStats((prev: any) => ({ ...prev, pet: profileRes.data.pet }))
+                }
+            } catch (err) {
+                console.error("Failed to fetch user stats:", err)
+            }
+        }
+        fetchStats()
+    }, [userId])
 
     const handleSelectionComplete = ({ selection, file }: { selection: PDFSelection; file: File }) => {
         setPdfSelection(selection)
@@ -127,29 +149,44 @@ const DashboardHome = () => {
                 <ErrorList errors={errors} onDismiss={clearError} />
 
                 {/* Header Section */}
-                <div className="welcome-text flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5">
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                                <Terminal size={16} className="text-primary" />
+                <div className="welcome-text space-y-8 pb-6 border-b border-white/5">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                                    <Terminal size={16} className="text-primary" />
+                                </div>
+                                <span className="text-[10px] lowercase font-black tracking-[0.3em] opacity-40">User Profile: Active</span>
                             </div>
-                            <span className="text-[10px] lowercase font-black tracking-[0.3em] opacity-40">User Profile: Active</span>
+                            <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
+                                {t("dashboard.greeting").split(', ')[0]}, <br className="md:hidden" />
+                                <span className="text-gradient">{t("dashboard.greeting").split(', ')[1]}</span>
+                            </h1>
+                            <p className="text-muted-foreground font-medium text-lg max-w-xl">
+                                {t("dashboard.intro")}
+                            </p>
                         </div>
-                        <h1 className="text-6xl font-black tracking-tighter leading-none">
-                            {t("dashboard.greeting").split(', ')[0]}, <span className="text-gradient">{t("dashboard.greeting").split(', ')[1]}</span>
-                        </h1>
-                        <p className="text-muted-foreground font-medium text-lg max-w-xl">
-                            {t("dashboard.intro")}
-                        </p>
+
+                        {userStats && (
+                            <div className="stagger-card">
+                                <StreakPet streak={userStats.studyStreak || 0} petData={userStats.pet} />
+                            </div>
+                        )}
                     </div>
                     
-                    <div className="flex items-center gap-4">
-                        <div className="hidden lg:flex flex-col items-end">
-                            <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Global Rank</span>
-                            <span className="text-xl font-black text-foreground">#Sch-1024</span>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-2xl bg-primary/10 text-primary animate-pulse">
+                               <LayoutGrid size={24} />
+                            </div>
+                            <div>
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Knowledge Points</span>
+                                <div className="text-2xl font-black text-foreground">{userStats?.totalPoints || 0} KP</div>
+                            </div>
                         </div>
-                        <div className="w-16 h-16 rounded-2xl glass border border-white/10 flex items-center justify-center shadow-glow">
-                           <LayoutGrid size={24} className="text-primary" />
+                        <div className="hidden md:flex flex-col items-end">
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-40 text-emerald-500">System Status</span>
+                            <span className="text-sm font-black text-foreground">Optimized for Growth</span>
                         </div>
                     </div>
                 </div>

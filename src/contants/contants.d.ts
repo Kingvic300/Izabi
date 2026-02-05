@@ -1,1 +1,1 @@
-export declare const BASE_URL = "https://student-app-r1a8.onrender.com";
+export declare const BASE_URL = "https://izabi.onrender.com";

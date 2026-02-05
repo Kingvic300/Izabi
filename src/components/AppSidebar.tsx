@@ -1,6 +1,6 @@
 "use client"
 
-import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings } from "lucide-react"
+import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap } from "lucide-react"
 import axios from "axios"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
@@ -50,6 +50,12 @@ const navigationItems = [
         url: "/dashboard/history",
         icon: History,
         description: "View uploaded files",
+    },
+    {
+        title: "Exam Center",
+        url: "/dashboard/exams",
+        icon: GraduationCap,
+        description: "JAMB and Past Questions",
     },
 ]
 

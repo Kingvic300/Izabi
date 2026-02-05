@@ -13,21 +13,53 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   className 
 }) => {
   const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-8 w-8',
-    lg: 'h-12 w-12'
+    sm: 'h-6 w-6',
+    md: 'h-12 w-12',
+    lg: 'h-20 w-20'
+  };
+
+  const ringSizes = {
+    sm: 'border-2',
+    md: 'border-3',
+    lg: 'border-4'
   };
 
   return (
-    <div className={cn('flex flex-col items-center justify-center', className)}>
-      <div
-        className={cn(
-          'animate-spin rounded-full border-2 border-gray-300 border-t-primary',
+    <div className={cn('flex flex-col items-center justify-center p-4', className)}>
+      <div className={cn('relative', sizeClasses[size])}>
+        {/* Outer glowing ring */}
+        <div className={cn(
+          'absolute inset-0 rounded-full animate-pulse blur-xl opacity-20 bg-primary',
           sizeClasses[size]
-        )}
-      />
+        )} />
+        
+        {/* Secondary spinning base */}
+        <div className={cn(
+          'absolute inset-0 rounded-full border-white/5',
+          ringSizes[size],
+          sizeClasses[size]
+        )} />
+        
+        {/* Primary animated spinner */}
+        <div
+          className={cn(
+            'absolute inset-0 animate-spin rounded-full border-t-primary border-r-transparent border-b-transparent border-l-transparent',
+            ringSizes[size],
+            sizeClasses[size]
+          )}
+        />
+        
+        {/* Center accent */}
+        <div className="absolute inset-4 rounded-full bg-primary/5 backdrop-blur-sm flex items-center justify-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_hsla(var(--primary)/0.8)]" />
+        </div>
+      </div>
+
       {text && (
-        <p className="mt-2 text-sm text-muted-foreground">{text}</p>
+        <div className="mt-6 flex flex-col items-center gap-1">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-foreground/80 animate-pulse">{text}</p>
+          <div className="h-[1px] w-8 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+        </div>
       )}
     </div>
   );
@@ -42,43 +74,43 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   variant = 'card',
   className 
 }) => {
+  const baseClasses = "animate-pulse rounded-[32px] bg-foreground/[0.03] dark:bg-white/[0.03] border border-white/5";
+
   const variants = {
     card: (
-      <div className="p-4 border rounded-lg">
-        <div className="animate-pulse">
-          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-        </div>
-      </div>
-    ),
-    'list-item': (
-      <div className="flex items-center space-x-4 p-4">
-        <div className="animate-pulse flex space-x-4 w-full">
-          <div className="rounded-full bg-gray-200 dark:bg-gray-700 h-10 w-10"></div>
-          <div className="flex-1 space-y-2">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+      <div className={cn("p-8", baseClasses)}>
+        <div className="space-y-6">
+          <div className="h-44 bg-foreground/[0.05] dark:bg-white/[0.05] rounded-[24px]"></div>
+          <div className="space-y-3">
+             <div className="h-6 bg-foreground/[0.05] dark:bg-white/[0.05] rounded-full w-2/3"></div>
+             <div className="h-4 bg-foreground/[0.05] dark:bg-white/[0.05] rounded-full w-full opacity-60"></div>
           </div>
         </div>
       </div>
     ),
+    'list-item': (
+      <div className={cn("flex items-center gap-6 p-6", baseClasses)}>
+        <div className="rounded-2xl bg-foreground/[0.05] dark:bg-white/[0.05] h-14 w-14 shrink-0"></div>
+        <div className="flex-1 space-y-3">
+          <div className="h-5 bg-foreground/[0.05] dark:bg-white/[0.05] rounded-full w-1/3"></div>
+          <div className="h-4 bg-foreground/[0.05] dark:bg-white/[0.05] rounded-full w-3/4 opacity-60"></div>
+        </div>
+      </div>
+    ),
     'text-block': (
-      <div className="animate-pulse space-y-2">
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+      <div className="space-y-4">
+        <div className="h-5 bg-foreground/[0.03] dark:bg-white/[0.03] rounded-full w-full"></div>
+        <div className="h-5 bg-foreground/[0.03] dark:bg-white/[0.03] rounded-full w-full"></div>
+        <div className="h-5 bg-foreground/[0.03] dark:bg-white/[0.03] rounded-full w-4/5"></div>
       </div>
     ),
     image: (
-      <div className="animate-pulse">
-        <div className="bg-gray-200 dark:bg-gray-700 rounded h-48 w-full"></div>
-      </div>
+      <div className={cn("h-64", baseClasses)}></div>
     )
   };
 
   return (
-    <div className={className}>
+    <div className={cn("overflow-hidden", className)}>
       {variants[variant]}
     </div>
   );

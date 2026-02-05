@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { LoadingSpinner, SkeletonLoader } from "@/components/ui/loading";
 import ErrorDisplay from "@/components/ui/error-display";
 import { cn } from "@/lib/utils";
-import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-import "react-pdf/dist/esm/Page/TextLayer.css";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
 import { Document, Page, pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
