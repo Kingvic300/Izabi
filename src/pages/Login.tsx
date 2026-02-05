@@ -86,14 +86,14 @@ const Login = () => {
         try {
             const response = await axios.post(
                 `${BASE_URL}/api/user/login`,
-                { email, password, role: "USER" },
+                { email: email.toLowerCase(), password, role: "USER" },
                 { withCredentials: true },
             )
 
-            const { userId, authToken, role } = response.data
+            const { userId, accessToken, role } = response.data
 
             localStorage.setItem("userId", userId)
-            localStorage.setItem("authToken", authToken)
+            localStorage.setItem("authToken", accessToken)
             localStorage.setItem("userEmail", email)
             localStorage.setItem("userRole", role || "USER")
 

@@ -42,7 +42,7 @@ const OTP = () => {
 
     // Determine mode from route query or state: "verification" | "reset"
     const mode = location.state?.mode || "verification"
-    const email = location.state?.email || ""
+    const email = (location.state?.email || "").toLowerCase()
     const password = location.state?.password || ""
 
     const handleChange = (value: string, index: number) => {
@@ -78,16 +78,26 @@ const OTP = () => {
         setLoading(true)
 
         try {
-            await axios.post(`${BASE_URL}/api/user/register`, {
-                email: location.state?.email,
+            const response = await axios.post(`${BASE_URL}/api/user/register`, {
+                email: location.state?.email?.toLowerCase(),
                 otp: otpCode,
                 role: "USER",
             })
 
+            const { userId, accessToken, role, email: userEmail } = response.data
+
+            localStorage.setItem("userId", userId)
+            localStorage.setItem("authToken", accessToken)
+            localStorage.setItem("userEmail", userEmail)
+            localStorage.setItem("userRole", role || "USER")
+
             toast.success("Account Verified", { 
-                description: "Your account has been successfully verified. You can now log in." 
+                description: "Welcome to Izabi! Routing you to your dashboard..." 
             })
-            navigate("/login")
+            
+            setTimeout(() => {
+                navigate("/dashboard")
+            }, 1500)
         } catch (err: unknown) {
             const error = err as ErrorResponse
             const errorMessage = error.response?.data?.message || "The code you entered is invalid or has expired."

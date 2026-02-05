@@ -98,7 +98,7 @@ const Signup = () => {
         setIsLoading(true)
         try {
             await axios.post(`${BASE_URL}/api/user/send-verification-otp`, {
-                email: formData.email,
+                email: formData.email.toLowerCase(),
                 password: formData.password,
                 role: "USER",
             })
@@ -110,7 +110,7 @@ const Signup = () => {
 
             navigate("/otp", {
                 state: {
-                    email: formData.email,
+                    email: formData.email.toLowerCase(),
                     password: formData.password,
                     mode: "verification",
                 },
