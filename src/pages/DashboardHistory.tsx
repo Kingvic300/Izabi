@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BASE_URL } from "@/contants/contants.ts";
+import { BASE_URL } from "@/constants";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
     Search,
@@ -43,6 +43,10 @@ const DashboardHistory = () => {
     const [selectedMaterial, setSelectedMaterial] = useState<StudyMaterialResponse | null>(null);
 
     useEffect(() => {
+        /*
+         * How: Fetches the user's study history (materials, questions, key points) from the backend.
+         * Why: Populates the dashboard with a chronological record of the user's learning activities.
+         */
         const fetchHistory = async () => {
             try {
                 const userId = localStorage.getItem("userId");
@@ -70,6 +74,10 @@ const DashboardHistory = () => {
         fetchHistory();
     }, []);
 
+    /*
+     * How: Filters the study materials based on the user's search query (matching filename, summary, or key points) and selected difficulty level.
+     * Why: Allows users to quickly find specific study sessions or materials that match their current focus.
+     */
     const filteredMaterials = studyMaterials.filter((material) => {
         const keyPoints = material.keyPoints || [];
         const questions = material.questions || [];

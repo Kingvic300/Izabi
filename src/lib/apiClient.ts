@@ -1,14 +1,21 @@
 import axios from "axios"
-import { BASE_URL } from "@/contants/contants.ts"
+import { BASE_URL } from "@/constants"
+import { toast } from "sonner"
 
-// Configure axios instance
+/*
+ * How: Creates an Axios instance with base URL, credential handling, and custom timeout.
+ * Why: To standardize HTTP requests across the application and handle slow network conditions.
+ */
 const apiClient = axios.create({
     baseURL: BASE_URL,
     withCredentials: true,
-    timeout: 8000,
+    timeout: 15000, 
 })
 
-// Add a request interceptor to attach the auth token
+/*
+ * How: Intercepts outgoing requests to append the Authorization header with the stored token.
+ * Why: To ensure all API calls are authenticated without manual header management.
+ */
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem("authToken")
     if (token) {
@@ -17,8 +24,60 @@ apiClient.interceptors.request.use((config) => {
     return config
 })
 
+/*
+ * How: Intercepts responses to strictly handle errors, show toasts for specific status codes (401, 403, etc.), and manage redirects.
+ * Why: To provide consistent global error feedback and handle session expiration automatically.
+ */
+apiClient.interceptors.response.use(
+    (response) => {
+        return response
+    },
+    (error) => {
+        const errorMessage = error.response?.data?.message || error.message || "An unexpected error occurred"
+        const statusCode = error.response?.status
+
+        // Handle specific status codes
+        if (statusCode === 401) {
+            // Unauthorized - clear token and redirect if needed
+            localStorage.removeItem("authToken")
+            localStorage.removeItem("userId")
+            // Optional: window.location.href = "/login"
+            toast.error("Session Expired", {
+                description: "Please sign in again to continue.",
+            })
+        } else if (statusCode === 403) {
+            toast.error("Access Denied", {
+                description: "You don't have permission to perform this action.",
+            })
+        } else if (statusCode === 404) {
+            toast.error("Not Found", {
+                description: "The requested resource could not be located.",
+            })
+        } else if (statusCode >= 500) {
+            toast.error("Server Error", {
+                description: "The backend is currently experiencing issues. Please try again later.",
+            })
+        } else if (!navigator.onLine) {
+            toast.error("Connection Failed", {
+                description: "Please check your internet connection.",
+            })
+        } else if (error.code === "ECONNABORTED") {
+            toast.error("Request Timeout", {
+                description: "The server took too long to respond. Please try again.",
+            })
+        } else {
+            // Generic error for other cases (like 400 Bad Request if not handled locally)
+            toast.error("Error", {
+                description: errorMessage,
+            })
+        }
+
+        return Promise.reject(error)
+    }
+)
+
 // Helper to check if error is network-related
-const isNetworkError = (error: any): boolean => {
+export const isNetworkError = (error: any): boolean => {
     return (
         !navigator.onLine ||
         error.code === "ECONNABORTED" ||
@@ -28,36 +87,12 @@ const isNetworkError = (error: any): boolean => {
     )
 }
 
-// Helper to log mock data usage
-const logMockDataUsage = (endpoint: string, reason: string) => {
-    console.warn(`[API Fallback] Using mock data for ${endpoint}: ${reason}`)
-}
-
-const handleApiError = (endpoint: string, error: any, context?: any) => {
-    const errorMessage = error.response?.data?.message || error.message || "Unknown error"
-    const statusCode = error.response?.status
-
-    console.error(`[API Error] ${endpoint}:`, errorMessage)
-
-    // Log to context if available (for UI display)
-    if (context?.setError) {
-        context.setError({
-            message: `Failed to load data`,
-            description: `${endpoint}: ${errorMessage}`,
-            type: "error",
-        })
-    }
-
-    return {
-        error: true,
-        message: errorMessage,
-        statusCode,
-    }
-}
-
 // Direct API wrapper
-export const apiWithFallback = {
-    // Notes API
+export const api = {
+    /*
+     * How: CRUD operations for study notes.
+     * Why: Users need to create, read, update, and delete their generated notes.
+     */
     async getNotes() {
         const response = await apiClient.get("/api/notes")
         return response.data
@@ -107,6 +142,10 @@ export const apiWithFallback = {
         return response.data
     },
 
+    /*
+     * How: Generates a new exam based on topic/type using AI or backend logic.
+     * Why: To provide on-demand practice material.
+     */
     async generateMockExam(topic: string, type: string) {
         const response = await apiClient.post("/api/exams/generate-mock", { topic, type })
         return response.data
@@ -123,6 +162,10 @@ export const apiWithFallback = {
         return response.data.response
     },
 
+    /*
+     * How: Establishes an EventSource connection for streaming AI responses.
+     * Why: To provide a real-time, typewriter-style chat experience for long AI generations.
+     */
     getAIStream(message: string, userId: string, onChunk: (text: string) => void, onError: (err: any) => void, onComplete?: () => void) {
         const url = `${BASE_URL}/api/ai/stream?message=${encodeURIComponent(message)}&userId=${encodeURIComponent(userId)}`
         const eventSource = new EventSource(url, { withCredentials: true })
@@ -157,13 +200,8 @@ export const apiWithFallback = {
     },
 
     async getChatHistory(userId: string) {
-        try {
-            const response = await apiClient.get(`/api/ai/history?userId=${userId}`)
-            return response.data
-        } catch (error: any) {
-            console.error("[API Error] Failed to fetch chat history:", error.message)
-            return null
-        }
+        const response = await apiClient.get(`/api/ai/history?userId=${userId}`)
+        return response.data
     },
 
     // Study History API
@@ -182,18 +220,32 @@ export const apiWithFallback = {
         const response = await apiClient.put(`/api/user/profile/${userId}`, updates)
         return response.data
     },
+
+    async submitGeminiKey(userId: string, apiKey: string) {
+        const response = await apiClient.post("/api/user/submit-gemini-key", { userId, apiKey })
+        return response.data
+    },
+
+    // Admin API
+    async getAdminStats() {
+        const response = await apiClient.get("/api/admin/stats")
+        return response.data
+    },
+
+    async getAllUsers() {
+        const response = await apiClient.get("/api/admin/users")
+        return response.data
+    },
+
+    async getContributedKeys() {
+        const response = await apiClient.get("/api/admin/contributed-keys")
+        return response.data
+    },
+
+    async deleteUser(userId: string) {
+        await apiClient.delete(`/api/admin/users/${userId}`)
+    },
 }
-
-// Add a request interceptor to attach the auth token
-apiClient.interceptors.request.use((config) => {
-    const token = localStorage.getItem("authToken")
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-})
-
-export const api = apiWithFallback;
 
 export default apiClient
 

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, GraduationCap, School, Search, Zap, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BASE_URL } from "@/contants/contants.ts";
+import { BASE_URL } from "@/constants";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { api } from "@/lib/apiClient";
 
@@ -17,6 +17,10 @@ const DashboardExams = () => {
   const [answers, setAnswers] = useState<{[key: number]: string}>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  /*
+   * How: Fetches available exams based on the selected category (JAMB, University, Secondary) from the backend.
+   * Why: Populates the exam repository so users can choose a simulation relevant to their educational level.
+   */
   const fetchExams = async () => {
     setLoading(true);
     try {
@@ -53,10 +57,18 @@ const DashboardExams = () => {
     }
   };
 
+  /*
+   * How: Marks the exam as submitted to trigger the results view and disables further answering.
+   * Why: Finalizes the user's attempt to calculate the score.
+   */
   const submitExam = () => {
     setIsSubmitted(true);
   };
 
+  /*
+   * How: Calculates the total score by comparing user answers with the correct ones defined in the exam object.
+   * Why: Provides immediate performance feedback to the user upon completion.
+   */
   const score = selectedExam ? selectedExam.questions.reduce((acc: number, q: any, i: number) => {
     return acc + (answers[i] === q.answer ? 1 : 0);
   }, 0) : 0;

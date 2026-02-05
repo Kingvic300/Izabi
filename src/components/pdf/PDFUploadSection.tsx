@@ -32,6 +32,10 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
 
   const { errors, addError, clearErrors, clearError } = useApiError();
 
+  /*
+   * How: Validates the file type (PDF only) and size (max 10MB) before storing it in state.
+   * Why: Ensures only compatible and manageable files are processed by the system.
+   */
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -66,6 +70,10 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
     );
   };
 
+  /*
+   * How: Aggregates selected pages and metadata, then triggers the parent callback to initiate backend processing.
+   * Why: Passes the validated user selection to the next stage of the study material generation workflow.
+   */
   const handleProcessSelection = () => {
     if (!uploadedFile || selectedPages.length === 0) {
       addError({ message: 'Please select at least one page to process', type: 'validation' });

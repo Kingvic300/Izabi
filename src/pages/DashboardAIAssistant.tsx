@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Zap, Send, Loader, User, Brain, History, Sparkles } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
-import { apiWithFallback as api } from "@/lib/apiClient"
+import { api } from "@/lib/apiClient"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 
@@ -58,6 +58,10 @@ const DashboardAIAssistant = () => {
     }, { scope: containerRef })
 
     useEffect(() => {
+        /*
+         * How: Retrieves past chat interactions for the current user from the backend.
+         * Why: Ensures context persistence so users can continue previous conversations.
+         */
         const fetchHistory = async () => {
             try {
                 const history = await api.getChatHistory(userId)
@@ -81,6 +85,10 @@ const DashboardAIAssistant = () => {
         scrollToBottom()
     }, [messages])
 
+    /*
+     * How: Appends user message to UI state, then initiates an event stream for the AI response. Updates the assistant's placeholder message chunk-by-chunk.
+     * Why: Provides a responsive, real-time typing experience typical of modern LLM interfaces.
+     */
     const handleSendMessage = async () => {
         if (!inputValue.trim()) return
 
@@ -119,11 +127,7 @@ const DashboardAIAssistant = () => {
                 },
                 (error) => {
                     console.error("Stream Error:", error)
-                    toast({
-                        title: "Connection Error",
-                        description: "Izabi is taking a short nap. Please try again in a moment.",
-                        variant: "destructive"
-                    })
+                    // Errors are now handled globally by the interceptor
                 },
                 () => {
                     setIsLoading(false)
@@ -131,11 +135,6 @@ const DashboardAIAssistant = () => {
             )
         } catch (error) {
             console.error("Error starting AI stream:", error)
-            toast({
-                title: "Error",
-                description: "Failed to connect to AI assistant",
-                variant: "destructive",
-            })
             setIsLoading(false)
         }
     }

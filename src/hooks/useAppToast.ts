@@ -1,6 +1,8 @@
 "use client"
 
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
+import { AlertCircle, CheckCircle2, Info, XCircle } from "lucide-react"
+import React from "react"
 
 export type ToastVariant = "default" | "destructive" | "success" | "warning" | "info"
 
@@ -11,107 +13,97 @@ interface ToastOptions {
 }
 
 export const useAppToast = () => {
-    const { toast } = useToast()
-
     return {
         // Success messages - rewarding and contextual
         success: (options: ToastOptions) => {
-            toast({
-                title: options.title || "Success!",
+            toast.success(options.title || "Success!", {
                 description: options.description,
-                variant: "default",
+                duration: options.duration,
+                icon: React.createElement(CheckCircle2, { className: "h-5 w-5 text-green-500" }),
             })
         },
 
         // Error messages - specific and actionable
         error: (options: ToastOptions) => {
-            toast({
-                title: options.title || "Something went wrong",
+            toast.error(options.title || "Something went wrong", {
                 description: options.description,
-                variant: "destructive",
+                duration: options.duration,
+                icon: React.createElement(XCircle, { className: "h-5 w-5 text-red-500" }),
             })
         },
 
         // Warning messages - explain the risk
         warning: (options: ToastOptions) => {
-            toast({
-                title: options.title || "Warning",
+            toast.warning(options.title || "Warning", {
                 description: options.description,
-                variant: "default",
+                duration: options.duration,
+                icon: React.createElement(AlertCircle, { className: "h-5 w-5 text-yellow-500" }),
             })
         },
 
         // Info messages - helpful guidance
         info: (options: ToastOptions) => {
-            toast({
-                title: options.title || "Info",
+            toast.info(options.title || "Info", {
                 description: options.description,
-                variant: "default",
+                duration: options.duration,
+                icon: React.createElement(Info, { className: "h-5 w-5 text-blue-500" }),
             })
         },
 
         // Specific action messages
         noteSaved: () => {
-            toast({
-                title: "Note saved!",
+            toast.success("Note saved!", {
                 description: "Your note has been saved successfully.",
-                variant: "default",
+                icon: React.createElement(CheckCircle2, { className: "h-5 w-5 text-green-500" }),
             })
         },
 
         noteDeleted: () => {
-            toast({
-                title: "Note deleted",
+            toast.success("Note deleted", {
                 description: "Your note has been permanently removed.",
-                variant: "default",
+                icon: React.createElement(CheckCircle2, { className: "h-5 w-5 text-green-500" }),
             })
         },
 
         profileUpdated: () => {
-            toast({
-                title: "Profile updated!",
+            toast.success("Profile updated!", {
                 description: "Your profile changes have been saved.",
-                variant: "default",
+                icon: React.createElement(CheckCircle2, { className: "h-5 w-5 text-green-500" }),
             })
         },
 
         settingChanged: (settingName: string) => {
-            toast({
-                title: "Setting updated",
+            toast.success("Setting updated", {
                 description: `${settingName} has been updated successfully.`,
-                variant: "default",
+                icon: React.createElement(CheckCircle2, { className: "h-5 w-5 text-green-500" }),
             })
         },
 
         loginFailed: (reason: string) => {
-            toast({
-                title: "Login failed",
+            toast.error("Login failed", {
                 description: reason || "Please check your email and password and try again.",
-                variant: "destructive",
+                icon: React.createElement(XCircle, { className: "h-5 w-5 text-red-500" }),
             })
         },
 
         signupFailed: (reason: string) => {
-            toast({
-                title: "Signup failed",
+            toast.error("Signup failed", {
                 description: reason || "Please check your information and try again.",
-                variant: "destructive",
+                icon: React.createElement(XCircle, { className: "h-5 w-5 text-red-500" }),
             })
         },
 
         networkError: () => {
-            toast({
-                title: "Connection lost",
+            toast.error("Connection lost", {
                 description: "Please check your internet connection and try again.",
-                variant: "destructive",
+                icon: React.createElement(XCircle, { className: "h-5 w-5 text-red-500" }),
             })
         },
 
         validationError: (fieldName: string, reason: string) => {
-            toast({
-                title: `Invalid ${fieldName}`,
+            toast.error(`Invalid ${fieldName}`, {
                 description: reason,
-                variant: "destructive",
+                icon: React.createElement(XCircle, { className: "h-5 w-5 text-red-500" }),
             })
         },
     }

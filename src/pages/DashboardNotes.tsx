@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { FileText, Plus, Trash2, Edit2, Save, AlertCircle, Sparkles, Clock } from "lucide-react"
 import { useAppToast } from "@/hooks/useAppToast"
 import { formValidation } from "@/lib/formValidation"
-import { apiWithFallback } from "@/lib/apiClient"
+import { api } from "@/lib/apiClient"
 import { PageLoader } from "@/components/PageLoader"
 import RichTextEditor from "@/components/RichTextEditor"
 import gsap from "gsap"
@@ -49,22 +49,22 @@ export default function DashboardNotes() {
     }, { scope: containerRef, dependencies: [isLoading] })
 
     useEffect(() => {
+        /*
+         * How: Fetches all notes associated with the user from the backend upon component mount.
+         * Why: Populates the dashboard with the user's saved study materials.
+         */
         const fetchNotes = async () => {
             try {
-                const data = await apiWithFallback.getNotes()
+                const data = await api.getNotes()
                 setNotes(data)
             } catch (err: any) {
                 console.error("Failed to fetch notes:", err)
-                appToast.error({
-                    title: "Failed to load notes",
-                    description: "Couldn’t retrieve your notes. Please refresh and try again.",
-                })
             } finally {
                 setIsLoading(false)
             }
         }
         fetchNotes()
-    }, [appToast])
+    }, [])
 
     const validateNote = () => {
         const titleCheck = formValidation.noteTitle(newNote.title)
@@ -75,6 +75,10 @@ export default function DashboardNotes() {
         return titleCheck.isValid && contentCheck.isValid
     }
 
+    /*
+     * How: Validates input, sends a creation request to the API, and updates local state on success.
+     * Why: Allows users to save new notes to their collection.
+     */
     const handleCreateNote = async () => {
         if (!validateNote()) {
             appToast.error({
@@ -85,7 +89,7 @@ export default function DashboardNotes() {
         }
 
         try {
-            const created = await apiWithFallback.createNote({
+            const created = await api.createNote({
                 ...newNote,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -97,13 +101,13 @@ export default function DashboardNotes() {
             appToast.success({ title: "Note saved", description: "Your new study note is ready!" })
         } catch (err) {
             console.error("Error creating note:", err)
-            appToast.error({
-                title: "Failed to save note",
-                description: "Couldn’t save your note. Please check your connection.",
-            })
         }
     }
 
+    /*
+     * How: Validates changes and sends a PUT request to update an existing note's title and content.
+     * Why: Enables users to refine and edit their notes over time.
+     */
     const handleUpdateNote = async (id: string, title: string, content: string) => {
         const titleCheck = formValidation.noteTitle(title)
         const contentCheck = formValidation.noteContent(content)
@@ -116,31 +120,27 @@ export default function DashboardNotes() {
         }
 
         try {
-            const updated = await apiWithFallback.updateNote(id, { title, content })
+            const updated = await api.updateNote(id, { title, content })
             setNotes(notes.map((note) => (note.id === id ? updated : note)))
             setEditingId(null)
             appToast.success({ title: "Note updated", description: "Your changes have been saved." })
         } catch (err) {
             console.error("Error updating note:", err)
-            appToast.error({
-                title: "Update failed",
-                description: "Couldn’t save your changes. Try again later.",
-            })
         }
     }
 
+    /*
+     * How: Sends a DELETE request to remove a note by ID and updates the local list.
+     * Why: Allows users to manage their storage and remove unwanted content.
+     */
     const handleDeleteNote = async (id: string) => {
         try {
-            await apiWithFallback.deleteNote(id)
+            await api.deleteNote(id)
             setNotes(notes.filter((n) => n.id !== id))
             setDeleteConfirm(null)
             appToast.success({ title: "Note deleted", description: "Your note was removed." })
         } catch (err) {
             console.error("Error deleting note:", err)
-            appToast.error({
-                title: "Delete failed",
-                description: "Couldn’t delete this note. Try again.",
-            })
         }
     }
 

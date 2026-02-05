@@ -46,6 +46,10 @@ const RichTextEditor = ({ content, onChange, placeholder }: RichTextEditorProps)
     return null;
   }
 
+  /*
+   * How: Prompts the user for a URL and attaches/removes it from the selected text.
+   * Why: Enables inline hyperlink management for note-taking without complex UI modals.
+   */
   const toggleLink = () => {
     const url = window.prompt('URL');
     if (url) {

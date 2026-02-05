@@ -5,6 +5,10 @@ export interface ValidationResult {
 
 export const formValidation = {
     // Email validation
+    /*
+     * How: Checks if the email string matches a standard regex pattern for email addresses.
+     * Why: Ensures communication channels are valid and properly formatted before submission.
+     */
     email: (email: string): ValidationResult => {
         if (!email.trim()) {
             return { isValid: false, error: "Email is required" }
@@ -17,6 +21,10 @@ export const formValidation = {
     },
 
     // Password validation
+    /*
+     * How: Enforces complexity rules: minimum length, uppercase letter, and number requirement.
+     * Why: Increases account security by preventing weak or easily guessable passwords.
+     */
     password: (password: string): ValidationResult => {
         if (!password) {
             return { isValid: false, error: "Password is required" }

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Brain, ArrowLeft, Sparkles, Loader2, ShieldCheck, Mail } from "lucide-react"
 import { toast } from "sonner"
 import axios from "axios"
-import { BASE_URL } from "@/contants/contants.ts"
+import { BASE_URL } from "@/constants"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 
@@ -60,12 +60,18 @@ const OTP = () => {
         }
     }
 
+    /*
+     * How: Submits the 6-digit OTP code to the backend for verification. On success, completes registration and redirects to login.
+     * Why: Confirms the user has access to the email address provided during signup.
+     */
     const handleOtpSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         const otpCode = otp.join("")
 
         if (otpCode.length < 6) {
-            toast.error("Protocol Incomplete", { description: "Please enter the full 6-digit synchronization code." })
+            toast.error("Incomplete Code", { 
+                description: "Please enter the full 6-digit verification code sent to your email." 
+            })
             return
         }
 
@@ -78,16 +84,25 @@ const OTP = () => {
                 role: "USER",
             })
 
-            toast.success("Identity Confirmed", { description: "Your scholar account is now correctly established." })
+            toast.success("Account Verified", { 
+                description: "Your account has been successfully verified. You can now log in." 
+            })
             navigate("/login")
         } catch (err: unknown) {
             const error = err as ErrorResponse
-            toast.error("Synchronization Failed", { description: error.response?.data?.message || "Invalid or expired code." })
+            const errorMessage = error.response?.data?.message || "The code you entered is invalid or has expired."
+            toast.error("Verification Failed", { 
+                description: errorMessage 
+            })
         } finally {
             setLoading(false)
         }
     }
 
+    /*
+     * How: Triggers a new OTP email request based on the current mode (verification or password reset).
+     * Why: Allows users to receive a fresh code if the previous one expired or was not received.
+     */
     const handleResendOtp = async () => {
         setResending(true)
         try {
@@ -100,10 +115,14 @@ const OTP = () => {
             } else if (mode === "reset") {
                 await axios.post(`${BASE_URL}/api/user/send-reset-otp`, { email })
             }
-            toast.success("Signal Retransmitted", { description: "A new synchronization code has been sent." })
+            toast.success("Code Resent", { 
+                description: "A new verification code has been sent to your email." 
+            })
         } catch (err: unknown) {
             const error = err as ErrorResponse
-            toast.error("Transmission Error", { description: error.response?.data?.message || "Failed to broadcast signal." })
+            toast.error("Error", { 
+                description: error.response?.data?.message || "Failed to resend verification code. Please try again." 
+            })
         } finally {
             setResending(false)
         }
@@ -118,7 +137,7 @@ const OTP = () => {
             <Link to="/signup" className="absolute top-8 left-8 group">
                 <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    <span>Return to Enlistment</span>
+                    <span>Back to Signup</span>
                 </div>
             </Link>
 
@@ -129,8 +148,8 @@ const OTP = () => {
                         <ShieldCheck className="h-10 w-10 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-black tracking-tighter text-white">Identity <span className="text-gradient">Verification</span></h1>
-                        <p className="text-muted-foreground font-medium">Verify your neural link via the terminal code.</p>
+                        <h1 className="text-4xl font-black tracking-tighter text-white">Email <span className="text-gradient">Verification</span></h1>
+                        <p className="text-muted-foreground font-medium">Please enter the security code sent to your email.</p>
                     </div>
                 </div>
 
@@ -140,7 +159,7 @@ const OTP = () => {
                             <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-2">
                                 <Mail className="text-primary" size={20} />
                             </div>
-                            <p className="text-sm font-bold text-muted-foreground">Sent to terminal:</p>
+                            <p className="text-sm font-bold text-muted-foreground">Code sent to:</p>
                             <p className="text-lg font-black text-white px-4 py-1 glass rounded-lg border border-white/10">{email || "scholar@example.com"}</p>
                         </div>
 
@@ -171,7 +190,7 @@ const OTP = () => {
                                 ) : (
                                     <>
                                         <Sparkles className="group-hover:rotate-12 transition-transform" />
-                                        <span>Confirm Identity</span>
+                                        <span>Verify Account</span>
                                     </>
                                 )}
                             </Button>
@@ -184,12 +203,12 @@ const OTP = () => {
                                 disabled={resending}
                                 className="text-xs uppercase font-black tracking-widest text-primary hover:opacity-80 transition-opacity disabled:opacity-40"
                             >
-                                {resending ? "Broadcasting..." : "Retransmit Signal"}
+                                {resending ? "Sending code..." : "Resend Verification Code"}
                             </button>
                             <p className="text-xs font-bold text-muted-foreground">
-                                Wrong address?{" "}
+                                Wrong email?{" "}
                                 <Link to="/signup" className="text-white hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
-                                    Re-enter terminal
+                                    Change email address
                                 </Link>
                             </p>
                         </div>

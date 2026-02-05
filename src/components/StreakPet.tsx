@@ -28,6 +28,10 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData }) => {
     }
   }, []);
 
+  /*
+   * How: Selects a visual icon based on the pet's type and mood (happy/sad).
+   * Why: Provides visual feedback reflecting the user's study consistency via the pet's emotional state.
+   */
   const getPetIcon = () => {
     const type = petData?.type || 'owl';
     const mood = petData?.mood || (streak > 0 ? 'happy' : 'sad');

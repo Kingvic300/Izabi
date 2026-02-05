@@ -1,7 +1,7 @@
 "use client"
 
-import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap } from "lucide-react"
-import axios from "axios"
+import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck } from "lucide-react"
+import apiClient from "@/lib/apiClient"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
     Sidebar,
@@ -17,7 +17,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
-import { BASE_URL } from "@/contants/contants.ts"
+import { BASE_URL } from "@/constants"
 import { useAppToast } from "@/hooks/useAppToast"
 
 const navigationItems = [
@@ -57,6 +57,12 @@ const navigationItems = [
         icon: GraduationCap,
         description: "JAMB and Past Questions",
     },
+    {
+        title: "Support Us",
+        url: "/dashboard/support",
+        icon: Heart,
+        description: "Contribute AI resources",
+    },
 ]
 
 const settingsItems = [
@@ -81,14 +87,17 @@ export function AppSidebar() {
     const appToast = useAppToast()
     const currentPath = location.pathname
     const collapsed = state === "collapsed"
+    const userRole = localStorage.getItem("userRole")
 
     const isActive = (path: string) => currentPath === path
 
+    /*
+     * How: Clears stored auth tokens and user data via apiClient (backend) and localStorage, then redirects to home.
+     * Why: Ensures the session is completely terminated on both server and client.
+     */
     const handleLogout = async () => {
         try {
-            await axios.post(`${BASE_URL}/users/logout`, {}, {
-                headers: {Authorization: `Bearer ${localStorage.getItem('authToken')}`}
-            })
+            await apiClient.post(`/users/logout`)
             // Clear local storage
             localStorage.removeItem("userId")
             localStorage.removeItem("authToken")
@@ -110,7 +119,7 @@ export function AppSidebar() {
     }
 
     return (
-        <Sidebar collapsible="icon">
+        <Sidebar collapsible="icon" className="bg-background/60 backdrop-blur-xl border-r border-white/5 data-[variant=inset]:bg-transparent">
             {/* Header */}
             <SidebarHeader className="border-b border-border p-4">
                 <div className="flex items-center space-x-3 px-2">
@@ -198,6 +207,23 @@ export function AppSidebar() {
                                     </SidebarMenuItem>
                                 )
                             })}
+                            
+                            {userRole === "ADMIN" && (
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton 
+                                        isActive={isActive("/dashboard/admin")}
+                                        className={`h-12 rounded-xl transition-all duration-300 px-4 group
+                                            ${isActive("/dashboard/admin") ? "bg-primary/20 text-primary shadow-glow" : "hover:bg-primary/5"}
+                                        `}
+                                        onClick={() => navigate("/dashboard/admin")}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <ShieldCheck className={`h-5 w-5 ${isActive("/dashboard/admin") ? "text-primary shadow-glow" : "text-primary/60"}`} />
+                                            {!collapsed && <span className="font-black text-sm tracking-tight text-primary">Admin Center</span>}
+                                        </div>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            )}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

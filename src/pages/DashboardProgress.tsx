@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, BarChart3, Calendar, Trophy, BookOpen, Target, Clock, Zap } from "lucide-react"
-import { apiWithFallback as api } from "@/lib/apiClient"
+import { api } from "@/lib/apiClient"
 import { useEffect, useState, useRef } from "react"
 import { PageLoader } from "@/components/PageLoader"
 import gsap from "gsap"
@@ -69,6 +69,10 @@ const DashboardProgress = () => {
     }, { scope: containerRef, dependencies: [isLoading] })
 
     useEffect(() => {
+        /*
+         * How: Asynchronously fetches user statistics (quizzes, streak, hours, etc.) from the backend.
+         * Why: Essential for populating the progress dashboard with real-time performance metrics.
+         */
         const fetchProgress = async () => {
             try {
                 const stats = await api.getUserStats()

@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useRef } from "react"
-import axios from "@/lib/apiClient"
+import apiClient from "@/lib/apiClient"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { BASE_URL } from "@/contants/contants.ts"
+import { BASE_URL } from "@/constants"
 import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import PDFUploadSection from "@/components/pdf/PDFUploadSection"
@@ -54,14 +54,18 @@ const DashboardHome = () => {
     }, { scope: containerRef })
 
     useEffect(() => {
+        /*
+         * How: Fetches user statistics and pet data from the backend to display on the dashboard.
+         * Why: Provides users with immediate feedback on their learning progress and engagement.
+         */
         const fetchStats = async () => {
             if (!userId) return
             try {
-                const { data } = await axios.get(`${BASE_URL}/api/user/stats?userId=${userId}`)
+                const { data } = await apiClient.get(`/api/user/stats?userId=${userId}`)
                 setUserStats(data)
                 
                 // Also get pet details if available
-                const profileRes = await axios.get(`${BASE_URL}/users/${userId}`)
+                const profileRes = await apiClient.get(`/users/${userId}`)
                 if (profileRes.data.pet) {
                     setUserStats((prev: any) => ({ ...prev, pet: profileRes.data.pet }))
                 }
@@ -77,6 +81,10 @@ const DashboardHome = () => {
         setPdfFile(file)
     }
 
+    /*
+     * How: Uploads the selected PDF file and parameters to the specified backend endpoint to generate study materials (summary, questions, etc.).
+     * Why: Core functionality allowing users to transform their documents into interactive learning content.
+     */
     const handleRequest = async (endpoint: string, includeQuestions = false) => {
         if (!pdfFile || !userId || !pdfSelection) {
             addError({ message: "Upload required: Please initialize a document node first.", type: "validation" })
@@ -100,7 +108,7 @@ const DashboardHome = () => {
                 formData.append("numberOfQuestions", String(numberOfQuestions))
             }
 
-            const { data } = await axios.post(`${BASE_URL}/api/study/${endpoint}`, formData, {
+            const { data } = await apiClient.post(`/api/study/${endpoint}`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             })
 
@@ -133,6 +141,10 @@ const DashboardHome = () => {
     const isShortAnswerCorrect = (input: string, correctAnswer: string) =>
         stringSimilarity.compareTwoStrings(input.trim().toLowerCase(), correctAnswer.trim().toLowerCase()) > 0.7
 
+    /*
+     * How: Compares user answers against the correct answers, accounting for both multiple choice and fuzzy matching for short answers.
+     * Why: To calculate the final score and verify mastery of the material.
+     */
     const scoreQuiz = () =>
         questions.reduce((acc, q, i) => {
             const userAnswer = selectedAnswers[i]

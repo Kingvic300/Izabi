@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom"
 import type React from "react"
 import { useState, useRef } from "react"
 import axios from "axios"
-import { BASE_URL } from "@/contants/contants.ts"
+import { BASE_URL } from "@/constants"
 import { useAppToast } from "@/hooks/useAppToast"
 import { formValidation } from "@/lib/formValidation"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
@@ -59,13 +59,20 @@ const Login = () => {
         }
     }
 
+    /*
+     * How: Validates credentials and sends a login request to the backend. On success, stores tokens and redirects.
+     * Why: Authenticates the user and initiates their session.
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
         const emailValidation = formValidation.email(email)
         if (!emailValidation.isValid) {
             setEmailError(emailValidation.error || null)
-            appToast.error({ title: "Invalid Email", description: emailValidation.error || "Please check your email formatting." })
+            appToast.error({ 
+                title: "Invalid Email", 
+                description: emailValidation.error || "Please check your email formatting." 
+            })
             return
         }
 
@@ -83,15 +90,16 @@ const Login = () => {
                 { withCredentials: true },
             )
 
-            const { userId, authToken } = response.data
+            const { userId, authToken, role } = response.data
 
             localStorage.setItem("userId", userId)
             localStorage.setItem("authToken", authToken)
             localStorage.setItem("userEmail", email)
+            localStorage.setItem("userRole", role || "USER")
 
             appToast.success({
-                title: "Authentication Successful",
-                description: "Welcome back, Scholar. Initializing workspace...",
+                title: "Login Successful",
+                description: "Welcome back! Redirecting to your dashboard...",
             })
 
             setTimeout(() => navigate("/dashboard"), 1000)
@@ -99,11 +107,17 @@ const Login = () => {
             const errorMessage = err.response?.data?.message || "Login failed"
 
             if (err.response?.status === 401) {
-                appToast.error({ title: "Portal Closed", description: "Invalid credentials. Please attempt again." })
+                appToast.error({ 
+                    title: "Login Failed", 
+                    description: "Invalid email or password. Please try again." 
+                })
             } else if (!navigator.onLine) {
                 appToast.networkError()
             } else {
-                appToast.error({ title: "System Error", description: errorMessage })
+                appToast.error({ 
+                    title: "Connection Error", 
+                    description: errorMessage 
+                })
             }
         } finally {
             setLoading(false)
@@ -130,7 +144,7 @@ const Login = () => {
                     </div>
                     <div>
                         <h1 className="text-4xl font-black tracking-tighter text-foreground">{t("auth.login").split(' ')[0]} <span className="text-gradient">{t("auth.login").split(' ')[1]}</span></h1>
-                        <p className="text-muted-foreground font-medium">Authenticate to access your neural laboratory.</p>
+                        <p className="text-muted-foreground font-medium">Welcome back! Please sign in to your account.</p>
                     </div>
                 </div>
 
@@ -195,7 +209,7 @@ const Login = () => {
 
                         <div className="pt-6 border-t border-foreground/5 text-center">
                             <p className="text-sm font-bold text-muted-foreground">
-                                No authorization yet?{" "}
+                                Don't have an account?{" "}
                                 <Link to="/signup" className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
                                     {t("auth.join")}
                                 </Link>

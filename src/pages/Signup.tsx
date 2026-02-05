@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Brain, Check, X, Mail, Lock, Sparkles, Loader2, ArrowLeft, ShieldCheck, Eye, EyeOff } from "lucide-react"
 import axios from "axios"
-import { BASE_URL } from "@/contants/contants.ts"
+import { BASE_URL } from "@/constants"
 import { useAppToast } from "@/hooks/useAppToast"
 import { formValidation } from "@/lib/formValidation"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
@@ -70,6 +70,10 @@ const Signup = () => {
         }
     }
 
+    /*
+     * How: Validates all form inputs and sends an OTP verification request to the backend.
+     * Why: Users must verify their email before completing registration to prevent spam and ensure account security.
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
@@ -85,8 +89,8 @@ const Signup = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
             appToast.error({
-                title: "Incomplete Protocol",
-                description: "Ensure all neural fields are correctly synchronized.",
+                title: "Validation Error",
+                description: "Please check the form for errors and try again.",
             })
             return
         }
@@ -100,8 +104,8 @@ const Signup = () => {
             })
 
             appToast.success({
-                title: "Gateway Opened",
-                description: "Sent an synchronization code to your inbox. Check your terminal.",
+                title: "Verification Code Sent",
+                description: "Please check your email for the verification code.",
             })
 
             navigate("/otp", {
@@ -112,18 +116,18 @@ const Signup = () => {
                 },
             })
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || "Failed to send OTP"
+            const errorMessage = err.response?.data?.message || "Failed to send verification code"
 
             if (err.response?.status === 409) {
                 appToast.error({
-                    title: "Entity Exists",
-                    description: "This scholar identity is already established. Access the portal directly.",
+                    title: "Account Already Exists",
+                    description: "This email is already registered. Please sign in instead.",
                 })
             } else if (!navigator.onLine) {
                 appToast.networkError()
             } else {
                 appToast.error({
-                    title: "Access Denied",
+                    title: "Registration Failed",
                     description: errorMessage,
                 })
             }
@@ -153,7 +157,7 @@ const Signup = () => {
                     </div>
                     <div>
                         <h1 className="text-4xl font-black tracking-tighter text-foreground">{t("auth.signup").split(' ')[0]} <span className="text-gradient">{t("auth.signup").split(' ')[1]}</span></h1>
-                        <p className="text-muted-foreground font-medium">Join the next generation of AI-enhanced scholars.</p>
+                        <p className="text-muted-foreground font-medium">Create your account to start your learning journey.</p>
                     </div>
                 </div>
 
@@ -233,7 +237,7 @@ const Signup = () => {
                                 ) : (
                                     <>
                                         <Sparkles className="group-hover:rotate-12 transition-transform" />
-                                        <span>Initialize Enlistment</span>
+                                        <span>Create Account</span>
                                     </>
                                 )}
                             </Button>
@@ -241,7 +245,7 @@ const Signup = () => {
 
                         <div className="pt-6 border-t border-foreground/5 text-center">
                             <p className="text-sm font-bold text-muted-foreground">
-                                Already enlisted?{" "}
+                                Already have an account?{" "}
                                 <Link to="/login" className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
                                     {t("auth.login")}
                                 </Link>
