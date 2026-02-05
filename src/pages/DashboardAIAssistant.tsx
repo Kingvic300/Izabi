@@ -64,15 +64,15 @@ const DashboardAIAssistant = () => {
          */
         const fetchHistory = async () => {
             try {
-                const history = await api.getChatHistory(userId)
-                if (history && history.messages && history.messages.length > 0) {
-                    const formattedMessages = history.messages.map((m: any) => ({
+                const res = await api.getChatHistory(userId)
+                if (res.success && res.data && res.data.length > 0) {
+                    const formattedMessages = res.data.map((m: any) => ({
                         id: m._id || Math.random().toString(),
                         role: m.role,
                         content: m.content,
-                        timestamp: new Date(m.timestamp),
+                        timestamp: new Date(m.createdAt || m.timestamp),
                     }))
-                    setMessages(formattedMessages)
+                    setMessages((prev) => [...prev, ...formattedMessages])
                 }
             } catch (error) {
                 console.error("Failed to fetch chat history:", error)
@@ -162,7 +162,7 @@ const DashboardAIAssistant = () => {
                 </Button>
             </div>
 
-            <Card className="chat-card flex-1 flex flex-col overflow-hidden glass-card border-white/10 shadow-2xl relative">
+            <Card className="chat-card flex-1 flex flex-col overflow-hidden glass-card border-foreground/10 shadow-2xl relative">
                 {/* Background decorative element */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] pointer-events-none rounded-full" />
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent/5 blur-[100px] pointer-events-none rounded-full" />
@@ -186,7 +186,7 @@ const DashboardAIAssistant = () => {
                                     className={`max-w-[85%] lg:max-w-[70%] px-5 py-4 rounded-3xl shadow-sm leading-relaxed
                                         ${message.role === "user"
                                             ? "bg-primary text-white rounded-tr-none"
-                                            : "bg-muted/50 backdrop-blur-sm border border-white/5 rounded-tl-none"
+                                            : "bg-muted/50 backdrop-blur-sm border border-foreground/5 rounded-tl-none"
                                     }`}
                                 >
                                     <div className="text-sm md:text-base prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
@@ -210,7 +210,7 @@ const DashboardAIAssistant = () => {
                                 <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-accent/20 border border-accent/30 text-accent">
                                     <Brain className="h-5 w-5" />
                                 </div>
-                                <div className="bg-muted/50 backdrop-blur-sm border border-white/5 px-5 py-4 rounded-3xl rounded-tl-none">
+                                <div className="bg-muted/50 backdrop-blur-sm border border-foreground/5 px-5 py-4 rounded-3xl rounded-tl-none">
                                     <Loader className="h-4 w-4 animate-spin text-accent" />
                                 </div>
                             </div>
@@ -220,7 +220,7 @@ const DashboardAIAssistant = () => {
 
                     {/* Input Area */}
                     <div className="p-6 pt-0">
-                        <div className="relative group glass flex items-center rounded-3xl p-1 px-2 border-white/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                        <div className="relative group glass flex items-center rounded-3xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                             <Input
                                 placeholder="Ask Izabi anything..."
                                 value={inputValue}

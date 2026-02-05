@@ -50,8 +50,9 @@ apiClient.interceptors.response.use(
                 description: "You don't have permission to perform this action.",
             })
         } else if (statusCode === 404) {
+            const detail = error.response?.data?.message || "The requested resource could not be located."
             toast.error("Not Found", {
-                description: "The requested resource could not be located.",
+                description: detail,
             })
         } else if (statusCode >= 500) {
             toast.error("Server Error", {
@@ -93,23 +94,27 @@ export const api = {
      * How: CRUD operations for study notes.
      * Why: Users need to create, read, update, and delete their generated notes.
      */
-    async getNotes() {
-        const response = await apiClient.get("/api/notes")
+    async getNotes(userId?: string) {
+        const id = userId || localStorage.getItem("userId")
+        const response = await apiClient.get(`/api/notes${id ? `?userId=${id}` : ""}`)
         return response.data
     },
 
     async createNote(note: any) {
-        const response = await apiClient.post("/api/notes", note)
+        const userId = note.userId || localStorage.getItem("userId")
+        const response = await apiClient.post("/api/notes", { ...note, userId })
         return response.data
     },
 
     async updateNote(id: string, updates: any) {
-        const response = await apiClient.put(`/api/notes/${id}`, updates)
+        const userId = updates.userId || localStorage.getItem("userId")
+        const response = await apiClient.put(`/api/notes/${id}`, { ...updates, userId })
         return response.data
     },
 
     async deleteNote(id: string) {
-        await apiClient.delete(`/api/notes/${id}`)
+        const userId = localStorage.getItem("userId")
+        await apiClient.delete(`/api/notes/${id}${userId ? `?userId=${userId}` : ""}`)
     },
 
     // Quiz Results API

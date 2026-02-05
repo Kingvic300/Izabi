@@ -60,6 +60,24 @@ const OTP = () => {
         }
     }
 
+    const handlePaste = (e: React.ClipboardEvent) => {
+        e.preventDefault()
+        const pastedData = e.clipboardData.getData("text").slice(0, 6).split("")
+        const newOtp = [...otp]
+        
+        pastedData.forEach((char, index) => {
+            if (/^[0-9]$/.test(char)) {
+                newOtp[index] = char
+            }
+        })
+        
+        setOtp(newOtp)
+        
+        // Focus the last filled input or the next empty one
+        const nextIndex = Math.min(pastedData.length, 5)
+        inputRefs.current[nextIndex]?.focus()
+    }
+
     /*
      * How: Submits the 6-digit OTP code to the backend for verification. On success, completes registration and redirects to login.
      * Why: Confirms the user has access to the email address provided during signup.
@@ -185,6 +203,7 @@ const OTP = () => {
                                         value={digit}
                                         onChange={(e) => handleChange(e.target.value, index)}
                                         onKeyDown={(e) => handleKeyDown(e, index)}
+                                        onPaste={handlePaste}
                                         className="w-14 h-16 rounded-2xl text-center text-2xl font-black bg-white/5 border-white/10 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all text-white"
                                     />
                                 ))}

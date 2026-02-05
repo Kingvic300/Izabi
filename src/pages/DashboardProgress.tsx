@@ -30,23 +30,8 @@ const DashboardProgress = () => {
     })
     const [isLoading, setIsLoading] = useState(true)
 
-    const [chartData] = useState([
-        { date: "Mon", score: 75, quizzes: 2 },
-        { date: "Tue", score: 82, quizzes: 3 },
-        { date: "Wed", score: 78, quizzes: 2 },
-        { date: "Thu", score: 88, quizzes: 4 },
-        { date: "Fri", score: 85, quizzes: 3 },
-        { date: "Sat", score: 90, quizzes: 2 },
-        { date: "Sun", score: 87, quizzes: 1 },
-    ])
-
-    const [subjectData] = useState([
-        { subject: "Biology", score: 85, quizzes: 5 },
-        { subject: "Chemistry", score: 78, quizzes: 4 },
-        { subject: "Physics", score: 88, quizzes: 3 },
-        { subject: "Math", score: 82, quizzes: 4 },
-        { subject: "History", score: 80, quizzes: 2 },
-    ])
+    const [chartData, setChartData] = useState([])
+    const [subjectData, setSubjectData] = useState([])
 
     useGSAP(() => {
         if (!isLoading) {
@@ -69,14 +54,17 @@ const DashboardProgress = () => {
     }, { scope: containerRef, dependencies: [isLoading] })
 
     useEffect(() => {
-        /*
-         * How: Asynchronously fetches user statistics (quizzes, streak, hours, etc.) from the backend.
-         * Why: Essential for populating the progress dashboard with real-time performance metrics.
-         */
         const fetchProgress = async () => {
             try {
-                const stats = await api.getUserStats()
-                setProgressData(stats)
+                const res = await api.getUserStats()
+                if (res.success && res.data) {
+                    setProgressData({
+                        totalQuizzes: res.data.studyStats?.quizzes || 0,
+                        averageScore: 0, // Calculate this if backend provides it
+                        studyStreak: res.data.studyStreak || 0,
+                        totalStudyHours: 0, // Placeholder for now
+                    })
+                }
             } catch (error) {
                 console.error("Failed to fetch user stats:", error)
             } finally {
@@ -105,10 +93,12 @@ const DashboardProgress = () => {
                     </h1>
                     <p className="text-muted-foreground text-lg">Real-time analytics of your academic growth.</p>
                 </div>
-                <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl text-emerald-500 font-bold">
-                    <Trophy size={18} />
-                    <span>Top 5% of class</span>
-                </div>
+                {progressData.studyStreak > 10 && (
+                    <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl text-emerald-500 font-bold">
+                        <Trophy size={18} />
+                        <span>Top 5% of class</span>
+                    </div>
+                )}
             </div>
 
             {/* Stats Cards */}
@@ -277,15 +267,33 @@ const DashboardProgress = () => {
                 <CardContent className="p-0">
                     <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-foreground/10">
                         {[
-                            { title: "7-Day Study Streak", desc: "Bulletproof consistency", icon: "🔥", color: "text-emerald-500" },
-                            { title: "Quiz Master", desc: "Completed 50 sessions", icon: "🎯", color: "text-blue-500" },
-                            { title: "Perfect Score", desc: "Absolute subject mastery", icon: "⭐", color: "text-blue-400" }
+                            { 
+                                title: "7-Day Study Streak", 
+                                desc: "Bulletproof consistency", 
+                                icon: "🔥", 
+                                color: "text-emerald-500",
+                                isUnlocked: progressData.studyStreak >= 7
+                            },
+                            { 
+                                title: "Quiz Master", 
+                                desc: "Completed 50 sessions", 
+                                icon: "🎯", 
+                                color: "text-blue-500",
+                                isUnlocked: progressData.totalQuizzes >= 50
+                            },
+                            { 
+                                title: "Perfect Score", 
+                                desc: "Absolute subject mastery", 
+                                icon: "⭐", 
+                                color: "text-blue-400",
+                                isUnlocked: false 
+                            }
                         ].map((ach, i) => (
-                            <div key={i} className="flex items-center gap-6 p-8 hover:bg-foreground/[0.02] transition-colors group">
-                                <span className="text-5xl group-hover:scale-125 transition-transform duration-500">{ach.icon}</span>
+                            <div key={i} className={`flex items-center gap-6 p-8 transition-colors group ${ach.isUnlocked ? 'hover:bg-foreground/[0.02]' : 'opacity-30 grayscale'}`}>
+                                <span className={`text-5xl ${ach.isUnlocked ? 'group-hover:scale-125' : ''} transition-transform duration-500`}>{ach.icon}</span>
                                 <div>
                                     <p className="font-bold text-lg">{ach.title}</p>
-                                    <p className="text-sm text-muted-foreground">{ach.desc}</p>
+                                    <p className="text-sm text-muted-foreground">{ach.isUnlocked ? ach.desc : 'Locked Milestone'}</p>
                                 </div>
                             </div>
                         ))}

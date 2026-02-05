@@ -61,13 +61,20 @@ const DashboardHome = () => {
         const fetchStats = async () => {
             if (!userId) return
             try {
-                const { data } = await apiClient.get(`/api/user/stats?userId=${userId}`)
-                setUserStats(data)
+                const response = await apiClient.get(`/api/user/stats?userId=${userId}`)
+                // response.data is { success: boolean, data: { ...Stats } }
+                setUserStats(response.data)
                 
-                // Also get pet details if available
-                const profileRes = await apiClient.get(`/users/${userId}`)
-                if (profileRes.data.pet) {
-                    setUserStats((prev: any) => ({ ...prev, pet: profileRes.data.pet }))
+                // Also get pet details if available from profile
+                const profileRes = await apiClient.get(`/api/user/profile/${userId}`)
+                if (profileRes.data?.data?.pet) {
+                    setUserStats((prev: any) => ({
+                        ...prev,
+                        data: {
+                            ...prev?.data,
+                            pet: profileRes.data.data.pet
+                        }
+                    }))
                 }
             } catch (err) {
                 console.error("Failed to fetch user stats:", err)
@@ -161,7 +168,7 @@ const DashboardHome = () => {
                 <ErrorList errors={errors} onDismiss={clearError} />
 
                 {/* Header Section */}
-                <div className="welcome-text space-y-8 pb-6 border-b border-white/5">
+                <div className="welcome-text space-y-8 pb-6 border-b border-foreground/5">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
@@ -179,9 +186,9 @@ const DashboardHome = () => {
                             </p>
                         </div>
 
-                        {userStats && (
+                        {userStats?.data && (
                             <div className="stagger-card">
-                                <StreakPet streak={userStats.studyStreak || 0} petData={userStats.pet} />
+                                <StreakPet streak={userStats.data.studyStreak || 0} petData={userStats.data.pet} />
                             </div>
                         )}
                     </div>
@@ -193,7 +200,7 @@ const DashboardHome = () => {
                             </div>
                             <div>
                                 <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Knowledge Points</span>
-                                <div className="text-2xl font-black text-foreground">{userStats?.totalPoints || 0} KP</div>
+                                <div className="text-2xl font-black text-foreground">{userStats?.data?.totalPoints || 0} KP</div>
                             </div>
                         </div>
                         <div className="hidden md:flex flex-col items-end">
@@ -206,7 +213,7 @@ const DashboardHome = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                     {/* Left Column: Data Ingestion */}
                     <div className="lg:col-span-12 xl:col-span-4 space-y-8 stagger-card">
-                        <Card className="glass shadow-2xl border-white/5 rounded-[32px] overflow-hidden group">
+                        <Card className="glass shadow-2xl border-foreground/5 rounded-[32px] overflow-hidden group">
                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl group-hover:bg-primary/10 transition-all pointer-events-none" />
                            <CardHeader className="p-8">
                                <CardTitle className="flex items-center gap-3 text-2xl font-black">
@@ -224,14 +231,14 @@ const DashboardHome = () => {
 
                         {/* Telemetry Stats */}
                         <div className="grid grid-cols-2 gap-4">
-                            <Card className="glass border-white/5 p-6 rounded-[24px] space-y-4">
+                            <Card className="glass border-foreground/5 p-6 rounded-[24px] space-y-4">
                                 <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500 w-fit shadow-xl"><BarChart3 size={20} /></div>
                                 <div>
                                     <div className="text-sm font-black opacity-40 uppercase tracking-widest">{t("dashboard.stats_eff")}</div>
                                     <div className="text-2xl font-black text-foreground">+24%</div>
                                 </div>
                             </Card>
-                            <Card className="glass border-white/5 p-6 rounded-[24px] space-y-4">
+                            <Card className="glass border-foreground/5 p-6 rounded-[24px] space-y-4">
                                 <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500 w-fit shadow-xl"><Clock size={20} /></div>
                                 <div>
                                     <div className="text-sm font-black opacity-40 uppercase tracking-widest">{t("dashboard.stats_time")}</div>
@@ -244,7 +251,7 @@ const DashboardHome = () => {
                     {/* Right Column: AI Modules */}
                     <div className="lg:col-span-12 xl:col-span-8 space-y-8">
                         {pdfSelection ? (
-                            <Card className="glass border-white/5 rounded-[40px] p-2 relative overflow-hidden stagger-card shadow-2xl">
+                            <Card className="glass border-foreground/5 rounded-[40px] p-2 relative overflow-hidden stagger-card shadow-2xl">
                                 <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
                                 <CardHeader className="p-10 pb-6">
                                     <div className="flex items-center justify-between mb-2">
@@ -252,7 +259,7 @@ const DashboardHome = () => {
                                             <Sparkles className="text-primary" />
                                             <span>{t("dashboard.modules_title")}</span>
                                         </CardTitle>
-                                        <div className="px-4 py-1.5 glass rounded-full border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] opacity-60">{t("dashboard.modules_ready")}</div>
+                                        <div className="px-4 py-1.5 glass rounded-full border border-foreground/5 text-[10px] font-black uppercase tracking-[0.2em] opacity-60">{t("dashboard.modules_ready")}</div>
                                     </div>
                                     <CardDescription className="text-lg font-medium">{t("dashboard.modules_desc")}</CardDescription>
                                 </CardHeader>
@@ -261,7 +268,7 @@ const DashboardHome = () => {
                                         <Button
                                             onClick={() => handleRequest("summarize")}
                                             disabled={isProcessing}
-                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-white/[0.02] hover:bg-white/[0.05] border-white/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-foreground/[0.02] hover:bg-foreground/[0.05] border-foreground/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
                                         >
                                             <div className="w-16 h-16 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-blue-500/30 transition-all">
                                                 <Brain size={32} />
@@ -274,7 +281,7 @@ const DashboardHome = () => {
                                         <Button
                                             onClick={() => handleRequest("generate-questions", true)}
                                             disabled={isProcessing}
-                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-white/[0.02] hover:bg-white/[0.05] border-white/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-foreground/[0.02] hover:bg-foreground/[0.05] border-foreground/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
                                         >
                                             <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all">
                                                 <Zap size={32} />
@@ -287,7 +294,7 @@ const DashboardHome = () => {
                                         <Button
                                             onClick={() => handleRequest("generate-study-material", true)}
                                             disabled={isProcessing}
-                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-white/[0.02] hover:bg-white/[0.05] border-white/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-foreground/[0.02] hover:bg-foreground/[0.05] border-foreground/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
                                         >
                                             <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all">
                                                 <FileText size={32} />
@@ -299,12 +306,12 @@ const DashboardHome = () => {
                                         </Button>
                                     </div>
 
-                                    <div className="flex flex-col md:flex-row items-center gap-6 p-8 rounded-[32px] glass border-white/5">
+                                    <div className="flex flex-col md:flex-row items-center gap-6 p-8 rounded-[32px] glass border-foreground/5">
                                         <div className="flex-1 space-y-2">
                                             <div className="text-sm font-black uppercase tracking-widest text-primary">{t("dashboard.config_title")}</div>
                                             <p className="text-sm text-balance font-medium opacity-60">{t("dashboard.config_desc")}</p>
                                         </div>
-                                        <div className="flex items-center gap-4 bg-white/5 p-1 rounded-2xl border border-white/5">
+                                        <div className="flex items-center gap-4 bg-foreground/5 p-1 rounded-2xl border border-foreground/5">
                                             <div className="px-4 text-[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.questions_label")}</div>
                                             <Select
                                                 value={String(numberOfQuestions)}
@@ -314,7 +321,7 @@ const DashboardHome = () => {
                                                 <SelectTrigger className="w-[80px] h-10 rounded-xl bg-transparent border-0 focus:ring-0 font-black">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent className="glass border-white/10">
+                                                <SelectContent className="glass border-foreground/10">
                                                     {[3, 5, 8, 10, 15].map((num) => (
                                                         <SelectItem key={num} value={String(num)} className="font-bold">
                                                             {num} 
@@ -340,7 +347,7 @@ const DashboardHome = () => {
                                 </CardContent>
                             </Card>
                         ) : (
-                            <div className="h-full min-h-[400px] flex flex-col items-center justify-center p-20 glass border-2 border-dashed border-white/10 rounded-[64px] opacity-20 hover:opacity-40 transition-opacity">
+                            <div className="h-full min-h-[400px] flex flex-col items-center justify-center p-20 glass border-2 border-dashed border-foreground/10 rounded-[64px] opacity-20 hover:opacity-40 transition-opacity">
                                 <Sparkles size={80} className="mb-8" />
                                 <h3 className="text-3xl font-black mb-2">{t("dashboard.init_node")}</h3>
                                 <p className="text-lg font-medium">{t("dashboard.init_desc")}</p>
@@ -359,7 +366,7 @@ const DashboardHome = () => {
 
                                 {summary && (
                                     <Collapsible open={showSummary} onOpenChange={setShowSummary}>
-                                        <Card className="glass border-white/5 rounded-[32px] overflow-hidden shadow-2xl">
+                                        <Card className="glass border-foreground/5 rounded-[32px] overflow-hidden shadow-2xl">
                                             <CollapsibleTrigger asChild>
                                                 <button className="w-full text-left p-10 flex items-center justify-between group">
                                                     <div className="flex items-center gap-6">
@@ -369,7 +376,7 @@ const DashboardHome = () => {
                                                             <p className="text--[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.res_summary_desc")}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-white/5 transition-all">
+                                                    <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
                                                         {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                                     </div>
                                                 </button>
@@ -387,7 +394,7 @@ const DashboardHome = () => {
 
                                 {questions.length > 0 && (
                                     <Collapsible open={showQuestions} onOpenChange={setShowQuestions}>
-                                        <Card className="glass border-white/5 rounded-[32px] overflow-hidden shadow-2xl">
+                                        <Card className="glass border-foreground/5 rounded-[32px] overflow-hidden shadow-2xl">
                                             <CollapsibleTrigger asChild>
                                                 <button className="w-full text-left p-10 flex items-center justify-between group">
                                                     <div className="flex items-center gap-6">
@@ -397,7 +404,7 @@ const DashboardHome = () => {
                                                             <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{questions.length} {t("dashboard.res_quiz_desc")}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-white/5 transition-all">
+                                                    <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
                                                         {showQuestions ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                                     </div>
                                                 </button>
@@ -410,7 +417,7 @@ const DashboardHome = () => {
                                                         const correct = isShort && userAnswer ? isShortAnswerCorrect(userAnswer, q.answer || "") : userAnswer === q.answer
 
                                                         return (
-                                                            <Card key={i} className="bg-white/[0.02] border-white/5 rounded-[32px] p-8 space-y-6 relative overflow-hidden group">
+                                                            <Card key={i} className="bg-foreground/[0.02] border-foreground/5 rounded-[32px] p-8 space-y-6 relative overflow-hidden group">
                                                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                                                                 
                                                                 <div className="flex justify-between items-start gap-6">
@@ -439,15 +446,15 @@ const DashboardHome = () => {
                                                                                     key={idx}
                                                                                     onClick={() => handleAnswerSelect(i, opt)}
                                                                                     disabled={showResults}
-                                                                                    className={`h-auto py-6 px-8 justify-start text-left rounded-2xl transition-all duration-300 font-bold border border-white/5
-                                                                                        ${isSelected ? "bg-white text-black shadow-glow" : "bg-white/5 hover:bg-white/10 text-white/70"}
+                                                                                    className={`h-auto py-6 px-8 justify-start text-left rounded-2xl transition-all duration-300 font-bold border border-foreground/5
+                                                                                        ${isSelected ? "bg-white text-black shadow-glow" : "bg-foreground/5 hover:bg-foreground/10 text-foreground/70"}
                                                                                         ${isCorrect ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 !bg-opacity-20" : ""}
                                                                                         ${isWrong ? "bg-destructive/20 border-destructive/50 text-destructive-foreground !bg-opacity-20" : ""}
                                                                                     `}
                                                                                 >
                                                                                     <div className="flex items-center gap-4">
                                                                                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs transition-opacity
-                                                                                            ${isSelected ? "bg-black/10" : "bg-white/10 opacity-30"}`}>
+                                                                                            ${isSelected ? "bg-black/10" : "bg-foreground/10 opacity-30"}`}>
                                                                                             {String.fromCharCode(65 + idx)}
                                                                                         </div>
                                                                                         <span className="text-sm">{opt}</span>
@@ -496,9 +503,9 @@ const DashboardHome = () => {
                                                                     <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                                                                         <div className="space-y-2 text-center md:text-left">
                                             <h3 className="text-4xl font-black text-white tracking-tighter">{t("dashboard.mastery_confirmed")}</h3>
-                                            <p className="text-white/70 font-bold text-lg">{t("dashboard.mastery_desc")}</p>
+                                            <p className="text-foreground/70 font-bold text-lg">{t("dashboard.mastery_desc")}</p>
                                         </div>
-                                        <div className="flex items-center gap-8 glass p-8 rounded-[32px] border-white/20 bg-black/20">
+                                        <div className="flex items-center gap-8 glass p-8 rounded-[32px] border-foreground/20 bg-black/20">
                                             <div className="text-center">
                                                 <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-2">{t("dashboard.resultant_yield")}</div>
                                                 <div className="text-4xl font-black text-white">{scoreQuiz()} / {questions.length}</div>

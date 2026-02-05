@@ -139,8 +139,8 @@ const DashboardSettings = () => {
             </div>
 
             {/* Appearance Section */}
-            <Card className="settings-card glass border-white/5 rounded-[40px] shadow-2xl overflow-hidden">
-                <CardHeader className="px-8 py-6 border-b border-white/5">
+            <Card className="settings-card glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden">
+                <CardHeader className="px-8 py-6 border-b border-foreground/5">
                     <CardTitle className="flex items-center gap-3 text-xl font-black">
                         <Palette className="text-primary" />
                         Visual Interface
@@ -175,8 +175,8 @@ const DashboardSettings = () => {
             </Card>
 
             {/* Notifications Section */}
-            <Card className="settings-card glass border-white/5 rounded-[40px] shadow-2xl overflow-hidden">
-                <CardHeader className="px-8 py-6 border-b border-white/5">
+            <Card className="settings-card glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden">
+                <CardHeader className="px-8 py-6 border-b border-foreground/5">
                     <CardTitle className="flex items-center gap-3 text-xl font-black">
                         <Bell className="text-primary" />
                         Alert Signals
@@ -191,7 +191,7 @@ const DashboardSettings = () => {
                         onToggle={() => handleToggle("emailNotifications")}
                         icon={<Mail size={20} />}
                     />
-                    <div className="h-[1px] w-full bg-white/5 mx-8" />
+                    <div className="h-[1px] w-full bg-foreground/5 mx-8" />
                     <SettingRow 
                         title="Study Reminders" 
                         description="Nudges to maintain your learning streak"
@@ -203,8 +203,8 @@ const DashboardSettings = () => {
             </Card>
 
             {/* Privacy Section */}
-            <Card className="settings-card glass border-white/5 rounded-[40px] shadow-2xl overflow-hidden">
-                <CardHeader className="px-8 py-6 border-b border-white/5">
+            <Card className="settings-card glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden">
+                <CardHeader className="px-8 py-6 border-b border-foreground/5">
                     <CardTitle className="flex items-center gap-3 text-xl font-black">
                         <Shield className="text-primary" />
                         Data & Privacy
@@ -221,8 +221,8 @@ const DashboardSettings = () => {
                         badge="Beta"
                     />
                     
-                    <div className="p-8 bg-white/[0.02]">
-                        <div className="rounded-[24px] border border-white/5 p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-background/20">
+                    <div className="p-8 bg-foreground/[0.02]">
+                        <div className="rounded-[24px] border border-foreground/5 p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-background/20">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                                     <DownloadCloud size={24} />
@@ -235,10 +235,10 @@ const DashboardSettings = () => {
                             <Button 
                                 onClick={handleDownloadData} 
                                 disabled={isSaving}
-                                className="h-12 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 font-bold px-6 min-w-[180px]"
+                                className="h-12 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground border border-foreground/10 font-bold px-6 min-w-[180px]"
                             >
                                 {isSaving ? (
-                                    <span className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Packaging...</span>
+                                    <span className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" /> Packaging...</span>
                                 ) : (
                                     <span className="flex items-center gap-2">Download <Download size={16} /></span>
                                 )}
@@ -253,11 +253,6 @@ const DashboardSettings = () => {
                     background: linear-gradient(to right, #3b82f6, #60a5fa);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
-                }
-                .glass {
-                    background: rgba(12, 12, 14, 0.6);
-                    backdrop-filter: blur(12px);
-                    -webkit-backdrop-filter: blur(12px);
                 }
                 .shadow-glow {
                      box-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
@@ -276,7 +271,7 @@ function ThemeOption({ value, current, onClick, icon, title }: any) {
                 group relative p-6 rounded-[24px] border transition-all duration-300 flex flex-col items-center gap-4
                 ${isActive 
                     ? 'bg-primary/20 border-primary text-primary shadow-glow' 
-                    : 'bg-white/5 border-white/5 hover:bg-white/10 opacity-60 hover:opacity-100'}
+                    : 'bg-foreground/5 border-foreground/5 hover:bg-foreground/10 opacity-60 hover:opacity-100'}
             `}
         >
             {isActive && (
@@ -286,7 +281,7 @@ function ThemeOption({ value, current, onClick, icon, title }: any) {
                     </div>
                 </div>
             )}
-            <div className={`p-4 rounded-full ${isActive ? 'bg-primary text-white' : 'bg-white/10'}`}>
+            <div className={`p-4 rounded-full ${isActive ? 'bg-primary text-white' : 'bg-foreground/10'}`}>
                 {icon}
             </div>
             <span className="font-bold tracking-tight">{title}</span>
@@ -298,12 +293,12 @@ function SettingRow({ title, description, isChecked, onToggle, icon, badge }: an
     return (
         <div 
             onClick={onToggle}
-            className="flex items-center justify-between p-8 hover:bg-white/[0.02] transition-colors cursor-pointer group"
+            className="flex items-center justify-between p-8 hover:bg-foreground/[0.02] transition-colors cursor-pointer group"
         >
             <div className="flex items-center gap-6">
                 <div className={`
                     w-12 h-12 rounded-2xl flex items-center justify-center transition-colors
-                    ${isChecked ? 'bg-primary/20 text-primary' : 'bg-white/5 text-muted-foreground group-hover:bg-white/10'}
+                    ${isChecked ? 'bg-primary/20 text-primary' : 'bg-foreground/5 text-muted-foreground group-hover:bg-foreground/10'}
                 `}>
                     {icon}
                 </div>

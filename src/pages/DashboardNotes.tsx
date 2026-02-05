@@ -38,15 +38,17 @@ export default function DashboardNotes() {
     useGSAP(() => {
         if (!isLoading) {
             gsap.from(".notes-header", { opacity: 0, y: -20, duration: 0.6, ease: "power2.out" })
-            gsap.from(".note-card", {
-                opacity: 0,
-                y: 20,
-                stagger: 0.1,
-                duration: 0.5,
-                ease: "power2.out"
-            })
+            if (notes.length > 0) {
+                gsap.from(".note-card", {
+                    opacity: 0,
+                    y: 20,
+                    stagger: 0.1,
+                    duration: 0.5,
+                    ease: "power2.out"
+                })
+            }
         }
-    }, { scope: containerRef, dependencies: [isLoading] })
+    }, { scope: containerRef, dependencies: [isLoading, notes.length] })
 
     useEffect(() => {
         /*
@@ -169,8 +171,8 @@ export default function DashboardNotes() {
             </header>
 
             {isAddingNote && (
-                <Card className="glass shadow-2xl border-white/10 overflow-hidden stagger-card">
-                    <CardHeader className="bg-white/5 border-b border-white/5">
+                <Card className="glass shadow-2xl border-foreground/10 overflow-hidden stagger-card">
+                    <CardHeader className="bg-foreground/5 border-b border-foreground/5">
                         <CardTitle className="flex items-center gap-2">
                             <Sparkles className="h-5 w-5 text-primary" />
                             <span>Create New Note</span>
@@ -185,7 +187,7 @@ export default function DashboardNotes() {
                                     value={newNote.title}
                                     onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
                                     placeholder="Enter note title..."
-                                    className={`rounded-xl h-12 bg-white/5 border-white/10 ${errors.title ? "border-destructive" : ""}`}
+                                    className={`rounded-xl h-12 bg-foreground/5 border-foreground/10 ${errors.title ? "border-destructive" : ""}`}
                                 />
                                 {errors.title && (
                                     <p className="text-xs text-destructive flex items-center gap-1">
@@ -200,7 +202,7 @@ export default function DashboardNotes() {
                                     value={newNote.subject}
                                     onChange={(e) => setNewNote({ ...newNote, subject: e.target.value })}
                                     placeholder="e.g., Biology, Math..."
-                                    className="rounded-xl h-12 bg-white/5 border-white/10"
+                                    className="rounded-xl h-12 bg-foreground/5 border-foreground/10"
                                 />
                             </div>
                         </div>
@@ -238,13 +240,13 @@ export default function DashboardNotes() {
             {notes.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {notes.map((note) => (
-                        <Card key={note.id} className="note-card glass shadow-lg hover-lift border-white/5 flex flex-col group h-[400px]">
+                        <Card key={note.id} className="note-card glass shadow-lg hover-lift border-foreground/5 flex flex-col group h-[400px]">
                             <CardContent className="p-6 flex flex-col h-full">
                                 {editingId === note.id ? (
                                     <div className="space-y-4 flex-1 flex flex-col">
                                         <Input
                                             value={note.title}
-                                            className="rounded-xl bg-white/5 border-white/10"
+                                            className="rounded-xl bg-foreground/5 border-foreground/10"
                                             onChange={(e) =>
                                                 setNotes((prev) =>
                                                     prev.map((n) => (n.id === note.id ? { ...n, title: e.target.value } : n))
@@ -303,7 +305,7 @@ export default function DashboardNotes() {
                                             dangerouslySetInnerHTML={{ __html: note.content }}
                                         />
                                         
-                                        <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-40">
+                                        <div className="mt-4 pt-4 border-t border-foreground/5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-40">
                                             <Clock size={10} />
                                             <span>{new Date(note.updatedAt).toLocaleDateString()}</span>
                                         </div>
@@ -312,7 +314,7 @@ export default function DashboardNotes() {
                                             <div className="absolute inset-x-0 bottom-0 p-4 bg-destructive text-white backdrop-blur-md rounded-b-3xl flex flex-col gap-2">
                                                 <p className="text-xs font-bold uppercase tracking-wider text-center">Permanently remove this note?</p>
                                                 <div className="flex gap-2">
-                                                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)} className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20">
+                                                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)} className="flex-1 bg-foreground/10 border-foreground/20 text-white hover:bg-foreground/20">
                                                         Cancel
                                                     </Button>
                                                     <Button
@@ -333,7 +335,7 @@ export default function DashboardNotes() {
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-24 glass rounded-[40px] border-dashed space-y-6">
-                    <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                    <div className="w-24 h-24 rounded-full bg-foreground/5 flex items-center justify-center border border-foreground/10">
                         <FileText size={48} className="text-muted-foreground/30" />
                     </div>
                     <div className="text-center space-y-2">

@@ -45,11 +45,12 @@ const DashboardProfile = () => {
                 const userId = localStorage.getItem("userId")
                 if (!userId) return
 
-                const { data } = await apiClient.get(`/users/${userId}`)
+                const response = await apiClient.get(`/api/user/profile/${userId}`)
+                const userData = response.data.data
                 setProfileData((prev) => ({
                     ...prev,
-                    ...data,
-                    email: localStorage.getItem("userEmail") || data.email,
+                    ...userData,
+                    email: localStorage.getItem("userEmail") || userData.email,
                 }))
             } catch (err) {
                 console.error("Error loading profile:", err)
@@ -93,12 +94,14 @@ const DashboardProfile = () => {
                 email: localStorage.getItem("userEmail") || profileData.email,
             }
 
-            const { data: updatedProfile } = await apiClient.put(`/users/update-profile`, updatedProfileData)
+            const response = await apiClient.put(`/api/user/profile/${profileData.id}`, updatedProfileData)
+            const updatedProfile = response.data.data
 
-            updatedProfile.email = localStorage.getItem("userEmail") || updatedProfile.email
-
-            setProfileData(updatedProfile)
-            localStorage.setItem("userProfile", JSON.stringify(updatedProfile))
+            setProfileData((prev) => ({
+                ...prev,
+                ...updatedProfile,
+                email: localStorage.getItem("userEmail") || updatedProfile.email,
+            }))
             setIsEditing(false)
 
             appToast.profileUpdated()
