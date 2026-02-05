@@ -264,11 +264,12 @@ export const api = {
         return response.data
     },
 
-    async submitGeminiKey(userId: string, apiKey: string) {
-        const response = await apiClient.post("/api/user/submit-gemini-key", { userId, apiKey })
+    async submitGroqKey(userId: string, apiKey: string) {
+        const response = await apiClient.post("/api/user/submit-groq-key", { userId, apiKey })
         return response.data
     },
 
+    
     // Admin API
     async getAdminStats() {
         const response = await apiClient.get("/api/admin/stats")

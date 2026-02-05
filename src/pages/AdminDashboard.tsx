@@ -184,7 +184,7 @@ export default function AdminDashboard() {
                     { label: "Fleet Population", value: stats.totalUsers, sub: "+12% this month", icon: Users, color: "text-blue-500", trend: "up" },
                     { label: "Active Neurons", value: stats.activeNow, sub: "Live connected users", icon: Activity, color: "text-emerald-500", trend: "up" },
                     { label: "Knowledge Base", value: stats.totalNotes, sub: "Student notes indexed", icon: Database, color: "text-orange-500", trend: "up" },
-                    { label: "AI Fuel Level", value: stats.contributedKeys, sub: "Active Gemini keys", icon: Key, color: "text-purple-500", trend: "down" },
+                    { label: "AI Fuel Level", value: stats.contributedKeys, sub: "Active Groq keys", icon: Key, color: "text-purple-500", trend: "down" },
                 ].map((stat, i) => (
                     <Card key={i} className="admin-card glass border-white/5 shadow-xl hover-lift group overflow-hidden">
                         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
                                 <div className="space-y-6">
                                     {[
                                         { user: "User #842", act: "Generated Bio Summary", time: "2m ago" },
-                                        { user: "User #105", act: "Submitted Gemini Key", time: "15m ago" },
+                                        { user: "User #105", act: "Submitted Groq Key", time: "15m ago" },
                                         { user: "User #931", act: "Started JAMB Simulation", time: "1h ago" },
                                         { user: "User #442", act: "Updated Study Notes", time: "3h ago" },
                                     ].map((item, i) => (
@@ -377,7 +377,7 @@ export default function AdminDashboard() {
                             <CardHeader className="p-10 pb-6 border-b border-white/5 flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="text-3xl font-black">AI Inventory</CardTitle>
-                                    <CardDescription className="text-lg">Monitoring donated Gemini API resources for student compute</CardDescription>
+                                    <CardDescription className="text-lg">Monitoring donated Groq API resources for student compute</CardDescription>
                                 </div>
                                 <div className="p-4 bg-purple-500/10 rounded-[20px] text-purple-500 border border-purple-500/20">
                                     <Key size={32} />
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
                                 {[
                                     { level: "Security", msg: "Unauthorized access attempt blocked from IP 192.168.1.1", time: "14:22:15", status: "blocked" },
                                     { level: "Registry", msg: "Bulk database backup completed successfully", time: "12:00:00", status: "success" },
-                                    { level: "Compute", msg: "API Rate limit approaching threshold for Gemini Key ...XY2z", time: "11:45:32", status: "warning" },
+                                    { level: "Compute", msg: "API Rate limit approaching threshold for Groq Key ...XY2z", time: "11:45:32", status: "warning" },
                                     { level: "User", msg: "Administrative reset performed on account #290", time: "09:12:08", status: "info" },
                                 ].map((log, i) => (
                                     <div key={i} className="font-mono text-xs flex gap-6 p-4 rounded-xl hover:bg-white/[0.03] transition-all cursor-default group">

@@ -19,7 +19,7 @@ import {
     User
 } from "lucide-react"
 import { useAppToast } from "@/hooks/useAppToast"
-import apiClient, { api } from "@/lib/apiClient"
+import { api } from "@/lib/apiClient"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 
@@ -43,15 +43,15 @@ export default function SupportUs() {
     }, { scope: containerRef })
 
     /*
-     * How: Validates the input format and sends the API key to the backend for secure storage via the submitGeminiKey endpoint.
-     * Why: Allows users to securely contribute their own Gemini API keys to help sustain the platform's AI features.
+     * How: Validates the input format and sends the API key to the backend for secure storage via the submitGroqKey endpoint.
+     * Why: Allows users to securely contribute their own Groq API keys to help sustain the platform's AI features.
      */
     const handleSubmitKey = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!apiKey.trim() || apiKey.length < 20) {
             appToast.error({
                 title: "Invalid API Key",
-                description: "Please enter a valid Gemini API key to continue."
+                description: "Please enter a valid Groq API key to continue."
             })
             return
         }
@@ -61,7 +61,7 @@ export default function SupportUs() {
             const userId = localStorage.getItem("userId")
             if (!userId) throw new Error("User not found")
             
-            await api.submitGeminiKey(userId, apiKey.trim())
+            await api.submitGroqKey(userId, apiKey.trim())
             
             setIsSubmitted(true)
             appToast.success({
@@ -70,7 +70,6 @@ export default function SupportUs() {
             })
         } catch (err: any) {
             console.error("Failed to submit API key:", err)
-            // Error handling is managed by global interceptor
         } finally {
             setIsLoading(false)
         }
@@ -104,7 +103,7 @@ export default function SupportUs() {
                                 <span>Contribute AI Key</span>
                             </CardTitle>
                             <CardDescription className="text-lg">
-                                Submitting your Gemini API key helps reduce our operational costs, allowing us to serve more students.
+                                Submitting your Groq API key helps reduce our operational costs, allowing us to serve more students.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-10 pt-0 space-y-8">
@@ -124,12 +123,12 @@ export default function SupportUs() {
                             ) : (
                                 <form onSubmit={handleSubmitKey} className="space-y-6">
                                     <div className="space-y-4">
-                                        <Label htmlFor="apiKey" className="text-xs uppercase tracking-[0.2em] font-black opacity-40">Gemini API Key</Label>
+                                        <Label htmlFor="apiKey" className="text-xs uppercase tracking-[0.2em] font-black opacity-40">Groq API Key</Label>
                                         <div className="relative">
                                             <Input
                                                 id="apiKey"
                                                 type="password"
-                                                placeholder="AIzaSy..."
+                                                placeholder="gsk-..."
                                                 value={apiKey}
                                                 onChange={(e) => setApiKey(e.target.value)}
                                                 className="h-16 rounded-[24px] glass border-white/10 px-6 font-mono text-lg focus:ring-primary/20"
@@ -197,27 +196,27 @@ export default function SupportUs() {
                             {[
                                 {
                                     step: 1,
-                                    title: "Visit Google AI Studio",
-                                    desc: "Go to the official Google AI Studio platform where Gemini keys are managed.",
-                                    link: "https://aistudio.google.com/app/apikey",
+                                    title: "Visit Groq Console",
+                                    desc: "Go to the official Groq Console platform where API keys are managed.",
+                                    link: "https://console.groq.com/keys",
                                     icon: <ExternalLink size={20} />
                                 },
                                 {
                                     step: 2,
-                                    title: "Sign in with Google",
-                                    desc: "Use your standard Google account. It's free to create an API key for individual use.",
+                                    title: "Sign in with Github/Google",
+                                    desc: "Use your standard developer accounts. Groq offers high-speed AI access.",
                                     icon: <User size={20} />
                                 },
                                 {
                                     step: 3,
                                     title: "Generate API Key",
-                                    desc: "Click on the 'Create API key' button. Choose to create it in a new project or an existing one.",
+                                    desc: "Click on the 'Create API Key' button. Choose a descriptive name.",
                                     icon: <PlusStep />
                                 },
                                 {
                                     step: 4,
                                     title: "Copy and Paste",
-                                    desc: "Copy your new key (starts with AIza...) and paste it into the submission form here.",
+                                    desc: "Copy your new key (starts with gsk...) and paste it into the submission form here.",
                                     icon: <Copy size={20} />
                                 }
                             ].map((item, i) => (
