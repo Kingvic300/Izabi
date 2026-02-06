@@ -146,8 +146,8 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
             />
         )}
 
-        <Card>
-          <CardHeader>
+        <Card className="rounded-none md:rounded-lg border-x-0 md:border shadow-none md:shadow-card bg-transparent md:bg-card">
+          <CardHeader className="md:px-6 px-4">
             <CardTitle className="flex items-center space-x-2">
               <Upload className="h-5 w-5 text-primary" />
               <span>PDF Upload & Selection</span>
@@ -170,7 +170,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="upload" className="space-y-4">
+              <TabsContent value="upload" className="space-y-4 px-4 md:px-0">
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
                   <input type="file" onChange={handleFileUpload} className="hidden" id="pdf-upload" />
                   <label htmlFor="pdf-upload" className="cursor-pointer block">

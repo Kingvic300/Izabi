@@ -238,8 +238,8 @@ const DashboardHome = () => {
                                </CardTitle>
                                <CardDescription className="font-medium opacity-60">{t("dashboard.upload_desc")}</CardDescription>
                            </CardHeader>
-                           <CardContent className="px-6 md:px-8 pb-8 md:pb-10">
-                               <PDFUploadSection onSelectionComplete={handleSelectionComplete} />
+                           <CardContent className="p-0 md:px-8 pb-8 md:pb-10">
+                               <PDFUploadSection onSelectionComplete={handleSelectionComplete} className="md:mt-0" />
                            </CardContent>
                         </Card>
 

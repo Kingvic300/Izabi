@@ -25,8 +25,11 @@ import { Footer } from "@/components/Footer"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { useEffect, useRef } from "react"
 import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
 import { useLanguage } from "@/contexts/LanguageContext"
+
+gsap.registerPlugin(ScrollTrigger)
 
 const Home = () => {
     const { t } = useLanguage()
