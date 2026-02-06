@@ -96,6 +96,8 @@ const Login = () => {
             localStorage.setItem("authToken", accessToken)
             localStorage.setItem("userEmail", email)
             localStorage.setItem("userRole", role || "USER")
+            if (response.data.firstName) localStorage.setItem("userFirstName", response.data.firstName)
+            if (response.data.lastName) localStorage.setItem("userLastName", response.data.lastName)
 
             appToast.success({
                 title: "Login Successful",

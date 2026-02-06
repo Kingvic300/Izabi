@@ -2,12 +2,12 @@
 
 import type React from "react"
 import { useState, useRef } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Brain, Check, X, Mail, Lock, Sparkles, Loader2, ArrowLeft, ShieldCheck, Eye, EyeOff } from "lucide-react"
+import { Brain, Check, X, Mail, Lock, Sparkles, Loader2, ArrowLeft, ShieldCheck, Eye, EyeOff, Star } from "lucide-react"
 import axios from "axios"
 import { BASE_URL } from "@/constants"
 import { useAppToast } from "@/hooks/useAppToast"
@@ -19,6 +19,9 @@ import { useLanguage } from "@/contexts/LanguageContext"
 
 const Signup = () => {
     const { t } = useLanguage()
+    const location = useLocation()
+    const queryParams = new URLSearchParams(location.search)
+    const selectedPlan = queryParams.get("plan")
     const cardRef = useRef<HTMLDivElement>(null)
     const [formData, setFormData] = useState({
         email: "",
@@ -158,6 +161,13 @@ const Signup = () => {
                     <div>
                         <h1 className="text-4xl font-black tracking-tighter text-foreground">{t("auth.signup").split(' ')[0]} <span className="text-gradient">{t("auth.signup").split(' ')[1]}</span></h1>
                         <p className="text-muted-foreground font-medium">Create your account to start your learning journey.</p>
+                        
+                        {selectedPlan && (
+                            <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-primary/20 bg-primary/5">
+                                <Star size={12} className="text-primary fill-primary animate-pulse" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Selected Node: {selectedPlan.replace(/-/g, ' ')}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 

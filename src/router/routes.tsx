@@ -1,31 +1,32 @@
-import React, { lazy, Suspense } from "react"
+import React, { Suspense } from "react"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import ErrorBoundary from "@/components/ErrorBoundary"
 import { PageLoader } from "@/components/PageLoader"
+import { lazyRetry as lazy } from "@/lib/lazyLoad"
 
 // Lazy-loaded Pages
-const Home = lazy(() => import("@/pages/Home"))
-const Login = lazy(() => import("@/pages/Login"))
-const Signup = lazy(() => import("@/pages/Signup"))
-const Dashboard = lazy(() => import("@/pages/Dashboard"))
-const DashboardHome = lazy(() => import("@/pages/DashboardHome"))
-const DashboardHistory = lazy(() => import("@/pages/DashboardHistory"))
-const DashboardProfile = lazy(() => import("@/pages/DashboardProfile"))
-const DashboardNotes = lazy(() => import("@/pages/DashboardNotes"))
-const DashboardAIAssistant = lazy(() => import("@/pages/DashboardAIAssistant"))
-const DashboardProgress = lazy(() => import("@/pages/DashboardProgress"))
-const DashboardSettings = lazy(() => import("@/pages/DashboardSettings"))
-const DashboardExams = lazy(() => import("@/pages/DashboardExams"))
-const NotFound = lazy(() => import("@/pages/NotFound"))
-const OTP = lazy(() => import("@/pages/OTP"))
-const Features = lazy(() => import("@/pages/Features"))
-const HowItWorks = lazy(() => import("@/pages/HowItWorks"))
-const Testimonials = lazy(() => import("@/pages/Testimonials"))
-const Pricing = lazy(() => import("@/pages/Pricing"))
-const FAQ = lazy(() => import("@/pages/FAQ"))
-const About = lazy(() => import("@/pages/About"))
-const SupportUs = lazy(() => import("@/pages/SupportUs"))
-const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"))
+const Home = lazy(() => import("@/pages/Home"), "Home")
+const Login = lazy(() => import("@/pages/Login"), "Login")
+const Signup = lazy(() => import("@/pages/Signup"), "Signup")
+const Dashboard = lazy(() => import("@/pages/Dashboard"), "Dashboard")
+const DashboardHome = lazy(() => import("@/pages/DashboardHome"), "DashboardHome")
+const DashboardHistory = lazy(() => import("@/pages/DashboardHistory"), "DashboardHistory")
+const DashboardProfile = lazy(() => import("@/pages/DashboardProfile"), "DashboardProfile")
+const DashboardNotes = lazy(() => import("@/pages/DashboardNotes"), "DashboardNotes")
+const DashboardAIAssistant = lazy(() => import("@/pages/DashboardAIAssistant"), "DashboardAIAssistant")
+const DashboardProgress = lazy(() => import("@/pages/DashboardProgress"), "DashboardProgress")
+const DashboardSettings = lazy(() => import("@/pages/DashboardSettings"), "DashboardSettings")
+const DashboardExams = lazy(() => import("@/pages/DashboardExams"), "DashboardExams")
+const NotFound = lazy(() => import("@/pages/NotFound"), "NotFound")
+const OTP = lazy(() => import("@/pages/OTP"), "OTP")
+const Features = lazy(() => import("@/pages/Features"), "Features")
+const HowItWorks = lazy(() => import("@/pages/HowItWorks"), "HowItWorks")
+const Testimonials = lazy(() => import("@/pages/Testimonials"), "Testimonials")
+const Pricing = lazy(() => import("@/pages/Pricing"), "Pricing")
+const FAQ = lazy(() => import("@/pages/FAQ"), "FAQ")
+const About = lazy(() => import("@/pages/About"), "About")
+const SupportUs = lazy(() => import("@/pages/SupportUs"), "SupportUs")
+const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"), "AdminDashboard")
 
 const withErrorBoundary = (Component: React.ComponentType) => (
     <ErrorBoundary>

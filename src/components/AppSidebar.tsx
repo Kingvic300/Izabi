@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp } from "lucide-react"
 import apiClient from "@/lib/apiClient"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -89,10 +90,35 @@ export function AppSidebar() {
     const appToast = useAppToast()
     const currentPath = location.pathname
     const collapsed = state === "collapsed"
-    const userRole = localStorage.getItem("userRole")
-    const userEmail = localStorage.getItem("userEmail") || "scholar@izabi.ai"
-    // Extract first letter for avatar
-    const userInitial = userEmail.charAt(0).toUpperCase()
+    const [userInfo, setUserInfo] = useState({
+        name: localStorage.getItem("userFirstName") 
+            ? `${localStorage.getItem("userFirstName")} ${localStorage.getItem("userLastName") || ""}`.trim()
+            : "Scholar",
+        email: localStorage.getItem("userEmail") || "scholar@izabi.ai",
+        role: localStorage.getItem("userRole"),
+        initial: (localStorage.getItem("userFirstName")?.[0] || localStorage.getItem("userEmail")?.[0] || "S").toUpperCase()
+    })
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const firstName = localStorage.getItem("userFirstName")
+            const lastName = localStorage.getItem("userLastName")
+            const email = localStorage.getItem("userEmail") || "scholar@izabi.ai"
+            
+            setUserInfo({
+                name: firstName ? `${firstName} ${lastName || ""}`.trim() : "Scholar",
+                email: email,
+                role: localStorage.getItem("userRole"),
+                initial: (firstName?.[0] || email?.[0] || "S").toUpperCase()
+            })
+        }
+
+        window.addEventListener("storage", handleStorageChange)
+        // Initial sync
+        handleStorageChange()
+        
+        return () => window.removeEventListener("storage", handleStorageChange)
+    }, [])
 
     const isActive = (path: string) => currentPath === path
 
@@ -107,6 +133,9 @@ export function AppSidebar() {
             localStorage.removeItem("userId")
             localStorage.removeItem("authToken")
             localStorage.removeItem("userEmail")
+            localStorage.removeItem("userFirstName")
+            localStorage.removeItem("userLastName")
+            localStorage.removeItem("userRole")
 
             appToast.success({
                 title: "Logged out",
@@ -213,7 +242,7 @@ export function AppSidebar() {
                                 )
                             })}
                             
-                            {userRole === "ADMIN" && (
+                            {userInfo.role === "ADMIN" && (
                                 <SidebarMenuItem>
                                     <SidebarMenuButton 
                                         isActive={isActive("/dashboard/admin")}
@@ -243,12 +272,12 @@ export function AppSidebar() {
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-14 rounded-xl transition-all"
                         >
                             <Avatar className="h-9 w-9 rounded-lg border border-white/10 shadow-sm">
-                                <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userEmail}`} alt={userEmail} />
-                                <AvatarFallback className="rounded-lg font-bold bg-primary/20 text-primary">{userInitial}</AvatarFallback>
+                                <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userInfo.email}`} alt={userInfo.email} />
+                                <AvatarFallback className="rounded-lg font-bold bg-primary/20 text-primary">{userInfo.initial}</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-bold mb-0.5">Scholar</span>
-                                <span className="truncate text-xs opacity-60 font-medium">{userEmail}</span>
+                                <span className="truncate font-bold mb-0.5">{userInfo.name}</span>
+                                <span className="truncate text-xs opacity-60 font-medium">{userInfo.email}</span>
                             </div>
                             <ChevronUp className="ml-auto size-4 opacity-50" />
                         </SidebarMenuButton>

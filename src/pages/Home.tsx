@@ -348,15 +348,17 @@ const Home = () => {
                                         ))}
                                     </ul>
                                     
-                                    <Button
-                                        className={`w-full h-14 rounded-2xl font-black text-lg transition-all ${
-                                            plan.hot 
-                                                ? "bg-primary hover:bg-primary/90 text-white shadow-glow" 
-                                                : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
-                                        }`}
-                                    >
-                                        Deploy Now
-                                    </Button>
+                                    <Link to={`/signup?plan=${plan.name.toLowerCase().replace(' ', '-')}`} className="w-full">
+                                        <Button
+                                            className={`w-full h-14 rounded-2xl font-black text-lg transition-all ${
+                                                plan.hot 
+                                                    ? "bg-primary hover:bg-primary/90 text-white shadow-glow" 
+                                                    : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                                            }`}
+                                        >
+                                            Deploy Now
+                                        </Button>
+                                    </Link>
                                 </Card>
                             ))}
                         </div>
@@ -406,7 +408,10 @@ const Home = () => {
                         </div>
                         <h2 className="text-6xl sm:text-7xl font-black mb-8 tracking-tighter text-foreground">{t("cta.upgrade")}</h2>
                         <p className="text-xl text-muted-foreground mb-12 font-medium">
-                            {t("cta.tagline").split('. ').join('. \n')}
+                            {t("cta.tagline").includes('. ') 
+                                ? t("cta.tagline").split('. ').join('. \n')
+                                : t("cta.tagline")
+                            }
                         </p>
                         <Link to="/signup">
                             <Button size="lg" className="h-20 px-14 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-black text-2xl shadow-glow-primary group">

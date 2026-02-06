@@ -128,7 +128,7 @@ const DashboardSettings = () => {
     }
 
     return (
-        <div ref={containerRef} className="space-y-8 w-full pb-20 max-w-4xl mx-auto">
+        <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
             <div className="settings-header">
                 <h1 className="text-4xl font-black tracking-tighter leading-none mb-2">
                     System <span className="text-gradient">Preferences</span>

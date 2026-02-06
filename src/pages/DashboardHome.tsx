@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, useRef } from "react"
-import apiClient from "@/lib/apiClient"
+import apiClient, { api } from "@/lib/apiClient"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BASE_URL } from "@/constants"
 import { motion, AnimatePresence } from "framer-motion"
-import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw, Activity, Cpu } from "lucide-react"
+import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw, Activity, Cpu, Download } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import PDFUploadSection from "@/components/pdf/PDFUploadSection"
 import type { PDFSelection, StudyQuestionResponse } from "@/types/pdf"
@@ -58,33 +58,34 @@ const DashboardHome = () => {
           }, "-=0.4")
     }, { scope: containerRef })
 
-    useEffect(() => {
-        /*
-         * How: Fetches user statistics and pet data from the backend to display on the dashboard.
-         * Why: Provides users with immediate feedback on their learning progress and engagement.
-         */
-        const fetchStats = async () => {
-            if (!userId) return
-            try {
-                const response = await apiClient.get(`/api/user/stats?userId=${userId}`)
-                // response.data is { success: boolean, data: { ...Stats } }
-                setUserStats(response.data)
-                
-                // Also get pet details if available from profile
-                const profileRes = await apiClient.get(`/api/user/profile/${userId}`)
-                if (profileRes.data?.data?.pet) {
-                    setUserStats((prev: any) => ({
-                        ...prev,
-                        data: {
-                            ...prev?.data,
-                            pet: profileRes.data.data.pet
-                        }
-                    }))
-                }
-            } catch (err) {
-                console.error("Failed to fetch user stats:", err)
+    const fetchStats = async () => {
+        if (!userId) return
+        try {
+            // Daily Check-in to update streak
+            await apiClient.post('/api/user/check-in', { userId })
+            
+            const [statsRes, profileRes] = await Promise.all([
+                apiClient.get(`/api/user/stats?userId=${userId}`),
+                apiClient.get(`/api/user/profile/${userId}`)
+            ])
+
+            setUserStats(statsRes.data)
+            
+            if (profileRes.data?.data?.pet) {
+                setUserStats((prev: any) => ({
+                    ...prev,
+                    data: {
+                        ...prev?.data,
+                        pet: profileRes.data.data.pet
+                    }
+                }))
             }
+        } catch (err) {
+            console.error("Failed to fetch user stats:", err)
         }
+    }
+
+    useEffect(() => {
         fetchStats()
     }, [userId])
 
@@ -186,6 +187,67 @@ const DashboardHome = () => {
             }
             return acc + (userAnswer === q.answer ? 1 : 0)
         }, 0)
+
+    const handleFinalizeQuiz = async () => {
+        const score = scoreQuiz()
+        const total = questions.length
+        const percentage = Math.round((score / total) * 100)
+        
+        setShowResults(true)
+        gsap.to(window, { duration: 1, scrollTo: "#mastery-verdict", ease: "expo.out" })
+
+        try {
+            await api.submitQuizResult({
+                userId,
+                score: percentage,
+                totalQuestions: total,
+                correctAnswers: score,
+                subject: pdfFile?.name.split('.')[0] || "General",
+                date: new Date().toISOString()
+            })
+            // Refresh stats to show new points/progress
+            fetchStats()
+        } catch (err) {
+            console.error("Failed to submit quiz result:", err)
+        }
+    }
+
+    const handleDownload = (content: string, filename: string) => {
+        const header = `----------------------------------------\nIZABI NEURAL NODE: DATA YIELD\nTIMESTAMP: ${new Date().toLocaleString()}\nPROTOCOL: DEEPLAYER_V2\n----------------------------------------\n\n`;
+        const blob = new Blob([header + content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${filename}.md`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    const downloadSummary = () => {
+        if (!summary) return;
+        handleDownload(summary, `Izabi_Summary_${pdfFile?.name.split('.')[0] || 'Note'}`);
+    }
+
+    const downloadQuiz = () => {
+        if (questions.length === 0) return;
+        let content = `# Quiz: ${pdfFile?.name.split('.')[0] || 'Document'}\n\n`;
+        questions.forEach((q, i) => {
+            content += `## Question ${i + 1}\n${q.question}\n\n`;
+            if (q.options && q.options.length > 0) {
+                content += `Options:\n`;
+                q.options.forEach((opt, idx) => {
+                    content += `${String.fromCharCode(65 + idx)}) ${opt}\n`;
+                });
+                content += `\n`;
+            }
+            content += `**Correct Answer:** ${q.answer}\n`;
+            if (q.explanation) content += `**Explanation:** ${q.explanation}\n`;
+            content += `\n---\n\n`;
+        });
+        handleDownload(content, `Izabi_Quiz_${pdfFile?.name.split('.')[0] || 'Assessment'}`);
+    }
 
     return (
         <ErrorBoundary>
@@ -520,8 +582,21 @@ const DashboardHome = () => {
                                                             <p className="text--[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.res_summary_desc")}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
-                                                        {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                                    <div className="flex items-center gap-3">
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            className="h-10 w-10 rounded-xl glass hover:bg-primary/20 text-primary"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                downloadSummary();
+                                                            }}
+                                                        >
+                                                            <Download size={18} />
+                                                        </Button>
+                                                        <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
+                                                            {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                                        </div>
                                                     </div>
                                                 </button>
                                             </CollapsibleTrigger>
@@ -548,8 +623,21 @@ const DashboardHome = () => {
                                                             <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{questions.length} {t("dashboard.res_quiz_desc")}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
-                                                        {showQuestions ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                                    <div className="flex items-center gap-3">
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            className="h-10 w-10 rounded-xl glass hover:bg-primary/20 text-primary"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                downloadQuiz();
+                                                            }}
+                                                        >
+                                                            <Download size={18} />
+                                                        </Button>
+                                                        <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
+                                                            {showQuestions ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                                        </div>
                                                     </div>
                                                 </button>
                                             </CollapsibleTrigger>
@@ -624,6 +712,12 @@ const DashboardHome = () => {
                                                                         )}
                                                                     </div>
                                                                 )}
+                                                                {showResults && q.explanation && (
+                                                                    <div className="p-6 rounded-2xl glass border-primary/20 bg-primary/5 mt-4">
+                                                                        <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Neural Insight</div>
+                                                                        <p className="text-sm font-bold opacity-80 italic">"{q.explanation}"</p>
+                                                                    </div>
+                                                                )}
                                                             </Card>
                                                         )
                                                     })}
@@ -632,14 +726,10 @@ const DashboardHome = () => {
                                                         <div className="pt-8">
                                                             {!showResults ? (
                                                                 <Button 
-                                                                    onClick={() => {
-                                                                        setShowResults(true)
-                                                                        gsap.to(window, { duration: 1, scrollTo: "#mastery-verdict", ease: "expo.out" })
-                                                                    }} 
+                                                                    onClick={handleFinalizeQuiz} 
                                                                     className="w-full h-20 rounded-[32px] bg-primary text-primary-foreground hover:bg-primary/90 font-black text-2xl shadow-glow group"
                                                                 >
                                                                     <span>{t("dashboard.finalize")}</span>
-                                                                    {/* <ArrowLeft className="rotate-180 ml-4 group-hover:translate-x-2 transition-transform" /> */}
                                                                 </Button>
                                                             ) : (
                                                                 <div id="mastery-verdict" className="p-10 rounded-[48px] bg-gradient-hero relative overflow-hidden group shadow-glow">

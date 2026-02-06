@@ -69,9 +69,28 @@ const DashboardExams = () => {
     }
   };
 
-  const submitExam = () => {
+  const submitExam = async () => {
     setIsSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const total = selectedExam.questions.length;
+    const percentage = Math.round((score / total) * 100);
+
+    try {
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        await api.submitQuizResult({
+          userId,
+          score: percentage,
+          totalQuestions: total,
+          correctAnswers: score,
+          subject: selectedExam.subject || "Examination",
+          date: new Date().toISOString()
+        });
+      }
+    } catch (err) {
+      console.error("Failed to submit exam result:", err);
+    }
   };
 
   const score = selectedExam ? selectedExam.questions.reduce((acc: number, q: any, i: number) => {

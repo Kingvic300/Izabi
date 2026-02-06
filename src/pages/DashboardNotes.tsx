@@ -157,7 +157,7 @@ export default function DashboardNotes() {
     }
 
     return (
-        <div ref={containerRef} className="space-y-8 w-full pb-12">
+        <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
             <header className="notes-header flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h1 className="text-5xl font-extrabold tracking-tighter mb-2 text-gradient">My Notes</h1>

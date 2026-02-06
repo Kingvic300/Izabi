@@ -40,4 +40,5 @@ export interface StudyQuestionResponse {
   answer: string;
   difficulty: 'easy' | 'medium' | 'hard';
   questionType: 'multiple_choice' | 'true_false' | 'short_answer' | string;
+  explanation?: string;
 }

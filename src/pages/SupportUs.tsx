@@ -76,7 +76,7 @@ export default function SupportUs() {
     }
 
     return (
-        <div ref={containerRef} className="space-y-12 w-full pb-20 px-6 lg:px-12 pt-12 max-w-7xl mx-auto">
+        <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
             {/* Header section */}
             <div className="support-header space-y-4 text-center">
                 <div className="flex justify-center mb-6">

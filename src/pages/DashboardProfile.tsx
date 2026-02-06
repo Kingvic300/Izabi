@@ -52,6 +52,9 @@ const DashboardProfile = () => {
                     ...userData,
                     email: localStorage.getItem("userEmail") || userData.email,
                 }))
+                if (userData.firstName) localStorage.setItem("userFirstName", userData.firstName)
+                if (userData.lastName) localStorage.setItem("userLastName", userData.lastName)
+                window.dispatchEvent(new Event("storage"))
             } catch (err) {
                 console.error("Error loading profile:", err)
             }
@@ -102,6 +105,10 @@ const DashboardProfile = () => {
                 ...updatedProfile,
                 email: localStorage.getItem("userEmail") || updatedProfile.email,
             }))
+            if (updatedProfile.firstName) localStorage.setItem("userFirstName", updatedProfile.firstName)
+            if (updatedProfile.lastName) localStorage.setItem("userLastName", updatedProfile.lastName)
+            window.dispatchEvent(new Event("storage"))
+            
             setIsEditing(false)
 
             appToast.profileUpdated()
@@ -131,7 +138,7 @@ const DashboardProfile = () => {
     }
 
     return (
-        <div ref={containerRef} className="space-y-6 md:space-y-8 w-full pb-20 max-w-5xl mx-auto px-0 md:px-0 pt-6 md:pt-0">
+        <div ref={containerRef} className="space-y-6 md:space-y-8 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
             <div className="profile-header flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h1 className="text-4xl font-black tracking-tighter leading-none mb-2">

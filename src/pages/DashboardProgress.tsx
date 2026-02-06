@@ -56,14 +56,44 @@ const DashboardProgress = () => {
     useEffect(() => {
         const fetchProgress = async () => {
             try {
-                const res = await api.getUserStats()
+                const [res, results] = await Promise.all([
+                    api.getUserStats(),
+                    api.getQuizResults()
+                ])
+                
                 if (res.success && res.data) {
+                    const quizData = results?.data || []
+                    const avgScore = quizData.length > 0 
+                        ? Math.round(quizData.reduce((acc: number, q: any) => acc + q.score, 0) / quizData.length)
+                        : 0
+
                     setProgressData({
-                        totalQuizzes: res.data.studyStats?.quizzes || 0,
-                        averageScore: 0, // Calculate this if backend provides it
+                        totalQuizzes: res.data.studyStats?.quizzes || quizData.length,
+                        averageScore: avgScore,
                         studyStreak: res.data.studyStreak || 0,
-                        totalStudyHours: 0, // Placeholder for now
+                        totalStudyHours: Math.round((res.data.studyStats?.quizzes || quizData.length) * 0.4), // Est. 24 mins per session
                     })
+
+                    // Growth Trend Chart (Last 7 Sessions)
+                    const growthData = quizData.slice(-7).map((q: any) => ({
+                        date: new Date(q.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                        score: q.score
+                    }))
+                    setChartData(growthData)
+
+                    // Subject Mastery Chart
+                    const subjects: Record<string, { total: number, count: number }> = {}
+                    quizData.forEach((q: any) => {
+                        const sub = q.subject || "General"
+                        if (!subjects[sub]) subjects[sub] = { total: 0, count: 0 }
+                        subjects[sub].total += q.score
+                        subjects[sub].count += 1
+                    })
+                    const subData = Object.keys(subjects).map(sub => ({
+                        subject: sub,
+                        score: Math.round(subjects[sub].total / subjects[sub].count)
+                    }))
+                    setSubjectData(subData as any)
                 }
             } catch (error) {
                 console.error("Failed to fetch user stats:", error)
@@ -85,7 +115,7 @@ const DashboardProgress = () => {
     }
 
     return (
-        <div ref={containerRef} className="space-y-8 w-full pb-12">
+        <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
             <div className="prog-header flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h1 className="text-5xl font-extrabold tracking-tighter mb-2">
