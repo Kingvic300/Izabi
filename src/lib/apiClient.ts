@@ -289,6 +289,11 @@ export const api = {
     async deleteUser(userId: string) {
         await apiClient.delete(`/api/admin/users/${userId}`)
     },
+
+    async logout(userId: string | null) {
+        if (!userId) return;
+        await apiClient.post("/api/user/logout", { userId });
+    }
 }
 
 export default apiClient

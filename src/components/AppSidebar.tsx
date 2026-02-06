@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp } from "lucide-react"
-import apiClient from "@/lib/apiClient"
+import apiClient, { api } from "@/lib/apiClient"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
     Sidebar,
@@ -128,7 +128,7 @@ export function AppSidebar() {
      */
     const handleLogout = async () => {
         try {
-            await apiClient.post(`/users/logout`)
+            await api.logout(localStorage.getItem("userId"))
             // Clear local storage
             localStorage.removeItem("userId")
             localStorage.removeItem("authToken")
