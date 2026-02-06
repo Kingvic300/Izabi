@@ -58,7 +58,8 @@ const navigationItems = [
         title: "Exam Center",
         url: "/dashboard/exams",
         icon: GraduationCap,
-        description: "JAMB and Past Questions",
+        description: "Practice past questions",
+        status: "unavailable",
     },
     {
         title: "Support Us",
@@ -191,15 +192,23 @@ export function AppSidebar() {
                                                 href={item.url}
                                                 onClick={(e) => {
                                                     e.preventDefault()
+                                                    if ((item as any).status === "unavailable") return
                                                     navigate(item.url)
                                                 }}
                                                 className="flex items-center gap-4"
                                             >
                                                 <item.icon className={`h-5 w-5 transition-transform group-hover:scale-110 ${active ? "text-primary shadow-glow" : "opacity-60"}`} />
                                                 {!collapsed && (
-                                                    <span className={`font-bold text-sm tracking-tight ${active ? "text-gradient" : "opacity-80"}`}>
-                                                        {item.title}
-                                                    </span>
+                                                    <div className="flex flex-1 items-center justify-between">
+                                                        <span className={`font-bold text-sm tracking-tight ${active ? "text-gradient" : "opacity-80"}`}>
+                                                            {item.title}
+                                                        </span>
+                                                        {(item as any).status === "unavailable" && (
+                                                            <span className="text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-500 border border-rose-500/10">
+                                                                Soon
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 )}
                                             </a>
                                         </SidebarMenuButton>
