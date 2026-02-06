@@ -131,7 +131,7 @@ const DashboardProfile = () => {
     }
 
     return (
-        <div ref={containerRef} className="space-y-8 w-full pb-20 max-w-5xl mx-auto">
+        <div ref={containerRef} className="space-y-6 md:space-y-8 w-full pb-20 max-w-5xl mx-auto px-0 md:px-0 pt-6 md:pt-0">
             <div className="profile-header flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h1 className="text-4xl font-black tracking-tighter leading-none mb-2">

@@ -178,11 +178,11 @@ const DashboardHome = () => {
 
     return (
         <ErrorBoundary>
-            <div ref={containerRef} className="space-y-12 w-full pb-20 px-6 lg:px-12 pt-12">
+            <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
                 <ErrorList errors={errors} onDismiss={clearError} />
 
                 {/* Header Section */}
-                <div className="welcome-text space-y-8 pb-6 border-b border-foreground/5">
+                <div className="welcome-text space-y-8 pb-6 border-b border-foreground/5 px-4 md:px-0">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
@@ -207,8 +207,8 @@ const DashboardHome = () => {
                         )}
                     </div>
                     
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex flex-col md:flex-row items-center gap-4">
                             <div className="p-3 rounded-2xl bg-primary/10 text-primary animate-pulse">
                                <LayoutGrid size={24} />
                             </div>
@@ -224,12 +224,12 @@ const DashboardHome = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
                     {/* Left Column: Data Ingestion */}
                     <div className="lg:col-span-12 xl:col-span-4 space-y-8 stagger-card">
-                        <Card className="glass shadow-2xl border-foreground/5 rounded-[32px] overflow-hidden group">
+                        <Card className="glass shadow-2xl border-foreground/5 rounded-none md:rounded-[32px] border-x-0 md:border overflow-hidden group">
                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl group-hover:bg-primary/10 transition-all pointer-events-none" />
-                           <CardHeader className="p-8">
+                           <CardHeader className="p-6 md:p-8">
                                <CardTitle className="flex items-center gap-3 text-2xl font-black">
                                    <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
                                         <FileText size={20} />
@@ -238,13 +238,13 @@ const DashboardHome = () => {
                                </CardTitle>
                                <CardDescription className="font-medium opacity-60">{t("dashboard.upload_desc")}</CardDescription>
                            </CardHeader>
-                           <CardContent className="px-8 pb-10">
+                           <CardContent className="px-6 md:px-8 pb-8 md:pb-10">
                                <PDFUploadSection onSelectionComplete={handleSelectionComplete} />
                            </CardContent>
                         </Card>
 
                         {/* Telemetry Stats */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-4 px-4 md:px-0">
                             <Card className="glass border-foreground/5 p-6 rounded-[24px] space-y-4">
                                 <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500 w-fit shadow-xl"><BarChart3 size={20} /></div>
                                 <div>
@@ -265,7 +265,7 @@ const DashboardHome = () => {
                     {/* Right Column: AI Modules */}
                     <div className="lg:col-span-12 xl:col-span-8 space-y-8">
                         {pdfSelection ? (
-                            <Card className="glass border-foreground/5 rounded-[40px] p-2 relative overflow-hidden stagger-card shadow-2xl">
+                            <Card className="glass border-foreground/5 rounded-none md:rounded-[40px] border-x-0 md:border p-2 relative overflow-hidden stagger-card shadow-2xl">
                                 <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
                                 <CardHeader className="p-10 pb-6">
                                     <div className="flex items-center justify-between mb-2">
@@ -383,7 +383,7 @@ const DashboardHome = () => {
 
                         {/* Results Hub */}
                         {(summary || questions.length > 0 || flashcards.length > 0) && (
-                            <div className="space-y-8 pt-8 stagger-card">
+                            <div className="space-y-8 pt-8 stagger-card px-4 md:px-0">
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-4xl font-black flex items-center gap-4 tracking-tighter">
                                         <div className="w-2 h-10 bg-gradient-hero rounded-full" />
@@ -393,7 +393,7 @@ const DashboardHome = () => {
 
                                 {flashcards.length > 0 && (
                                     <Collapsible open={showFlashcards} onOpenChange={setShowFlashcards}>
-                                        <Card className="glass border-foreground/5 rounded-[32px] overflow-hidden shadow-2xl">
+                                        <Card className="glass border-foreground/5 rounded-none md:rounded-[32px] border-x-0 md:border overflow-hidden shadow-2xl">
                                             <CollapsibleTrigger asChild>
                                                 <button className="w-full text-left p-10 flex items-center justify-between group">
                                                     <div className="flex items-center gap-6">
@@ -475,7 +475,7 @@ const DashboardHome = () => {
 
                                 {summary && (
                                     <Collapsible open={showSummary} onOpenChange={setShowSummary}>
-                                        <Card className="glass border-foreground/5 rounded-[32px] overflow-hidden shadow-2xl">
+                                        <Card className="glass border-foreground/5 rounded-none md:rounded-[32px] border-x-0 md:border overflow-hidden shadow-2xl">
                                             <CollapsibleTrigger asChild>
                                                 <button className="w-full text-left p-10 flex items-center justify-between group">
                                                     <div className="flex items-center gap-6">
@@ -503,7 +503,7 @@ const DashboardHome = () => {
 
                                 {questions.length > 0 && (
                                     <Collapsible open={showQuestions} onOpenChange={setShowQuestions}>
-                                        <Card className="glass border-foreground/5 rounded-[32px] overflow-hidden shadow-2xl">
+                                        <Card className="glass border-foreground/5 rounded-none md:rounded-[32px] border-x-0 md:border overflow-hidden shadow-2xl">
                                             <CollapsibleTrigger asChild>
                                                 <button className="w-full text-left p-10 flex items-center justify-between group">
                                                     <div className="flex items-center gap-6">

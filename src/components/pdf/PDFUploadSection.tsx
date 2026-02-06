@@ -40,21 +40,43 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.type !== 'application/pdf') {
-      addError({ message: 'Please select a PDF file', type: 'validation' });
-      return;
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+      'application/msword', // doc
+      'application/vnd.ms-excel', // xls
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
+      'application/vnd.ms-powerpoint', // ppt
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation', // pptx
+      'text/plain',
+      'text/csv',
+      'text/markdown'
+    ];
+
+    // Loose check if type is empty (some systems) or matches
+    if (file.type && !allowedTypes.includes(file.type)) {
+       // Optional: Allow it anyway if it looks like a text file? For now, just warn.
+       // addError({ message: 'Warning: Uncommon file type, conversion might fail.', type: 'validation' });
     }
 
-    const maxSize = 10 * 1024 * 1024;
+    const maxSize = 100 * 1024 * 1024; // 100MB
     if (file.size > maxSize) {
-      addError({ message: 'File size must be less than 10MB', type: 'validation' });
+      addError({ message: 'File size must be less than 100MB', type: 'validation' });
       return;
     }
 
     clearErrors();
     setUploadedFile(file);
-    setSelectedPages([]);
-    setActiveTab('preview');
+    
+    if (file.type === 'application/pdf') {
+      setSelectedPages([]);
+      setActiveTab('preview');
+    } else {
+      // For TXT and DOCX, we treat it as a single "page" for simplicity in the current UI
+      setTotalPages(1);
+      setSelectedPages([1]);
+      setActiveTab('select');
+    }
   };
 
   const handlePDFLoadSuccess = (numPages: number) => {
@@ -138,7 +160,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                   <FileText className="h-4 w-4" />
                   <span>Upload</span>
                 </TabsTrigger>
-                <TabsTrigger value="preview" disabled={!uploadedFile} className="flex items-center space-x-2">
+                <TabsTrigger value="preview" disabled={!uploadedFile || uploadedFile.type !== 'application/pdf'} className="flex items-center space-x-2">
                   <Eye className="h-4 w-4" />
                   <span>Preview</span>
                 </TabsTrigger>
@@ -150,14 +172,14 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
 
               <TabsContent value="upload" className="space-y-4">
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
-                  <input type="file" accept=".pdf" onChange={handleFileUpload} className="hidden" id="pdf-upload" />
+                  <input type="file" onChange={handleFileUpload} className="hidden" id="pdf-upload" />
                   <label htmlFor="pdf-upload" className="cursor-pointer block">
                     <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <p className="text-lg font-medium mb-2">{uploadedFile ? uploadedFile.name : 'Choose PDF file'}</p>
                     <p className="text-muted-foreground">
                       {uploadedFile
                           ? `${(uploadedFile.size / 1024 / 1024).toFixed(2)} MB - Click to change`
-                          : 'Click to browse or drag and drop (Max 10MB)'}
+                          : 'Click to browse or drag and drop (Max 100MB)'}
                     </p>
                   </label>
                 </div>

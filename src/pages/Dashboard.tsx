@@ -17,7 +17,7 @@ const Dashboard = () => {
                     
                     <div className="flex-1 flex flex-col relative z-10">
                         {/* Modern Header */}
-                        <header className="h-20 flex items-center px-8 justify-between sticky top-0 z-40 bg-background/20 backdrop-blur-xl border-b border-white/5">
+                        <header className="h-20 flex items-center px-4 md:px-8 justify-between sticky top-0 z-40 bg-background/20 backdrop-blur-xl border-b border-white/5">
                             <div className="flex items-center space-x-6">
                                 <SidebarTrigger className="text-muted-foreground hover:text-primary transition-colors scale-125" />
                                 <Separator orientation="vertical" className="h-8 bg-white/10" />
@@ -41,7 +41,8 @@ const Dashboard = () => {
                         </header>
  
                         {/* Main Content Area */}
-                        <main className="flex-1 p-8 md:p-12 overflow-y-auto">
+                        {/* Main Content Area */}
+                        <main className="flex-1 p-0 md:p-12 overflow-y-auto">
                             <div className="w-full h-full">
                                 <Outlet />
                             </div>
