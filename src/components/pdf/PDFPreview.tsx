@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { Document, Page, pdfjs } from "react-pdf";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2 } from "lucide-react";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -73,69 +75,68 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
                 onLoadError={handleDocumentLoadError}
                 loading={<LoadingSpinner size="lg" text="Loading PDF..." />}
             >
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6 p-6">
                     {Array.from({ length: numPages }, (_, index) => {
                         const pageNumber = index + 1;
                         const isSelected = selectedPages.includes(pageNumber);
                         const isLoaded = loadedPages.has(pageNumber);
 
                         return (
-                            <div
+                            <motion.div
                                 key={pageNumber}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.05, duration: 0.4 }}
                                 className={cn(
-                                    "relative cursor-pointer transition-all duration-200 rounded-lg overflow-hidden",
-                                    "hover:shadow-lg hover:scale-105",
-                                    isSelected && "ring-2 ring-primary shadow-lg scale-105",
-                                    onPageSelect && "hover:ring-1 hover:ring-primary/50"
+                                    "relative cursor-pointer transition-all duration-500 rounded-3xl overflow-hidden group",
+                                    isSelected && "ring-4 ring-primary ring-offset-4 ring-offset-black scale-105",
+                                    "hover:scale-[1.08] hover:shadow-[0_0_30px_hsla(var(--primary)/0.2)]"
                                 )}
                                 onClick={() => handlePageClick(pageNumber)}
                             >
-                                <div className="relative bg-white rounded-lg shadow-sm">
+                                <div className="relative bg-black/40 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden aspect-[3/4]">
                                     <Page
                                         pageNumber={pageNumber}
-                                        width={150}
+                                        width={200}
                                         onLoadSuccess={handlePageLoadSuccess}
                                         loading={
-                                            <SkeletonLoader variant="image" className="h-[200px]" />
+                                            <div className="flex items-center justify-center h-full">
+                                                <SkeletonLoader variant="image" className="w-full h-full" />
+                                            </div>
                                         }
                                         renderTextLayer={false}
                                         renderAnnotationLayer={false}
+                                        className="opacity-90 group-hover:opacity-100 transition-opacity"
                                     />
 
-                                    {/* Page number overlay */}
-                                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-black/70 text-white text-xs px-2 py-1 rounded">
-                      {pageNumber}
-                    </span>
+                                    <div className="absolute top-4 left-4">
+                                        <div className="bg-black/80 backdrop-blur-md border border-white/10 text-[10px] font-black px-3 py-1 rounded-full shadow-2xl uppercase tracking-tighter">
+                                            SEG {pageNumber}
+                                        </div>
                                     </div>
 
-                                    {/* Selection indicator */}
-                                    {isSelected && (
-                                        <div className="absolute top-2 right-2">
-                                            <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center">
-                                                <svg
-                                                    className="w-4 h-4"
-                                                    fill="currentColor"
-                                                    viewBox="0 0 20 20"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    )}
+                                    <AnimatePresence>
+                                        {isSelected && (
+                                            <motion.div 
+                                                initial={{ scale: 0.5, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                exit={{ scale: 0.5, opacity: 0 }}
+                                                className="absolute top-4 right-4"
+                                            >
+                                                <div className="bg-primary text-white rounded-full p-1 shadow-glow ring-2 ring-white/20">
+                                                    <CheckCircle2 size={16} />
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
 
-                                    {/* Loading overlay */}
                                     {!isLoaded && (
-                                        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                                        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
                                             <LoadingSpinner size="sm" />
                                         </div>
                                     )}
                                 </div>
-                            </div>
+                            </motion.div>
                         );
                     })}
                 </div>

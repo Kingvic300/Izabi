@@ -5,7 +5,8 @@ import apiClient from "@/lib/apiClient"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BASE_URL } from "@/constants"
-import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw, Activity, Cpu } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import PDFUploadSection from "@/components/pdf/PDFUploadSection"
 import type { PDFSelection, StudyQuestionResponse } from "@/types/pdf"
@@ -123,24 +124,34 @@ const DashboardHome = () => {
                 headers: { "Content-Type": "multipart/form-data" },
             })
 
-            setSummary(data.summary || "")
-            let questionsData: StudyQuestionResponse[] = []
-            if (Array.isArray(data)) questionsData = data
-            else if (Array.isArray(data.questions)) questionsData = data.questions
-            else if (Array.isArray(data.studyQuestions)) questionsData = data.studyQuestions
-
-            setQuestions(questionsData)
+            const responseYield = data.yield;
             
-            if (data.flashcards) {
-                setFlashcards(data.flashcards)
-                setShowFlashcards(true)
-            } else {
+            if (endpoint === 'summarize') {
+                setSummary(responseYield || "")
+                setShowSummary(true)
+                setQuestions([])
                 setFlashcards([])
-                setShowFlashcards(false)
+            } else if (endpoint === 'generate-questions') {
+                const questionsData: StudyQuestionResponse[] = Array.isArray(responseYield) ? responseYield : []
+                setQuestions(questionsData)
+                setShowQuestions(questionsData.length > 0)
+                setSummary("")
+                setFlashcards([])
+            } else if (endpoint === 'flashcards') {
+                setFlashcards(Array.isArray(responseYield) ? responseYield : [])
+                setShowFlashcards(true)
+                setSummary("")
+                setQuestions([])
+            } else if (endpoint === 'generate-study-material') {
+                setSummary(responseYield || "")
+                setShowSummary(true)
+                setQuestions([])
+                setFlashcards([])
             }
 
-            setShowQuestions(questionsData.length > 0)
-            setShowSummary(!!data.summary)
+            // You could also store telemetry in state if you want to display it
+            console.log("[NeuralNode] Telemetry Received:", data.telemetry);
+
         } catch (err) {
             addError(err)
             setSummary("")
@@ -201,9 +212,14 @@ const DashboardHome = () => {
                         </div>
 
                         {userStats?.data && (
-                            <div className="stagger-card">
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.4 }}
+                                className="stagger-card"
+                            >
                                 <StreakPet streak={userStats.data.studyStreak || 0} petData={userStats.data.pet} />
-                            </div>
+                            </motion.div>
                         )}
                     </div>
                     
@@ -374,11 +390,25 @@ const DashboardHome = () => {
                                 </CardContent>
                             </Card>
                         ) : (
-                            <div className="h-full min-h-[400px] flex flex-col items-center justify-center p-20 glass border-2 border-dashed border-foreground/10 rounded-[64px] opacity-20 hover:opacity-40 transition-opacity">
-                                <Sparkles size={80} className="mb-8" />
-                                <h3 className="text-3xl font-black mb-2">{t("dashboard.init_node")}</h3>
-                                <p className="text-lg font-medium">{t("dashboard.init_desc")}</p>
-                            </div>
+                            <motion.div 
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="h-full min-h-[500px] flex flex-col items-center justify-center p-12 glass border border-white/5 rounded-[64px] relative overflow-hidden group"
+                            >
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(var(--primary-rgb),0.05),transparent)] pointer-events-none" />
+                                <div className="w-32 h-32 rounded-[40px] bg-black/40 flex items-center justify-center mb-10 shadow-2xl border border-white/5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                                    <Cpu size={56} className="text-primary animate-pulse" />
+                                </div>
+                                <div className="text-center space-y-4 relative z-10">
+                                    <h3 className="text-4xl font-black tracking-tighter">{t("dashboard.init_node")}</h3>
+                                    <p className="text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed">{t("dashboard.init_desc")}</p>
+                                    <div className="pt-8 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] opacity-30">
+                                        <Activity size={12} />
+                                        <span>System Idle: Awaiting Ingestion</span>
+                                    </div>
+                                </div>
+                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+                            </motion.div>
                         )}
 
                         {/* Results Hub */}
