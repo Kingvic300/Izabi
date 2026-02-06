@@ -333,7 +333,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                         <div className="flex flex-col gap-4">
                             <Button
                                 onClick={handleProcessSelection}
-                                disabled={isProcessing || (uploadedFile.type === 'application/pdf' && selectedPages.length === 0)}
+                                disabled={isProcessing || !uploadedFile || (uploadedFile.type === 'application/pdf' && selectedPages.length === 0)}
                                 className="w-full h-20 rounded-[28px] bg-primary hover:bg-primary/90 text-white font-black text-xl shadow-glow transition-all hover:scale-[1.02] active:scale-[0.98] gap-4"
                             >
                               {isProcessing ? (

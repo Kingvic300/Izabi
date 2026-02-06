@@ -203,8 +203,13 @@ const DashboardHome = () => {
                                 <span className="text-[10px] lowercase font-black tracking-[0.3em] opacity-40">User Profile: Active</span>
                             </div>
                             <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
-                                {t("dashboard.greeting").split(', ')[0]}, <br className="md:hidden" />
-                                <span className="text-gradient">{t("dashboard.greeting").split(', ')[1]}</span>
+                                {t("dashboard.greeting").split(',')[0]}
+                                {t("dashboard.greeting").includes(',') && (
+                                    <>
+                                        , <br className="md:hidden" />
+                                        <span className="text-gradient">{t("dashboard.greeting").split(',')[1]}</span>
+                                    </>
+                                )}
                             </h1>
                             <p className="text-muted-foreground font-medium text-lg max-w-xl">
                                 {t("dashboard.intro")}
