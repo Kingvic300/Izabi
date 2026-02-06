@@ -128,8 +128,8 @@ export const PageSelector: React.FC<PageSelectorProps> = ({
         {/* Range Selection */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">Select Page Range</Label>
-          <div className="flex items-end space-x-2">
-            <div className="flex-1">
+          <div className="flex flex-col md:flex-row items-end md:items-end space-y-3 md:space-y-0 md:space-x-2">
+            <div className="flex-1 w-full md:w-auto">
               <Label htmlFor="range-start" className="text-xs text-muted-foreground">
                 From
               </Label>
@@ -141,11 +141,11 @@ export const PageSelector: React.FC<PageSelectorProps> = ({
                 value={rangeStart}
                 onChange={(e) => setRangeStart(e.target.value)}
                 placeholder="1"
-                className="h-8"
+                className="h-8 md:h-10 text-sm"
               />
             </div>
-            <span className="text-muted-foreground pb-2">to</span>
-            <div className="flex-1">
+            <span className="text-muted-foreground pb-2 self-end mb-1 md:mb-0">to</span>
+            <div className="flex-1 w-full md:w-auto">
               <Label htmlFor="range-end" className="text-xs text-muted-foreground">
                 To
               </Label>
@@ -164,7 +164,7 @@ export const PageSelector: React.FC<PageSelectorProps> = ({
               size="sm"
               onClick={handleRangeSelect}
               disabled={!rangeStart || !rangeEnd}
-              className="h-8"
+              className="h-8 md:h-10 w-full md:w-auto mt-2 md:mt-0"
             >
               Add Range
             </Button>

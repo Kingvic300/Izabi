@@ -1,6 +1,6 @@
 "use client"
 
-import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck } from "lucide-react"
+import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp } from "lucide-react"
 import apiClient from "@/lib/apiClient"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
@@ -17,6 +17,8 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { BASE_URL } from "@/constants"
 import { useAppToast } from "@/hooks/useAppToast"
 
@@ -88,6 +90,9 @@ export function AppSidebar() {
     const currentPath = location.pathname
     const collapsed = state === "collapsed"
     const userRole = localStorage.getItem("userRole")
+    const userEmail = localStorage.getItem("userEmail") || "scholar@izabi.ai"
+    // Extract first letter for avatar
+    const userInitial = userEmail.charAt(0).toUpperCase()
 
     const isActive = (path: string) => currentPath === path
 
@@ -139,7 +144,7 @@ export function AppSidebar() {
             <SidebarContent className="flex-1 px-3 py-4">
                 {/* Main Navigation Group */}
                 <SidebarGroup>
-                    <SidebarGroupLabel className="text-[10px] uppercase font-black tracking-widest mb-4 px-4 opacity-30">The Lab</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-[10px] uppercase font-black tracking-widest mb-4 px-4 opacity-50 text-foreground">The Lab</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="gap-2">
                             {navigationItems.map((item) => {
@@ -177,8 +182,8 @@ export function AppSidebar() {
                 </SidebarGroup>
 
                 {/* Settings Group */}
-                <SidebarGroup>
-                    <SidebarGroupLabel className="text-[10px] uppercase font-black tracking-widest mb-4 px-4 opacity-30">Account</SidebarGroupLabel>
+                <SidebarGroup className="mt-auto">
+                    <SidebarGroupLabel className="text-[10px] uppercase font-black tracking-widest mb-4 px-4 opacity-50 text-foreground">Account</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="gap-2">
                             {settingsItems.map((item) => {
@@ -229,16 +234,35 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
 
-            {/* Footer / Logout */}
-            <SidebarFooter className="p-4 border-t border-white/5">
-                <Button
-                    variant="ghost"
-                    onClick={handleLogout}
-                    className="w-full h-12 flex items-center justify-start gap-4 px-4 rounded-xl text-destructive hover:bg-destructive/10 transition-all font-bold group"
-                >
-                    <LogOut className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    {!collapsed && <span>Sign Out</span>}
-                </Button>
+            {/* Footer / User Profile */}
+            <SidebarFooter className="p-4 border-t border-white/5 bg-black/10">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <SidebarMenuButton
+                            size="lg"
+                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-14 rounded-xl transition-all"
+                        >
+                            <Avatar className="h-9 w-9 rounded-lg border border-white/10 shadow-sm">
+                                <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userEmail}`} alt={userEmail} />
+                                <AvatarFallback className="rounded-lg font-bold bg-primary/20 text-primary">{userInitial}</AvatarFallback>
+                            </Avatar>
+                            <div className="grid flex-1 text-left text-sm leading-tight">
+                                <span className="truncate font-bold mb-0.5">Scholar</span>
+                                <span className="truncate text-xs opacity-60 font-medium">{userEmail}</span>
+                            </div>
+                            <ChevronUp className="ml-auto size-4 opacity-50" />
+                        </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                        side="top"
+                        className="w-[--radix-popper-anchor-width] rounded-xl glass border-white/10 p-2 shadow-2xl"
+                    >
+                        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 font-bold rounded-lg p-3">
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Sign out</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </SidebarFooter>
         </Sidebar>
     )
