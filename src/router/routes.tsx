@@ -47,6 +47,23 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>
 }
 
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+    const authToken = localStorage.getItem("authToken")
+    const userId = localStorage.getItem("userId")
+    const userRole = localStorage.getItem("userRole")
+
+    if (!authToken || !userId) {
+        return <Navigate to="/login" replace />
+    }
+
+    // Check if user is admin
+    if (userRole !== "ADMIN") {
+        return <Navigate to="/dashboard" replace />
+    }
+
+    return <>{children}</>
+}
+
 const routes = () => {
     return (
         <BrowserRouter>
@@ -73,7 +90,7 @@ const routes = () => {
                     <Route path="settings" element={withErrorBoundary(DashboardSettings)} />
                     <Route path="exams" element={withErrorBoundary(DashboardExams)} />
                     <Route path="support" element={withErrorBoundary(SupportUs)} />
-                    <Route path="admin" element={withErrorBoundary(AdminDashboard)} />
+                    <Route path="admin" element={<AdminRoute>{withErrorBoundary(AdminDashboard)}</AdminRoute>} />
                 </Route>
 
                 {/* Catch-all route */}

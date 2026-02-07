@@ -141,35 +141,36 @@ const Signup = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-6">
+        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6">
 
-            <Link to="/" className="absolute top-8 left-8 group">
-                <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
+            <Link to="/" className="absolute top-4 left-4 sm:top-8 sm:left-8 group z-20">
+                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    <span>Return Home</span>
+                    <span className="hidden sm:inline">Return Home</span>
+                    <span className="sm:hidden">Back</span>
                 </div>
             </Link>
 
-            <div ref={cardRef} className="w-full max-w-[520px] space-y-8 relative z-10">
+            <div ref={cardRef} className="w-full max-w-[520px] space-y-6 sm:space-y-8 relative z-10">
                 {/* Branding */}
-                <div className="text-center space-y-3">
-                    <Logo size={64} className="justify-center mx-auto" />
+                <div className="text-center space-y-2 sm:space-y-3">
+                    <Logo size={48} className="justify-center mx-auto sm:w-16 sm:h-16" />
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tighter text-foreground">{t("auth.signup").split(' ')[0]} <span className="text-gradient">{t("auth.signup").split(' ')[1]}</span></h1>
-                        <p className="text-muted-foreground font-medium">Create your account to start your learning journey.</p>
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">{t("auth.signup").split(' ')[0]} <span className="text-gradient">{t("auth.signup").split(' ')[1]}</span></h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">Create your account to start your learning journey.</p>
                         
                         {selectedPlan && (
-                            <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-xl glass border border-primary/20 bg-primary/5">
+                            <div className="mt-3 sm:mt-4 inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg sm:rounded-xl glass border border-primary/20 bg-primary/5">
                                 <Star size={12} className="text-primary fill-primary animate-pulse" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Selected Node: {selectedPlan.replace(/-/g, ' ')}</span>
+                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-primary">Selected Node: {selectedPlan.replace(/-/g, ' ')}</span>
                             </div>
                         )}
                     </div>
                 </div>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-2xl overflow-hidden">
-                    <CardContent className="p-10 space-y-6">
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
+                    <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                             <div className="space-y-2">
                                 <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
                                 <div className="relative">
@@ -180,13 +181,13 @@ const Signup = () => {
                                         placeholder="scholar@example.com"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className={`h-14 pl-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.email ? "border-destructive/50" : ""}`}
+                                        className={`h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.email ? "border-destructive/50" : ""}`}
                                     />
                                 </div>
                                 {errors.email && <p className="text-xs text-destructive font-bold px-1">{errors.email}</p>}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 gap-4 sm:gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">{t("auth.password")}</Label>
                                     <div className="relative">
@@ -197,7 +198,7 @@ const Signup = () => {
                                             placeholder="••••••••"
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className={`h-14 pl-12 pr-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.password ? "border-destructive/50" : ""}`}
+                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.password ? "border-destructive/50" : ""}`}
                                         />
                                         <button
                                             type="button"
@@ -219,7 +220,7 @@ const Signup = () => {
                                             placeholder="••••••••"
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
-                                            className={`h-14 pl-12 pr-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.confirmPassword ? "border-destructive/50" : ""}`}
+                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.confirmPassword ? "border-destructive/50" : ""}`}
                                         />
                                         <button
                                             type="button"
@@ -236,7 +237,7 @@ const Signup = () => {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-16 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
+                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
                             >
                                 {isLoading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />
@@ -250,7 +251,7 @@ const Signup = () => {
                         </form>
 
                         <div className="pt-6 border-t border-foreground/5 text-center">
-                            <p className="text-sm font-bold text-muted-foreground">
+                            <p className="text-xs sm:text-sm font-bold text-muted-foreground">
                                 Already have an account?{" "}
                                 <Link to="/login" className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
                                     {t("auth.login")}

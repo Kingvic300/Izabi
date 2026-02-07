@@ -155,7 +155,7 @@ export function AppSidebar() {
     }
 
     return (
-        <Sidebar collapsible="icon" className="bg-[#0000001a] backdrop-blur-xl border-r border-foreground/5 data-[variant=inset]:bg-transparent">
+        <Sidebar collapsible="icon" className="bg-card/50 backdrop-blur-xl border-r border-foreground/5 data-[variant=inset]:bg-transparent">
             {/* Header */}
             <SidebarHeader className="border-b border-border p-4">
                 <Logo showText={!collapsed} size={40} className="px-2" />
@@ -265,7 +265,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             {/* Footer / User Profile */}
-            <SidebarFooter className="p-4 border-t border-foreground/5 bg-foreground/[0.02]">
+            <SidebarFooter className="p-4 border-t border-foreground/5">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton

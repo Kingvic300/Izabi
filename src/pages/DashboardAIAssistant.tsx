@@ -201,7 +201,7 @@ const DashboardAIAssistant = () => {
     }
 
     return (
-        <div ref={containerRef} className="space-y-6 md:space-y-8 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12 flex flex-col h-[calc(100vh-64px)] overflow-hidden">
+        <div ref={containerRef} className="space-y-6 md:space-y-8 w-full pb-20 px-0 md:px-6 lg:px-6 pt-6 md:pt-12 flex flex-col h-[calc(100vh-64px)] overflow-hidden">
             <div className="chat-header flex items-center justify-between">
                 <div>
                     <h1 className="text-4xl font-bold mb-1 flex items-center gap-3">

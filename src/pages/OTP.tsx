@@ -158,27 +158,28 @@ const OTP = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-6">
+        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6">
 
-            <Link to="/signup" className="absolute top-8 left-8 group">
-                <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all">
+            <Link to="/signup" className="absolute top-4 left-4 sm:top-8 sm:left-8 group z-20">
+                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold opacity-60 group-hover:opacity-100 transition-all">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    <span>Back to Signup</span>
+                    <span className="hidden sm:inline">Back to Signup</span>
+                    <span className="sm:hidden">Back</span>
                 </div>
             </Link>
 
-            <div ref={cardRef} className="w-full max-w-[480px] space-y-8 relative z-10">
+            <div ref={cardRef} className="w-full max-w-[480px] space-y-6 sm:space-y-8 relative z-10">
                 {/* Branding */}
-                <div className="text-center space-y-4">
-                    <Logo size={64} className="justify-center mx-auto" />
+                <div className="text-center space-y-3 sm:space-y-4">
+                    <Logo size={48} className="justify-center mx-auto sm:w-16 sm:h-16" />
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tighter text-foreground">Email <span className="text-gradient">Verification</span></h1>
-                        <p className="text-muted-foreground font-medium">Please enter the security code sent to your email.</p>
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">Email <span className="text-gradient">Verification</span></h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">Please enter the security code sent to your email.</p>
                     </div>
                 </div>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-2xl md:rounded-2xl overflow-hidden">
-                    <CardContent className="p-6 md:p-10 space-y-6 md:space-y-8">
+                <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
+                    <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6 md:space-y-8">
                         <div className="flex flex-col items-center gap-2 text-center">
                             <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-foreground/5 flex items-center justify-center mb-1 md:mb-2">
                                 <Mail className="text-primary h-5 w-5 md:h-6 md:w-6" />
@@ -187,8 +188,8 @@ const OTP = () => {
                             <p className="text-base md:text-lg font-bold text-foreground px-4 py-1 glass rounded-lg border border-foreground/10 break-all">{email || "scholar@example.com"}</p>
                         </div>
 
-                        <form onSubmit={handleOtpSubmit} className="space-y-6 md:space-y-8">
-                            <div className="flex justify-between gap-1.5 md:gap-3">
+                        <form onSubmit={handleOtpSubmit} className="space-y-5 sm:space-y-6 md:space-y-8">
+                            <div className="flex justify-between gap-1.5 sm:gap-2 md:gap-3">
                                 {otp.map((digit, index) => (
                                     <Input
                                         key={index}
@@ -200,7 +201,7 @@ const OTP = () => {
                                         onChange={(e) => handleChange(e.target.value, index)}
                                         onKeyDown={(e) => handleKeyDown(e, index)}
                                         onPaste={handlePaste}
-                                        className="w-10 h-12 md:w-14 md:h-16 rounded-xl md:rounded-xl text-center text-xl md:text-2xl font-bold bg-foreground/5 border-foreground/10 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all text-foreground p-0"
+                                        className="w-9 h-11 sm:w-12 sm:h-14 md:w-14 md:h-16 rounded-lg sm:rounded-xl text-center text-lg sm:text-xl md:text-2xl font-bold bg-foreground/5 border-foreground/10 focus:border-primary focus:ring-2 sm:focus:ring-4 focus:ring-primary/20 transition-all text-foreground p-0"
                                     />
                                 ))}
                             </div>
@@ -208,7 +209,7 @@ const OTP = () => {
                             <Button
                                 type="submit"
                                 disabled={loading || otp.join("").length < 6}
-                                className="w-full h-16 rounded-xl bg-primary text-white hover:bg-primary/90 font-bold text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
+                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-white hover:bg-primary/90 font-bold text-lg sm:text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
                             >
                                 {loading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />

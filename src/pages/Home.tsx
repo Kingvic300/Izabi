@@ -147,16 +147,16 @@ const Home = () => {
                             </div>
 
                             {/* Hero Features Bar */}
-                            <div className="hero-stats grid grid-cols-2 md:grid-cols-4 gap-4 glass p-4 rounded-2xl border border-foreground/10 max-w-4xl mx-auto">
+                            <div className="hero-stats grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 glass p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-foreground/10 max-w-4xl mx-auto">
                                 {[
                                     { val: "Save 10h+", lab: "Weekly Study Time" },
                                     { val: "40%+", lab: "Grade Improvement" },
                                     { val: "Any Device", lab: "Responsive Learning" },
                                     { val: "Pidgin AI", lab: "Localized Support" }
                                 ].map((stat, i) => (
-                                    <div key={i} className="py-2 px-4 border-r border-foreground/5 last:border-0">
-                                        <div className="text-2xl font-bold text-foreground">{stat.val}</div>
-                                        <div className="text-[10px] font-bold uppercase tracking-widest opacity-40 text-foreground">{stat.lab}</div>
+                                    <div key={i} className="py-2 px-2 sm:px-4 border-r border-foreground/5 last:border-0">
+                                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">{stat.val}</div>
+                                        <div className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider sm:tracking-widest opacity-40 text-foreground leading-tight">{stat.lab}</div>
                                     </div>
                                 ))}
                             </div>

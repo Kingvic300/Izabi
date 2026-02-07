@@ -134,7 +134,8 @@ export const api = {
 
     // Quiz Results API
     async getQuizResults() {
-        const response = await apiClient.get("/api/quiz/results")
+        const userId = localStorage.getItem("userId")
+        const response = await apiClient.get(`/api/quiz/results${userId ? `?userId=${userId}` : ""}`)
         return response.data
     },
 

@@ -101,12 +101,18 @@ const Login = () => {
             if (response.data.firstName) localStorage.setItem("userFirstName", response.data.firstName)
             if (response.data.lastName) localStorage.setItem("userLastName", response.data.lastName)
 
+            // Check if user is admin and redirect accordingly
+            const isAdmin = role === "ADMIN"
+            const redirectPath = isAdmin ? "/dashboard/admin" : "/dashboard"
+
             appToast.success({
                 title: "Login Successful",
-                description: "Welcome back! Redirecting to your dashboard...",
+                description: isAdmin 
+                    ? "Welcome Admin! Redirecting to admin dashboard..." 
+                    : "Welcome back! Redirecting to your dashboard...",
             })
 
-            setTimeout(() => navigate("/dashboard"), 1000)
+            setTimeout(() => navigate(redirectPath), 1000)
         } catch (err: any) {
             const errorMessage = err.response?.data?.message || "Login failed"
 
@@ -128,28 +134,29 @@ const Login = () => {
         }
     }
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-6">
+        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6">
 
-            <Link to="/" className="absolute top-8 left-8 group">
-                <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
+            <Link to="/" className="absolute top-4 left-4 sm:top-8 sm:left-8 group z-20">
+                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    <span>Return Home</span>
+                    <span className="hidden sm:inline">Return Home</span>
+                    <span className="sm:hidden">Back</span>
                 </div>
             </Link>
 
-            <div ref={cardRef} className="w-full max-w-[480px] space-y-8 relative z-10">
+            <div ref={cardRef} className="w-full max-w-[480px] space-y-6 sm:space-y-8 relative z-10">
                 {/* Branding */}
-                <div className="text-center space-y-4">
-                    <Logo size={64} className="justify-center mx-auto" />
+                <div className="text-center space-y-3 sm:space-y-4">
+                    <Logo size={48} className="justify-center mx-auto sm:w-16 sm:h-16" />
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tighter text-foreground">{t("auth.login").split(' ')[0]} <span className="text-gradient">{t("auth.login").split(' ')[1]}</span></h1>
-                        <p className="text-muted-foreground font-medium">Welcome back! Please sign in to your account.</p>
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">{t("auth.login").split(' ')[0]} <span className="text-gradient">{t("auth.login").split(' ')[1]}</span></h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">Welcome back! Please sign in to your account.</p>
                     </div>
                 </div>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-2xl overflow-hidden">
-                    <CardContent className="p-10 space-y-6">
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
+                    <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                             <div className="space-y-2">
                                 <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
                                 <div className="relative">
@@ -160,7 +167,7 @@ const Login = () => {
                                         value={email}
                                         onChange={handleEmailChange}
                                         className={cn(
-                                            "h-14 pl-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground",
+                                            "h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground",
                                             emailError && "border-destructive/50"
                                         )}
                                     />
@@ -181,7 +188,7 @@ const Login = () => {
                                         value={password}
                                         onChange={handlePasswordChange}
                                         className={cn(
-                                            "h-14 pl-12 pr-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground",
+                                            "h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground",
                                             passwordError && "border-destructive/50"
                                         )}
                                     />
@@ -199,7 +206,7 @@ const Login = () => {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-16 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
+                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
                             >
                                 {loading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />
@@ -213,7 +220,7 @@ const Login = () => {
                         </form>
 
                         <div className="pt-6 border-t border-foreground/5 text-center">
-                            <p className="text-sm font-bold text-muted-foreground">
+                            <p className="text-xs sm:text-sm font-bold text-muted-foreground">
                                 Don't have an account?{" "}
                                 <Link to="/signup" className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
                                     {t("auth.join")}

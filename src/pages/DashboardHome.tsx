@@ -319,7 +319,7 @@ const DashboardHome = () => {
                                     </>
                                 )}
                             </h1>
-                            <p className="text-muted-foreground font-medium text-lg max-w-xl mx-auto md:mx-0">
+                            <p className="text-foreground/70 font-medium text-lg max-w-xl mx-auto md:mx-0">
                                 {t("dashboard.intro")}
                             </p>
                         </div>
@@ -655,19 +655,19 @@ const DashboardHome = () => {
                                             </button>
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
-                                            <CardContent className="p-10 space-y-8">
+                                            <CardContent className="p-4 md:p-10 space-y-6 md:space-y-8">
                                                 {questions.map((q, i) => {
                                                     const userAnswer = selectedAnswers[i]
                                                     const isShort = q.questionType?.toLowerCase() === "short_answer"
                                                     const correct = isShort && userAnswer ? isShortAnswerCorrect(userAnswer, q.answer || "") : userAnswer === q.answer
 
                                                     return (
-                                                        <Card key={i} className="bg-foreground/[0.02] border-foreground/5 rounded-3xl md:rounded-3xl p-6 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group">
+                                                        <Card key={i} className="bg-foreground/[0.02] border-foreground/5 rounded-2xl md:rounded-3xl p-4 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group">
                                                             
                                                             <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-6">
                                                                 <div className="space-y-2 md:space-y-3">
                                                                     <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Node {i+1}</div>
-                                                                    <h4 className="text-lg md:text-xl font-bold leading-tight text-foreground">{q.question}</h4>
+                                                                    <h4 className="text-base md:text-xl font-bold leading-tight text-foreground break-words">{q.question}</h4>
                                                                 </div>
                                                                 {showResults && (
                                                                     <div className={`w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-3xl text-[10px] font-bold tracking-widest uppercase flex items-center gap-2 shadow-2xl transition-all
@@ -679,7 +679,7 @@ const DashboardHome = () => {
                                                             </div>
 
                                                             {!isShort ? (
-                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                <div className="grid grid-cols-1 gap-3 md:gap-4">
                                                                     {q.options?.map((opt, idx) => {
                                                                         const isSelected = userAnswer === opt
                                                                         const isCorrect = showResults && opt === q.answer
@@ -690,18 +690,18 @@ const DashboardHome = () => {
                                                                                 key={idx}
                                                                                 onClick={() => handleAnswerSelect(i, opt)}
                                                                                 disabled={showResults}
-                                                                                className={`h-auto py-6 px-8 justify-start text-left rounded-3xl transition-all duration-300 font-bold border border-foreground/5
+                                                                                className={`h-auto py-4 md:py-6 px-4 md:px-8 justify-start text-left rounded-2xl md:rounded-3xl transition-all duration-300 font-bold border border-foreground/5 w-full
                                                                                     ${isSelected ? "bg-primary text-primary-foreground shadow-glow" : "bg-foreground/5 hover:bg-foreground/10 text-foreground/70"}
                                                                                     ${isCorrect ? "bg-primary/20 border-primary/50 text-primary !bg-opacity-20" : ""}
                                                                                     ${isWrong ? "bg-destructive/20 border-destructive/50 text-destructive-foreground !bg-opacity-20" : ""}
                                                                                 `}
                                                                             >
-                                                                                <div className="flex items-center gap-4">
-                                                                                    <div className={`w-8 h-8 rounded-3xl flex items-center justify-center font-bold text-xs transition-opacity
+                                                                                <div className="flex items-start gap-3 md:gap-4 w-full">
+                                                                                    <div className={`w-7 h-7 md:w-8 md:h-8 rounded-2xl md:rounded-3xl flex items-center justify-center font-bold text-xs transition-opacity flex-shrink-0
                                                                                         ${isSelected ? "bg-black/10" : "bg-foreground/10 opacity-30"}`}>
                                                                                         {String.fromCharCode(65 + idx)}
                                                                                     </div>
-                                                                                    <span className="text-sm">{opt}</span>
+                                                                                    <span className="text-sm md:text-base break-words flex-1">{opt}</span>
                                                                                 </div>
                                                                             </Button>
                                                                         )
@@ -714,7 +714,7 @@ const DashboardHome = () => {
                                                                         placeholder="Input response terminal..."
                                                                         onChange={(e) => handleShortAnswerChange(i, e.target.value)}
                                                                         disabled={showResults}
-                                                                        className="rounded-3xl h-16 bg-foreground/5 border-foreground/5 focus:bg-foreground/10 transition-all font-bold px-8 text-foreground"
+                                                                        className="rounded-2xl md:rounded-3xl h-14 md:h-16 bg-foreground/5 border-foreground/5 focus:bg-foreground/10 transition-all font-bold px-4 md:px-8 text-sm md:text-base text-foreground w-full"
                                                                     />
                                                                     {showResults && !correct && (
                                                                         <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5">
@@ -739,24 +739,24 @@ const DashboardHome = () => {
                                                         {!showResults ? (
                                                             <Button 
                                                                 onClick={handleFinalizeQuiz} 
-                                                                className="w-full h-20 rounded-3xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-2xl shadow-glow group"
+                                                                className="w-full h-16 md:h-20 rounded-2xl md:rounded-3xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg md:text-2xl shadow-glow group"
                                                             >
                                                                 <span>{t("dashboard.finalize")}</span>
                                                             </Button>
                                                         ) : (
-                                                            <div id="mastery-verdict" className="p-6 md:p-10 rounded-3xl bg-gradient-hero relative overflow-hidden group shadow-glow">
+                                                            <div id="mastery-verdict" className="p-4 md:p-10 rounded-2xl md:rounded-3xl bg-gradient-hero relative overflow-hidden group shadow-glow">
                                                                 <div className="absolute inset-0 bg-black/10 transition-colors" />
-                                                                <div className="relative z-10 flex flex-col md:lg:flex-row items-center justify-between gap-8">
+                                                                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
                                                                     <div className="space-y-2 text-center md:text-left">
-                                                                        <h3 className="text-3xl md:text-4xl font-bold text-white tracking-tighter">{t("dashboard.mastery_confirmed")}</h3>
+                                                                        <h3 className="text-2xl md:text-4xl font-bold text-white tracking-tighter">{t("dashboard.mastery_confirmed")}</h3>
                                                                         <p className="text-foreground/70 font-bold text-base md:text-lg">{t("dashboard.mastery_desc")}</p>
                                                                     </div>
-                                                                    <div className="flex items-center gap-8 glass p-6 md:p-8 rounded-3xl border-foreground/20 bg-black/20">
+                                                                    <div className="flex items-center gap-4 md:gap-8 glass p-4 md:p-8 rounded-2xl md:rounded-3xl border-foreground/20 bg-black/20">
                                                                         <div className="text-center">
                                                                             <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-2">{t("dashboard.resultant_yield")}</div>
-                                                                            <div className="text-3xl md:text-4xl font-bold text-white">{scoreQuiz()} / {questions.length}</div>
+                                                                            <div className="text-2xl md:text-4xl font-bold text-white">{scoreQuiz()} / {questions.length}</div>
                                                                         </div>
-                                                                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-primary text-primary-foreground flex items-center justify-center text-xl md:text-2xl font-bold shadow-glow">
+                                                                        <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-primary text-primary-foreground flex items-center justify-center text-lg md:text-2xl font-bold shadow-glow">
                                                                             {Math.round((scoreQuiz()/questions.length)*100)}%
                                                                         </div>
                                                                     </div>

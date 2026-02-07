@@ -70,7 +70,7 @@
         --secondary-foreground: 220 20% 10%;
         --secondary-glow: 215 20% 80%;
 
-        --muted: 220 15% 96%;
+        --muted: 0 0% 100%;
         --muted-foreground: 215 15% 45%;
 
         --accent: 217 91% 60%;

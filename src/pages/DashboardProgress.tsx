@@ -75,8 +75,8 @@ const DashboardProgress = () => {
                     })
 
                     // Growth Trend Chart (Last 7 Sessions)
-                    const growthData = quizData.slice(-7).map((q: any) => ({
-                        date: new Date(q.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                    const growthData = quizData.slice(0, 7).reverse().map((q: any) => ({
+                        date: new Date(q.createdAt || q.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
                         score: q.score
                     }))
                     setChartData(growthData)
@@ -84,7 +84,7 @@ const DashboardProgress = () => {
                     // Subject Mastery Chart
                     const subjects: Record<string, { total: number, count: number }> = {}
                     quizData.forEach((q: any) => {
-                        const sub = q.subject || "General"
+                        const sub = q.subject || q.quizTitle || "General"
                         if (!subjects[sub]) subjects[sub] = { total: 0, count: 0 }
                         subjects[sub].total += q.score
                         subjects[sub].count += 1

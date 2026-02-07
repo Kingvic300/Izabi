@@ -91,21 +91,55 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState(MOCK_STATS)
     const [users, setUsers] = useState<any[]>([])
     const [keys, setKeys] = useState<any[]>([])
+    const [chartData, setChartData] = useState<any[]>(MOCK_CHART_DATA)
+    const [activityData, setActivityData] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
 
     useEffect(() => {
         const fetchAdminData = async () => {
             try {
-                const [statsData, usersData, keysData] = await Promise.allSettled([
+                const [statsResponse, usersResponse, keysResponse] = await Promise.allSettled([
                     api.getAdminStats(),
                     api.getAllUsers(),
                     api.getContributedKeys()
                 ])
 
-                if (statsData.status === "fulfilled") setStats(statsData.value)
-                if (usersData.status === "fulfilled") setUsers(usersData.value)
-                if (keysData.status === "fulfilled") setKeys(keysData.value)
+                // Handle stats data
+                if (statsResponse.status === "fulfilled" && statsResponse.value?.data) {
+                    const data = statsResponse.value.data
+                    setStats({
+                        totalUsers: data.totalUsers || 0,
+                        activeNow: data.activeNow || 0,
+                        totalNotes: data.totalNotes || 0,
+                        contributedKeys: data.contributedKeys || 0,
+                        growth: data.growth || 0
+                    })
+                    
+                    // Set chart data
+                    if (data.userGrowthChart && data.userGrowthChart.length > 0) {
+                        setChartData(data.userGrowthChart)
+                    }
+                    if (data.activityChart && data.activityChart.length > 0) {
+                        setActivityData(data.activityChart)
+                    }
+                } else {
+                    console.warn("Failed to fetch admin stats, using defaults")
+                }
+
+                // Handle users data
+                if (usersResponse.status === "fulfilled" && usersResponse.value?.data) {
+                    setUsers(Array.isArray(usersResponse.value.data) ? usersResponse.value.data : [])
+                } else {
+                    console.warn("Failed to fetch users data")
+                }
+
+                // Handle keys data
+                if (keysResponse.status === "fulfilled" && keysResponse.value?.data) {
+                    setKeys(Array.isArray(keysResponse.value.data) ? keysResponse.value.data : [])
+                } else {
+                    console.warn("Failed to fetch contributed keys")
+                }
                 
                 setIsLoading(false)
             } catch (error) {
@@ -223,21 +257,41 @@ export default function AdminDashboard() {
                             </div>
                             <div className="h-[400px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={MOCK_CHART_DATA}>
+                                    <AreaChart data={chartData}>
                                         <defs>
                                             <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#ffffff40', fontSize: 12}} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#ffffff40', fontSize: 12}} />
-                                        <Tooltip 
-                                            contentStyle={{backgroundColor: '#0c0c0e', border: '1px solid #ffffff10', borderRadius: '4px', color: '#fff'}}
-                                            itemStyle={{color: '#3b82f6'}}
+                                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" vertical={false} />
+                                        <XAxis 
+                                            dataKey="date" 
+                                            className="text-xs font-medium" 
+                                            tickLine={false} 
+                                            axisLine={false}
                                         />
-                                        <Area type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={4} fillOpacity={1} fill="url(#colorUsers)" />
+                                        <YAxis 
+                                            className="text-xs font-medium" 
+                                            tickLine={false} 
+                                            axisLine={false}
+                                        />
+                                        <Tooltip 
+                                            contentStyle={{ 
+                                                backgroundColor: "rgba(255, 255, 255, 0.8)", 
+                                                borderRadius: "12px", 
+                                                border: "none", 
+                                                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" 
+                                            }} 
+                                        />
+                                        <Area 
+                                            type="monotone" 
+                                            dataKey="users" 
+                                            stroke="#8b5cf6" 
+                                            fillOpacity={1} 
+                                            fill="url(#colorUsers)" 
+                                            strokeWidth={3}
+                                        />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>

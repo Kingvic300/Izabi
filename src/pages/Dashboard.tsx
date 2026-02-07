@@ -14,12 +14,12 @@ const Dashboard = () => {
                     
                     <div className="flex-1 flex flex-col relative z-10">
                         {/* Modern Header */}
-                        <header className="h-20 border-b border-foreground/5 bg-[#0000001a] backdrop-blur-xl px-6 md:px-12 flex items-center justify-between shrink-0">
+                        <header className="h-20 border-b border-foreground/5 bg-card/50 backdrop-blur-xl px-6 md:px-12 flex items-center justify-between shrink-0">
                             <div className="flex items-center space-x-6">
                                 <SidebarTrigger className="text-muted-foreground hover:text-primary transition-colors scale-125" />
                                 <Separator orientation="vertical" className="h-8 bg-white/10" />
                                 <div className="flex flex-col">
-                                    <h1 className="text-sm font-bold uppercase tracking-[0.2em] opacity-40">Workspace</h1>
+                                    <h1 className="text-sm font-bold uppercase tracking-[0.2em] opacity-60">Workspace</h1>
                                     <p className="text-lg font-bold">Scholar Environment</p>
                                 </div>
                             </div>
