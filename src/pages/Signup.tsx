@@ -25,6 +25,8 @@ const Signup = () => {
     const selectedPlan = queryParams.get("plan")
     const cardRef = useRef<HTMLDivElement>(null)
     const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -105,6 +107,8 @@ const Signup = () => {
                 email: formData.email.toLowerCase(),
                 password: formData.password,
                 role: "USER",
+                firstName: formData.firstName,
+                lastName: formData.lastName,
             })
 
             appToast.success({
@@ -171,6 +175,33 @@ const Signup = () => {
                 <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
                     <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6">
                         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">First Name</Label>
+                                    <Input
+                                        name="firstName"
+                                        type="text"
+                                        placeholder="John"
+                                        value={formData.firstName}
+                                        onChange={handleChange}
+                                        required
+                                        className="h-12 sm:h-14 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">Last Name</Label>
+                                    <Input
+                                        name="lastName"
+                                        type="text"
+                                        placeholder="Doe"
+                                        value={formData.lastName}
+                                        onChange={handleChange}
+                                        required
+                                        className="h-12 sm:h-14 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground"
+                                    />
+                                </div>
+                            </div>
+
                             <div className="space-y-2">
                                 <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
                                 <div className="relative">

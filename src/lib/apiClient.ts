@@ -41,7 +41,7 @@ apiClient.interceptors.response.use(
             // Unauthorized - clear token and redirect if needed
             localStorage.removeItem("authToken")
             localStorage.removeItem("userId")
-            // Optional: window.location.href = "/login"
+            window.location.href = "/login"
             toast.error("Session Expired", {
                 description: "Please sign in again to continue.",
             })

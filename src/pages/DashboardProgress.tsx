@@ -27,6 +27,7 @@ const DashboardProgress = () => {
         averageScore: 0,
         studyStreak: 0,
         totalStudyHours: 0,
+        perfectScore: false,
     })
     const [isLoading, setIsLoading] = useState(true)
 
@@ -72,6 +73,7 @@ const DashboardProgress = () => {
                         averageScore: avgScore,
                         studyStreak: res.data.studyStreak || 0,
                         totalStudyHours: Math.round((res.data.totalStudyMinutes || 0) / 60),
+                        perfectScore: quizData.some((q: any) => q.score === 100),
                     })
 
                     // Growth Trend Chart (Last 7 Sessions)
@@ -312,7 +314,7 @@ const DashboardProgress = () => {
                                 desc: "Absolute subject mastery", 
                                 icon: "⭐", 
                                 color: "text-primary",
-                                isUnlocked: false 
+                                isUnlocked: progressData.perfectScore
                             }
                         ].map((ach, i) => (
                             <div key={i} className={`flex items-center gap-6 p-8 transition-colors group ${ach.isUnlocked ? 'hover:bg-foreground/[0.02]' : 'opacity-30 grayscale'}`}>

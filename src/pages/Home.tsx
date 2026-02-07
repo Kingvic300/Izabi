@@ -66,22 +66,22 @@ const Home = () => {
     const features = [
         {
             icon: <FileText size={32} />,
-            title: "Neural Scan",
-            description: "Upload PDFs and notes - our neural engine scans and understands context instantly.",
+            title: "Smart Scan",
+            description: "Upload PDFs and notes - our system understands the context instantly.",
             color: "text-primary",
             bg: "bg-primary/10"
         },
         {
             icon: <Brain size={32} />,
-            title: "Izabi Summaries",
-            description: "Get structured deep-dives that explain the 'Why' behind every concept.",
+            title: "Smart Summaries",
+            description: "Get clear summaries that explain the 'Why' behind every concept.",
             color: "text-primary",
             bg: "bg-primary/10"
         },
         {
             icon: <Zap size={32} />,
-            title: "Flash Quiz",
-            description: "Auto-generate challenging quizzes with instant feedback tracking.",
+            title: "Practice Quiz",
+            description: "Auto-generate practice quizzes with instant feedback.",
             color: "text-primary",
             bg: "bg-primary/10"
         },
@@ -215,9 +215,9 @@ const Home = () => {
                             <div className="hidden lg:block absolute top-[60px] left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                             
                             {[
-                                { step: "01", title: "Ingest", desc: "Feed the AI your PDFs, notes, or raw texts.", icon: <FileText /> },
-                                { step: "02", title: "Analyze", desc: "Izabi identifies key patterns and neural links.", icon: <Zap /> },
-                                { step: "03", title: "Conquer", desc: "Simulate exams and master the curriculum.", icon: <Sparkles /> },
+                                { step: "01", title: "Upload", desc: "Upload your PDFs, notes, or raw texts.", icon: <FileText /> },
+                                { step: "02", title: "Analyze", desc: "Izabi identifies key patterns and explains them.", icon: <Zap /> },
+                                { step: "03", title: "Learn", desc: "Simulate exams and master the curriculum.", icon: <Sparkles /> },
                             ].map((item, i) => (
                                 <div key={i} className="relative group">
                                     <div className="w-32 h-32 glass rounded-2xl border border-white/10 flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:border-primary/50 transition-colors">
@@ -297,21 +297,21 @@ const Home = () => {
                                     name: "Initiate",
                                     price: "₦0",
                                     desc: "Explore the environment",
-                                    feat: ["5 Neural Scans/month", "Basic Summarization", "Standard Quizzes", "Web Access Only"],
+                                    feat: ["5 Smart Scans/month", "Basic Summarization", "Standard Quizzes", "Web Access Only"],
                                     hot: false
                                 },
                                 {
                                     name: "Pro Scholar",
                                     price: "₦2,999",
-                                    desc: "Dominance mode activated",
-                                    feat: ["Unlimited Scans", "Deep-Dive Summaries", "Audio Lessons", "Pidgin AI Integration", "Neural Memory"],
+                                    desc: "Unlock full potential",
+                                    feat: ["Unlimited Scans", "Detailed Summaries", "Audio Lessons", "Pidgin AI Integration", "Smart Memory"],
                                     hot: true
                                 },
                                 {
                                     name: "Academic Elite",
                                     price: "₦9,999",
-                                    desc: "Maximum knowledge yield",
-                                    feat: ["Everything in Pro", "Scholar Battle Pass", "WAEC/JAMB Predictions", "Priority GPU Access", "1-on-1 AI Tutoring"],
+                                    desc: "Get the best results",
+                                    feat: ["Everything in Pro", "Scholar Battle Pass", "WAEC/JAMB Predictions", "Priority Access", "1-on-1 AI Tutoring"],
                                     hot: false
                                 },
                             ].map((plan, i) => (
@@ -352,7 +352,7 @@ const Home = () => {
                                                     : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                                             }`}
                                         >
-                                            Deploy Now
+                                            Get Started
                                         </Button>
                                     </Link>
                                 </Card>

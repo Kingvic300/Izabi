@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 import StreakPet from "@/components/StreakPet"
+import { OnboardingTour } from "@/components/OnboardingTour"
 import { useEffect, useState as react_useState, useMemo } from "react"
 
 import ReactMarkdown from 'react-markdown'
@@ -197,7 +198,7 @@ const DashboardHome = () => {
             }
 
             // You could also store telemetry in state if you want to display it
-            console.log("[NeuralNode] Telemetry Received:", data.telemetry);
+            console.log("[SmartStudy] Telemetry Received:", data.telemetry);
 
         } catch (err) {
             addError(err)
@@ -259,7 +260,7 @@ const DashboardHome = () => {
     }
 
     const handleDownload = (content: string, filename: string) => {
-        const header = `----------------------------------------\nIZABI NEURAL NODE: DATA YIELD\nTIMESTAMP: ${new Date().toLocaleString()}\nPROTOCOL: DEEPLAYER_V2\n----------------------------------------\n\n`;
+        const header = `----------------------------------------\nIZABI STUDY ASSISTANT: STUDY MATERIAL\nTIMESTAMP: ${new Date().toLocaleString()}\nPROTOCOL: STANDARD_V2\n----------------------------------------\n\n`;
         const blob = new Blob([header + content], { type: 'text/markdown' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -298,6 +299,7 @@ const DashboardHome = () => {
     return (
         <ErrorBoundary>
             <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
+                <OnboardingTour />
                 <ErrorList errors={errors} onDismiss={clearError} />
 
                 {/* Header Section */}
@@ -347,21 +349,21 @@ const DashboardHome = () => {
                                     <CardHeader className="p-8">
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className="p-2 rounded-xl bg-primary/20 text-primary"><FileText size={16} /></div>
-                                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Active Session</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Active Document</span>
                                         </div>
                                         <CardTitle className="text-2xl font-bold truncate leading-tight">{pdfSelection.metadata.fileName}</CardTitle>
                                         <CardDescription className="flex items-center gap-2 font-bold text-primary">
                                             <Sparkles size={14} />
-                                            AI-Ready Context
+                                            AI-Ready Document
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="px-8 pb-8 space-y-6">
                                         <div className="flex items-center justify-between p-4 rounded-2xl bg-foreground/5 border border-foreground/5">
                                             <div className="flex items-center gap-3">
                                                 <Layers size={18} className="text-primary/60" />
-                                                <span className="text-xs font-bold opacity-60">Action Readiness</span>
+                                                <span className="text-xs font-bold opacity-60">Status</span>
                                             </div>
-                                            <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase">High</div>
+                                            <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase">Ready</div>
                                         </div>
                                         <Button 
                                             variant="ghost" 
@@ -389,17 +391,18 @@ const DashboardHome = () => {
                             </div>
 
                             {/* Main Hub Controls */}
-                            <div className="xl:col-span-8 flex flex-col gap-6">
+                            <div className="xl:col-span-8 flex flex-col gap-6" id="onboarding-study-tools">
                                 <Card className="glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden relative border border-white/5">
                                     <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-white/5">
                                         {[
-                                            { id: 'summarize', icon: Brain, label: t("dashboard.mod_summary"), desc: t("dashboard.mod_summary_desc"), color: "text-blue-400" },
-                                            { id: 'quiz', icon: Zap, label: t("dashboard.mod_quiz"), desc: t("dashboard.mod_quiz_desc"), color: "text-yellow-400" },
+                                            { id: 'summarize', icon: Brain, label: t("dashboard.mod_summary"), desc: t("dashboard.mod_summary_desc"), color: "text-blue-400", domId: "onboarding-feature-summary" },
+                                            { id: 'quiz', icon: Zap, label: t("dashboard.mod_quiz"), desc: t("dashboard.mod_quiz_desc"), color: "text-yellow-400", domId: "onboarding-feature-quiz" },
                                             { id: 'guide', icon: FileText, label: t("dashboard.mod_guide"), desc: t("dashboard.mod_guide_desc"), color: "text-emerald-400" },
                                             { id: 'cards', icon: Layers, label: t("dashboard.mod_flashcards"), desc: t("dashboard.mod_flashcards_desc"), color: "text-purple-400" }
                                         ].map((module) => (
                                             <button
                                                 key={module.id}
+                                                id={module.domId}
                                                 onClick={() => {
                                                     if (module.id === 'summarize') handleRequest("summarize")
                                                     if (module.id === 'quiz') handleRequest("generate-questions", true)
@@ -443,7 +446,7 @@ const DashboardHome = () => {
                                         {isProcessing && (
                                             <div className="flex items-center gap-4 text-primary animate-pulse">
                                                 <Loader2 className="animate-spin" size={16} />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">Synthesizing resources...</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-widest">Generating resources...</span>
                                             </div>
                                         )}
                                     </div>
@@ -455,15 +458,15 @@ const DashboardHome = () => {
                     ) : (
                         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 stagger-card">
                              <div className="xl:col-span-8">
-                                <Card className="h-full glass shadow-2xl rounded-[48px] overflow-hidden group relative border-0">
+                                <Card id="onboarding-welcome-card" className="h-full glass shadow-2xl rounded-[48px] overflow-hidden group relative border-0">
                                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
                                     <CardHeader className="p-10 md:p-14 text-center md:text-left text-foreground">
                                         <CardTitle className="text-4xl md:text-5xl font-bold font-mono tracking-tighter mb-6 relative uppercase">
-                                            {t("dashboard.upload_title") || "DeepLayer Ingestion"}
+                                            {t("dashboard.upload_title") || "Document Upload"}
                                             <span className="absolute -top-1 -right-8 w-2 h-2 bg-primary rounded-full animate-ping" />
                                         </CardTitle>
                                         <CardDescription className="text-lg font-medium opacity-60 max-w-xl mx-auto md:mx-0 leading-relaxed font-mono">
-                                            {t("dashboard.upload_desc") || "Deploy raw documents into the neural environment."}
+                                            {t("dashboard.upload_desc") || "Upload notes or textbooks to start studying."}
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="px-6 md:px-14 pb-14">
@@ -477,15 +480,15 @@ const DashboardHome = () => {
                                          <Cpu size={48} className="text-primary animate-float" />
                                      </div>
                                      <div className="space-y-4 pt-4">
-                                         <h3 className="text-3xl font-bold tracking-tight font-mono uppercase">{t("dashboard.init_node") || "Initialize Node"}</h3>
+                                         <h3 className="text-3xl font-bold tracking-tight font-mono uppercase">{t("dashboard.init_node") || "Start Studying"}</h3>
                                          <p className="text-base font-medium text-muted-foreground leading-relaxed max-w-[280px] mx-auto">
-                                            {t("dashboard.init_desc") || "Ingest a document segment to access the Laboratory modules."}
+                                            {t("dashboard.init_desc") || "Upload a document to access the study tools."}
                                          </p>
                                      </div>
                                      <div className="flex-1 flex items-end pb-4">
                                         <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-foreground/5 border border-foreground/5">
                                             <div className="w-2 h-2 rounded-full bg-yellow-500/50 animate-pulse" />
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">System: Standby</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">System: Ready</span>
                                         </div>
                                      </div>
                                  </Card>
@@ -577,7 +580,7 @@ const DashboardHome = () => {
                                                     }}
                                                 >
                                                     <RotateCcw size={14} />
-                                                    Reset Terminal
+                                                    Reset Quiz
                                                 </Button>
                                             </CardContent>
                                         </CollapsibleContent>
@@ -666,14 +669,14 @@ const DashboardHome = () => {
                                                             
                                                             <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-6">
                                                                 <div className="space-y-2 md:space-y-3">
-                                                                    <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Node {i+1}</div>
+                                                                    <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Question {i+1}</div>
                                                                     <h4 className="text-base md:text-xl font-bold leading-tight text-foreground break-words">{q.question}</h4>
                                                                 </div>
                                                                 {showResults && (
                                                                     <div className={`w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-3xl text-[10px] font-bold tracking-widest uppercase flex items-center gap-2 shadow-2xl transition-all
                                                                         ${correct ? "bg-primary text-white shadow-primary/20" : "bg-destructive text-white shadow-destructive/20"}`}>
                                                                         {correct ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                                                                        {correct ? "Acquisition" : "Anomaly"}
+                                                                        {correct ? "Correct" : "Incorrect"}
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -711,14 +714,14 @@ const DashboardHome = () => {
                                                                 <div className="space-y-4">
                                                                     <Input
                                                                         value={userAnswer || ""}
-                                                                        placeholder="Input response terminal..."
+                                                                        placeholder="Type your answer here..."
                                                                         onChange={(e) => handleShortAnswerChange(i, e.target.value)}
                                                                         disabled={showResults}
                                                                         className="rounded-2xl md:rounded-3xl h-14 md:h-16 bg-foreground/5 border-foreground/5 focus:bg-foreground/10 transition-all font-bold px-4 md:px-8 text-sm md:text-base text-foreground w-full"
                                                                     />
                                                                     {showResults && !correct && (
                                                                         <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5">
-                                                                            <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Expected Pattern</div>
+                                                                            <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Correct Answer</div>
                                                                             <p className="text-sm font-bold opacity-80">{q.answer}</p>
                                                                         </div>
                                                                     )}
@@ -726,7 +729,7 @@ const DashboardHome = () => {
                                                             )}
                                                             {showResults && q.explanation && (
                                                                 <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5 mt-4">
-                                                                    <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Neural Insight</div>
+                                                                    <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Explanation</div>
                                                                     <p className="text-sm font-bold opacity-80 italic">"{q.explanation}"</p>
                                                                 </div>
                                                             )}
