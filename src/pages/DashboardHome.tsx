@@ -23,7 +23,6 @@ import { cn } from "@/lib/utils"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 import StreakPet from "@/components/StreakPet"
-import { OnboardingTour } from "@/components/OnboardingTour"
 import { useEffect, useState as react_useState, useMemo } from "react"
 
 import ReactMarkdown from 'react-markdown'
@@ -299,7 +298,6 @@ const DashboardHome = () => {
     return (
         <ErrorBoundary>
             <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
-                <OnboardingTour />
                 <ErrorList errors={errors} onDismiss={clearError} />
 
                 {/* Header Section */}
@@ -391,18 +389,17 @@ const DashboardHome = () => {
                             </div>
 
                             {/* Main Hub Controls */}
-                            <div className="xl:col-span-8 flex flex-col gap-6" id="onboarding-study-tools">
+                            <div className="xl:col-span-8 flex flex-col gap-6">
                                 <Card className="glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden relative border border-white/5">
                                     <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-white/5">
                                         {[
-                                            { id: 'summarize', icon: Brain, label: t("dashboard.mod_summary"), desc: t("dashboard.mod_summary_desc"), color: "text-blue-400", domId: "onboarding-feature-summary" },
-                                            { id: 'quiz', icon: Zap, label: t("dashboard.mod_quiz"), desc: t("dashboard.mod_quiz_desc"), color: "text-yellow-400", domId: "onboarding-feature-quiz" },
+                                            { id: 'summarize', icon: Brain, label: t("dashboard.mod_summary"), desc: t("dashboard.mod_summary_desc"), color: "text-blue-400" },
+                                            { id: 'quiz', icon: Zap, label: t("dashboard.mod_quiz"), desc: t("dashboard.mod_quiz_desc"), color: "text-yellow-400" },
                                             { id: 'guide', icon: FileText, label: t("dashboard.mod_guide"), desc: t("dashboard.mod_guide_desc"), color: "text-emerald-400" },
                                             { id: 'cards', icon: Layers, label: t("dashboard.mod_flashcards"), desc: t("dashboard.mod_flashcards_desc"), color: "text-purple-400" }
                                         ].map((module) => (
                                             <button
                                                 key={module.id}
-                                                id={module.domId}
                                                 onClick={() => {
                                                     if (module.id === 'summarize') handleRequest("summarize")
                                                     if (module.id === 'quiz') handleRequest("generate-questions", true)
@@ -458,7 +455,7 @@ const DashboardHome = () => {
                     ) : (
                         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 stagger-card">
                              <div className="xl:col-span-8">
-                                <Card id="onboarding-welcome-card" className="h-full glass shadow-2xl rounded-[48px] overflow-hidden group relative border-0">
+                                <Card className="h-full glass shadow-2xl rounded-[48px] overflow-hidden group relative border-0">
                                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
                                     <CardHeader className="p-10 md:p-14 text-center md:text-left text-foreground">
                                         <CardTitle className="text-4xl md:text-5xl font-bold font-mono tracking-tighter mb-6 relative uppercase">
