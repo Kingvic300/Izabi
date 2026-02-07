@@ -1,6 +1,7 @@
 "use client"
 
-import { Brain, Mail, Linkedin, Twitter, Sparkles } from "lucide-react"
+import { Mail, Linkedin, Twitter, Sparkles } from "lucide-react"
+import { Logo } from "@/components/Logo"
 import { Link } from "react-router-dom"
 
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -35,21 +36,13 @@ export const Footer = () => {
 
     return (
         <footer className="relative bg-background pt-24 pb-12 overflow-hidden border-t border-foreground/10">
-            {/* Background Glow */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[40%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
             <div className="w-full px-6 lg:px-12 relative">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12 mb-20">
                     {/* Brand */}
                     <div className="col-span-2">
-                        <Link to="/" className="flex items-center space-x-3 mb-6 group">
-                            <div className="w-12 h-12 bg-gradient-hero rounded-2xl flex items-center justify-center shadow-glow group-hover:rotate-6 transition-transform">
-                                <Brain className="h-6 w-6 text-white" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-3xl font-black bg-gradient-hero bg-clip-text text-transparent leading-none">Izabi</span>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 text-foreground">AI Scholar Labs</span>
-                            </div>
+                        <Link to="/" className="flex items-center mb-6 group">
+                            <Logo showText size={48} />
                         </Link>
                         <p className="text-muted-foreground text-sm max-w-sm leading-relaxed mb-6 font-medium">
                             The world's most advanced AI-powered learning environment designed specifically for the next generation of scholars.
@@ -70,7 +63,7 @@ export const Footer = () => {
                     {/* Links */}
                     {Object.entries(footerLinks).map(([category, links]) => (
                         <div key={category} className="space-y-6">
-                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-foreground opacity-40">{category}</h3>
+                            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-foreground opacity-40">{category}</h3>
                             <ul className="space-y-4">
                                 {links.map((link) => (
                                     <li key={link.label}>
@@ -91,10 +84,10 @@ export const Footer = () => {
                         <span>{t("footer.copyright")}. Built for excellence.</span>
                     </div>
                     
-                    <div className="flex items-center gap-8 bg-foreground/5 px-6 py-2 rounded-full border border-foreground/10 backdrop-blur-md">
-                        <Link to="/privacy" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
-                        <Link to="/terms" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
-                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary">
+                    <div className="flex items-center gap-6">
+                        <Link to="/privacy" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
+                        <Link to="/terms" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+                        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary">
                             <Sparkles size={10} className="animate-pulse" />
                             <span>v2.0 Scholar</span>
                         </div>

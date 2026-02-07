@@ -28,9 +28,9 @@ const About = lazy(() => import("@/pages/About"), "About")
 const SupportUs = lazy(() => import("@/pages/SupportUs"), "SupportUs")
 const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"), "AdminDashboard")
 
-const withErrorBoundary = (Component: React.ComponentType) => (
+const withErrorBoundary = (Component: React.ComponentType, text?: string) => (
     <ErrorBoundary>
-        <Suspense fallback={<PageLoader variant="spinner" text="Loading page..." />}>
+        <Suspense fallback={<PageLoader variant="spinner" text={text || "Synchronizing data..."} />}>
             <Component />
         </Suspense>
     </ErrorBoundary>
@@ -52,7 +52,7 @@ const routes = () => {
         <BrowserRouter>
             <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={withErrorBoundary(Home)} />
+                <Route path="/" element={withErrorBoundary(Home, "your landing page is loading")} />
                 <Route path="/features" element={withErrorBoundary(Features)} />
                 <Route path="/how-it-works" element={withErrorBoundary(HowItWorks)} />
                 <Route path="/testimonials" element={withErrorBoundary(Testimonials)} />
@@ -69,7 +69,7 @@ const routes = () => {
                     <Route path="ai-assistant" element={withErrorBoundary(DashboardAIAssistant)} />
                     <Route path="progress" element={withErrorBoundary(DashboardProgress)} />
                     <Route path="history" element={withErrorBoundary(DashboardHistory)} />
-                    <Route path="profile" element={withErrorBoundary(DashboardProfile)} />
+                    <Route path="profile" element={withErrorBoundary(DashboardProfile, "your profile page is loading")} />
                     <Route path="settings" element={withErrorBoundary(DashboardSettings)} />
                     <Route path="exams" element={withErrorBoundary(DashboardExams)} />
                     <Route path="support" element={withErrorBoundary(SupportUs)} />

@@ -146,10 +146,10 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
         <div className="relative">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="mb-8">
-                <TabsList className="grid w-full grid-cols-3 bg-black/40 p-1.5 rounded-[22px] h-16 border border-white/5">
+                <TabsList className="grid w-full grid-cols-3 glass p-1.5 rounded-[22px] h-16 border border-foreground/5 shadow-none">
                   <TabsTrigger 
                     value="load" 
-                    className="rounded-[18px] h-full data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-glow font-black tracking-tight transition-all gap-2"
+                    className="rounded-[18px] h-full data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-glow font-bold tracking-tight transition-all gap-2"
                   >
                     <Binary size={18} />
                     <span className="hidden md:inline">LOAD</span>
@@ -157,7 +157,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                   <TabsTrigger 
                     value="analyze" 
                     disabled={!uploadedFile || uploadedFile.type !== 'application/pdf'} 
-                    className="rounded-[18px] h-full data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-glow font-black tracking-tight transition-all gap-2"
+                    className="rounded-[18px] h-full data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-glow font-bold tracking-tight transition-all gap-2"
                   >
                     <ShieldCheck size={18} />
                     <span className="hidden md:inline">SCAN</span>
@@ -165,7 +165,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                   <TabsTrigger 
                     value="sync" 
                     disabled={!uploadedFile} 
-                    className="rounded-[18px] h-full data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-glow font-black tracking-tight transition-all gap-2"
+                    className="rounded-[18px] h-full data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-glow font-bold tracking-tight transition-all gap-2"
                   >
                     <Database size={18} />
                     <span className="hidden md:inline">SYNC</span>
@@ -182,15 +182,15 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                     transition={{ duration: 0.3 }}
                     className="space-y-6"
                   >
-                      <div className="group relative border-2 border-dashed border-white/10 hover:border-primary/40 rounded-[40px] p-12 text-center transition-all duration-500 bg-white/[0.01] hover:bg-white/[0.03] overflow-hidden">
+                      <div className="group relative border-2 border-dashed border-foreground/10 hover:border-primary/40 rounded-2xl p-6 md:p-12 text-center transition-all duration-500 bg-foreground/[0.01] hover:bg-foreground/[0.03] overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         
                         <input type="file" onChange={handleFileUpload} className="hidden" id="pdf-upload" />
                         <label htmlFor="pdf-upload" className="cursor-pointer block relative z-10">
-                          <div className="w-24 h-24 rounded-3xl bg-black/40 flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all shadow-2xl border border-white/5">
-                              <Upload className="h-10 w-10 text-primary" />
+                          <div className="w-16 h-16 md:w-24 md:h-24 rounded-2xl glass flex items-center justify-center mx-auto mb-6 md:mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all shadow-2xl border border-white/5">
+                              <Upload className="h-8 w-8 md:h-10 md:w-10 text-primary" />
                           </div>
-                          <h3 className="text-2xl font-black mb-3 tracking-tight">{uploadedFile ? 'Node Loaded' : 'Ingest Intelligence'}</h3>
+                          <h3 className="text-2xl font-bold mb-3 tracking-tight">{uploadedFile ? 'Node Loaded' : 'Ingest Intelligence'}</h3>
                           <p className="text-muted-foreground font-medium max-w-xs mx-auto mb-6">
                             {uploadedFile
                                 ? uploadedFile.name
@@ -198,7 +198,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                           </p>
                           
                           {uploadedFile && (
-                              <div className="w-full max-w-xs mx-auto h-2 bg-white/5 rounded-full overflow-hidden mb-6">
+                              <div className="w-full max-w-xs mx-auto h-2 bg-foreground/5 rounded-2xl overflow-hidden mb-6">
                                   <motion.div 
                                     className="h-full bg-primary shadow-glow" 
                                     initial={{ width: 0 }}
@@ -207,7 +207,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                               </div>
                           )}
 
-                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">
+                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-foreground/5 border border-foreground/5 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
                              Protocols: PDF / DOCX / TXT
                           </div>
                         </label>
@@ -218,7 +218,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                             <Button 
                                 onClick={() => setActiveTab(uploadedFile.type === 'application/pdf' ? 'analyze' : 'sync')}
                                 size="lg"
-                                className="rounded-2xl px-10 h-16 bg-primary hover:bg-primary/90 text-white font-black text-lg shadow-glow transition-all hover:scale-105 gap-3"
+                                className="rounded-2xl px-10 h-16 bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-glow transition-all hover:scale-105 gap-3"
                             >
                                 START MAPPING
                                 <ArrowRight size={20} />
@@ -236,22 +236,22 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                     className="space-y-6"
                   >
                       {uploadedFile && (
-                          <div className="glass border-white/5 rounded-[40px] overflow-hidden p-8 space-y-8">
+                          <div className="glass border-foreground/5 rounded-2xl overflow-hidden p-4 md:p-8 space-y-6 md:space-y-8">
                             <div className="flex items-center justify-between">
                               <div className="space-y-1">
-                                  <h3 className="text-xl font-black flex items-center gap-3">
-                                    <div className="w-2 h-6 bg-primary rounded-full" />
+                                  <h3 className="text-xl font-bold flex items-center gap-3">
+                                    <div className="w-2 h-6 bg-primary rounded-2xl" />
                                     SCAN MODE
                                   </h3>
-                                  <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Verifying neural fragments</p>
+                                  <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Verifying neural fragments</p>
                               </div>
-                              <Button variant="outline" onClick={() => setActiveTab('sync')} disabled={totalPages === 0} className="rounded-xl font-bold border-white/10 hover:bg-white/5 gap-2 px-6">
+                              <Button variant="outline" onClick={() => setActiveTab('sync')} disabled={totalPages === 0} className="rounded-2xl font-bold border-foreground/10 hover:bg-foreground/5 gap-2 px-6">
                                 NEXT
                                 <ArrowRight size={16} />
                               </Button>
                             </div>
 
-                            <div className="rounded-[32px] overflow-hidden border border-white/5 shadow-2xl bg-black/60 relative group min-h-[400px]">
+                            <div className="rounded-2xl overflow-hidden border border-foreground/5 shadow-2xl bg-black/60 relative group min-h-[400px]">
                                 <div className="absolute inset-x-0 h-0.5 bg-primary/40 shadow-glow top-0 animate-[scan_3s_ease-in-out_infinite] z-10 pointer-events-none" />
                                 <PDFPreview
                                     file={uploadedFile}
@@ -279,22 +279,21 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                             totalPages={totalPages}
                             selectedPages={selectedPages}
                             onSelectionChange={setSelectedPages}
-                            className="glass border-white/5 rounded-[40px] p-8 shadow-none"
+                            className="glass border-foreground/5 rounded-2xl p-8 shadow-none"
                         />
                     )}
 
-                    <div className="glass p-10 rounded-[40px] border border-white/5 space-y-10 relative overflow-hidden">
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 blur-[80px] rounded-full" />
+                    <div className="glass p-10 rounded-2xl border border-foreground/5 space-y-10 relative overflow-hidden">
                         
                         <div className="relative">
-                            <h3 className="text-2xl font-black mb-2 tracking-tight">SYNC PARAMETERS</h3>
-                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Optimize extraction weights</p>
+                            <h3 className="text-2xl font-bold mb-2 tracking-tight">SYNC PARAMETERS</h3>
+                            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Optimize extraction weights</p>
                         </div>
 
                         <div className="space-y-6 relative">
                           <div className="flex justify-between items-end">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Output Density (KP Generator)</Label>
-                            <span className="text-2xl font-black text-primary">{numQuestions}</span>
+                            <Label className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Output Density (KP Generator)</Label>
+                            <span className="text-2xl font-bold text-primary">{numQuestions}</span>
                           </div>
                           <div className="relative pt-2">
                               <input
@@ -303,27 +302,27 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                                   max={30}
                                   value={numQuestions}
                                   onChange={(e) => setNumQuestions(parseInt(e.target.value))}
-                                  className="w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-primary"
+                                  className="w-full h-2 bg-foreground/5 rounded-2xl appearance-none cursor-pointer accent-primary"
                               />
-                              <div className="flex justify-between mt-3 text-[10px] font-black opacity-30">
+                              <div className="flex justify-between mt-3 text-[10px] font-bold opacity-30">
                                   <span>LOW FREQUENCY</span>
                                   <span>HIGH FREQUENCY</span>
                               </div>
                           </div>
                         </div>
 
-                        <div className="p-8 rounded-[32px] bg-black/40 border border-white/5 space-y-4 shadow-inner">
-                            <div className="flex justify-between text-sm py-2 border-b border-white/5">
+                        <div className="p-8 rounded-2xl bg-foreground/5 border border-foreground/5 space-y-4 shadow-inner">
+                            <div className="flex justify-between text-sm py-2 border-b border-foreground/5">
                                 <span className="font-bold opacity-30 uppercase tracking-widest text-[10px]">Reference</span>
-                                <span className="font-black truncate max-w-[200px]">{uploadedFile?.name}</span>
+                                <span className="font-bold truncate max-w-[200px]">{uploadedFile?.name}</span>
                             </div>
                             <div className="flex justify-between text-sm py-2">
                                 <span className="font-bold opacity-30 uppercase tracking-widest text-[10px]">Segment Count</span>
-                                <span className="font-black text-emerald-400">{selectedPages.length || 1} Blocks</span>
+                                <span className="font-bold text-primary">{selectedPages.length || 1} Blocks</span>
                             </div>
-                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden mt-4">
+                            <div className="h-1.5 w-full bg-foreground/5 rounded-2xl overflow-hidden mt-4">
                                 <motion.div 
-                                    className="h-full bg-emerald-500 shadow-[0_0_15px_#10b981]" 
+                                    className="h-full bg-primary shadow-[0_0_15px_#10b981]" 
                                     initial={{ width: 0 }}
                                     animate={{ width: `${(Math.max(selectedPages.length, 1) / Math.max(totalPages, 1)) * 100}%` }}
                                 />
@@ -334,7 +333,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                             <Button
                                 onClick={handleProcessSelection}
                                 disabled={isProcessing || !uploadedFile || (uploadedFile.type === 'application/pdf' && selectedPages.length === 0)}
-                                className="w-full h-20 rounded-[28px] bg-primary hover:bg-primary/90 text-white font-black text-xl shadow-glow transition-all hover:scale-[1.02] active:scale-[0.98] gap-4"
+                                className="w-full h-20 rounded-[28px] bg-primary hover:bg-primary/90 text-white font-bold text-xl shadow-glow transition-all hover:scale-[1.02] active:scale-[0.98] gap-4"
                             >
                               {isProcessing ? (
                                   <>
@@ -352,7 +351,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                             <Button 
                                 variant="ghost" 
                                 onClick={resetUpload} 
-                                className="w-full h-12 font-black text-[10px] tracking-[0.3em] opacity-20 hover:opacity-100 hover:bg-transparent text-destructive gap-2"
+                                className="w-full h-12 font-bold text-[10px] tracking-[0.3em] opacity-20 hover:opacity-100 hover:bg-transparent text-destructive gap-2"
                             >
                               <Trash2 size={14} />
                               TERMINATE SEQUENCE

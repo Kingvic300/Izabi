@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Brain, ArrowLeft, Mail, Lock, Sparkles, Loader2, Eye, EyeOff } from "lucide-react"
+import { ArrowLeft, Mail, Lock, Sparkles, Loader2, Eye, EyeOff } from "lucide-react"
+import { Logo } from "@/components/Logo"
 import { Link, useNavigate } from "react-router-dom"
 import type React from "react"
 import { useState, useRef } from "react"
@@ -12,6 +13,7 @@ import axios from "axios"
 import { BASE_URL } from "@/constants"
 import { useAppToast } from "@/hooks/useAppToast"
 import { formValidation } from "@/lib/formValidation"
+import { cn } from "@/lib/utils"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
@@ -127,9 +129,6 @@ const Login = () => {
     }
     return (
         <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-6">
-            {/* Background Blobs */}
-            <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
 
             <Link to="/" className="absolute top-8 left-8 group">
                 <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
@@ -141,20 +140,18 @@ const Login = () => {
             <div ref={cardRef} className="w-full max-w-[480px] space-y-8 relative z-10">
                 {/* Branding */}
                 <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-gradient-hero rounded-2xl flex items-center justify-center shadow-glow mx-auto animate-pulse">
-                        <Brain className="h-10 w-10 text-white" />
-                    </div>
+                    <Logo size={64} className="justify-center mx-auto" />
                     <div>
-                        <h1 className="text-4xl font-black tracking-tighter text-foreground">{t("auth.login").split(' ')[0]} <span className="text-gradient">{t("auth.login").split(' ')[1]}</span></h1>
+                        <h1 className="text-4xl font-bold tracking-tighter text-foreground">{t("auth.login").split(' ')[0]} <span className="text-gradient">{t("auth.login").split(' ')[1]}</span></h1>
                         <p className="text-muted-foreground font-medium">Welcome back! Please sign in to your account.</p>
                     </div>
                 </div>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-[40px] overflow-hidden">
+                <Card className="glass shadow-2xl border-foreground/10 rounded-2xl overflow-hidden">
                     <CardContent className="p-10 space-y-6">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
-                                <Label className="text-[10px] uppercase font-black tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
+                                <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
                                 <div className="relative">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
                                     <Input
@@ -162,7 +159,10 @@ const Login = () => {
                                         placeholder="scholar@example.com"
                                         value={email}
                                         onChange={handleEmailChange}
-                                        className={`h-14 pl-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${emailError ? "border-destructive/50" : ""}`}
+                                        className={cn(
+                                            "h-14 pl-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground",
+                                            emailError && "border-destructive/50"
+                                        )}
                                     />
                                 </div>
                                 {emailError && <p className="text-xs text-destructive font-bold px-1">{emailError}</p>}
@@ -170,8 +170,8 @@ const Login = () => {
 
                             <div className="space-y-2">
                                 <div className="flex justify-between px-1">
-                                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-40">{t("auth.password")}</Label>
-                                    <Link to="/forgot-password" title="Feature coming soon" className="text-[10px] uppercase font-black tracking-widest text-primary hover:opacity-80 transition-opacity">Request reset</Link>
+                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40">{t("auth.password")}</Label>
+                                    <Link to="/forgot-password" title="Feature coming soon" className="text-[10px] uppercase font-bold tracking-widest text-primary hover:opacity-80 transition-opacity">Request reset</Link>
                                 </div>
                                 <div className="relative">
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
@@ -180,7 +180,10 @@ const Login = () => {
                                         placeholder="••••••••"
                                         value={password}
                                         onChange={handlePasswordChange}
-                                        className={`h-14 pl-12 pr-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${passwordError ? "border-destructive/50" : ""}`}
+                                        className={cn(
+                                            "h-14 pl-12 pr-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground",
+                                            passwordError && "border-destructive/50"
+                                        )}
                                     />
                                     <button
                                         type="button"
@@ -196,7 +199,7 @@ const Login = () => {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-16 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 font-black text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
+                                className="w-full h-16 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
                             >
                                 {loading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />

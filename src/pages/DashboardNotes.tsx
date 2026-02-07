@@ -187,7 +187,7 @@ export default function DashboardNotes() {
                                     value={newNote.title}
                                     onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
                                     placeholder="Enter note title..."
-                                    className={`rounded-xl h-12 bg-foreground/5 border-foreground/10 ${errors.title ? "border-destructive" : ""}`}
+                                    className={`rounded-2xl h-12 bg-foreground/5 border-foreground/10 ${errors.title ? "border-destructive" : ""}`}
                                 />
                                 {errors.title && (
                                     <p className="text-xs text-destructive flex items-center gap-1">
@@ -202,7 +202,7 @@ export default function DashboardNotes() {
                                     value={newNote.subject}
                                     onChange={(e) => setNewNote({ ...newNote, subject: e.target.value })}
                                     placeholder="e.g., Biology, Math..."
-                                    className="rounded-xl h-12 bg-foreground/5 border-foreground/10"
+                                    className="rounded-2xl h-12 bg-foreground/5 border-foreground/10"
                                 />
                             </div>
                         </div>
@@ -220,13 +220,13 @@ export default function DashboardNotes() {
                             )}
                         </div>
                         <div className="flex justify-end gap-3 pt-4">
-                            <Button variant="ghost" onClick={() => setIsAddingNote(false)} className="rounded-xl h-12 px-6">
+                            <Button variant="ghost" onClick={() => setIsAddingNote(false)} className="rounded-2xl h-12 px-6">
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleCreateNote}
                                 disabled={!newNote.title.trim() || !newNote.content.trim()}
-                                className="rounded-xl h-12 px-8 shadow-glow"
+                                className="rounded-2xl h-12 px-8 shadow-glow"
                             >
                                 <Save className="h-4 w-4 mr-2" />
                                 Save Note
@@ -246,7 +246,7 @@ export default function DashboardNotes() {
                                     <div className="space-y-4 flex-1 flex flex-col">
                                         <Input
                                             value={note.title}
-                                            className="rounded-xl bg-foreground/5 border-foreground/10"
+                                            className="rounded-2xl bg-foreground/5 border-foreground/10"
                                             onChange={(e) =>
                                                 setNotes((prev) =>
                                                     prev.map((n) => (n.id === note.id ? { ...n, title: e.target.value } : n))
@@ -311,15 +311,15 @@ export default function DashboardNotes() {
                                         </div>
 
                                         {deleteConfirm === note.id && (
-                                            <div className="absolute inset-x-0 bottom-0 p-4 bg-destructive text-white backdrop-blur-md rounded-b-3xl flex flex-col gap-2">
+                                            <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 space-y-4 z-20">
                                                 <p className="text-xs font-bold uppercase tracking-wider text-center">Permanently remove this note?</p>
-                                                <div className="flex gap-2">
-                                                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)} className="flex-1 bg-foreground/10 border-foreground/20 text-white hover:bg-foreground/20">
+                                                <div className="flex gap-2 w-full">
+                                                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)} className="flex-1 rounded-2xl bg-foreground/10 border-foreground/20 text-foreground hover:bg-foreground/20">
                                                         Cancel
                                                     </Button>
                                                     <Button
                                                         size="sm"
-                                                        className="flex-1 bg-white text-destructive hover:bg-white/90 font-bold"
+                                                        className="flex-1 rounded-2xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
                                                         onClick={() => handleDeleteNote(note.id)}
                                                     >
                                                         Delete
@@ -334,8 +334,8 @@ export default function DashboardNotes() {
                     ))}
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center py-24 glass rounded-[40px] border-dashed space-y-6">
-                    <div className="w-24 h-24 rounded-full bg-foreground/5 flex items-center justify-center border border-foreground/10">
+                <div className="flex flex-col items-center justify-center py-24 glass rounded-2xl border-dashed space-y-6">
+                    <div className="w-24 h-24 rounded-2xl bg-foreground/5 flex items-center justify-center border border-foreground/10">
                         <FileText size={48} className="text-muted-foreground/30" />
                     </div>
                     <div className="text-center space-y-2">

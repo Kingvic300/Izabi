@@ -40,22 +40,20 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData }) => {
 
     switch (type) {
       case 'owl': return <Bird size={64} className="text-primary" />;
-      case 'dragon': return <Flame size={64} className="text-orange-500" />;
+      case 'dragon': return <Flame size={64} className="text-primary" />;
       default: return <Bird size={64} className="text-primary" />;
     }
   };
 
   return (
     <div className="relative group cursor-pointer">
-      <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
-      <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-4 md:gap-6 glass border-white/5 p-6 rounded-none md:rounded-[32px] border-x-0 md:border shadow-none md:shadow-2xl relative z-10 overflow-hidden w-full">
+      <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-4 md:gap-6 glass border-white/5 p-6 rounded-none md:rounded-2xl border-x-0 md:border shadow-none md:shadow-2xl relative z-10 overflow-hidden w-full">
         {/* Animated Background Rays */}
         <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary blur-2xl animate-pulse" />
         </div>
 
-        <div ref={petRef} className="relative z-10 flex items-center justify-center p-4 bg-white/5 rounded-2xl border border-white/10 shadow-inner w-full md:w-auto">
+        <div ref={petRef} className="relative z-10 flex items-center justify-center p-4 bg-white/5 rounded-xl border border-white/10 shadow-inner w-full md:w-auto">
           <div className="scale-75 md:scale-100">
              {getPetIcon()}
           </div>
@@ -64,21 +62,21 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData }) => {
 
         <div ref={infoRef} className="space-y-2 w-full md:w-auto flex flex-col items-center md:items-start">
           <div className="flex items-center gap-2 justify-center md:justify-start">
-            <span className="text-xs font-black uppercase tracking-[0.2em] opacity-40">Companion</span>
-            <div className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${streak > 0 ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'}`}>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] opacity-40">Companion</span>
+            <div className={`px-2 py-0.5 rounded-xl text-[8px] font-bold uppercase tracking-widest ${streak > 0 ? 'bg-primary/20 text-primary' : 'bg-red-500/20 text-red-500'}`}>
                 {petData?.mood || (streak > 0 ? 'Happy' : 'Sad')}
             </div>
           </div>
-          <h3 className="text-2xl font-black tracking-tighter">{petData?.name || 'Izabi Pet'}</h3>
+          <h3 className="text-2xl font-bold tracking-tighter">{petData?.name || 'Izabi Pet'}</h3>
           <div className="flex items-center gap-3 justify-center md:justify-start">
-            <div className="flex items-center gap-1 text-orange-500">
+            <div className="flex items-center gap-1 text-primary">
               <Flame size={16} fill="currentColor" />
-              <span className="font-black">{streak} Day Streak</span>
+              <span className="font-bold">{streak} Day Streak</span>
             </div>
-            <div className="w-1 h-1 bg-white/20 rounded-full" />
+            <div className="w-1 h-1 bg-white/20 rounded-xl" />
             <div className="flex items-center gap-1 text-primary">
               <Zap size={16} fill="currentColor" />
-              <span className="font-black">Lvl {petData?.level || 1}</span>
+              <span className="font-bold">Lvl {petData?.level || 1}</span>
             </div>
           </div>
         </div>

@@ -247,6 +247,11 @@ export const api = {
         return response.data
     },
 
+    async clearChatHistory(userId: string) {
+        const response = await apiClient.post(`/api/ai/clear-history`, { userId })
+        return response.data
+    },
+
     // Study History API
     async getStudyHistory(userId: string) {
         const response = await apiClient.get(`/api/study/history?userId=${userId}`)

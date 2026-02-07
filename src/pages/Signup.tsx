@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Brain, Check, X, Mail, Lock, Sparkles, Loader2, ArrowLeft, ShieldCheck, Eye, EyeOff, Star } from "lucide-react"
+import { Check, X, Mail, Lock, Sparkles, Loader2, ArrowLeft, ShieldCheck, Eye, EyeOff, Star } from "lucide-react"
+import { Logo } from "@/components/Logo"
 import axios from "axios"
 import { BASE_URL } from "@/constants"
 import { useAppToast } from "@/hooks/useAppToast"
@@ -141,9 +142,6 @@ const Signup = () => {
 
     return (
         <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-6">
-            {/* Background Blobs */}
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
 
             <Link to="/" className="absolute top-8 left-8 group">
                 <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
@@ -155,27 +153,25 @@ const Signup = () => {
             <div ref={cardRef} className="w-full max-w-[520px] space-y-8 relative z-10">
                 {/* Branding */}
                 <div className="text-center space-y-3">
-                    <div className="w-16 h-16 bg-gradient-hero rounded-2xl flex items-center justify-center shadow-glow mx-auto animate-pulse">
-                        <Brain className="h-10 w-10 text-white" />
-                    </div>
+                    <Logo size={64} className="justify-center mx-auto" />
                     <div>
-                        <h1 className="text-4xl font-black tracking-tighter text-foreground">{t("auth.signup").split(' ')[0]} <span className="text-gradient">{t("auth.signup").split(' ')[1]}</span></h1>
+                        <h1 className="text-4xl font-bold tracking-tighter text-foreground">{t("auth.signup").split(' ')[0]} <span className="text-gradient">{t("auth.signup").split(' ')[1]}</span></h1>
                         <p className="text-muted-foreground font-medium">Create your account to start your learning journey.</p>
                         
                         {selectedPlan && (
-                            <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-primary/20 bg-primary/5">
+                            <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-xl glass border border-primary/20 bg-primary/5">
                                 <Star size={12} className="text-primary fill-primary animate-pulse" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Selected Node: {selectedPlan.replace(/-/g, ' ')}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Selected Node: {selectedPlan.replace(/-/g, ' ')}</span>
                             </div>
                         )}
                     </div>
                 </div>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-[40px] overflow-hidden">
+                <Card className="glass shadow-2xl border-foreground/10 rounded-2xl overflow-hidden">
                     <CardContent className="p-10 space-y-6">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
-                                <Label className="text-[10px] uppercase font-black tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
+                                <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
                                 <div className="relative">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
                                     <Input
@@ -184,7 +180,7 @@ const Signup = () => {
                                         placeholder="scholar@example.com"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className={`h-14 pl-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.email ? "border-destructive/50" : ""}`}
+                                        className={`h-14 pl-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.email ? "border-destructive/50" : ""}`}
                                     />
                                 </div>
                                 {errors.email && <p className="text-xs text-destructive font-bold px-1">{errors.email}</p>}
@@ -192,7 +188,7 @@ const Signup = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-40 px-1">{t("auth.password")}</Label>
+                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">{t("auth.password")}</Label>
                                     <div className="relative">
                                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
                                         <Input
@@ -201,7 +197,7 @@ const Signup = () => {
                                             placeholder="••••••••"
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className={`h-14 pl-12 pr-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.password ? "border-destructive/50" : ""}`}
+                                            className={`h-14 pl-12 pr-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.password ? "border-destructive/50" : ""}`}
                                         />
                                         <button
                                             type="button"
@@ -214,7 +210,7 @@ const Signup = () => {
                                     {errors.password && <p className="text-xs text-destructive font-bold px-1">{errors.password}</p>}
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-40 px-1">Confirm</Label>
+                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">Confirm</Label>
                                     <div className="relative">
                                         <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
                                         <Input
@@ -223,7 +219,7 @@ const Signup = () => {
                                             placeholder="••••••••"
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
-                                            className={`h-14 pl-12 pr-12 rounded-2xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.confirmPassword ? "border-destructive/50" : ""}`}
+                                            className={`h-14 pl-12 pr-12 rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-lg font-medium text-foreground ${errors.confirmPassword ? "border-destructive/50" : ""}`}
                                         />
                                         <button
                                             type="button"
@@ -240,7 +236,7 @@ const Signup = () => {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-16 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 font-black text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
+                                className="w-full h-16 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
                             >
                                 {isLoading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { BASE_URL } from "@/constants"
 import { motion, AnimatePresence } from "framer-motion"
-import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw, Activity, Cpu, Download } from "lucide-react"
+import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw, Activity, Cpu, Download, Loader2 } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import PDFUploadSection from "@/components/pdf/PDFUploadSection"
 import type { PDFSelection, StudyQuestionResponse } from "@/types/pdf"
@@ -19,10 +19,56 @@ import stringSimilarity from "string-similarity"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
+import { cn } from "@/lib/utils"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 import StreakPet from "@/components/StreakPet"
-import { useEffect } from "react"
+import { useEffect, useState as react_useState, useMemo } from "react"
+
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
+const SummaryViewer = ({ content, t }: { content: string; t: any }) => {
+    const [isExpanded, setIsExpanded] = react_useState(false);
+    const isLong = content.length > 800;
+    
+    return (
+        <div className="space-y-8">
+            <div className={cn(
+                "prose prose-sm md:prose-base dark:prose-invert max-w-none leading-relaxed text-muted-foreground/90 font-medium selection:bg-primary/30 transition-all duration-700 ease-in-out",
+                !isExpanded && isLong && "max-h-[400px] overflow-hidden relative"
+            )}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {content}
+                </ReactMarkdown>
+                {!isExpanded && isLong && (
+                    <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
+                )}
+            </div>
+            {isLong && (
+                <Button 
+                    variant="outline" 
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="w-full h-12 rounded-2xl glass hover:bg-primary/10 text-primary border-primary/20 font-bold tracking-widest uppercase text-[10px] gap-3 shadow-sm"
+                >
+                    {isExpanded ? (
+                        <>
+                            <ChevronUp size={14} />
+                            {t("dashboard.collapse_summary")}
+                        </>
+                    ) : (
+                        <>
+                            <ChevronDown size={14} />
+                            {t("dashboard.view_full_summary")}
+                        </>
+                    )}
+                </Button>
+            )}
+        </div>
+    )
+}
+
+
 
 const DashboardHome = () => {
     const { t } = useLanguage()
@@ -257,23 +303,23 @@ const DashboardHome = () => {
                 {/* Header Section */}
                 <div className="welcome-text space-y-8 pb-6 border-b border-foreground/5 px-4 md:px-0">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <div className="space-y-4 text-center md:text-left">
+                            <div className="flex items-center justify-center md:justify-start gap-3">
+                                <div className="w-8 h-8 rounded-3xl bg-primary/20 flex items-center justify-center">
                                     <Terminal size={16} className="text-primary" />
                                 </div>
-                                <span className="text-[10px] lowercase font-black tracking-[0.3em] opacity-40">User Profile: Active</span>
+                                <span className="text-[10px] lowercase font-bold tracking-[0.3em] opacity-40">User Profile: Active</span>
                             </div>
-                            <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
+                            <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-none">
                                 {t("dashboard.greeting").split(',')[0]}
                                 {t("dashboard.greeting").includes(',') && (
                                     <>
-                                        , <br className="md:hidden" />
+                                        , <br />
                                         <span className="text-gradient">{t("dashboard.greeting").split(',')[1]}</span>
                                     </>
                                 )}
                             </h1>
-                            <p className="text-muted-foreground font-medium text-lg max-w-xl">
+                            <p className="text-muted-foreground font-medium text-lg max-w-xl mx-auto md:mx-0">
                                 {t("dashboard.intro")}
                             </p>
                         </div>
@@ -289,482 +335,445 @@ const DashboardHome = () => {
                             </motion.div>
                         )}
                     </div>
-                    
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div className="flex flex-col md:flex-row items-center gap-4">
-                            <div className="p-3 rounded-2xl bg-primary/10 text-primary animate-pulse">
-                               <LayoutGrid size={24} />
-                            </div>
-                            <div>
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Knowledge Points</span>
-                                <div className="text-2xl font-black text-foreground">{userStats?.data?.totalPoints || 0} KP</div>
-                            </div>
-                        </div>
-                        <div className="hidden md:flex flex-col items-end">
-                            <span className="text-[10px] font-black uppercase tracking-widest opacity-40 text-emerald-500">System Status</span>
-                            <span className="text-sm font-black text-foreground">Optimized for Growth</span>
-                        </div>
-                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
-                    {/* Left Column: Data Ingestion */}
-                    <div className="lg:col-span-12 xl:col-span-4 space-y-8 stagger-card">
-                        <Card className="glass shadow-2xl border-foreground/5 rounded-none md:rounded-[32px] border-x-0 md:border overflow-hidden group">
-                           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl group-hover:bg-primary/10 transition-all pointer-events-none" />
-                           <CardHeader className="p-6 md:p-8">
-                               <CardTitle className="flex items-center gap-3 text-2xl font-black">
-                                   <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
-                                        <FileText size={20} />
-                                   </div>
-                                   <span>{t("dashboard.upload_title")}</span>
-                               </CardTitle>
-                               <CardDescription className="font-medium opacity-60">{t("dashboard.upload_desc")}</CardDescription>
-                           </CardHeader>
-                           <CardContent className="p-0 md:px-8 pb-8 md:pb-10">
-                               <PDFUploadSection onSelectionComplete={handleSelectionComplete} className="md:mt-0" />
-                           </CardContent>
-                        </Card>
-
-                        {/* Telemetry Stats */}
-                        <div className="grid grid-cols-2 gap-4 px-4 md:px-0">
-                            <Card className="glass border-foreground/5 p-6 rounded-[24px] space-y-4">
-                                <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500 w-fit shadow-xl"><BarChart3 size={20} /></div>
-                                <div>
-                                    <div className="text-sm font-black opacity-40 uppercase tracking-widest">{t("dashboard.stats_eff")}</div>
-                                    <div className="text-2xl font-black text-foreground">+24%</div>
-                                </div>
-                            </Card>
-                            <Card className="glass border-foreground/5 p-6 rounded-[24px] space-y-4">
-                                <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500 w-fit shadow-xl"><Clock size={20} /></div>
-                                <div>
-                                    <div className="text-sm font-black opacity-40 uppercase tracking-widest">{t("dashboard.stats_time")}</div>
-                                    <div className="text-2xl font-black text-foreground">12.5h</div>
-                                </div>
-                            </Card>
-                        </div>
-                    </div>
-
-                    {/* Right Column: AI Modules */}
-                    <div className="lg:col-span-12 xl:col-span-8 space-y-8">
-                        {pdfSelection ? (
-                            <Card className="glass border-foreground/5 rounded-none md:rounded-[40px] border-x-0 md:border p-2 relative overflow-hidden stagger-card shadow-2xl">
-                                <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
-                                <CardHeader className="p-10 pb-6">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <CardTitle className="flex items-center gap-3 text-3xl font-black">
-                                            <Sparkles className="text-primary" />
-                                            <span>{t("dashboard.modules_title")}</span>
-                                        </CardTitle>
-                                        <div className="px-4 py-1.5 glass rounded-full border border-foreground/5 text-[10px] font-black uppercase tracking-[0.2em] opacity-60">{t("dashboard.modules_ready")}</div>
-                                    </div>
-                                    <CardDescription className="text-lg font-medium">{t("dashboard.modules_desc")}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-10 pt-0 space-y-8">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <Button
-                                            onClick={() => handleRequest("summarize")}
-                                            disabled={isProcessing}
-                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-foreground/[0.02] hover:bg-foreground/[0.05] border-foreground/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
-                                        >
-                                            <div className="w-16 h-16 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-blue-500/30 transition-all">
-                                                <Brain size={32} />
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-black text-foreground">{t("dashboard.mod_summary")}</div>
-                                                <div className="text-[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.mod_summary_desc")}</div>
-                                            </div>
-                                        </Button>
-                                        <Button
-                                            onClick={() => handleRequest("generate-questions", true)}
-                                            disabled={isProcessing}
-                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-foreground/[0.02] hover:bg-foreground/[0.05] border-foreground/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
-                                        >
-                                            <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all">
-                                                <Zap size={32} />
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-black text-foreground">{t("dashboard.mod_quiz")}</div>
-                                                <div className="text-[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.mod_quiz_desc")}</div>
-                                            </div>
-                                        </Button>
-                                        <Button
-                                            onClick={() => handleRequest("generate-study-material", true)}
-                                            disabled={isProcessing}
-                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-foreground/[0.02] hover:bg-foreground/[0.05] border-foreground/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
-                                        >
-                                            <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all">
-                                                <FileText size={32} />
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-black text-foreground">{t("dashboard.mod_guide")}</div>
-                                                <div className="text-[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.mod_guide_desc")}</div>
-                                            </div>
-                                        </Button>
-                                        <Button
-                                            onClick={() => handleRequest("flashcards")}
-                                            disabled={isProcessing}
-                                            className="h-44 flex flex-col items-center justify-center gap-4 rounded-[32px] glass bg-foreground/[0.02] hover:bg-foreground/[0.05] border-foreground/5 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
-                                        >
-                                            <div className="w-16 h-16 rounded-2xl bg-orange-500/20 text-orange-400 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-orange-500/30 transition-all">
-                                                <Layers size={32} />
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="text-lg font-black text-foreground">{t("dashboard.mod_flashcards")}</div>
-                                                <div className="text-[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.mod_flashcards_desc")}</div>
-                                            </div>
-                                        </Button>
-                                    </div>
-
-                                    <div className="flex flex-col md:flex-row items-center gap-6 p-8 rounded-[32px] glass border-foreground/5">
-                                        <div className="flex-1 space-y-2">
-                                            <div className="text-sm font-black uppercase tracking-widest text-primary">{t("dashboard.config_title")}</div>
-                                            <p className="text-sm text-balance font-medium opacity-60">{t("dashboard.config_desc")}</p>
+                <div className="workspace-area">
+                    {pdfSelection ? (
+                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 stagger-card">
+                            {/* Document Info & Quick Stats */}
+                            <div className="xl:col-span-4 space-y-6">
+                                <Card className="glass border-primary/20 rounded-[32px] overflow-hidden shadow-2xl relative">
+                                    <div className="absolute top-0 right-0 p-6 opacity-5"><FileText size={100} /></div>
+                                    <CardHeader className="p-8">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="p-2 rounded-xl bg-primary/20 text-primary"><FileText size={16} /></div>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Active Session</span>
                                         </div>
-                                        <div className="flex items-center gap-4 bg-foreground/5 p-1 rounded-2xl border border-foreground/5">
-                                            <div className="px-4 text-[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.questions_label")}</div>
-                                            <Select
-                                                value={String(numberOfQuestions)}
-                                                onValueChange={(val) => setNumberOfQuestions(Number(val))}
+                                        <CardTitle className="text-2xl font-bold truncate leading-tight">{pdfSelection.metadata.fileName}</CardTitle>
+                                        <CardDescription className="flex items-center gap-2 font-bold text-primary">
+                                            <Sparkles size={14} />
+                                            AI-Ready Context
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="px-8 pb-8 space-y-6">
+                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-foreground/5 border border-foreground/5">
+                                            <div className="flex items-center gap-3">
+                                                <Layers size={18} className="text-primary/60" />
+                                                <span className="text-xs font-bold opacity-60">Action Readiness</span>
+                                            </div>
+                                            <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase">High</div>
+                                        </div>
+                                        <Button 
+                                            variant="ghost" 
+                                            onClick={() => setPdfSelection(null)}
+                                            className="w-full h-12 rounded-2xl border border-foreground/5 hover:bg-destructive/10 hover:text-destructive font-bold text-xs gap-2 transition-all"
+                                        >
+                                            <RotateCcw size={14} />
+                                            Change document
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                     <Card className="glass border-foreground/5 p-6 rounded-[28px] group hover:bg-primary/5 transition-all">
+                                         <BarChart3 size={20} className="text-primary mb-3 group-hover:scale-110 transition-transform" />
+                                         <div className="text-[9px] font-bold opacity-40 uppercase tracking-widest">{t("dashboard.stats_eff")}</div>
+                                         <div className="text-2xl font-bold text-foreground">+{userStats?.data?.dailyPoints || 0}</div>
+                                     </Card>
+                                     <Card className="glass border-foreground/5 p-6 rounded-[28px] group hover:bg-primary/5 transition-all">
+                                         <Clock size={20} className="text-primary mb-3 group-hover:scale-110 transition-transform" />
+                                         <div className="text-[9px] font-bold opacity-40 uppercase tracking-widest">{t("dashboard.stats_time")}</div>
+                                         <div className="text-2xl font-bold text-foreground">{(userStats?.data?.totalStudyMinutes || 0)}m</div>
+                                     </Card>
+                                </div>
+                            </div>
+
+                            {/* Main Hub Controls */}
+                            <div className="xl:col-span-8 flex flex-col gap-6">
+                                <Card className="glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden relative border border-white/5">
+                                    <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-white/5">
+                                        {[
+                                            { id: 'summarize', icon: Brain, label: t("dashboard.mod_summary"), desc: t("dashboard.mod_summary_desc"), color: "text-blue-400" },
+                                            { id: 'quiz', icon: Zap, label: t("dashboard.mod_quiz"), desc: t("dashboard.mod_quiz_desc"), color: "text-yellow-400" },
+                                            { id: 'guide', icon: FileText, label: t("dashboard.mod_guide"), desc: t("dashboard.mod_guide_desc"), color: "text-emerald-400" },
+                                            { id: 'cards', icon: Layers, label: t("dashboard.mod_flashcards"), desc: t("dashboard.mod_flashcards_desc"), color: "text-purple-400" }
+                                        ].map((module) => (
+                                            <button
+                                                key={module.id}
+                                                onClick={() => {
+                                                    if (module.id === 'summarize') handleRequest("summarize")
+                                                    if (module.id === 'quiz') handleRequest("generate-questions", true)
+                                                    if (module.id === 'guide') handleRequest("generate-study-material", true)
+                                                    if (module.id === 'cards') handleRequest("flashcards")
+                                                }}
                                                 disabled={isProcessing}
+                                                className="flex-1 p-8 hover:bg-white/[0.03] active:bg-white/[0.05] transition-all group flex flex-col items-center text-center gap-4"
                                             >
-                                                <SelectTrigger className="w-[80px] h-10 rounded-xl bg-transparent border-0 focus:ring-0 font-black">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent className="glass border-foreground/10">
-                                                    {[3, 5, 8, 10, 15].map((num) => (
-                                                        <SelectItem key={num} value={String(num)} className="font-bold">
-                                                            {num} 
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
+                                                <div className={cn("p-4 rounded-3xl bg-foreground/5 transition-all group-hover:scale-110 group-hover:shadow-glow", module.color)}>
+                                                    <module.icon size={28} />
+                                                </div>
+                                                <div>
+                                                    <div className="text-lg font-bold mb-1">{module.label}</div>
+                                                    <div className="text-[10px] font-bold uppercase tracking-widest opacity-30">{module.desc}</div>
+                                                </div>
+                                            </button>
+                                        ))}
                                     </div>
-
-                                    {isProcessing && (
-                                        <div className="absolute inset-0 bg-background/80 backdrop-blur-md flex flex-col items-center justify-center z-50 space-y-6">
-                                            <div className="relative">
-                                                <div className="animate-spin h-20 w-20 border-b-4 border-primary rounded-full" />
-                                                <Brain className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary animate-pulse" size={32} />
-                                            </div>
-                                            <div className="text-center">
-                                                <p className="text-2xl font-black tracking-tight">{t("dashboard.processing")}</p>
-                                                <p className="text-sm font-bold opacity-40 uppercase tracking-widest">{t("dashboard.processing_desc")}</p>
+                                    
+                                    <div className="p-6 bg-white/[0.02] border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 px-4">Configuration</div>
+                                            <div className="flex items-center gap-2 bg-black/20 p-1.5 rounded-2xl border border-white/5">
+                                                <Select
+                                                    value={String(numberOfQuestions)}
+                                                    onValueChange={(val) => setNumberOfQuestions(Number(val))}
+                                                    disabled={isProcessing}
+                                                >
+                                                    <SelectTrigger className="w-[80px] h-8 rounded-xl bg-transparent border-0 focus:ring-0 font-bold text-xs uppercase">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="glass border-white/10">
+                                                        {[3, 5, 8, 10, 15].map((num) => (
+                                                            <SelectItem key={num} value={String(num)} className="font-bold text-xs">{num} items</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
                                             </div>
                                         </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        ) : (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="h-full min-h-[500px] flex flex-col items-center justify-center p-12 glass border border-white/5 rounded-[64px] relative overflow-hidden group"
-                            >
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(var(--primary-rgb),0.05),transparent)] pointer-events-none" />
-                                <div className="w-32 h-32 rounded-[40px] bg-black/40 flex items-center justify-center mb-10 shadow-2xl border border-white/5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                                    <Cpu size={56} className="text-primary animate-pulse" />
-                                </div>
-                                <div className="text-center space-y-4 relative z-10">
-                                    <h3 className="text-4xl font-black tracking-tighter">{t("dashboard.init_node")}</h3>
-                                    <p className="text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed">{t("dashboard.init_desc")}</p>
-                                    <div className="pt-8 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] opacity-30">
-                                        <Activity size={12} />
-                                        <span>System Idle: Awaiting Ingestion</span>
+                                        {isProcessing && (
+                                            <div className="flex items-center gap-4 text-primary animate-pulse">
+                                                <Loader2 className="animate-spin" size={16} />
+                                                <span className="text-[10px] font-bold uppercase tracking-widest">Synthesizing resources...</span>
+                                            </div>
+                                        )}
                                     </div>
-                                </div>
-                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-                            </motion.div>
-                        )}
+                                </Card>
 
-                        {/* Results Hub */}
-                        {(summary || questions.length > 0 || flashcards.length > 0) && (
-                            <div className="space-y-8 pt-8 stagger-card px-4 md:px-0">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-4xl font-black flex items-center gap-4 tracking-tighter">
-                                        <div className="w-2 h-10 bg-gradient-hero rounded-full" />
-                                        <span>{t("dashboard.results_title")}</span>
-                                    </h2>
-                                </div>
+                                {/* Results View nested if preferred or kept outside. Let's keep it below for space. */}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 stagger-card">
+                             <div className="xl:col-span-8">
+                                <Card className="h-full glass shadow-2xl rounded-[48px] overflow-hidden group relative border-0">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
+                                    <CardHeader className="p-10 md:p-14 text-center md:text-left text-foreground">
+                                        <CardTitle className="text-4xl md:text-5xl font-bold font-mono tracking-tighter mb-6 relative uppercase">
+                                            {t("dashboard.upload_title") || "DeepLayer Ingestion"}
+                                            <span className="absolute -top-1 -right-8 w-2 h-2 bg-primary rounded-full animate-ping" />
+                                        </CardTitle>
+                                        <CardDescription className="text-lg font-medium opacity-60 max-w-xl mx-auto md:mx-0 leading-relaxed font-mono">
+                                            {t("dashboard.upload_desc") || "Deploy raw documents into the neural environment."}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="px-6 md:px-14 pb-14">
+                                        <PDFUploadSection onSelectionComplete={handleSelectionComplete} className="md:mt-0" />
+                                    </CardContent>
+                                </Card>
+                             </div>
+                             <div className="xl:col-span-4 space-y-6">
+                                 <Card className="glass shadow-2xl p-10 md:p-14 rounded-[48px] flex flex-col items-center text-center space-y-8 h-full min-h-[400px] border-0">
+                                     <div className="w-24 h-24 rounded-[32px] bg-foreground/5 flex items-center justify-center border border-foreground/5 shadow-2xl rotate-3 group-hover:rotate-0 transition-all mt-4">
+                                         <Cpu size={48} className="text-primary animate-float" />
+                                     </div>
+                                     <div className="space-y-4 pt-4">
+                                         <h3 className="text-3xl font-bold tracking-tight font-mono uppercase">{t("dashboard.init_node") || "Initialize Node"}</h3>
+                                         <p className="text-base font-medium text-muted-foreground leading-relaxed max-w-[280px] mx-auto">
+                                            {t("dashboard.init_desc") || "Ingest a document segment to access the Laboratory modules."}
+                                         </p>
+                                     </div>
+                                     <div className="flex-1 flex items-end pb-4">
+                                        <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-foreground/5 border border-foreground/5">
+                                            <div className="w-2 h-2 rounded-full bg-yellow-500/50 animate-pulse" />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">System: Standby</span>
+                                        </div>
+                                     </div>
+                                 </Card>
+                             </div>
+                        </div>
+                    )}
 
-                                {flashcards.length > 0 && (
-                                    <Collapsible open={showFlashcards} onOpenChange={setShowFlashcards}>
-                                        <Card className="glass border-foreground/5 rounded-none md:rounded-[32px] border-x-0 md:border overflow-hidden shadow-2xl">
-                                            <CollapsibleTrigger asChild>
-                                                <button className="w-full text-left p-10 flex items-center justify-between group">
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="w-14 h-14 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform"><Layers size={24} /></div>
-                                                        <div>
-                                                            <h3 className="text-2xl font-black leading-tight">{t("dashboard.res_flashcards")}</h3>
-                                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{flashcards.length} {t("dashboard.res_flashcards_desc")}</p>
+                    {/* Results Hub */}
+                    {(summary || questions.length > 0 || flashcards.length > 0) && (
+                        <div className="space-y-8 pt-12 stagger-card px-4 md:px-0">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-4xl font-bold flex items-center gap-4 tracking-tighter">
+                                    <div className="w-2 h-10 bg-gradient-hero rounded-3xl" />
+                                    <span>{t("dashboard.results_title")}</span>
+                                </h2>
+                            </div>
+
+                            {flashcards.length > 0 && (
+                                <Collapsible open={showFlashcards} onOpenChange={setShowFlashcards}>
+                                    <Card className="glass border-foreground/5 rounded-none md:rounded-3xl border-x-0 md:border overflow-hidden shadow-2xl">
+                                        <CollapsibleTrigger asChild>
+                                            <button className="w-full text-left p-6 md:p-10 flex items-center justify-between group">
+                                                <div className="flex items-center gap-4 md:gap-6">
+                                                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-3xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform"><Layers className="h-5 w-5 md:h-6 md:w-6" /></div>
+                                                    <div>
+                                                        <h3 className="text-xl md:text-2xl font-bold leading-tight">{t("dashboard.res_flashcards")}</h3>
+                                                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{flashcards.length} {t("dashboard.res_flashcards_desc")}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
+                                                    {showFlashcards ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                                </div>
+                                            </button>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                            <CardContent className="p-10 flex flex-col items-center space-y-8">
+                                                <div 
+                                                    className="relative w-full max-w-md h-64 cursor-pointer perspective-1000"
+                                                    onClick={() => setIsFlipped(!isFlipped)}
+                                                >
+                                                    <div className={`relative w-full h-full transition-all duration-500 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
+                                                        {/* Front */}
+                                                        <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-8 rounded-3xl glass bg-foreground/[0.02] border-2 border-primary/20 shadow-xl overflow-hidden">
+                                                            <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30">Front</div>
+                                                            <p className="text-2xl font-bold text-center text-foreground">{flashcards[currentCardIndex]?.front}</p>
+                                                        </div>
+                                                        {/* Back */}
+                                                        <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-8 rounded-3xl glass bg-primary/10 border-2 border-primary/40 shadow-xl overflow-hidden">
+                                                            <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30 text-primary">Back</div>
+                                                            <p className="text-xl font-bold text-center text-foreground/90 leading-relaxed">{flashcards[currentCardIndex]?.back}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
-                                                        {showFlashcards ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                                                    </div>
-                                                </button>
-                                            </CollapsibleTrigger>
-                                            <CollapsibleContent>
-                                                <CardContent className="p-10 flex flex-col items-center space-y-8">
-                                                    <div 
-                                                        className="relative w-full max-w-md h-64 cursor-pointer perspective-1000"
-                                                        onClick={() => setIsFlipped(!isFlipped)}
-                                                    >
-                                                        <div className={`relative w-full h-full transition-all duration-500 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-                                                            {/* Front */}
-                                                            <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-8 rounded-[32px] glass bg-foreground/[0.02] border-2 border-primary/20 shadow-xl overflow-hidden">
-                                                                <div className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-widest opacity-30">Front</div>
-                                                                <p className="text-2xl font-black text-center text-foreground">{flashcards[currentCardIndex]?.front}</p>
-                                                            </div>
-                                                            {/* Back */}
-                                                            <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-8 rounded-[32px] glass bg-primary/10 border-2 border-primary/40 shadow-xl overflow-hidden">
-                                                                <div className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-widest opacity-30 text-primary">Back</div>
-                                                                <p className="text-xl font-bold text-center text-foreground/90 leading-relaxed">{flashcards[currentCardIndex]?.back}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                </div>
 
-                                                    <div className="flex items-center gap-6">
-                                                        <Button 
-                                                            variant="outline" 
-                                                            size="icon" 
-                                                            className="h-12 w-12 rounded-2xl glass hover:bg-foreground/10"
-                                                            onClick={() => {
-                                                                setIsFlipped(false)
-                                                                setCurrentCardIndex((prev) => (prev > 0 ? prev - 1 : flashcards.length - 1))
-                                                            }}
-                                                        >
-                                                            <ChevronDown className="rotate-90" />
-                                                        </Button>
-                                                        <span className="text-lg font-black tracking-tighter">
-                                                            {currentCardIndex + 1} / {flashcards.length}
-                                                        </span>
-                                                        <Button 
-                                                            variant="outline" 
-                                                            size="icon" 
-                                                            className="h-12 w-12 rounded-2xl glass hover:bg-foreground/10"
-                                                            onClick={() => {
-                                                                setIsFlipped(false)
-                                                                setCurrentCardIndex((prev) => (prev < flashcards.length - 1 ? prev + 1 : 0))
-                                                            }}
-                                                        >
-                                                            <ChevronDown className="-rotate-90" />
-                                                        </Button>
-                                                    </div>
-
+                                                <div className="flex items-center gap-6">
                                                     <Button 
-                                                        variant="ghost" 
-                                                        className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity gap-2"
+                                                        variant="outline" 
+                                                        size="icon" 
+                                                        className="h-12 w-12 rounded-3xl glass hover:bg-foreground/10"
                                                         onClick={() => {
-                                                            setCurrentCardIndex(0)
                                                             setIsFlipped(false)
+                                                            setCurrentCardIndex((prev) => (prev > 0 ? prev - 1 : flashcards.length - 1))
                                                         }}
                                                     >
-                                                        <RotateCcw size={14} />
-                                                        Reset Terminal
+                                                        <ChevronDown className="rotate-90" />
                                                     </Button>
-                                                </CardContent>
-                                            </CollapsibleContent>
-                                        </Card>
-                                    </Collapsible>
-                                )}
+                                                    <span className="text-lg font-bold tracking-tighter">
+                                                        {currentCardIndex + 1} / {flashcards.length}
+                                                    </span>
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="icon" 
+                                                        className="h-12 w-12 rounded-3xl glass hover:bg-foreground/10"
+                                                        onClick={() => {
+                                                            setIsFlipped(false)
+                                                            setCurrentCardIndex((prev) => (prev < flashcards.length - 1 ? prev + 1 : 0))
+                                                        }}
+                                                    >
+                                                        <ChevronDown className="-rotate-90" />
+                                                    </Button>
+                                                </div>
 
-                                {summary && (
-                                    <Collapsible open={showSummary} onOpenChange={setShowSummary}>
-                                        <Card className="glass border-foreground/5 rounded-none md:rounded-[32px] border-x-0 md:border overflow-hidden shadow-2xl">
-                                            <CollapsibleTrigger asChild>
-                                                <button className="w-full text-left p-10 flex items-center justify-between group">
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform"><Brain size={24} /></div>
-                                                        <div>
-                                                            <h3 className="text-2xl font-black leading-tight">{t("dashboard.res_summary")}</h3>
-                                                            <p className="text--[10px] font-black uppercase tracking-widest opacity-40">{t("dashboard.res_summary_desc")}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <Button 
-                                                            variant="ghost" 
-                                                            size="icon" 
-                                                            className="h-10 w-10 rounded-xl glass hover:bg-primary/20 text-primary"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                downloadSummary();
-                                                            }}
-                                                        >
-                                                            <Download size={18} />
-                                                        </Button>
-                                                        <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
-                                                            {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                                                        </div>
-                                                    </div>
-                                                </button>
-                                            </CollapsibleTrigger>
-                                            <CollapsibleContent>
-                                                <CardContent className="px-24 pb-16">
-                                                    <div className="prose prose-lg dark:prose-invert max-w-none leading-loose text-muted-foreground/90 font-medium whitespace-pre-wrap selection:bg-primary/30">
-                                                        {summary}
-                                                    </div>
-                                                </CardContent>
-                                            </CollapsibleContent>
-                                        </Card>
-                                    </Collapsible>
-                                )}
+                                                <Button 
+                                                    variant="ghost" 
+                                                    className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity gap-2"
+                                                    onClick={() => {
+                                                        setCurrentCardIndex(0)
+                                                        setIsFlipped(false)
+                                                    }}
+                                                >
+                                                    <RotateCcw size={14} />
+                                                    Reset Terminal
+                                                </Button>
+                                            </CardContent>
+                                        </CollapsibleContent>
+                                    </Card>
+                                </Collapsible>
+                            )}
 
-                                {questions.length > 0 && (
-                                    <Collapsible open={showQuestions} onOpenChange={setShowQuestions}>
-                                        <Card className="glass border-foreground/5 rounded-none md:rounded-[32px] border-x-0 md:border overflow-hidden shadow-2xl">
-                                            <CollapsibleTrigger asChild>
-                                                <button className="w-full text-left p-10 flex items-center justify-between group">
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center group-hover:scale-110 transition-transform"><Zap size={24} /></div>
-                                                        <div>
-                                                            <h3 className="text-2xl font-black leading-tight">{t("dashboard.res_quiz")}</h3>
-                                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{questions.length} {t("dashboard.res_quiz_desc")}</p>
-                                                        </div>
+                            {summary && (
+                                <Collapsible open={showSummary} onOpenChange={setShowSummary}>
+                                    <Card className="glass border-foreground/5 rounded-none md:rounded-3xl border-x-0 md:border overflow-hidden shadow-2xl">
+                                        <CollapsibleTrigger asChild>
+                                            <button className="w-full text-left p-6 md:p-10 flex items-center justify-between group">
+                                                <div className="flex items-center gap-4 md:gap-6">
+                                                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-3xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform"><Brain className="h-5 w-5 md:h-6 md:w-6" /></div>
+                                                    <div>
+                                                        <h3 className="text-xl md:text-2xl font-bold leading-tight">{t("dashboard.res_summary")}</h3>
+                                                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{t("dashboard.res_summary_desc")}</p>
                                                     </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <Button 
-                                                            variant="ghost" 
-                                                            size="icon" 
-                                                            className="h-10 w-10 rounded-xl glass hover:bg-primary/20 text-primary"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                downloadQuiz();
-                                                            }}
-                                                        >
-                                                            <Download size={18} />
-                                                        </Button>
-                                                        <div className="w-10 h-10 rounded-full glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
-                                                            {showQuestions ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                                                        </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="icon" 
+                                                        className="h-10 w-10 rounded-3xl glass hover:bg-primary/20 text-primary"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            downloadSummary();
+                                                        }}
+                                                    >
+                                                        <Download size={18} />
+                                                    </Button>
+                                                    <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
+                                                        {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                                     </div>
-                                                </button>
-                                            </CollapsibleTrigger>
-                                            <CollapsibleContent>
-                                                <CardContent className="p-10 space-y-8">
-                                                    {questions.map((q, i) => {
-                                                        const userAnswer = selectedAnswers[i]
-                                                        const isShort = q.questionType?.toLowerCase() === "short_answer"
-                                                        const correct = isShort && userAnswer ? isShortAnswerCorrect(userAnswer, q.answer || "") : userAnswer === q.answer
+                                                </div>
+                                            </button>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                            <CardContent className="px-6 md:px-16 pb-10 md:pb-16 pt-2">
+                                                <SummaryViewer content={summary} t={t} />
+                                            </CardContent>
+                                        </CollapsibleContent>
+                                    </Card>
+                                </Collapsible>
+                            )}
 
-                                                        return (
-                                                            <Card key={i} className="bg-foreground/[0.02] border-foreground/5 rounded-[32px] p-8 space-y-6 relative overflow-hidden group">
-                                                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                                
-                                                                <div className="flex justify-between items-start gap-6">
-                                                                    <div className="space-y-3">
-                                                                        <div className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Node {i+1}</div>
-                                                                        <h4 className="text-xl font-black leading-tight text-foreground">{q.question}</h4>
+                            {questions.length > 0 && (
+                                <Collapsible open={showQuestions} onOpenChange={setShowQuestions}>
+                                    <Card className="glass border-foreground/5 rounded-none md:rounded-3xl border-x-0 md:border overflow-hidden shadow-2xl">
+                                        <CollapsibleTrigger asChild>
+                                            <button className="w-full text-left p-6 md:p-10 flex items-center justify-between group">
+                                                <div className="flex items-center gap-4 md:gap-6">
+                                                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-3xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform"><Zap className="h-5 w-5 md:h-6 md:w-6" /></div>
+                                                    <div>
+                                                        <h3 className="text-xl md:text-2xl font-bold leading-tight">{t("dashboard.res_quiz")}</h3>
+                                                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{questions.length} {t("dashboard.res_quiz_desc")}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="icon" 
+                                                        className="h-10 w-10 rounded-3xl glass hover:bg-primary/20 text-primary"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            downloadQuiz();
+                                                        }}
+                                                    >
+                                                        <Download size={18} />
+                                                    </Button>
+                                                    <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
+                                                        {showQuestions ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                            <CardContent className="p-10 space-y-8">
+                                                {questions.map((q, i) => {
+                                                    const userAnswer = selectedAnswers[i]
+                                                    const isShort = q.questionType?.toLowerCase() === "short_answer"
+                                                    const correct = isShort && userAnswer ? isShortAnswerCorrect(userAnswer, q.answer || "") : userAnswer === q.answer
+
+                                                    return (
+                                                        <Card key={i} className="bg-foreground/[0.02] border-foreground/5 rounded-3xl md:rounded-3xl p-6 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group">
+                                                            
+                                                            <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-6">
+                                                                <div className="space-y-2 md:space-y-3">
+                                                                    <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Node {i+1}</div>
+                                                                    <h4 className="text-lg md:text-xl font-bold leading-tight text-foreground">{q.question}</h4>
+                                                                </div>
+                                                                {showResults && (
+                                                                    <div className={`w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-3xl text-[10px] font-bold tracking-widest uppercase flex items-center gap-2 shadow-2xl transition-all
+                                                                        ${correct ? "bg-primary text-white shadow-primary/20" : "bg-destructive text-white shadow-destructive/20"}`}>
+                                                                        {correct ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                                                                        {correct ? "Acquisition" : "Anomaly"}
                                                                     </div>
-                                                                    {showResults && (
-                                                                        <div className={`px-5 py-2 rounded-full text-[10px] font-black tracking-widest uppercase flex items-center gap-2 shadow-2xl transition-all
-                                                                            ${correct ? "bg-emerald-500 text-white shadow-emerald-500/20" : "bg-destructive text-white shadow-destructive/20"}`}>
-                                                                            {correct ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                                                                            {correct ? "Acquisition" : "Anomaly"}
+                                                                )}
+                                                            </div>
+
+                                                            {!isShort ? (
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                    {q.options?.map((opt, idx) => {
+                                                                        const isSelected = userAnswer === opt
+                                                                        const isCorrect = showResults && opt === q.answer
+                                                                        const isWrong = showResults && isSelected && opt !== q.answer
+
+                                                                        return (
+                                                                            <Button
+                                                                                key={idx}
+                                                                                onClick={() => handleAnswerSelect(i, opt)}
+                                                                                disabled={showResults}
+                                                                                className={`h-auto py-6 px-8 justify-start text-left rounded-3xl transition-all duration-300 font-bold border border-foreground/5
+                                                                                    ${isSelected ? "bg-primary text-primary-foreground shadow-glow" : "bg-foreground/5 hover:bg-foreground/10 text-foreground/70"}
+                                                                                    ${isCorrect ? "bg-primary/20 border-primary/50 text-primary !bg-opacity-20" : ""}
+                                                                                    ${isWrong ? "bg-destructive/20 border-destructive/50 text-destructive-foreground !bg-opacity-20" : ""}
+                                                                                `}
+                                                                            >
+                                                                                <div className="flex items-center gap-4">
+                                                                                    <div className={`w-8 h-8 rounded-3xl flex items-center justify-center font-bold text-xs transition-opacity
+                                                                                        ${isSelected ? "bg-black/10" : "bg-foreground/10 opacity-30"}`}>
+                                                                                        {String.fromCharCode(65 + idx)}
+                                                                                    </div>
+                                                                                    <span className="text-sm">{opt}</span>
+                                                                                </div>
+                                                                            </Button>
+                                                                        )
+                                                                    })}
+                                                                </div>
+                                                            ) : (
+                                                                <div className="space-y-4">
+                                                                    <Input
+                                                                        value={userAnswer || ""}
+                                                                        placeholder="Input response terminal..."
+                                                                        onChange={(e) => handleShortAnswerChange(i, e.target.value)}
+                                                                        disabled={showResults}
+                                                                        className="rounded-3xl h-16 bg-foreground/5 border-foreground/5 focus:bg-foreground/10 transition-all font-bold px-8 text-foreground"
+                                                                    />
+                                                                    {showResults && !correct && (
+                                                                        <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5">
+                                                                            <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Expected Pattern</div>
+                                                                            <p className="text-sm font-bold opacity-80">{q.answer}</p>
                                                                         </div>
                                                                     )}
                                                                 </div>
+                                                            )}
+                                                            {showResults && q.explanation && (
+                                                                <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5 mt-4">
+                                                                    <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Neural Insight</div>
+                                                                    <p className="text-sm font-bold opacity-80 italic">"{q.explanation}"</p>
+                                                                </div>
+                                                            )}
+                                                        </Card>
+                                                    )
+                                                })}
 
-                                                                {!isShort ? (
-                                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                        {q.options?.map((opt, idx) => {
-                                                                            const isSelected = userAnswer === opt
-                                                                            const isCorrect = showResults && opt === q.answer
-                                                                            const isWrong = showResults && isSelected && opt !== q.answer
-
-                                                                            return (
-                                                                                <Button
-                                                                                    key={idx}
-                                                                                    onClick={() => handleAnswerSelect(i, opt)}
-                                                                                    disabled={showResults}
-                                                                                    className={`h-auto py-6 px-8 justify-start text-left rounded-2xl transition-all duration-300 font-bold border border-foreground/5
-                                                                                        ${isSelected ? "bg-white text-black shadow-glow" : "bg-foreground/5 hover:bg-foreground/10 text-foreground/70"}
-                                                                                        ${isCorrect ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 !bg-opacity-20" : ""}
-                                                                                        ${isWrong ? "bg-destructive/20 border-destructive/50 text-destructive-foreground !bg-opacity-20" : ""}
-                                                                                    `}
-                                                                                >
-                                                                                    <div className="flex items-center gap-4">
-                                                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs transition-opacity
-                                                                                            ${isSelected ? "bg-black/10" : "bg-foreground/10 opacity-30"}`}>
-                                                                                            {String.fromCharCode(65 + idx)}
-                                                                                        </div>
-                                                                                        <span className="text-sm">{opt}</span>
-                                                                                    </div>
-                                                                                </Button>
-                                                                            )
-                                                                        })}
+                                                {questions.length > 0 && (
+                                                    <div className="pt-8">
+                                                        {!showResults ? (
+                                                            <Button 
+                                                                onClick={handleFinalizeQuiz} 
+                                                                className="w-full h-20 rounded-3xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-2xl shadow-glow group"
+                                                            >
+                                                                <span>{t("dashboard.finalize")}</span>
+                                                            </Button>
+                                                        ) : (
+                                                            <div id="mastery-verdict" className="p-6 md:p-10 rounded-3xl bg-gradient-hero relative overflow-hidden group shadow-glow">
+                                                                <div className="absolute inset-0 bg-black/10 transition-colors" />
+                                                                <div className="relative z-10 flex flex-col md:lg:flex-row items-center justify-between gap-8">
+                                                                    <div className="space-y-2 text-center md:text-left">
+                                                                        <h3 className="text-3xl md:text-4xl font-bold text-white tracking-tighter">{t("dashboard.mastery_confirmed")}</h3>
+                                                                        <p className="text-foreground/70 font-bold text-base md:text-lg">{t("dashboard.mastery_desc")}</p>
                                                                     </div>
-                                                                ) : (
-                                                                    <div className="space-y-4">
-                                                                        <Input
-                                                                            value={userAnswer || ""}
-                                                                            placeholder="Input response terminal..."
-                                                                            onChange={(e) => handleShortAnswerChange(i, e.target.value)}
-                                                                            disabled={showResults}
-                                                                            className="rounded-2xl h-16 bg-foreground/5 border-foreground/5 focus:bg-foreground/10 transition-all font-bold px-8 text-foreground"
-                                                                        />
-                                                                        {showResults && !correct && (
-                                                                            <div className="p-6 rounded-2xl glass border-primary/20 bg-primary/5">
-                                                                                <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Expected Pattern</div>
-                                                                                <p className="text-sm font-bold opacity-80">{q.answer}</p>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                                {showResults && q.explanation && (
-                                                                    <div className="p-6 rounded-2xl glass border-primary/20 bg-primary/5 mt-4">
-                                                                        <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Neural Insight</div>
-                                                                        <p className="text-sm font-bold opacity-80 italic">"{q.explanation}"</p>
-                                                                    </div>
-                                                                )}
-                                                            </Card>
-                                                        )
-                                                    })}
-
-                                                    {questions.length > 0 && (
-                                                        <div className="pt-8">
-                                                            {!showResults ? (
-                                                                <Button 
-                                                                    onClick={handleFinalizeQuiz} 
-                                                                    className="w-full h-20 rounded-[32px] bg-primary text-primary-foreground hover:bg-primary/90 font-black text-2xl shadow-glow group"
-                                                                >
-                                                                    <span>{t("dashboard.finalize")}</span>
-                                                                </Button>
-                                                            ) : (
-                                                                <div id="mastery-verdict" className="p-10 rounded-[48px] bg-gradient-hero relative overflow-hidden group shadow-glow">
-                                                                    <div className="absolute inset-0 bg-black/10 transition-colors" />
-                                                                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                                                                        <div className="space-y-2 text-center md:text-left">
-                                            <h3 className="text-4xl font-black text-white tracking-tighter">{t("dashboard.mastery_confirmed")}</h3>
-                                            <p className="text-foreground/70 font-bold text-lg">{t("dashboard.mastery_desc")}</p>
-                                        </div>
-                                        <div className="flex items-center gap-8 glass p-8 rounded-[32px] border-foreground/20 bg-black/20">
-                                            <div className="text-center">
-                                                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-2">{t("dashboard.resultant_yield")}</div>
-                                                <div className="text-4xl font-black text-white">{scoreQuiz()} / {questions.length}</div>
-                                            </div>
-                                                                            <div className="w-20 h-20 rounded-2xl bg-white text-black flex items-center justify-center text-2xl font-black shadow-glow">
-                                                                                {Math.round((scoreQuiz()/questions.length)*100)}%
-                                                                            </div>
+                                                                    <div className="flex items-center gap-8 glass p-6 md:p-8 rounded-3xl border-foreground/20 bg-black/20">
+                                                                        <div className="text-center">
+                                                                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-2">{t("dashboard.resultant_yield")}</div>
+                                                                            <div className="text-3xl md:text-4xl font-bold text-white">{scoreQuiz()} / {questions.length}</div>
+                                                                        </div>
+                                                                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-primary text-primary-foreground flex items-center justify-center text-xl md:text-2xl font-bold shadow-glow">
+                                                                            {Math.round((scoreQuiz()/questions.length)*100)}%
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </CardContent>
-                                            </CollapsibleContent>
-                                        </Card>
-                                    </Collapsible>
-                                )}
-                            </div>
-                        )}
-                    </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </CollapsibleContent>
+                                    </Card>
+                                </Collapsible>
+                            )}
+                        </div>
+                    )}
                 </div>
-            </div>
-            
-            <style>{`
+                <style>{`
                 .shadow-glow {
                     box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
                 }
@@ -781,6 +790,7 @@ const DashboardHome = () => {
                     transform: rotateY(180deg);
                 }
             `}</style>
+            </div>
         </ErrorBoundary>
     )
 }

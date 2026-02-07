@@ -1,0 +1,64 @@
+
+> vite_react_shadcn_ts@0.0.0 build
+> vite build
+
+vite v7.3.1 building client environment for production...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+transforming...
+✓ 2943 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                   0.73 kB │ gzip:   0.36 kB
+dist/assets/pdf.worker.min-qwK7q_zL.mjs       1,046.21 kB
+dist/assets/DashboardHome-Dbl8kTil.css            9.34 kB │ gzip:   2.00 kB
+dist/assets/index-DvMLHb0s.css                  105.26 kB │ gzip:  16.71 kB
+dist/assets/index-BT4h5yxd.js                     0.15 kB │ gzip:   0.15 kB
+dist/assets/index-BbjZkxxy.js                     0.24 kB │ gzip:   0.18 kB
+dist/assets/label-0DsKWR3M.js                     0.56 kB │ gzip:   0.38 kB
+dist/assets/input-hVIozLHs.js                     0.62 kB │ gzip:   0.38 kB
+dist/assets/separator-cbA1Zn5f.js                 0.71 kB │ gzip:   0.42 kB
+dist/assets/badge-DFiLv9RZ.js                     0.75 kB │ gzip:   0.39 kB
+dist/assets/formValidation-DxVpUnmW.js            0.99 kB │ gzip:   0.39 kB
+dist/assets/card-B9SUljAW.js                      1.09 kB │ gzip:   0.43 kB
+dist/assets/Logo-xXr1jwUu.js                      1.81 kB │ gzip:   0.89 kB
+dist/assets/useAppToast-BQ_k2G66.js               2.07 kB │ gzip:   0.61 kB
+dist/assets/index-yrEsIuTk.js                     2.21 kB │ gzip:   0.99 kB
+dist/assets/avatar-g2xM5g_H.js                    2.24 kB │ gzip:   1.03 kB
+dist/assets/NotFound-g0O9IJHR.js                  2.78 kB │ gzip:   1.19 kB
+dist/assets/tabs-CwudNuXA.js                      3.29 kB │ gzip:   1.38 kB
+dist/assets/index-DQk0SV_l.js                     3.53 kB │ gzip:   1.60 kB
+dist/assets/DashboardExams-_p5kTFg-.js            4.47 kB │ gzip:   1.77 kB
+dist/assets/apiClient-COyx-Uqc.js                 4.51 kB │ gzip:   1.75 kB
+dist/assets/index-BWm56P5E.js                     5.14 kB │ gzip:   1.96 kB
+dist/assets/Testimonials-CUZuDOO2.js              5.45 kB │ gzip:   2.17 kB
+dist/assets/DashboardAIAssistant-DOE_H03z.js      5.76 kB │ gzip:   2.30 kB
+dist/assets/Features-eU1TLkAq.js                  6.14 kB │ gzip:   2.41 kB
+dist/assets/OTP-Df9HjtoQ.js                       6.25 kB │ gzip:   2.46 kB
+dist/assets/DashboardHistory-BiHnzmuS.js          6.25 kB │ gzip:   2.11 kB
+dist/assets/HowItWorks-BUrAEL1Z.js                6.41 kB │ gzip:   1.98 kB
+dist/assets/Login-DRSLH0Ci.js                     6.59 kB │ gzip:   2.40 kB
+dist/assets/Pricing-CQdKYt6F.js                   6.71 kB │ gzip:   2.49 kB
+dist/assets/Footer-BXBnZbFP.js                    7.44 kB │ gzip:   2.31 kB
+dist/assets/About-DHSRda-F.js                     7.59 kB │ gzip:   2.66 kB
+dist/assets/Signup-CxQcO09r.js                    7.99 kB │ gzip:   2.59 kB
+dist/assets/SupportUs-D91jXZyE.js                 8.26 kB │ gzip:   2.91 kB
+dist/assets/DashboardProgress-CqeZ9nDu.js         9.38 kB │ gzip:   2.84 kB
+dist/assets/FAQ-Dl_UCReo.js                       9.78 kB │ gzip:   3.87 kB
+dist/assets/DashboardSettings-B3YRX5gw.js        10.36 kB │ gzip:   3.67 kB
+dist/assets/DashboardNotes-hKJU4iUq.js           12.81 kB │ gzip:   3.76 kB
+dist/assets/DashboardProfile-Ck6KINqe.js         15.19 kB │ gzip:   4.50 kB
+dist/assets/index-DNFYzdfq.js                    16.50 kB │ gzip:   6.25 kB
+dist/assets/AdminDashboard-UOkJdiXM.js           17.49 kB │ gzip:   5.12 kB
+dist/assets/dropdown-menu-COGc22bi.js            20.37 kB │ gzip:   5.95 kB
+dist/assets/select-u17uaOF_.js                   20.82 kB │ gzip:   7.24 kB
+dist/assets/Dashboard-CcFDpB73.js                24.22 kB │ gzip:   6.60 kB
+dist/assets/DashboardHome-CSKbFuBp.js            55.33 kB │ gzip:  13.28 kB
+dist/assets/Home-BCOIDDoI.js                     58.71 kB │ gzip:  22.52 kB
+dist/assets/vendor-gsap-Dbyr7za0.js              70.67 kB │ gzip:  27.86 kB
+dist/assets/index-BcBaAv0f.js                   141.92 kB │ gzip:  47.11 kB
+dist/assets/vendor-utils-VrQWjE7f.js            176.90 kB │ gzip:  61.17 kB
+dist/assets/vendor-react-Q5WIwta_.js            186.98 kB │ gzip:  60.37 kB
+dist/assets/vendor-editor-mDBUUIDz.js           362.20 kB │ gzip: 115.47 kB
+dist/assets/vendor-charts-CiKXLOjC.js           403.37 kB │ gzip: 109.41 kB
+dist/assets/vendor-pdf-BztkhUoS.js              422.20 kB │ gzip: 124.87 kB
+✓ built in 44.85s

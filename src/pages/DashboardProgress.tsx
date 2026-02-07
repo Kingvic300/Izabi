@@ -71,7 +71,7 @@ const DashboardProgress = () => {
                         totalQuizzes: res.data.studyStats?.quizzes || quizData.length,
                         averageScore: avgScore,
                         studyStreak: res.data.studyStreak || 0,
-                        totalStudyHours: Math.round((res.data.studyStats?.quizzes || quizData.length) * 0.4), // Est. 24 mins per session
+                        totalStudyHours: Math.round((res.data.totalStudyMinutes || 0) / 60),
                     })
 
                     // Growth Trend Chart (Last 7 Sessions)
@@ -124,7 +124,7 @@ const DashboardProgress = () => {
                     <p className="text-muted-foreground text-lg">Real-time analytics of your academic growth.</p>
                 </div>
                 {progressData.studyStreak > 10 && (
-                    <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl text-emerald-500 font-bold">
+                    <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-xl text-primary font-bold">
                         <Trophy size={18} />
                         <span>Top 5% of class</span>
                     </div>
@@ -134,21 +134,19 @@ const DashboardProgress = () => {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="stat-card glass-card group hover-lift relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 blur-2xl group-hover:bg-blue-500/20 transition-all" />
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60 flex items-center gap-2">
-                            <BookOpen size={14} className="text-blue-500" />
+                            <BookOpen size={14} className="text-primary" />
                             Total Quizzes
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-black">{progressData.totalQuizzes}</div>
+                        <div className="text-4xl font-bold">{progressData.totalQuizzes}</div>
                         <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Completed Sessions</p>
                     </CardContent>
                 </Card>
 
                 <Card className="stat-card glass-card group hover-lift relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/10 blur-2xl group-hover:bg-green-500/20 transition-all" />
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60 flex items-center gap-2">
                             <Target size={14} className="text-green-500" />
@@ -156,13 +154,12 @@ const DashboardProgress = () => {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-black text-green-400">{progressData.averageScore}%</div>
+                        <div className="text-4xl font-bold text-green-400">{progressData.averageScore}%</div>
                         <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Mastery Level</p>
                     </CardContent>
                 </Card>
 
                 <Card className="stat-card glass-card group hover-lift relative overflow-hidden border-primary/30">
-                    <div className="absolute top-0 right-0 w-16 h-16 bg-primary/20 blur-2xl group-hover:bg-primary/30 transition-all" />
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-primary">
                             <Zap size={14} className="fill-current" />
@@ -170,21 +167,20 @@ const DashboardProgress = () => {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-black text-gradient">{progressData.studyStreak} Days</div>
+                        <div className="text-4xl font-bold text-gradient">{progressData.studyStreak} Days</div>
                         <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Consistent Growth</p>
                     </CardContent>
                 </Card>
 
                 <Card className="stat-card glass-card group hover-lift relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 blur-2xl group-hover:bg-blue-500/20 transition-all" />
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60 flex items-center gap-2">
-                            <Clock size={14} className="text-emerald-500" />
+                            <Clock size={14} className="text-primary" />
                             Study Hours
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-black">{progressData.totalStudyHours}h</div>
+                        <div className="text-4xl font-bold">{progressData.totalStudyHours}h</div>
                         <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Time Invested</p>
                     </CardContent>
                 </Card>
@@ -301,21 +297,21 @@ const DashboardProgress = () => {
                                 title: "7-Day Study Streak", 
                                 desc: "Bulletproof consistency", 
                                 icon: "🔥", 
-                                color: "text-emerald-500",
+                                color: "text-primary",
                                 isUnlocked: progressData.studyStreak >= 7
                             },
                             { 
                                 title: "Quiz Master", 
                                 desc: "Completed 50 sessions", 
                                 icon: "🎯", 
-                                color: "text-blue-500",
+                                color: "text-primary",
                                 isUnlocked: progressData.totalQuizzes >= 50
                             },
                             { 
                                 title: "Perfect Score", 
                                 desc: "Absolute subject mastery", 
                                 icon: "⭐", 
-                                color: "text-blue-400",
+                                color: "text-primary",
                                 isUnlocked: false 
                             }
                         ].map((ach, i) => (

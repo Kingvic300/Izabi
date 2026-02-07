@@ -88,13 +88,12 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.05, duration: 0.4 }}
                                 className={cn(
-                                    "relative cursor-pointer transition-all duration-500 rounded-3xl overflow-hidden group",
+                                    "relative cursor-pointer transition-all duration-500 rounded-2xl overflow-hidden group",
                                     isSelected && "ring-4 ring-primary ring-offset-4 ring-offset-black scale-105",
                                     "hover:scale-[1.08] hover:shadow-[0_0_30px_hsla(var(--primary)/0.2)]"
                                 )}
                                 onClick={() => handlePageClick(pageNumber)}
                             >
-                                <div className="relative bg-black/40 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden aspect-[3/4]">
                                     <Page
                                         pageNumber={pageNumber}
                                         width={200}
@@ -109,10 +108,8 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
                                         className="opacity-90 group-hover:opacity-100 transition-opacity"
                                     />
 
-                                    <div className="absolute top-4 left-4">
-                                        <div className="bg-black/80 backdrop-blur-md border border-white/10 text-[10px] font-black px-3 py-1 rounded-full shadow-2xl uppercase tracking-tighter">
-                                            SEG {pageNumber}
-                                        </div>
+                                    <div className="absolute top-4 left-4 px-2 py-0.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 text-[10px] font-bold tracking-widest text-white uppercase">
+                                        SEG {pageNumber}
                                     </div>
 
                                     <AnimatePresence>
@@ -121,9 +118,9 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
                                                 initial={{ scale: 0.5, opacity: 0 }}
                                                 animate={{ scale: 1, opacity: 1 }}
                                                 exit={{ scale: 0.5, opacity: 0 }}
-                                                className="absolute top-4 right-4"
+                                                className="absolute top-4 right-4 z-10"
                                             >
-                                                <div className="bg-primary text-white rounded-full p-1 shadow-glow ring-2 ring-white/20">
+                                                <div className="bg-primary text-white rounded-2xl p-1 shadow-glow ring-2 ring-white/20">
                                                     <CheckCircle2 size={16} />
                                                 </div>
                                             </motion.div>
@@ -131,11 +128,10 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
                                     </AnimatePresence>
 
                                     {!isLoaded && (
-                                        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                                        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-20">
                                             <LoadingSpinner size="sm" />
                                         </div>
                                     )}
-                                </div>
                             </motion.div>
                         );
                     })}

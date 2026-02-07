@@ -186,9 +186,9 @@ const DashboardHistory = () => {
             {/* Modal Overlay */}
             {selectedMaterial && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                    <div className="bg-background rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+                    <div className="bg-background rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
                         <button
-                            className="absolute top-4 right-4 p-2 rounded-full bg-muted hover:bg-muted-foreground/20"
+                            className="absolute top-4 right-4 p-2 rounded-xl bg-muted hover:bg-muted-foreground/20"
                             onClick={() => setSelectedMaterial(null)}
                         >
                             <X className="h-5 w-5" />
@@ -218,7 +218,7 @@ const DashboardHistory = () => {
                                 <ul className="space-y-2">
                                     {selectedMaterial.keyPoints.map((point, idx) => (
                                         <li key={idx} className="text-sm flex items-start space-x-2">
-                                            <span className="w-2 h-2 bg-primary rounded-full mt-2"></span>
+                                            <span className="w-2 h-2 bg-primary rounded-xl mt-2"></span>
                                             <span>{point}</span>
                                         </li>
                                     ))}
@@ -245,7 +245,7 @@ const DashboardHistory = () => {
                                                 <ul className="ml-4 space-y-1">
                                                     {q.options.map((opt, optIdx) => (
                                                         <li key={optIdx} className="text-xs flex items-center">
-                              <span className="w-4 h-4 rounded-full bg-muted flex items-center justify-center text-[10px] mr-2">
+                              <span className="w-4 h-4 rounded-xl bg-muted flex items-center justify-center text-[10px] mr-2">
                                 {String.fromCharCode(65 + optIdx)}
                               </span>
                                                             {opt}

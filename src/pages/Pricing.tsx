@@ -89,20 +89,17 @@ const Pricing = () => {
 
     return (
         <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
-            {/* Background Blobs */}
-            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
 
             <Header />
 
             {/* Hero */}
             <section className="relative pt-44 pb-20">
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-full border border-white/10">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-white/10">
                         <Sparkles size={14} className="text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Investment in Intelligence</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Investment in Intelligence</span>
                     </div>
-                    <h1 className="text-6xl sm:text-7xl font-black mb-8 leading-none tracking-tighter">
+                    <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         Transparent <span className="text-gradient">Scholar Economics</span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
@@ -125,15 +122,15 @@ const Pricing = () => {
                                 }`}
                             >
                                 {plan.highlighted && (
-                                    <div className="absolute top-6 right-6 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">Most Popular</div>
+                                    <div className="absolute top-6 right-6 bg-primary text-white px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest animate-pulse">Most Popular</div>
                                 )}
                                 <div className="mb-10">
-                                    <h3 className="text-3xl font-black mb-2">{plan.name}</h3>
+                                    <h3 className="text-3xl font-bold mb-2">{plan.name}</h3>
                                     <p className="text-xs font-bold opacity-40 mb-8 uppercase tracking-widest leading-none">{plan.description}</p>
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-2xl font-bold opacity-40">₦</span>
-                                        <span className="text-5xl font-black text-white">{plan.price}</span>
-                                        <span className="text-[10px] font-black opacity-40 uppercase tracking-widest">/mo</span>
+                                        <span className="text-5xl font-bold text-white">{plan.price}</span>
+                                        <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">/mo</span>
                                     </div>
                                 </div>
                                 
@@ -148,7 +145,7 @@ const Pricing = () => {
                                 
                                 <Link to="/signup">
                                     <Button
-                                        className={`w-full h-14 rounded-2xl font-black text-lg transition-all ${
+                                        className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${
                                             plan.highlighted 
                                                 ? "bg-primary hover:bg-primary/90 text-white shadow-glow" 
                                                 : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
@@ -167,10 +164,10 @@ const Pricing = () => {
             <section className="py-32 relative z-10">
                 <div className="max-w-4xl mx-auto px-6 lg:px-12">
                     <div className="flex items-center gap-4 mb-12 justify-center">
-                        <div className="w-12 h-12 rounded-2xl glass border border-white/10 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl glass border border-white/10 flex items-center justify-center">
                             <HelpCircle className="text-primary" />
                         </div>
-                        <h2 className="text-4xl font-black">Neural Queries</h2>
+                        <h2 className="text-4xl font-bold">Neural Queries</h2>
                     </div>
                     <div className="grid grid-cols-1 gap-6">
                         {faqs.map((faq, i) => (
@@ -186,10 +183,10 @@ const Pricing = () => {
             {/* Secondary CTA */}
             <section className="py-20 relative z-10 border-t border-white/5 bg-white/[0.01]">
                 <div className="w-full px-6 lg:px-12 text-center">
-                    <h2 className="text-3xl font-black mb-8">Not sure which architecture to deploy?</h2>
+                    <h2 className="text-3xl font-bold mb-8">Not sure which architecture to deploy?</h2>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button variant="ghost" className="font-black text-lg h-14 px-8 rounded-2xl glass border border-white/10">Compare Modules</Button>
-                        <Button variant="ghost" className="font-black text-lg h-14 px-8 rounded-2xl text-primary hover:bg-primary/10">Contact Support</Button>
+                        <Button variant="ghost" className="font-bold text-lg h-14 px-8 rounded-xl glass border border-white/10">Compare Modules</Button>
+                        <Button variant="ghost" className="font-bold text-lg h-14 px-8 rounded-xl text-primary hover:bg-primary/10">Contact Support</Button>
                     </div>
                 </div>
             </section>

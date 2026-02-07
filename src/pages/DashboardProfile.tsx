@@ -141,7 +141,7 @@ const DashboardProfile = () => {
         <div ref={containerRef} className="space-y-6 md:space-y-8 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
             <div className="profile-header flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-black tracking-tighter leading-none mb-2">
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-2">
                         My <span className="text-gradient">Profile</span>
                     </h1>
                     <p className="text-muted-foreground font-medium text-lg">
@@ -154,7 +154,7 @@ const DashboardProfile = () => {
                         onClick={() => setIsEditing(!isEditing)}
                         className={`
                             h-12 rounded-2xl border-white/10 px-6 font-bold transition-all
-                            ${isEditing ? 'bg-white/10 text-white' : 'glass hover:bg-white/5'}
+                            ${isEditing ? 'bg-foreground/10 text-foreground' : 'glass hover:bg-foreground/5'}
                         `}
                     >
                         <Edit className="h-4 w-4 mr-2" />
@@ -176,33 +176,32 @@ const DashboardProfile = () => {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                 {/* Left Column: Avatar & Basic Info */}
                 <div className="md:col-span-4 space-y-6">
-                    <Card className="profile-card glass border-white/5 rounded-[40px] overflow-hidden shadow-2xl h-full">
+                    <Card className="profile-card glass border-foreground/5 rounded-2xl overflow-hidden shadow-2xl h-full">
                         <div className="h-32 bg-gradient-to-br from-primary/20 via-purple-500/10 to-background/0 relative">
                              <div className="absolute top-4 right-4">
-                                <Badge className="bg-white/10 hover:bg-white/20 text-white border-0 backdrop-blur-md">
+                                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 rounded-2xl">
                                     Scholar
                                 </Badge>
                              </div>
                         </div>
                         <div className="px-8 pb-8 -mt-16 flex flex-col items-center text-center">
                             <div className="relative mb-6 group">
-                                <div className="absolute -inset-1 bg-gradient-hero rounded-full opacity-70 blur-md group-hover:opacity-100 transition-opacity" />
                                 <Avatar className="w-32 h-32 border-4 border-background relative z-10 shadow-xl">
                                     <AvatarImage src={profileData.profilePicturePath || "/placeholder.svg"} className="object-cover" />
-                                    <AvatarFallback className="text-4xl font-black bg-muted">
+                                    <AvatarFallback className="text-4xl font-bold bg-muted">
                                         {profileData.firstName?.[0] || "U"}
                                         {profileData.lastName?.[0] || "N"}
                                     </AvatarFallback>
                                 </Avatar>
                                 {isEditing && (
-                                    <label className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-glow shadow-lg z-20 transition-transform active:scale-95">
+                                    <label className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-white rounded-2xl flex items-center justify-center cursor-pointer hover:bg-primary-glow shadow-lg z-20 transition-transform active:scale-95">
                                         <Camera className="h-5 w-5" />
                                         <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
                                     </label>
                                 )}
                             </div>
                             
-                            <h2 className="text-2xl font-black tracking-tight mb-1">
+                            <h2 className="text-2xl font-bold tracking-tight mb-1">
                                 {profileData.firstName || "New"} {profileData.lastName || "Scholar"}
                             </h2>
                             <div className="flex items-center gap-2 text-muted-foreground font-medium text-sm mb-6">
@@ -211,21 +210,21 @@ const DashboardProfile = () => {
                             </div>
 
                             <div className="w-full space-y-4">
-                                <div className="p-4 rounded-3xl bg-white/5 border border-white/5 w-full flex items-center gap-4">
+                                <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/5 w-full flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                                        <Shield size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-xs uppercase tracking-widest font-black opacity-40">Role</p>
+                                        <p className="text-xs uppercase tracking-widest font-bold opacity-40">Role</p>
                                         <p className="font-bold">Standard User</p>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-3xl bg-white/5 border border-white/5 w-full flex items-center gap-4">
+                                <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/5 w-full flex items-center gap-4">
                                      <div className="w-10 h-10 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-500">
                                        <MapPin size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-xs uppercase tracking-widest font-black opacity-40">Location</p>
+                                        <p className="text-xs uppercase tracking-widest font-bold opacity-40">Location</p>
                                         <p className="font-bold">{profileData.location || "Earth"}</p>
                                     </div>
                                 </div>
@@ -236,9 +235,9 @@ const DashboardProfile = () => {
 
                 {/* Right Column: Settings Form */}
                 <div className="md:col-span-8 space-y-6">
-                    <Card className="profile-card glass border-white/5 rounded-[40px] shadow-2xl overflow-hidden">
-                        <CardHeader className="px-8 py-6 border-b border-white/5">
-                            <CardTitle className="flex items-center gap-3 text-xl font-black">
+                    <Card className="profile-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
+                        <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
+                            <CardTitle className="flex items-center gap-3 text-xl font-bold">
                                 <User className="text-primary" />
                                 Personal Details
                             </CardTitle>
@@ -246,7 +245,7 @@ const DashboardProfile = () => {
                                 Information visible to your instructors and peers
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8 space-y-8">
+                        <CardContent className="p-6 md:p-8 space-y-6 md:space-y-8">
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <FormInput 
                                     icon={<User size={16} />}
@@ -295,9 +294,9 @@ const DashboardProfile = () => {
                         </CardContent>
                     </Card>
 
-                    <Card className="profile-card glass border-white/5 rounded-[40px] shadow-2xl overflow-hidden">
-                        <CardHeader className="px-8 py-6 border-b border-white/5">
-                            <CardTitle className="flex items-center gap-3 text-xl font-black">
+                    <Card className="profile-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
+                        <CardHeader className="px-8 py-6 border-b border-foreground/5">
+                            <CardTitle className="flex items-center gap-3 text-xl font-bold">
                                 <Lock className="text-primary" />
                                 Security Settings
                             </CardTitle>
@@ -306,9 +305,9 @@ const DashboardProfile = () => {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-8">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-[24px] bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-colors">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-2xl bg-foreground/[0.02] border border-foreground/5 hover:bg-foreground/[0.04] transition-colors">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                                         <KeyRound size={24} />
                                     </div>
                                     <div>
@@ -329,14 +328,6 @@ const DashboardProfile = () => {
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
                 }
-                .glass {
-                    background: rgba(12, 12, 14, 0.6);
-                    backdrop-filter: blur(12px);
-                    -webkit-backdrop-filter: blur(12px);
-                }
-                .shadow-glow {
-                     box-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
-                }
             `}</style>
         </div>
     )
@@ -345,13 +336,13 @@ const DashboardProfile = () => {
 function FormInput({ label, icon, ...props }: any) {
     return (
         <div className="space-y-3">
-            <Label htmlFor={props.id} className="text-xs uppercase font-black tracking-widest opacity-40 flex items-center gap-2">
+            <Label htmlFor={props.id} className="text-xs uppercase font-bold tracking-widest opacity-40 flex items-center gap-2">
                 {icon}
                 {label}
             </Label>
             <Input
                 {...props}
-                className="h-14 rounded-[16px] glass border-white/10 px-4 font-medium transition-all focus:border-primary/50 focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-14 rounded-2xl glass border-foreground/10 px-4 font-medium transition-all focus:border-primary/50 focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed text-foreground"
             />
         </div>
     )

@@ -69,20 +69,17 @@ const Testimonials = () => {
 
     return (
         <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
-            {/* Background Blobs */}
-            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
 
             <Header />
 
             {/* Hero */}
             <section className="relative pt-44 pb-20">
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-full border border-white/10">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-white/10">
                         <Sparkles size={14} className="text-secondary" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Voices of the Consortium</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Voices of the Consortium</span>
                     </div>
-                    <h1 className="text-6xl sm:text-7xl font-black mb-8 leading-none tracking-tighter">
+                    <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         Validated by <span className="text-gradient">10,000+ Scholars</span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
@@ -103,11 +100,11 @@ const Testimonials = () => {
                                 <Quote className="absolute top-6 right-8 text-primary/10" size={60} />
                                 <div className="flex items-center gap-4 mb-8">
                                     <Avatar className="w-14 h-14 border-2 border-primary/20 bg-gradient-hero">
-                                        <AvatarFallback className="font-black text-white">{t.initials}</AvatarFallback>
+                                        <AvatarFallback className="font-bold text-white">{t.initials}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <h3 className="font-black text-white">{t.name}</h3>
-                                        <p className="text-xs font-black uppercase tracking-widest text-primary/60">{t.role}</p>
+                                        <h3 className="font-bold text-white">{t.name}</h3>
+                                        <p className="text-xs font-bold uppercase tracking-widest text-primary/60">{t.role}</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-1 mb-6">
@@ -129,14 +126,14 @@ const Testimonials = () => {
                 <div className="w-full px-6 lg:px-12">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
                         {[
-                            { val: "10K+", label: "Active Nodes", color: "text-blue-500" },
-                            { val: "4.9/5", label: "Protocol Rating", color: "text-emerald-500" },
-                            { val: "40%", label: "Grade Yield", color: "text-blue-400" },
-                            { val: "50K+", label: "Syntheses Generated", color: "text-emerald-400" }
+                            { val: "10K+", label: "Active Nodes", color: "text-primary" },
+                            { val: "4.9/5", label: "Protocol Rating", color: "text-primary" },
+                            { val: "40%", label: "Grade Yield", color: "text-primary" },
+                            { val: "50K+", label: "Syntheses Generated", color: "text-primary" }
                         ].map((stat, i) => (
                             <div key={i} className="text-center space-y-2">
-                                <div className={`text-5xl font-black ${stat.color} tracking-tighter`}>{stat.val}</div>
-                                <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">{stat.label}</div>
+                                <div className={`text-5xl font-bold ${stat.color} tracking-tighter`}>{stat.val}</div>
+                                <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">{stat.label}</div>
                             </div>
                         ))}
                     </div>

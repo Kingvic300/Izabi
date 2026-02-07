@@ -36,7 +36,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
                         <div className="w-full max-w-md">
                             <div className="bg-card border border-border rounded-lg p-8 text-center space-y-6">
                                 <div className="flex justify-center">
-                                    <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center">
+                                    <div className="w-16 h-16 bg-destructive/10 rounded-xl flex items-center justify-center">
                                         <AlertCircle className="w-8 h-8 text-destructive" />
                                     </div>
                                 </div>

@@ -14,7 +14,7 @@ const queryClient = new QueryClient()
 
 const App = () => (
     <ErrorBoundary>
-        <ThemeProvider defaultTheme="dark" storageKey="izabi-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="izabi-theme-v3">
             <LanguageProvider>
                 <ErrorProvider>
                     <QueryClientProvider client={queryClient}>

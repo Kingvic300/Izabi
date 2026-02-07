@@ -40,8 +40,8 @@ const HowItWorks = () => {
                 t("hiw.ingest_d3"),
                 t("hiw.ingest_d4"),
             ],
-            bg: "bg-blue-500/10",
-            color: "text-blue-500"
+            bg: "bg-primary/10",
+            color: "text-primary"
         },
         {
             icon: <Zap size={32} />,
@@ -66,8 +66,8 @@ const HowItWorks = () => {
                 t("hiw.synth_d3"),
                 t("hiw.synth_d4"),
             ],
-            bg: "bg-emerald-500/10",
-            color: "text-emerald-500"
+            bg: "bg-primary/10",
+            color: "text-primary"
         },
         {
             icon: <Trophy size={32} />,
@@ -86,20 +86,17 @@ const HowItWorks = () => {
 
     return (
         <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
-            {/* Background Blobs */}
-            <div className="fixed top-[-10%] right-[-10%] w-[55%] h-[55%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-[55%] h-[55%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
 
             <Header />
 
             {/* Hero */}
             <section className="relative pt-44 pb-24">
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-full border border-foreground/10">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                         <Binary size={14} className="text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/60">{t("hiw.hero_tag")}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">{t("hiw.hero_tag")}</span>
                     </div>
-                    <h1 className="text-6xl sm:text-7xl font-black mb-8 leading-none tracking-tighter">
+                    <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         {t("hiw.hero_title")} <span className="text-gradient">{t("hiw.hero_title_span")}</span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
@@ -115,34 +112,34 @@ const HowItWorks = () => {
                         {steps.map((step, i) => (
                             <div key={i} className={`step-card flex flex-col ${i % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-20`}>
                                 <div className="flex-1 space-y-8">
-                                    <div className={`w-20 h-20 rounded-3xl ${step.bg} ${step.color} flex items-center justify-center shadow-2xl group`}>
+                                    <div className={`w-20 h-20 rounded-2xl ${step.bg} ${step.color} flex items-center justify-center shadow-2xl group`}>
                                         {step.icon}
                                     </div>
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-4">
-                                            <span className="text-5xl font-black opacity-10">{i + 1}</span>
-                                            <h2 className="text-4xl font-black text-foreground">{step.title}</h2>
+                                            <span className="text-5xl font-bold opacity-10">{i + 1}</span>
+                                            <h2 className="text-4xl font-bold text-foreground">{step.title}</h2>
                                         </div>
                                         <p className="text-xl text-muted-foreground font-medium leading-relaxed">{step.description}</p>
                                     </div>
                                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         {step.details.map((detail, j) => (
-                                            <li key={j} className="flex items-center gap-3 glass p-4 rounded-2xl border border-white/5">
+                                            <li key={j} className="flex items-center gap-3 glass p-4 rounded-xl border border-white/5">
                                                 <CheckCircle size={18} className="text-primary flex-shrink-0" />
                                                 <span className="text-sm font-bold opacity-80">{detail}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="flex-1 w-full aspect-square glass rounded-[64px] border border-white/5 relative overflow-hidden group shadow-2xl">
+                                <div className="flex-1 w-full aspect-square glass rounded-xl border border-white/5 relative overflow-hidden group shadow-2xl">
                                     <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <div className="absolute inset-0 flex items-center justify-center scale-150 opacity-10 blur-2xl group-hover:scale-100 group-hover:opacity-100 group-hover:blur-none transition-all duration-1000">
-                                        {step.icon}
-                                    </div>
                                     <div className="absolute inset-0 flex items-center justify-center p-20">
-                                       <div className="w-full h-full bg-white/5 rounded-[48px] animate-pulse border border-white/10 flex items-center justify-center">
-                                            <Sparkles className="text-primary/20" size={80} />
+                                       <div className="w-full h-full bg-white/5 rounded-xl animate-pulse border border-white/10 flex items-center justify-center text-primary/20">
+                                            {step.icon}
                                        </div>
+                                    </div>
+                                    <div className="absolute top-8 right-8 text-primary opacity-20 group-hover:opacity-100 transition-opacity">
+                                        <Sparkles size={40} />
                                     </div>
                                 </div>
                             </div>
@@ -154,7 +151,7 @@ const HowItWorks = () => {
             {/* Quick Timeline */}
             <section className="py-32 bg-white/[0.01] border-y border-white/5">
                 <div className="w-full px-6 lg:px-12">
-                    <h2 className="text-4xl font-black text-center mb-16">Deployment Latency</h2>
+                    <h2 className="text-4xl font-bold text-center mb-16">Deployment Latency</h2>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
                         {[
                             { label: t("hiw.lat_setup"), time: "2 min" },
@@ -163,8 +160,8 @@ const HowItWorks = () => {
                             { label: t("hiw.lat_mastery"), time: "Instant" }
                         ].map((stat, i) => (
                             <Card key={i} className="glass p-10 border-white/5 hover-lift text-center group">
-                                <div className="text-3xl font-black text-primary mb-2 group-hover:scale-110 transition-transform">{stat.time}</div>
-                                <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{stat.label}</p>
+                                <div className="text-3xl font-bold text-primary mb-2 group-hover:scale-110 transition-transform">{stat.time}</div>
+                                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{stat.label}</p>
                             </Card>
                         ))}
                     </div>
@@ -174,10 +171,9 @@ const HowItWorks = () => {
             {/* Final CTA */}
             <section className="py-44 relative z-10">
                 <div className="w-full px-6 lg:px-12 text-center bg-gradient-hero/5 py-24 rounded-[64px] border border-white/5 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full" />
-                    <h2 className="text-5xl font-black mb-8 leading-tight text-foreground">{t("hiw.cta_title")}</h2>
+                    <h2 className="text-5xl font-bold mb-8 leading-tight text-foreground">{t("hiw.cta_title")}</h2>
                     <Link to="/signup">
-                        <Button size="lg" className="h-20 px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-black text-xl shadow-glow group">
+                        <Button size="lg" className="h-20 px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xl shadow-glow group">
                             <span>{t("hiw.cta_btn")}</span>
                             <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                         </Button>

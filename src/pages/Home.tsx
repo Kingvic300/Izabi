@@ -68,51 +68,48 @@ const Home = () => {
             icon: <FileText size={32} />,
             title: "Neural Scan",
             description: "Upload PDFs and notes - our neural engine scans and understands context instantly.",
-            color: "text-blue-400",
-            bg: "bg-blue-400/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             icon: <Brain size={32} />,
             title: "Izabi Summaries",
             description: "Get structured deep-dives that explain the 'Why' behind every concept.",
-            color: "text-emerald-400",
-            bg: "bg-emerald-400/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             icon: <Zap size={32} />,
             title: "Flash Quiz",
             description: "Auto-generate challenging quizzes with instant feedback tracking.",
-            color: "text-blue-400",
-            bg: "bg-blue-400/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             icon: <Users size={32} />,
             title: "Scholar Battles",
             description: "Engage in real-time knowledge duels with fellow students.",
-            color: "text-emerald-400",
-            bg: "bg-emerald-400/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             icon: <Mic size={32} />,
             title: "Audio Lexicon",
             description: "Convert any lesson into interactive audio tailored to your learning style.",
-            color: "text-blue-400",
-            bg: "bg-blue-400/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             icon: <Globe size={32} />,
             title: "Dialect Support",
             description: "Fluent across Academic English and Local Dialects (Pidgin) for better clarity.",
-            color: "text-emerald-400",
-            bg: "bg-emerald-400/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
     ]
     return (
         <ErrorBoundary>
             <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
-                {/* Background Blobs */}
-                <div className="fixed top-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[160px] rounded-full pointer-events-none z-0" />
-                <div className="fixed bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-accent/5 blur-[160px] rounded-full pointer-events-none z-0" />
 
                 <Header />
 
@@ -120,12 +117,12 @@ const Home = () => {
                 <section className="relative pt-44 pb-32 lg:pt-56 lg:pb-48">
                     <div className="w-full px-6 lg:px-12 relative z-10">
                         <div className="hero-content text-center w-full max-w-[1400px] mx-auto">
-                            <div className="inline-flex items-center gap-2 mb-8 px-5 py-2 glass rounded-full border border-foreground/10 shadow-glow">
+                            <div className="inline-flex items-center gap-2 mb-8 px-5 py-2 glass rounded-xl border border-foreground/10 shadow-glow">
                                 <Trophy size={16} className="text-yellow-500" />
-                                <span className="text-xs font-black uppercase tracking-widest text-foreground/60">{t("hero.trusted")}</span>
+                                <span className="text-xs font-bold uppercase tracking-widest text-foreground/60">{t("hero.trusted")}</span>
                             </div>
                             
-                            <h1 className="text-6xl sm:text-8xl font-black mb-8 leading-[0.9] tracking-tighter text-foreground">
+                            <h1 className="text-6xl sm:text-8xl font-bold mb-8 leading-[0.9] tracking-tighter text-foreground">
                                 {t("hero.title_top")} <br />
                                 <span className="text-gradient">{t("hero.title_bottom")}</span>
                             </h1>
@@ -137,20 +134,20 @@ const Home = () => {
                             
                             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-20">
                                 <Link to="/signup">
-                                    <Button size="lg" className="h-16 px-10 rounded-[20px] bg-primary hover:bg-primary/90 text-primary-foreground font-black text-lg shadow-glow-primary group">
+                                    <Button size="lg" className="h-16 px-10 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg shadow-glow-primary group">
                                         <span>{t("hero.cta")}</span>
                                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </Link>
                                 <a href="#how-it-works">
-                                    <Button variant="ghost" size="lg" className="h-16 px-10 rounded-[20px] font-black text-lg glass border border-foreground/10 hover:bg-foreground/5 text-foreground">
+                                    <Button variant="ghost" size="lg" className="h-16 px-10 rounded-xl font-bold text-lg glass border border-foreground/10 hover:bg-foreground/5 text-foreground">
                                         {t("hero.view_env")}
                                     </Button>
                                 </a>
                             </div>
 
                             {/* Hero Features Bar */}
-                            <div className="hero-stats grid grid-cols-2 md:grid-cols-4 gap-4 glass p-4 rounded-[32px] border border-foreground/10 max-w-4xl mx-auto">
+                            <div className="hero-stats grid grid-cols-2 md:grid-cols-4 gap-4 glass p-4 rounded-2xl border border-foreground/10 max-w-4xl mx-auto">
                                 {[
                                     { val: "Save 10h+", lab: "Weekly Study Time" },
                                     { val: "40%+", lab: "Grade Improvement" },
@@ -158,7 +155,7 @@ const Home = () => {
                                     { val: "Pidgin AI", lab: "Localized Support" }
                                 ].map((stat, i) => (
                                     <div key={i} className="py-2 px-4 border-r border-foreground/5 last:border-0">
-                                        <div className="text-2xl font-black text-foreground">{stat.val}</div>
+                                        <div className="text-2xl font-bold text-foreground">{stat.val}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-widest opacity-40 text-foreground">{stat.lab}</div>
                                     </div>
                                 ))}
@@ -172,7 +169,7 @@ const Home = () => {
                     <div className="w-full px-6 lg:px-12">
                         <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8 text-center md:text-left">
                             <div className="w-full">
-                                <h2 className="text-5xl font-black mb-6 leading-none tracking-tight text-foreground">
+                                <h2 className="text-5xl font-bold mb-6 leading-none tracking-tight text-foreground">
                                     {t("features.title")} <br />
                                     <span className="text-gradient">{t("features.title_gradient")}</span>
                                 </h2>
@@ -194,13 +191,12 @@ const Home = () => {
                                     key={i}
                                     className="feature-card glass-card hover-lift border-white/5 p-8 relative group overflow-hidden"
                                 >
-                                    <div className={`w-16 h-16 rounded-[20px] ${feature.bg} ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl`}>
+                                    <div className={`w-16 h-16 rounded-xl ${feature.bg} ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl`}>
                                         {feature.icon}
                                     </div>
                                     <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
                                     <p className="text-muted-foreground leading-relaxed font-medium">{feature.description}</p>
                                     
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </Card>
                             ))}
                         </div>
@@ -211,8 +207,8 @@ const Home = () => {
                 <section id="how-it-works" className="py-32 bg-white/[0.01] border-y border-white/5">
                     <div className="w-full px-6 lg:px-12 text-center">
                         <div className="mb-20">
-                            <span className="text-xs font-black uppercase tracking-widest text-primary mb-4 block">{t("how.title")}</span>
-                            <h2 className="text-5xl font-black text-foreground">{t("how.subtitle")}</h2>
+                            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-4 block">{t("how.title")}</span>
+                            <h2 className="text-5xl font-bold text-foreground">{t("how.subtitle")}</h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-16 relative">
                             {/* Connector Line */}
@@ -224,9 +220,9 @@ const Home = () => {
                                 { step: "03", title: "Conquer", desc: "Simulate exams and master the curriculum.", icon: <Sparkles /> },
                             ].map((item, i) => (
                                 <div key={i} className="relative group">
-                                    <div className="w-32 h-32 glass rounded-[40px] border border-white/10 flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:border-primary/50 transition-colors">
+                                    <div className="w-32 h-32 glass rounded-2xl border border-white/10 flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:border-primary/50 transition-colors">
                                         <span className="text-4xl">{item.icon}</span>
-                                        <div className="absolute -top-4 -right-4 w-12 h-12 rounded-full bg-primary flex items-center justify-center font-black text-white shadow-glow text-xl">
+                                        <div className="absolute -top-4 -right-4 w-12 h-12 rounded-xl bg-primary flex items-center justify-center font-bold text-white shadow-glow text-xl">
                                             {item.step}
                                         </div>
                                     </div>
@@ -242,7 +238,7 @@ const Home = () => {
                 <section id="testimonials" className="py-32 relative overflow-hidden">
                     <div className="w-full px-6 lg:px-12 relative z-10">
                         <div className="text-center mb-24">
-                            <h2 className="text-5xl font-black mb-6">Voice of the <span className="text-gradient">Nex-Gen Scholar</span></h2>
+                            <h2 className="text-5xl font-bold mb-6">Voice of the <span className="text-gradient">Nex-Gen Scholar</span></h2>
                             <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">
                                 Join students across the continent transforming their academic legacy.
                             </p>
@@ -273,11 +269,11 @@ const Home = () => {
                             ].map((testimonial, i) => (
                                 <Card key={i} className="glass shadow-2xl border-white/5 p-10 hover-lift relative group">
                                     <div className="flex items-center gap-5 mb-8">
-                                        <div className={`w-14 h-14 rounded-2xl ${testimonial.grad} flex items-center justify-center text-white font-black text-xl shadow-lg`}>
+                                        <div className={`w-14 h-14 rounded-xl ${testimonial.grad} flex items-center justify-center text-white font-bold text-xl shadow-lg`}>
                                             {testimonial.avatar}
                                         </div>
                                         <div>
-                                            <h4 className="font-black text-lg text-white group-hover:text-primary transition-colors">{testimonial.name}</h4>
+                                            <h4 className="font-bold text-lg text-white group-hover:text-primary transition-colors">{testimonial.name}</h4>
                                             <p className="text-xs uppercase tracking-widest font-bold opacity-40">{testimonial.role}</p>
                                         </div>
                                     </div>
@@ -292,7 +288,7 @@ const Home = () => {
                 <section id="pricing" className="py-32 relative z-10">
                     <div className="w-full px-6 lg:px-12">
                         <div className="text-center mb-24">
-                            <h2 className="text-5xl font-black mb-6 text-foreground">{t("pricing.title")} <span className="text-gradient">{t("pricing.title_gradient")}</span></h2>
+                            <h2 className="text-5xl font-bold mb-6 text-foreground">{t("pricing.title")} <span className="text-gradient">{t("pricing.title_gradient")}</span></h2>
                             <p className="text-xl text-muted-foreground font-medium">{t("pricing.subtitle")}</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center w-full">
@@ -328,13 +324,13 @@ const Home = () => {
                                     }`}
                                 >
                                     {plan.hot && (
-                                        <div className="absolute top-6 right-6 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">Most Popular</div>
+                                        <div className="absolute top-6 right-6 bg-primary text-white px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest animate-pulse">Most Popular</div>
                                     )}
                                     <div className="mb-10">
-                                        <h3 className="text-3xl font-black mb-2 text-foreground">{plan.name}</h3>
+                                        <h3 className="text-3xl font-bold mb-2 text-foreground">{plan.name}</h3>
                                         <p className="text-sm font-bold opacity-40 mb-6 uppercase tracking-wider text-foreground">{plan.desc}</p>
                                         <div className="flex items-baseline gap-2">
-                                            <span className="text-5xl font-black text-foreground">{plan.price}</span>
+                                            <span className="text-5xl font-bold text-foreground">{plan.price}</span>
                                             <span className="text-xs font-bold opacity-40 text-foreground">/MONTH</span>
                                         </div>
                                     </div>
@@ -350,7 +346,7 @@ const Home = () => {
                                     
                                     <Link to={`/signup?plan=${plan.name.toLowerCase().replace(' ', '-')}`} className="w-full">
                                         <Button
-                                            className={`w-full h-14 rounded-2xl font-black text-lg transition-all ${
+                                            className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${
                                                 plan.hot 
                                                     ? "bg-primary hover:bg-primary/90 text-white shadow-glow" 
                                                     : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
@@ -370,13 +366,13 @@ const Home = () => {
                     <div className="w-full px-6 lg:px-12">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
                             <div>
-                                <h2 className="text-5xl font-black mb-8 leading-tight">Our Mission: <br /> <span className="text-gradient">Equal Access.</span></h2>
+                                <h2 className="text-5xl font-bold mb-8 leading-tight">Our Mission: <br /> <span className="text-gradient">Equal Access.</span></h2>
                                 <p className="text-lg text-muted-foreground font-medium leading-[1.8] mb-8">
                                     We believe that every student in Africa deserves an unfair advantage. 
                                     Izabi was engineered to democratize elite-level academic tutoring through 
                                     accessible, localized, and intelligent technology.
                                 </p>
-                                <Button variant="ghost" className="font-black p-0 hover:bg-transparent text-primary hover:gap-3 transition-all">
+                                <Button variant="ghost" className="font-bold p-0 hover:bg-transparent text-primary hover:gap-3 transition-all">
                                     Read Our Full Manifesto <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </div>
@@ -387,8 +383,8 @@ const Home = () => {
                                     { label: "Papers", val: "50M+" },
                                     { label: "Hours Saved", val: "200K" }
                                 ].map((stat, i) => (
-                                    <div key={i} className="glass p-8 rounded-[32px] border border-white/10 text-center hover-lift">
-                                        <div className="text-3xl font-black text-primary mb-1">{stat.val}</div>
+                                    <div key={i} className="glass p-8 rounded-2xl border border-white/10 text-center hover-lift">
+                                        <div className="text-3xl font-bold text-primary mb-1">{stat.val}</div>
                                         <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{stat.label}</p>
                                     </div>
                                 ))}
@@ -400,13 +396,13 @@ const Home = () => {
                 {/* Final CTA */}
                 <section className="py-44 relative">
                     <div className="w-full px-6 lg:px-12 text-center relative z-10">
-                        <div className="inline-block p-1 rounded-full bg-gradient-hero mb-8 shadow-glow transition-transform hover:scale-105">
-                            <div className="bg-background rounded-full px-6 py-2 flex items-center gap-2">
+                        <div className="inline-block p-1 rounded-xl bg-gradient-hero mb-8 shadow-glow transition-transform hover:scale-105">
+                            <div className="bg-background rounded-xl px-6 py-2 flex items-center gap-2">
                                 <Sparkles size={14} className="text-primary animate-pulse" />
-                                <span className="text-xs font-black uppercase tracking-widest">Enrollment Open</span>
+                                <span className="text-xs font-bold uppercase tracking-widest">Enrollment Open</span>
                             </div>
                         </div>
-                        <h2 className="text-6xl sm:text-7xl font-black mb-8 tracking-tighter text-foreground">{t("cta.upgrade")}</h2>
+                        <h2 className="text-6xl sm:text-7xl font-bold mb-8 tracking-tighter text-foreground">{t("cta.upgrade")}</h2>
                         <p className="text-xl text-muted-foreground mb-12 font-medium">
                             {t("cta.tagline").includes('. ') 
                                 ? t("cta.tagline").split('. ').join('. \n')
@@ -414,7 +410,7 @@ const Home = () => {
                             }
                         </p>
                         <Link to="/signup">
-                            <Button size="lg" className="h-20 px-14 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-black text-2xl shadow-glow-primary group">
+                            <Button size="lg" className="h-20 px-14 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-2xl shadow-glow-primary group">
                                 <span>{t("nav.get_early_access")}</span>
                                 <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                             </Button>

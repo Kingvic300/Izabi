@@ -101,8 +101,8 @@ const DashboardExams = () => {
     return (
         <div ref={containerRef} className="min-h-screen w-full flex flex-col items-center justify-center px-6 lg:px-12 py-20 relative overflow-hidden">
             {/* Background Effects */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px] animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px]" />
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-xl blur-[120px] animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-xl blur-[120px]" />
             
             <motion.div 
                 initial={{ opacity: 0, y: 40 }}
@@ -111,16 +111,16 @@ const DashboardExams = () => {
                 className="max-w-4xl w-full text-center space-y-12 relative z-10"
             >
                 <div className="relative inline-block">
-                    <div className="w-32 h-32 md:w-48 md:h-48 rounded-[40px] bg-gradient-hero flex items-center justify-center shadow-glow mx-auto mb-10 group hover:scale-105 transition-transform duration-500">
+                    <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl bg-gradient-hero flex items-center justify-center shadow-glow mx-auto mb-10 group hover:scale-105 transition-transform duration-500">
                         <GraduationCap size={80} className="text-white group-hover:rotate-12 transition-transform duration-500" />
                     </div>
-                    <div className="absolute -top-4 -right-4 px-6 py-2 bg-rose-500 text-white text-[12px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl animate-bounce">
+                    <div className="absolute -top-4 -right-4 px-6 py-2 bg-rose-500 text-white text-[12px] font-bold uppercase tracking-[0.2em] rounded-xl shadow-2xl animate-bounce">
                         System Offline
                     </div>
                 </div>
 
                 <div className="space-y-6">
-                    <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-tight text-white mb-4">
+                    <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-tight text-white mb-4">
                         The <span className="text-gradient">Arena</span> is <br />
                         Under Calibration
                     </h1>
@@ -131,23 +131,23 @@ const DashboardExams = () => {
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 pt-10">
-                    <div className="flex items-center gap-4 glass p-6 rounded-[32px] border-white/5 bg-white/[0.02]">
-                        <div className="p-4 rounded-2xl bg-primary/10 text-primary">
+                    <div className="flex items-center gap-4 glass p-6 rounded-2xl border-white/5 bg-white/[0.02]">
+                        <div className="p-4 rounded-xl bg-primary/10 text-primary">
                             <Clock size={24} />
                         </div>
                         <div className="text-left">
-                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Status</p>
-                            <p className="text-lg font-black text-white">Maintenance Mode</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Status</p>
+                            <p className="text-lg font-bold text-white">Maintenance Mode</p>
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-4 glass p-6 rounded-[32px] border-white/5 bg-white/[0.02]">
-                        <div className="p-4 rounded-2xl bg-emerald-500/10 text-emerald-500">
+                    <div className="flex items-center gap-4 glass p-6 rounded-2xl border-white/5 bg-white/[0.02]">
+                        <div className="p-4 rounded-xl bg-primary/10 text-primary">
                             <Zap size={24} />
                         </div>
                         <div className="text-left">
-                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Estimated Return</p>
-                            <p className="text-lg font-black text-white">Check back later</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Estimated Return</p>
+                            <p className="text-lg font-bold text-white">Check back later</p>
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@ const DashboardExams = () => {
                 <div className="pt-12">
                    <Button 
                         onClick={() => window.history.back()}
-                        className="h-16 px-10 rounded-2xl bg-white text-black font-black text-lg hover:bg-white/90 transition-all shadow-glow flex items-center gap-3 mx-auto"
+                        className="h-16 px-10 rounded-xl bg-white text-black font-bold text-lg hover:bg-white/90 transition-all shadow-glow flex items-center gap-3 mx-auto"
                    >
                         <ChevronRight className="rotate-180" size={20} />
                         Return to Command Center

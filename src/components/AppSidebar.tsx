@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp } from "lucide-react"
+import { Logo } from "@/components/Logo"
 import apiClient, { api } from "@/lib/apiClient"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
@@ -154,27 +155,18 @@ export function AppSidebar() {
     }
 
     return (
-        <Sidebar collapsible="icon" className="bg-background/60 backdrop-blur-xl border-r border-white/5 data-[variant=inset]:bg-transparent">
+        <Sidebar collapsible="icon" className="bg-[#0000001a] backdrop-blur-xl border-r border-foreground/5 data-[variant=inset]:bg-transparent">
             {/* Header */}
             <SidebarHeader className="border-b border-border p-4">
-                <div className="flex items-center space-x-3 px-2">
-                    <div className="w-10 h-10 bg-gradient-hero rounded-xl flex items-center justify-center shadow-glow animate-pulse">
-                        <Brain className="h-6 w-6 text-white" />
-                    </div>
-                    {!collapsed && (
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-black bg-gradient-hero bg-clip-text text-transparent leading-none">Izabi</span>
-                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Learning AI</span>
-                        </div>
-                    )}
-                </div>
+                <Logo showText={!collapsed} size={40} className="px-2" />
             </SidebarHeader>
+
 
             {/* Navigation */}
             <SidebarContent className="flex-1 px-3 py-4">
                 {/* Main Navigation Group */}
                 <SidebarGroup>
-                    <SidebarGroupLabel className="text-[10px] uppercase font-black tracking-widest mb-4 px-4 opacity-50 text-foreground">The Lab</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-[10px] uppercase font-bold tracking-widest mb-4 px-4 opacity-50 text-foreground">The Lab</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="gap-2">
                             {navigationItems.map((item) => {
@@ -184,7 +176,7 @@ export function AppSidebar() {
                                         <SidebarMenuButton 
                                             asChild 
                                             isActive={active}
-                                            className={`h-12 rounded-xl transition-all duration-300 px-4 group
+                                            className={`h-12 rounded-3xl transition-all duration-300 px-4 group
                                                 ${active ? "bg-primary/10 text-primary shadow-[inset_0_0_20px_hsla(var(--primary)/0.1)]" : "hover:bg-foreground/5"}
                                             `}
                                         >
@@ -204,7 +196,7 @@ export function AppSidebar() {
                                                             {item.title}
                                                         </span>
                                                         {(item as any).status === "unavailable" && (
-                                                            <span className="text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-500 border border-rose-500/10">
+                                                            <span className="text-[12px] font-bold uppercase tracking-tighter px-1.5 py-0.5 rounded-2xl bg-rose-500/20 text-rose-500 border border-rose-500/10">
                                                                 Soon
                                                             </span>
                                                         )}
@@ -221,7 +213,7 @@ export function AppSidebar() {
 
                 {/* Settings Group */}
                 <SidebarGroup className="mt-auto">
-                    <SidebarGroupLabel className="text-[10px] uppercase font-black tracking-widest mb-4 px-4 opacity-50 text-foreground">Account</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-[10px] uppercase font-bold tracking-widest mb-4 px-4 opacity-50 text-foreground">Account</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="gap-2">
                             {settingsItems.map((item) => {
@@ -231,7 +223,7 @@ export function AppSidebar() {
                                         <SidebarMenuButton 
                                             asChild 
                                             isActive={active}
-                                            className={`h-12 rounded-xl transition-all duration-300 px-4 group
+                                            className={`h-12 rounded-3xl transition-all duration-300 px-4 group
                                                 ${active ? "bg-foreground/10 text-foreground shadow-xl" : "hover:bg-foreground/5"}
                                             `}
                                         >
@@ -255,14 +247,14 @@ export function AppSidebar() {
                                 <SidebarMenuItem>
                                     <SidebarMenuButton 
                                         isActive={isActive("/dashboard/admin")}
-                                        className={`h-12 rounded-xl transition-all duration-300 px-4 group
+                                        className={`h-12 rounded-3xl transition-all duration-300 px-4 group
                                             ${isActive("/dashboard/admin") ? "bg-primary/20 text-primary shadow-glow" : "hover:bg-primary/5"}
                                         `}
                                         onClick={() => navigate("/dashboard/admin")}
                                     >
                                         <div className="flex items-center gap-4">
                                             <ShieldCheck className={`h-5 w-5 ${isActive("/dashboard/admin") ? "text-primary shadow-glow" : "text-primary/60"}`} />
-                                            {!collapsed && <span className="font-black text-sm tracking-tight text-primary">Admin Center</span>}
+                                            {!collapsed && <span className="font-bold text-sm tracking-tight text-primary">Admin Center</span>}
                                         </div>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
@@ -273,12 +265,12 @@ export function AppSidebar() {
             </SidebarContent>
 
             {/* Footer / User Profile */}
-            <SidebarFooter className="p-4 border-t border-white/5 bg-black/10">
+            <SidebarFooter className="p-4 border-t border-foreground/5 bg-foreground/[0.02]">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton
                             size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-14 rounded-xl transition-all"
+                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-14 rounded-3xl transition-all"
                         >
                             <Avatar className="h-9 w-9 rounded-lg border border-white/10 shadow-sm">
                                 <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userInfo.email}`} alt={userInfo.email} />
@@ -293,7 +285,7 @@ export function AppSidebar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         side="top"
-                        className="w-[--radix-popper-anchor-width] rounded-xl glass border-white/10 p-2 shadow-2xl"
+                        className="w-[--radix-popper-anchor-width] rounded-3xl glass border-foreground/10 p-2 shadow-2xl"
                     >
                         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 font-bold rounded-lg p-3">
                             <LogOut className="mr-2 h-4 w-4" />

@@ -79,20 +79,17 @@ const FAQ = () => {
 
     return (
         <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
-            {/* Background Blobs */}
-            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
 
             <Header />
 
             {/* Hero */}
             <section className="relative pt-44 pb-20">
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-full border border-white/10">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-white/10">
                         <HelpCircle size={14} className="text-secondary" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Neural Support System</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Neural Support System</span>
                     </div>
-                    <h1 className="text-6xl sm:text-7xl font-black mb-8 leading-none tracking-tighter">
+                    <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         Frequently Asked <span className="text-gradient">Neural Queries</span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
@@ -107,13 +104,13 @@ const FAQ = () => {
                     <div className="space-y-20">
                         {faqs.map((category, i) => (
                             <div key={i} className="faq-section">
-                                <h2 className="text-sm font-black uppercase tracking-[0.3em] opacity-40 mb-8 px-1">{category.category}</h2>
+                                <h2 className="text-sm font-bold uppercase tracking-[0.3em] opacity-40 mb-8 px-1">{category.category}</h2>
                                 <Accordion type="single" collapsible className="space-y-4">
                                     {category.items.map((item, index) => (
                                         <AccordionItem
                                             key={index}
                                             value={`${category.category}-${index}`}
-                                            className="border border-white/5 bg-white/[0.02] rounded-[24px] px-8 shadow-2xl transition-all data-[state=open]:border-primary/30"
+                                            className="border border-white/5 bg-white/[0.02] rounded-xl px-8 shadow-2xl transition-all data-[state=open]:border-primary/30"
                                         >
                                             <AccordionTrigger className="hover:no-underline py-6">
                                                 <span className="text-left font-bold text-lg">{item.q}</span>
@@ -133,13 +130,13 @@ const FAQ = () => {
             {/* Support CTA */}
             <section className="py-32 relative z-10 border-t border-white/5">
                 <div className="w-full max-w-6xl mx-auto px-6 lg:px-12 text-center bg-primary/5 py-24 rounded-[48px] border border-white/5">
-                    <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-8">
+                    <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center mx-auto mb-8">
                         <Sparkles className="text-primary" size={32} />
                     </div>
-                    <h2 className="text-4xl font-black mb-6">Need a human link?</h2>
+                    <h2 className="text-4xl font-bold mb-6">Need a human link?</h2>
                     <p className="text-lg text-muted-foreground mb-10 font-medium">Our help descriptors are available for direct neural link support.</p>
                     <Link to="/contact">
-                        <Button className="h-16 px-10 rounded-2xl bg-white text-black font-black text-lg hover:bg-white/90 shadow-glow">
+                        <Button className="h-16 px-10 rounded-xl bg-white text-black font-bold text-lg hover:bg-white/90 shadow-glow">
                             Initialize Direct Link
                         </Button>
                     </Link>

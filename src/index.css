@@ -1,14 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
     :root {
-        /* Premium Light Mode */
+        --font-mono: 'Space Mono', monospace;
+        /* Premium Charcoal Dark theme as default */
+        --background: 222 47% 4%;
+        --foreground: 213 27% 96%;
+
+        --card: 222 47% 6%;
+        --card-foreground: 210 20% 98%;
+
+        --popover: 220 15% 6%;
+        --popover-foreground: 210 20% 98%;
+
+        --primary: 217 91% 60%;
+        --primary-foreground: 210 40% 98%;
+        --primary-glow: 217 91% 75%;
+
+        --secondary: 215 20% 25%;
+        --secondary-foreground: 210 40% 98%;
+        --secondary-glow: 215 20% 35%;
+
+        --muted: 220 10% 12%;
+        --muted-foreground: 215 15% 65%;
+
+        --accent: 221 83% 53%;
+        --accent-foreground: 210 40% 98%;
+        --accent-glow: 221 83% 70%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 220 10% 12%;
+        --input: 220 10% 12%;
+        --ring: 217 91% 60%;
+
+        /* Gradients - Professional Blues Only */
+        --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(217, 91%, 70%));
+        --gradient-hero: linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(217, 91%, 60%) 100%);
+        
+        /* Shadows */
+        --shadow-glow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+        --shadow-float: 0 30px 60px -12px rgba(0, 0, 0, 0.7);
+
+        --radius: 1rem;
+        --glass-bg: rgba(0, 0, 0, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.05);
+    }
+
+    .light {
         --background: 0 0% 100%;
         --foreground: 220 20% 10%;
 
@@ -18,77 +62,32 @@ All colors MUST be HSL.
         --popover: 0 0% 100%;
         --popover-foreground: 220 20% 10%;
 
-        /* Blue for Buttons & Primary Actions */
-        --primary: 217 91% 60%;
-        --primary-foreground: 0 0% 100%;
-        --primary-glow: 217 91% 70%;
+        --primary: 221 83% 53%;
+        --primary-foreground: 210 40% 98%;
+        --primary-glow: 221 83% 70%;
 
-        /* Green for Notifications & Success */
-        --secondary: 142 71% 45%;
-        --secondary-foreground: 144 100% 98%;
-        --secondary-glow: 142 71% 60%;
+        --secondary: 215 20% 65%;
+        --secondary-foreground: 220 20% 10%;
+        --secondary-glow: 215 20% 80%;
 
         --muted: 220 15% 96%;
         --muted-foreground: 215 15% 45%;
 
-        /* Accent: Using a cyan/blue-green hybrid for highlights */
-        --accent: 199 89% 48%;
-        --accent-foreground: 0 0% 100%;
-        --accent-glow: 199 89% 60%;
+        --accent: 217 91% 60%;
+        --accent-foreground: 210 40% 98%;
+        --accent-glow: 217 91% 75%;
 
         --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 100%;
 
         --border: 220 15% 92%;
         --input: 220 15% 92%;
-        --ring: 217 91% 60%;
+        --ring: 221 83% 53%;
 
-        /* Gradients - Professional Blue to Green */
-        --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-        --gradient-hero: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 50%, #10b981 100%);
-        
-        /* Shadows */
-        --shadow-glow: 0 0 40px -10px hsla(var(--primary) / 0.2);
+        --shadow-glow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
         --shadow-float: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
-
-        --radius: 1rem;
-    }
-
-    .dark {
-        /* Premium Charcoal Dark theme */
-        --background: 220 15% 4%;
-        --foreground: 210 20% 98%;
-
-        --card: 220 15% 6%;
-        --card-foreground: 210 20% 98%;
-
-        --popover: 220 15% 6%;
-        --popover-foreground: 210 20% 98%;
-
-        --primary: 217 91% 60%;
-        --primary-foreground: 0 0% 100%;
-        --primary-glow: 217 91% 70%;
-
-        --secondary: 142 71% 45%;
-        --secondary-foreground: 144 100% 98%;
-        --secondary-glow: 142 71% 60%;
-
-        --muted: 220 10% 12%;
-        --muted-foreground: 215 15% 65%;
-
-        --accent: 199 89% 48%;
-        --accent-foreground: 0 0% 100%;
-        --accent-glow: 199 89% 60%;
-
-        --destructive: 0 84% 60%;
-        --destructive-foreground: 0 0% 100%;
-
-        --border: 220 10% 12%;
-        --input: 220 10% 12%;
-        --ring: 217 91% 60%;
-
-        --shadow-glow: 0 0 40px -10px hsla(var(--primary) / 0.3);
-        --shadow-float: 0 30px 60px -12px rgba(0, 0, 0, 0.7);
+        --glass-bg: rgba(255, 255, 255, 0.6);
+        --glass-border: rgba(0, 0, 0, 0.05);
     }
 }
 
@@ -99,28 +98,44 @@ All colors MUST be HSL.
 
     body {
         @apply bg-background text-foreground;
+        font-family: var(--font-mono);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         font-feature-settings: "liga" 1, "kern" 1;
         overflow-x: hidden;
     }
 
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-mono);
+    }
+
     html {
         color-scheme: dark;
         scroll-behavior: smooth;
+    }
+
+    /* Remove yellow background from autofilled inputs */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: hsl(var(--foreground)) !important;
+        transition: background-color 5000s ease-in-out 0s;
+        box-shadow: inset 0 0 20px 20px transparent !important;
     }
 }
 
 @layer components {
     .glass {
-        background: hsla(var(--foreground) / 0.03);
+        background-color: var(--glass-bg);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
-        @apply border border-foreground/10;
+        border: 1px solid var(--glass-border);
     }
 
     .glass-card {
-        @apply glass shadow-float rounded-[40px];
+        @apply glass shadow-float rounded-xl;
     }
 
     .text-gradient {
@@ -128,15 +143,15 @@ All colors MUST be HSL.
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        @apply font-black;
+        @apply font-bold;
     }
 
     .shadow-glow {
-        box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+        box-shadow: 0 8px 16px -4px hsla(var(--primary) / 0.4);
     }
 
     .hover-lift {
-        @apply transition-all duration-500 hover:-translate-y-2 hover:shadow-float;
+        @apply transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-12px_hsla(var(--primary)/0.2)];
     }
 
     .bg-noise {

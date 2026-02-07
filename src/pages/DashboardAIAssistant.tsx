@@ -6,11 +6,21 @@ import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Zap, Send, Loader, User, Brain, History, Sparkles } from "lucide-react"
+import { Zap, Send, Loader, User, Brain, History, Sparkles, Plus, Search, Calendar, XCircle } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { api } from "@/lib/apiClient"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
 
 interface Message {
     id: string
@@ -34,6 +44,7 @@ const DashboardAIAssistant = () => {
     ])
     const [inputValue, setInputValue] = useState("")
     const [isLoading, setIsLoading] = useState(false)
+    const [historyGroups, setHistoryGroups] = useState<{ [key: string]: Message[] }>({})
     const userId = localStorage.getItem("userId") || "default-user"
 
     const scrollToBottom = () => {
@@ -65,14 +76,29 @@ const DashboardAIAssistant = () => {
         const fetchHistory = async () => {
             try {
                 const res = await api.getChatHistory(userId)
-                if (res.success && res.data && res.data.length > 0) {
-                    const formattedMessages = res.data.map((m: any) => ({
+                if (res.success && res.data && res.data.messages) {
+                    const formattedMessages = res.data.messages.map((m: any) => ({
                         id: m._id || Math.random().toString(),
                         role: m.role,
                         content: m.content,
-                        timestamp: new Date(m.createdAt || m.timestamp),
+                        timestamp: new Date(m.createdAt || m.timestamp || Date.now()),
                     }))
-                    setMessages((prev) => [...prev, ...formattedMessages])
+                    
+                    // Group by date for history view
+                    const groups: { [key: string]: Message[] } = {}
+                    formattedMessages.forEach((m: Message) => {
+                        const dateStr = m.timestamp.toLocaleDateString()
+                        if (!groups[dateStr]) groups[dateStr] = []
+                        groups[dateStr].push(m)
+                    })
+                    setHistoryGroups(groups)
+                    
+                    // Show last 10 messages in active view
+                    setMessages((prev) => {
+                        const existingIds = new Set(prev.map(p => p.id));
+                        const newOnes = formattedMessages.filter((m: Message) => !existingIds.has(m.id));
+                        return [...prev, ...newOnes].slice(-20);
+                    })
                 }
             } catch (error) {
                 console.error("Failed to fetch chat history:", error)
@@ -146,6 +172,34 @@ const DashboardAIAssistant = () => {
         }
     }
 
+    const startNewChat = () => {
+        setMessages([
+            {
+                id: "1",
+                role: "assistant",
+                content: "Hello! I'm Izabi, your AI learning assistant. New session started. What's on your mind?",
+                timestamp: new Date(),
+            },
+        ])
+    }
+
+    const handleClearHistory = async () => {
+        if (!confirm("Are you sure you want to delete all chat history? This cannot be undone.")) return;
+        try {
+            const res = await api.clearChatHistory(userId);
+            if (res.success) {
+                setHistoryGroups({});
+                startNewChat();
+                toast({
+                    title: "History Cleared",
+                    description: "Your conversation history has been permanently deleted.",
+                });
+            }
+        } catch (error) {
+            console.error("Failed to clear history:", error);
+        }
+    }
+
     return (
         <div ref={containerRef} className="space-y-6 md:space-y-8 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12 flex flex-col h-[calc(100vh-64px)] overflow-hidden">
             <div className="chat-header flex items-center justify-between">
@@ -154,18 +208,101 @@ const DashboardAIAssistant = () => {
                         <span className="text-gradient">Izabi AI</span>
                         <Sparkles className="h-6 w-6 text-primary animate-pulse" />
                     </h1>
-                    <p className="text-muted-foreground">Your personal co-pilot for smarter learning.</p>
+                    <p className="text-muted-foreground font-medium">Your personal co-pilot for smarter learning.</p>
                 </div>
-                <Button variant="outline" size="sm" className="hidden md:flex items-center gap-2 glass-card">
-                    <History className="h-4 w-4" />
-                    Clear History
-                </Button>
+                <div className="flex items-center gap-3">
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={startNewChat}
+                        className="hidden md:flex items-center gap-2 glass border-primary/20 hover:bg-primary/10 text-primary font-bold transition-all"
+                    >
+                        <Plus className="h-4 w-4" />
+                        New Chat
+                    </Button>
+                    
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="outline" size="sm" className="flex items-center gap-2 glass-card font-bold hover:bg-foreground/5">
+                                <History className="h-4 w-4" />
+                                <span className="hidden sm:inline">History</span>
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-card border-foreground/10 p-0 flex flex-col">
+                            <SheetHeader className="p-6 pb-4">
+                                <SheetTitle className="text-2xl font-bold flex items-center gap-3">
+                                    <History className="text-primary" />
+                                    <span>Chat History</span>
+                                </SheetTitle>
+                                <SheetDescription className="font-medium opacity-60">
+                                    Browse your past interactions with Izabi.
+                                </SheetDescription>
+                            </SheetHeader>
+                            <Separator className="bg-foreground/5" />
+                            <ScrollArea className="flex-1 px-4 py-6">
+                                <div className="space-y-8">
+                                    {Object.keys(historyGroups).length === 0 ? (
+                                        <div className="text-center py-20 opacity-40">
+                                            <Calendar className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                                            <p className="text-sm font-bold uppercase tracking-widest">No history recorded yet</p>
+                                        </div>
+                                    ) : (
+                                        Object.keys(historyGroups).sort((a,b) => new Date(b).getTime() - new Date(a).getTime()).map(date => (
+                                            <div key={date} className="space-y-4">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">{date}</span>
+                                                    <Separator className="flex-1 bg-primary/20" />
+                                                </div>
+                                                <div className="space-y-3">
+                                                    {historyGroups[date].filter(m => m.role === 'user' && m.content.length > 0).map(m => (
+                                                        <Button 
+                                                            key={m.id} 
+                                                            variant="ghost" 
+                                                            onClick={() => {
+                                                                // Find matching exchange
+                                                                const idx = historyGroups[date].findIndex(msg => msg.id === m.id);
+                                                                const exchange = historyGroups[date].slice(idx, idx + 2);
+                                                                setMessages(prev => {
+                                                                    const existingIds = new Set(prev.map(p => p.id));
+                                                                    const toAdd = exchange.filter(e => !existingIds.has(e.id));
+                                                                    return [...prev, ...toAdd];
+                                                                });
+                                                            }}
+                                                            className="w-full justify-start h-auto py-3 px-4 rounded-xl hover:bg-primary/10 group transition-all"
+                                                        >
+                                                            <div className="flex flex-col items-start gap-1 overflow-hidden">
+                                                                <span className="text-xs font-bold text-foreground/80 line-clamp-2 text-left group-hover:text-primary transition-colors">
+                                                                    {m.content}
+                                                                </span>
+                                                                <span className="text-[9px] opacity-40 font-bold uppercase tracking-widest">
+                                                                    {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                </span>
+                                                            </div>
+                                                        </Button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </ScrollArea>
+                            <div className="p-6 border-t border-foreground/5">
+                                <Button 
+                                    variant="destructive" 
+                                    onClick={handleClearHistory}
+                                    className="w-full rounded-xl font-bold gap-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all"
+                                >
+                                    <XCircle size={16} />
+                                    Clear All History
+                                </Button>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                </div>
             </div>
 
             <Card className="chat-card flex-1 flex flex-col overflow-hidden glass-card border-foreground/10 shadow-2xl relative">
                 {/* Background decorative element */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] pointer-events-none rounded-full" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent/5 blur-[100px] pointer-events-none rounded-full" />
 
                 <CardContent className="flex-1 flex flex-col overflow-hidden p-0">
                     {/* Messages Container */}
@@ -175,7 +312,7 @@ const DashboardAIAssistant = () => {
                                 key={message.id} 
                                 className={`flex items-start gap-4 ${message.role === "user" ? "flex-row-reverse" : "flex-row"}`}
                             >
-                                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border 
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border 
                                     ${message.role === "user" 
                                         ? "bg-primary/20 border-primary/30 text-primary" 
                                         : "bg-accent/20 border-accent/30 text-accent"}`}
@@ -183,7 +320,7 @@ const DashboardAIAssistant = () => {
                                     {message.role === "user" ? <User className="h-5 w-5" /> : <Brain className="h-5 w-5" />}
                                 </div>
                                 <div
-                                    className={`max-w-[85%] lg:max-w-[70%] px-5 py-4 rounded-3xl shadow-sm leading-relaxed
+                                    className={`max-w-[85%] lg:max-w-[70%] px-5 py-4 rounded-2xl shadow-sm leading-relaxed
                                         ${message.role === "user"
                                             ? "bg-primary text-white rounded-tr-none"
                                             : "bg-muted/50 backdrop-blur-sm border border-foreground/5 rounded-tl-none"
@@ -207,10 +344,10 @@ const DashboardAIAssistant = () => {
                         ))}
                         {isLoading && messages[messages.length-1].content !== "" && (
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-accent/20 border border-accent/30 text-accent">
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-accent/20 border border-accent/30 text-accent">
                                     <Brain className="h-5 w-5" />
                                 </div>
-                                <div className="bg-muted/50 backdrop-blur-sm border border-foreground/5 px-5 py-4 rounded-3xl rounded-tl-none">
+                                <div className="bg-muted/50 backdrop-blur-sm border border-foreground/5 px-5 py-4 rounded-2xl rounded-tl-none">
                                     <Loader className="h-4 w-4 animate-spin text-accent" />
                                 </div>
                             </div>
@@ -220,7 +357,7 @@ const DashboardAIAssistant = () => {
 
                     {/* Input Area */}
                     <div className="p-6 pt-0">
-                        <div className="relative group glass flex items-center rounded-3xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                        <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                             <Input
                                 placeholder="Ask Izabi anything..."
                                 value={inputValue}
@@ -233,7 +370,7 @@ const DashboardAIAssistant = () => {
                                 onClick={handleSendMessage} 
                                 disabled={isLoading || !inputValue.trim()} 
                                 size="icon"
-                                className="h-10 w-10 rounded-2xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary-glow"
+                                className="h-10 w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary-glow"
                             >
                                 <Send className="h-5 w-5" />
                             </Button>

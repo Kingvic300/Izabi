@@ -28,29 +28,29 @@ const About = () => {
             icon: <Target className="h-10 w-10" />,
             title: "Mission",
             description: "Democratizing neural-level tutoring by making localized AI accessible to every scholar in the global south.",
-            color: "text-blue-500",
-            bg: "bg-blue-500/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             icon: <Lightbulb className="h-10 w-10" />,
             title: "Innovation",
             description: "Pioneering the boundary of adaptive learning systems tailored specifically for local contexts.",
-            color: "text-emerald-500",
-            bg: "bg-emerald-500/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             icon: <Heart className="h-10 w-10" />,
             title: "Scholar-First",
             description: "Every optimization is verified by the actual academic success of our student consortium.",
-            color: "text-blue-500",
-            bg: "bg-blue-500/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             icon: <Users className="h-10 w-10" />,
             title: "Consortium",
             description: "Building the world's most intelligent collaborative learning network for peer-to-peer mastery.",
-            color: "text-emerald-500",
-            bg: "bg-emerald-500/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
     ]
 
@@ -83,20 +83,17 @@ const About = () => {
 
     return (
         <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
-            {/* Background Blobs */}
-            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
 
             <Header />
 
             {/* Hero */}
             <section className="relative pt-44 pb-20">
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-full border border-white/10">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-white/10">
                         <Sparkles size={14} className="text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Our Academic Manifesto</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Our Academic Manifesto</span>
                     </div>
-                    <h1 className="text-6xl sm:text-7xl font-black mb-8 leading-none tracking-tighter">
+                    <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         The Future of <span className="text-gradient">Scholastic Mastery</span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
@@ -110,8 +107,8 @@ const About = () => {
                 <div className="w-full max-w-6xl mx-auto px-6 lg:px-12">
                     <div className="glass p-12 rounded-[48px] border border-white/5 space-y-10 shadow-2xl">
                         <div className="flex items-center gap-4">
-                            <div className="w-1.5 h-12 bg-primary rounded-full" />
-                            <h2 className="text-4xl font-black">Our Origin</h2>
+                            <div className="w-1.5 h-12 bg-primary rounded-xl" />
+                            <h2 className="text-4xl font-bold">Our Origin</h2>
                         </div>
                         <div className="space-y-6 text-lg text-muted-foreground font-medium leading-[2]">
                             <p>
@@ -135,14 +132,14 @@ const About = () => {
             {/* Core Values */}
             <section className="about-section py-32 relative z-10">
                 <div className="w-full px-6 lg:px-12">
-                    <h2 className="text-sm font-black uppercase tracking-[0.4em] text-center opacity-40 mb-16">Core Principles</h2>
+                    <h2 className="text-sm font-bold uppercase tracking-[0.4em] text-center opacity-40 mb-16">Core Principles</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {values.map((v, i) => (
                             <Card key={i} className="glass p-10 border-white/5 hover-lift text-center group">
-                                <div className={`w-16 h-16 rounded-2xl ${v.bg} ${v.color} flex items-center justify-center mx-auto mb-8 shadow-xl group-hover:scale-110 transition-transform`}>
+                                <div className={`w-16 h-16 rounded-xl ${v.bg} ${v.color} flex items-center justify-center mx-auto mb-8 shadow-xl group-hover:scale-110 transition-transform`}>
                                     {v.icon}
                                 </div>
-                                <h3 className="text-2xl font-black mb-4">{v.title}</h3>
+                                <h3 className="text-2xl font-bold mb-4">{v.title}</h3>
                                 <p className="text-muted-foreground font-medium text-sm leading-loose">{v.description}</p>
                             </Card>
                         ))}
@@ -154,20 +151,19 @@ const About = () => {
             <section className="about-section py-32 bg-white/[0.01] border-y border-white/5 relative z-10">
                 <div className="w-full px-6 lg:px-12">
                     <div className="text-center mb-20">
-                        <h2 className="text-5xl font-black mb-6">The Neural Council</h2>
+                        <h2 className="text-5xl font-bold mb-6">The Neural Council</h2>
                         <p className="text-xl text-muted-foreground font-medium">The architects engineering the future of education.</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {team.map((member, i) => (
                             <Card key={i} className="glass p-8 border-white/5 hover-lift relative overflow-hidden group">
-                                <div className="w-16 h-16 bg-gradient-hero rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-glow mb-6 group-hover:rotate-6 transition-transform">
+                                <div className="w-16 h-16 bg-gradient-hero rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-glow mb-6 group-hover:rotate-6 transition-transform">
                                     {member.initials}
                                 </div>
-                                <h3 className="text-xl font-black mb-1">{member.name}</h3>
-                                <p className="text-primary text-xs font-black uppercase tracking-widest mb-4">{member.role}</p>
+                                <h3 className="text-xl font-bold mb-1">{member.name}</h3>
+                                <p className="text-primary text-xs font-bold uppercase tracking-widest mb-4">{member.role}</p>
                                 <p className="text-muted-foreground text-sm font-medium leading-relaxed">{member.bio}</p>
                                 
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                             </Card>
                         ))}
                     </div>
@@ -177,12 +173,12 @@ const About = () => {
             {/* Manifesto CTA */}
             <section className="about-section py-44 relative z-10">
                 <div className="w-full px-6 lg:px-12 text-center">
-                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-10 shadow-glow">
+                    <div className="w-20 h-20 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-10 shadow-glow">
                         <Trophy className="text-primary" size={32} />
                     </div>
-                    <h2 className="text-6xl font-black mb-10 leading-none tracking-tighter">Become Part of the <br /> Scholars Movement</h2>
+                    <h2 className="text-6xl font-bold mb-10 leading-none tracking-tighter">Become Part of the <br /> Scholars Movement</h2>
                     <Link to="/signup">
-                        <Button size="lg" className="h-20 px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-white font-black text-xl shadow-glow group">
+                        <Button size="lg" className="h-20 px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-white font-bold text-xl shadow-glow group">
                             <span>Initialize Enlistment</span>
                             <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                         </Button>

@@ -36,7 +36,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onDismiss, onRetry }
             case "validation":
                 return "from-yellow-500/10 to-transparent"
             case "network":
-                return "from-orange-500/10 to-transparent"
+                return "from-primary/10 to-transparent"
             case "backend":
                 return "from-rose-500/10 to-transparent"
             default:
@@ -47,7 +47,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onDismiss, onRetry }
     const getGlowColor = () => {
         switch (error.type) {
             case "validation": return "shadow-yellow-500/20"
-            case "network": return "shadow-orange-500/20"
+            case "network": return "shadow-primary/20"
             case "backend": return "shadow-rose-500/20"
             default: return "shadow-primary/20"
         }
@@ -55,38 +55,38 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onDismiss, onRetry }
 
     return (
         <Card className={cn(
-            "relative overflow-hidden glass border-foreground/5 rounded-[24px] shadow-2xl transition-all duration-500 group",
+            "relative overflow-hidden glass border-foreground/5 rounded-2xl shadow-2xl transition-all duration-500 group",
             getGlowColor()
         )}>
             {/* Background Gradient */}
             <div className={cn("absolute inset-0 bg-gradient-to-br opacity-50", getErrorBg())} />
             
             <CardContent className="relative p-6">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-5 flex-1">
-                        <div className="flex-shrink-0 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-inner">
+                <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-5 flex-1">
+                        <div className="mt-1">
                             {getErrorIcon()}
                         </div>
                         <div className="flex-1">
-                            <h4 className="font-black text-lg tracking-tight uppercase opacity-40 text-[10px] mb-1">
+                            <h4 className="font-bold text-lg tracking-tight uppercase opacity-40 text-[10px] mb-1">
                                 {error.type || 'System'} Signal
                             </h4>
                             <p className="font-bold text-foreground/90 leading-tight">{error.message}</p>
                             <div className="flex items-center gap-2 mt-2">
-                                <span className="text-[10px] font-black opacity-30 uppercase tracking-widest px-2 py-0.5 rounded-full bg-foreground/5">
+                                <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest px-2 py-0.5 rounded-2xl bg-foreground/5">
                                     {new Date(error.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 ml-4">
+                    <div className="flex items-center space-x-2 shrink-0">
                         {onRetry && (
                             <Button 
                                 variant="ghost" 
                                 size="sm" 
                                 onClick={onRetry} 
-                                className="h-10 w-10 p-0 rounded-xl hover:bg-white/10 transition-colors"
+                                className="h-10 w-10 p-0 rounded-2xl hover:bg-white/10 transition-colors"
                             >
                                 <RotateCcw className="h-4 w-4" />
                             </Button>
@@ -96,7 +96,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onDismiss, onRetry }
                                 variant="ghost" 
                                 size="sm" 
                                 onClick={onDismiss} 
-                                className="h-10 w-10 p-0 rounded-xl hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
+                                className="h-10 w-10 p-0 rounded-2xl hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
                             >
                                 <X className="h-4 w-4" />
                             </Button>
@@ -111,17 +111,15 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onDismiss, onRetry }
                                 <Button 
                                     variant="ghost" 
                                     size="sm" 
-                                    className="h-8 text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 hover:bg-white/5 transition-all"
+                                    className="h-8 text-[10px] font-bold uppercase tracking-widest opacity-40 hover:opacity-100 hover:bg-white/5 transition-all"
                                 >
                                     {showDetails ? "Encrypt Terminal" : "Decrypt Terminal"}
                                 </Button>
                             </CollapsibleTrigger>
                             <CollapsibleContent>
-                                <div className="mt-3 p-4 bg-black/40 rounded-2xl border border-white/5 backdrop-blur-xl">
-                                    <pre className="text-[11px] font-mono text-emerald-400/80 overflow-auto max-h-40 whitespace-pre-wrap leading-relaxed">
+                                    <pre className="text-[11px] font-mono text-primary/80 overflow-auto max-h-40 whitespace-pre-wrap leading-relaxed">
                                         {error.details}
                                     </pre>
-                                </div>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>

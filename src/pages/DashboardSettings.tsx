@@ -130,7 +130,7 @@ const DashboardSettings = () => {
     return (
         <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
             <div className="settings-header">
-                <h1 className="text-4xl font-black tracking-tighter leading-none mb-2">
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-2">
                     System <span className="text-gradient">Preferences</span>
                 </h1>
                 <p className="text-muted-foreground font-medium text-lg">
@@ -139,15 +139,15 @@ const DashboardSettings = () => {
             </div>
 
             {/* Appearance Section */}
-            <Card className="settings-card glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden">
-                <CardHeader className="px-8 py-6 border-b border-foreground/5">
-                    <CardTitle className="flex items-center gap-3 text-xl font-black">
+            <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
+                <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
+                    <CardTitle className="flex items-center gap-3 text-xl font-bold">
                         <Palette className="text-primary" />
                         Visual Interface
                     </CardTitle>
                     <CardDescription>Adjust the workspace aesthetics</CardDescription>
                 </CardHeader>
-                <CardContent className="p-8">
+                <CardContent className="p-6 md:p-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <ThemeOption 
                             value="light" 
@@ -175,9 +175,9 @@ const DashboardSettings = () => {
             </Card>
 
             {/* Notifications Section */}
-            <Card className="settings-card glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden">
-                <CardHeader className="px-8 py-6 border-b border-foreground/5">
-                    <CardTitle className="flex items-center gap-3 text-xl font-black">
+            <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
+                <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
+                    <CardTitle className="flex items-center gap-3 text-xl font-bold">
                         <Bell className="text-primary" />
                         Alert Signals
                     </CardTitle>
@@ -203,9 +203,9 @@ const DashboardSettings = () => {
             </Card>
 
             {/* Privacy Section */}
-            <Card className="settings-card glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden">
+            <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
                 <CardHeader className="px-8 py-6 border-b border-foreground/5">
-                    <CardTitle className="flex items-center gap-3 text-xl font-black">
+                    <CardTitle className="flex items-center gap-3 text-xl font-bold">
                         <Shield className="text-primary" />
                         Data & Privacy
                     </CardTitle>
@@ -222,9 +222,9 @@ const DashboardSettings = () => {
                     />
                     
                     <div className="p-8 bg-foreground/[0.02]">
-                        <div className="rounded-[24px] border border-foreground/5 p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-background/20">
+                        <div className="rounded-xl border border-foreground/5 p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-background/20">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                                     <DownloadCloud size={24} />
                                 </div>
                                 <div>
@@ -238,7 +238,7 @@ const DashboardSettings = () => {
                                 className="h-12 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground border border-foreground/10 font-bold px-6 min-w-[180px]"
                             >
                                 {isSaving ? (
-                                    <span className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" /> Packaging...</span>
+                                    <span className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-xl animate-spin" /> Packaging...</span>
                                 ) : (
                                     <span className="flex items-center gap-2">Download <Download size={16} /></span>
                                 )}
@@ -268,7 +268,7 @@ function ThemeOption({ value, current, onClick, icon, title }: any) {
         <button 
             onClick={onClick}
             className={`
-                group relative p-6 rounded-[24px] border transition-all duration-300 flex flex-col items-center gap-4
+                group relative p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-4
                 ${isActive 
                     ? 'bg-primary/20 border-primary text-primary shadow-glow' 
                     : 'bg-foreground/5 border-foreground/5 hover:bg-foreground/10 opacity-60 hover:opacity-100'}
@@ -276,12 +276,12 @@ function ThemeOption({ value, current, onClick, icon, title }: any) {
         >
             {isActive && (
                 <div className="absolute top-4 right-4">
-                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white">
+                    <div className="w-6 h-6 bg-primary rounded-xl flex items-center justify-center text-white">
                         <Check size={14} strokeWidth={4} />
                     </div>
                 </div>
             )}
-            <div className={`p-4 rounded-full ${isActive ? 'bg-primary text-white' : 'bg-foreground/10'}`}>
+            <div className={`p-4 rounded-xl ${isActive ? 'bg-primary text-white' : 'bg-foreground/10'}`}>
                 {icon}
             </div>
             <span className="font-bold tracking-tight">{title}</span>
@@ -297,7 +297,7 @@ function SettingRow({ title, description, isChecked, onToggle, icon, badge }: an
         >
             <div className="flex items-center gap-6">
                 <div className={`
-                    w-12 h-12 rounded-2xl flex items-center justify-center transition-colors
+                    w-12 h-12 rounded-xl flex items-center justify-center transition-colors
                     ${isChecked ? 'bg-primary/20 text-primary' : 'bg-foreground/5 text-muted-foreground group-hover:bg-foreground/10'}
                 `}>
                     {icon}

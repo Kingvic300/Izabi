@@ -12,6 +12,7 @@ import axios from "axios"
 import { BASE_URL } from "@/constants"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
+import { Logo } from "@/components/Logo"
 
 // Define types for the error response
 interface ErrorResponse {
@@ -158,9 +159,6 @@ const OTP = () => {
 
     return (
         <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-6">
-            {/* Background Blobs */}
-            <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
 
             <Link to="/signup" className="absolute top-8 left-8 group">
                 <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all">
@@ -172,27 +170,25 @@ const OTP = () => {
             <div ref={cardRef} className="w-full max-w-[480px] space-y-8 relative z-10">
                 {/* Branding */}
                 <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-gradient-hero rounded-2xl flex items-center justify-center shadow-glow mx-auto animate-pulse">
-                        <ShieldCheck className="h-10 w-10 text-white" />
-                    </div>
+                    <Logo size={64} className="justify-center mx-auto" />
                     <div>
-                        <h1 className="text-4xl font-black tracking-tighter text-white">Email <span className="text-gradient">Verification</span></h1>
+                        <h1 className="text-4xl font-bold tracking-tighter text-foreground">Email <span className="text-gradient">Verification</span></h1>
                         <p className="text-muted-foreground font-medium">Please enter the security code sent to your email.</p>
                     </div>
                 </div>
 
-                <Card className="glass shadow-2xl border-white/10 rounded-[40px] overflow-hidden">
-                    <CardContent className="p-10 space-y-8">
+                <Card className="glass shadow-2xl border-foreground/10 rounded-2xl md:rounded-2xl overflow-hidden">
+                    <CardContent className="p-6 md:p-10 space-y-6 md:space-y-8">
                         <div className="flex flex-col items-center gap-2 text-center">
-                            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-2">
-                                <Mail className="text-primary" size={20} />
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-foreground/5 flex items-center justify-center mb-1 md:mb-2">
+                                <Mail className="text-primary h-5 w-5 md:h-6 md:w-6" />
                             </div>
-                            <p className="text-sm font-bold text-muted-foreground">Code sent to:</p>
-                            <p className="text-lg font-black text-white px-4 py-1 glass rounded-lg border border-white/10">{email || "scholar@example.com"}</p>
+                            <p className="text-xs md:text-sm font-bold text-muted-foreground">Code sent to:</p>
+                            <p className="text-base md:text-lg font-bold text-foreground px-4 py-1 glass rounded-lg border border-foreground/10 break-all">{email || "scholar@example.com"}</p>
                         </div>
 
-                        <form onSubmit={handleOtpSubmit} className="space-y-8">
-                            <div className="flex justify-between gap-3">
+                        <form onSubmit={handleOtpSubmit} className="space-y-6 md:space-y-8">
+                            <div className="flex justify-between gap-1.5 md:gap-3">
                                 {otp.map((digit, index) => (
                                     <Input
                                         key={index}
@@ -204,7 +200,7 @@ const OTP = () => {
                                         onChange={(e) => handleChange(e.target.value, index)}
                                         onKeyDown={(e) => handleKeyDown(e, index)}
                                         onPaste={handlePaste}
-                                        className="w-14 h-16 rounded-2xl text-center text-2xl font-black bg-white/5 border-white/10 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all text-white"
+                                        className="w-10 h-12 md:w-14 md:h-16 rounded-xl md:rounded-xl text-center text-xl md:text-2xl font-bold bg-foreground/5 border-foreground/10 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all text-foreground p-0"
                                     />
                                 ))}
                             </div>
@@ -212,7 +208,7 @@ const OTP = () => {
                             <Button
                                 type="submit"
                                 disabled={loading || otp.join("").length < 6}
-                                className="w-full h-16 rounded-2xl bg-white text-black hover:bg-white/90 font-black text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
+                                className="w-full h-16 rounded-xl bg-primary text-white hover:bg-primary/90 font-bold text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group"
                             >
                                 {loading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />
@@ -230,7 +226,7 @@ const OTP = () => {
                                 type="button"
                                 onClick={handleResendOtp}
                                 disabled={resending}
-                                className="text-xs uppercase font-black tracking-widest text-primary hover:opacity-80 transition-opacity disabled:opacity-40"
+                                className="text-xs uppercase font-bold tracking-widest text-primary hover:opacity-80 transition-opacity disabled:opacity-40"
                             >
                                 {resending ? "Sending code..." : "Resend Verification Code"}
                             </button>
