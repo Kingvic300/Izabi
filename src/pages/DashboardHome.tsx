@@ -429,6 +429,16 @@ const DashboardHome = () => {
             <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-4 md:px-8 lg:px-12 pt-6 md:pt-12">
                 <ErrorList errors={errors} onDismiss={clearError} />
 
+                {/* Welcome Section - GSAP Target */}
+                <div className="welcome-text space-y-2">
+                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/40 leading-tight">
+                        {t("dashboard.greeting") || "Welcome back,"} {userStats?.data?.firstName || "Scholar"}
+                    </h1>
+                    <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl leading-relaxed">
+                        {t("dashboard.intro") || "Your neural workspace is synchronized and ready for deep learning."}
+                    </p>
+                </div>
+
                 {/* Gamification Strip - Always Visible */}
                 {userStats?.data && (
                     <motion.div 
