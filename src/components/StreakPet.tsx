@@ -99,13 +99,6 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
                  </motion.div>
              )}
           </div>
-          {streak > 5 && <Star size={16} className="absolute top-2 right-2 text-yellow-500 fill-yellow-500 animate-pulse" />}
-          
-          {/* Active Streak Badge */}
-          <div className="absolute -bottom-1 -right-1 bg-orange-600 border border-white/20 rounded-full px-2 py-0.5 flex items-center gap-1 shadow-lg">
-             <Flame size={14} fill="white" className="text-white" />
-             <span className="text-xs font-black text-white">{streak}</span>
-          </div>
         </div>
 
         {/* Info Card */}
@@ -135,7 +128,7 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
 
               <div className="flex items-center justify-between pt-1">
                  <div className="flex items-center gap-1.5">
-                    <div className="p-1 rounded-lg bg-orange-500/20 text-orange-500"><Flame size={14} fill="currentColor" /></div>
+                    <div className="p-1 rounded-lg bg-orange-500/20 text-orange-500"><Flame size={10} fill="currentColor" /></div>
                     <span className="text-xs font-bold">{streak} Day Streak</span>
                  </div>
                  
