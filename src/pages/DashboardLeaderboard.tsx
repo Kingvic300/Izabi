@@ -275,7 +275,9 @@ const Podium = ({ users, type, currentUserId }: { users: any[], type: 'xp' | 'st
             {/* First Place */}
             <div className="podium-card order-1 md:order-2 flex flex-col items-center w-full md:w-1/3 max-w-[240px] sm:max-w-[280px] mb-4 md:mb-0 z-10">
                 <div className="relative mb-4 sm:mb-6">
-                    <Crown className="absolute -top-8 sm:-top-12 left-1/2 -translate-x-1/2 text-yellow-400 w-8 h-8 sm:w-10 sm:h-10 animate-bounce drop-shadow-glow" />
+                    <div className="absolute -top-10 sm:-top-14 inset-x-0 flex justify-center pointer-events-none">
+                        <Crown className="text-yellow-400 w-8 h-8 sm:w-10 sm:h-10 animate-bounce drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]" />
+                    </div>
                     <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-2 sm:border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.4)]">
                         <AvatarImage src={first.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${first.email}`} />
                         <AvatarFallback className="bg-yellow-400 text-yellow-900 font-bold text-2xl sm:text-3xl">{(first.firstName || 'U')[0]}</AvatarFallback>
