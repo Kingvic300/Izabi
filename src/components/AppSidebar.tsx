@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp } from "lucide-react"
+import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp, Trophy } from "lucide-react"
 import { Logo } from "@/components/Logo"
 import apiClient, { api } from "@/lib/apiClient"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -61,6 +61,12 @@ const navigationItems = [
         icon: GraduationCap,
         description: "Practice past questions",
         status: "unavailable",
+    },
+    {
+        title: "Leaderboard",
+        url: "/dashboard/leaderboard",
+        icon: Trophy,
+        description: "See top scholars",
     },
     {
         title: "Support Us",

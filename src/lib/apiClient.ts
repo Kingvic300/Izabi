@@ -144,6 +144,22 @@ export const api = {
         return response.data
     },
 
+    async getDailyChallenge() {
+        const userId = localStorage.getItem("userId")
+        const response = await apiClient.get(`/api/quiz/daily-challenge${userId ? `?userId=${userId}` : ""}`)
+        return response.data
+    },
+
+    async getPracticeQuestions(count: number = 5) {
+        const response = await apiClient.get(`/api/quiz/practice-questions?count=${count}`)
+        return response.data
+    },
+
+    async feedPet(userId: string) {
+        const response = await apiClient.post("/api/user/pet/feed", { userId })
+        return response.data
+    },
+
     // User Stats API
     async getUserStats(userId?: string) {
         const id = userId || localStorage.getItem("userId")
@@ -289,6 +305,11 @@ export const api = {
 
     async getContributedKeys() {
         const response = await apiClient.get("/api/admin/contributed-keys")
+        return response.data
+    },
+
+    async getUserHistory(userId: string) {
+        const response = await apiClient.get(`/api/admin/users/${userId}/history`)
         return response.data
     },
 

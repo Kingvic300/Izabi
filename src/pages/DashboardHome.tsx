@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { BASE_URL } from "@/constants"
 import { motion, AnimatePresence } from "framer-motion"
-import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw, Activity, Cpu, Download, Loader2 } from "lucide-react"
+import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw, Activity, Cpu, Download, Loader2, Flame, Trophy, TrendingUp, Upload } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import PDFUploadSection from "@/components/pdf/PDFUploadSection"
 import type { PDFSelection, StudyQuestionResponse } from "@/types/pdf"
@@ -23,6 +23,9 @@ import { cn } from "@/lib/utils"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 import StreakPet from "@/components/StreakPet"
+import BrainDrop from "@/components/BrainDrop"
+import IntentCards from "@/components/IntentCards"
+import ContextCard from "@/components/ContextCard"
 import { useEffect, useState as react_useState, useMemo } from "react"
 
 import ReactMarkdown from 'react-markdown'
@@ -89,8 +92,134 @@ const DashboardHome = () => {
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
     const [isFlipped, setIsFlipped] = useState(false)
 
+    // Brain Drop State
+    const [brainDropQuestion, setBrainDropQuestion] = useState<any>(null)
+    const [isBrainDropCompleted, setIsBrainDropCompleted] = useState(false)
+    
+    // Practice Questions State
+    const [practiceQuestions, setPracticeQuestions] = useState<StudyQuestionResponse[]>([])
+    const [showPracticeQuiz, setShowPracticeQuiz] = useState(false)
+    
+    // Context Card State
+    const [showContextCard, setShowContextCard] = useState(false)
+    const [userExamType, setUserExamType] = useState<string | null>(null)
+
     const { errors, addError, clearError } = useApiError()
     const userId = localStorage.getItem("userId")
+
+    const handleFeedPet = async () => {
+        if (!userId) return;
+        try {
+            const res = await api.feedPet(userId);
+            if (res.success) {
+                // Optimistic update
+                setUserStats((prev: any) => ({
+                    ...prev,
+                    data: {
+                        ...prev.data,
+                        totalPoints: res.data.points,
+                        pet: res.data.pet
+                    }
+                }));
+                const audio = new Audio('/sounds/eat.mp3'); // Optional: would need file
+                // audio.play().catch(() => {}); 
+            }
+        } catch (err: any) {
+            addError({ message: err.message || "Failed to feed pet", type: "validation" });
+        }
+    };
+    
+    const handleBrainDropAnswer = async (answer: string, isCorrect: boolean) => {
+        if (!userId) return;
+        
+        try {
+            // Award points
+            await api.submitQuizResult({
+                userId,
+                score: isCorrect ? 100 : 0,
+                totalQuestions: 1,
+                correctAnswers: isCorrect ? 1 : 0,
+                subject: "Brain Drop",
+                date: new Date().toISOString()
+            });
+            
+            setIsBrainDropCompleted(true);
+            localStorage.setItem(`braindrop_complete_${new Date().toDateString()}`, 'true');
+            
+            // Show context card after they've engaged
+            const hasSeenContext = localStorage.getItem('context_card_seen');
+            if (!hasSeenContext && userExamType === null) {
+                setTimeout(() => setShowContextCard(true), 2000);
+            }
+            
+            fetchStats();
+        } catch (err) {
+            console.error("Failed to submit Brain Drop", err);
+        }
+    };
+    
+    const handlePracticeSkills = async () => {
+        try {
+            const res = await api.getPracticeQuestions(5);
+            if (res.success) {
+                setPracticeQuestions(res.data);
+                setShowPracticeQuiz(true);
+                setQuestions(res.data);
+                setShowQuestions(true);
+                setSummary("");
+                setFlashcards([]);
+            }
+        } catch (err) {
+            addError({ message: "Failed to load practice questions", type: "validation" });
+        }
+    };
+    
+    const handleQuickTest = async () => {
+        // TODO: Implement timed test feature
+        addError({ message: "Quick Test coming soon!", type: "validation" });
+    };
+    
+    const handleLearnTricks = () => {
+        // TODO: Implement study tricks feature
+        addError({ message: "Study Tricks coming soon!", type: "validation" });
+    };
+    
+    const handleContextSelect = (examType: string) => {
+        setUserExamType(examType);
+        setShowContextCard(false);
+        localStorage.setItem('context_card_seen', 'true');
+        localStorage.setItem('user_exam_type', examType);
+    };
+    
+    const handleContextDismiss = () => {
+        setShowContextCard(false);
+        localStorage.setItem('context_card_seen', 'true');
+    };
+    
+    useEffect(() => {
+        const loadBrainDrop = async () => {
+            try {
+                const lastCompleted = localStorage.getItem(`braindrop_complete_${new Date().toDateString()}`);
+                if (lastCompleted) {
+                    setIsBrainDropCompleted(true);
+                }
+
+                const res = await api.getDailyChallenge();
+                if (res.success) {
+                    setBrainDropQuestion(res.data);
+                }
+                
+                // Check if user has set exam type
+                const savedExamType = localStorage.getItem('user_exam_type');
+                if (savedExamType) {
+                    setUserExamType(savedExamType);
+                }
+            } catch (err) {
+                console.error("Failed to load Brain Drop", err);
+            }
+        };
+        loadBrainDrop();
+    }, []);
 
     useGSAP(() => {
         const tl = gsap.timeline()
@@ -297,45 +426,107 @@ const DashboardHome = () => {
 
     return (
         <ErrorBoundary>
-            <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
+            <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-4 md:px-8 lg:px-12 pt-6 md:pt-12">
                 <ErrorList errors={errors} onDismiss={clearError} />
 
-                {/* Header Section */}
-                <div className="welcome-text space-y-8 pb-6 border-b border-foreground/5 px-4 md:px-0">
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-                        <div className="space-y-4 text-center md:text-left">
-                            <div className="flex items-center justify-center md:justify-start gap-3">
-                                <div className="w-8 h-8 rounded-3xl bg-primary/20 flex items-center justify-center">
-                                    <Terminal size={16} className="text-primary" />
-                                </div>
-                                <span className="text-[10px] lowercase font-bold tracking-[0.3em] opacity-40">User Profile: Active</span>
+                {/* Gamification Strip - Always Visible */}
+                {userStats?.data && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20"
+                    >
+                        <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-2">
+                                <Flame size={20} className="text-orange-500" fill="currentColor" />
+                                <span className="text-sm font-bold text-foreground">{userStats.data.studyStreak || 0} day streak</span>
                             </div>
-                            <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-none">
-                                {t("dashboard.greeting").split(',')[0]}
-                                {t("dashboard.greeting").includes(',') && (
-                                    <>
-                                        , <br />
-                                        <span className="text-gradient">{t("dashboard.greeting").split(',')[1]}</span>
-                                    </>
-                                )}
-                            </h1>
-                            <p className="text-foreground/70 font-medium text-lg max-w-xl mx-auto md:mx-0">
-                                {t("dashboard.intro")}
-                            </p>
+                            <div className="flex items-center gap-2">
+                                <Trophy size={20} className="text-yellow-500" />
+                                <span className="text-sm font-bold text-foreground">{userStats.data.totalPoints || 0} XP</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <TrendingUp size={20} className="text-green-500" />
+                                <span className="text-sm font-bold text-foreground/60 dark:text-foreground/70">Top 12% today</span>
+                            </div>
                         </div>
-
                         {userStats?.data && (
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.4 }}
-                                className="stagger-card"
+                            <div className="hidden md:block">
+                                <StreakPet 
+                                    streak={userStats.data.studyStreak || 0} 
+                                    petData={userStats.data.pet} 
+                                    userPoints={userStats.data.totalPoints || 0}
+                                    onFeed={handleFeedPet}
+                                />
+                            </div>
+                        )}
+                    </motion.div>
+                )}
+
+                {/* Brain Drop - Instant Engagement (Priority #1) */}
+                {!isBrainDropCompleted && (
+                    <div className="stagger-card">
+                        {brainDropQuestion ? (
+                            <BrainDrop 
+                                question={brainDropQuestion}
+                                onAnswer={handleBrainDropAnswer}
+                                totalAnswered={847}
+                            />
+                        ) : (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-primary/10 via-accent/5 to-transparent border border-primary/20 p-8 md:p-12 text-center"
                             >
-                                <StreakPet streak={userStats.data.studyStreak || 0} petData={userStats.data.pet} />
+                                <div className="absolute top-0 right-0 p-8 opacity-5">
+                                    <Brain size={180} className="stroke-primary" />
+                                </div>
+                                <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+                                    <div className="flex justify-center">
+                                        <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
+                                            <Sparkles size={32} />
+                                        </div>
+                                    </div>
+                                    <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+                                        Personalize your <span className="text-gradient">Daily Brain Drop</span>
+                                    </h3>
+                                    <p className="text-lg text-muted-foreground font-medium">
+                                        Upload your class notes or a textbook PDF, and we'll generate daily personalized questions to help you mastery your specific subjects.
+                                    </p>
+                                    <button 
+                                        onClick={() => setPdfSelection(null)} // Or whatever scrolls them to upload
+                                        className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all shadow-glow hover:scale-105"
+                                    >
+                                        <Upload size={20} />
+                                        Upload Your First Note
+                                    </button>
+                                </div>
                             </motion.div>
                         )}
                     </div>
+                )}
+
+                {/* Intent Cards - Action First (Priority #2) */}
+                <div className="stagger-card">
+                    <IntentCards 
+                        onPracticeSkills={handlePracticeSkills}
+                        onQuickTest={handleQuickTest}
+                        onLearnTricks={handleLearnTricks}
+                        onUploadDocument={() => setPdfSelection(null)}
+                    />
                 </div>
+
+                {/* Context Card - Non-blocking Onboarding (Priority #3) */}
+                <AnimatePresence>
+                    {showContextCard && (
+                        <div className="stagger-card">
+                            <ContextCard 
+                                onSelect={handleContextSelect}
+                                onDismiss={handleContextDismiss}
+                            />
+                        </div>
+                    )}
+                </AnimatePresence>
 
                 <div className="workspace-area">
                     {pdfSelection ? (
@@ -347,12 +538,12 @@ const DashboardHome = () => {
                                     <CardHeader className="p-8">
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className="p-2 rounded-xl bg-primary/20 text-primary"><FileText size={16} /></div>
-                                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Active Document</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Current Topic</span>
                                         </div>
                                         <CardTitle className="text-2xl font-bold truncate leading-tight">{pdfSelection.metadata.fileName}</CardTitle>
                                         <CardDescription className="flex items-center gap-2 font-bold text-primary">
                                             <Sparkles size={14} />
-                                            AI-Ready Document
+                                            Ready for deep dive
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="px-8 pb-8 space-y-6">
@@ -361,7 +552,7 @@ const DashboardHome = () => {
                                                 <Layers size={18} className="text-primary/60" />
                                                 <span className="text-xs font-bold opacity-60">Status</span>
                                             </div>
-                                            <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase">Ready</div>
+                                            <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase">Active</div>
                                         </div>
                                         <Button 
                                             variant="ghost" 
@@ -422,7 +613,7 @@ const DashboardHome = () => {
                                     
                                     <div className="p-6 bg-white/[0.02] border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
                                         <div className="flex items-center gap-4">
-                                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 px-4">Configuration</div>
+                                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 px-4">Session Settings</div>
                                             <div className="flex items-center gap-2 bg-black/20 p-1.5 rounded-2xl border border-white/5">
                                                 <Select
                                                     value={String(numberOfQuestions)}
@@ -443,7 +634,7 @@ const DashboardHome = () => {
                                         {isProcessing && (
                                             <div className="flex items-center gap-4 text-primary animate-pulse">
                                                 <Loader2 className="animate-spin" size={16} />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">Generating resources...</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-widest">Creating your study plan...</span>
                                             </div>
                                         )}
                                     </div>
@@ -477,15 +668,15 @@ const DashboardHome = () => {
                                          <Cpu size={48} className="text-primary animate-float" />
                                      </div>
                                      <div className="space-y-4 pt-4">
-                                         <h3 className="text-3xl font-bold tracking-tight font-mono uppercase">{t("dashboard.init_node") || "Start Studying"}</h3>
+                                         <h3 className="text-3xl font-bold tracking-tight font-sans uppercase">{t("dashboard.init_node") || "Let's Get Started"}</h3>
                                          <p className="text-base font-medium text-muted-foreground leading-relaxed max-w-[280px] mx-auto">
-                                            {t("dashboard.init_desc") || "Upload a document to access the study tools."}
+                                            {t("dashboard.init_desc") || "Upload a document to unlock your personalized study tools."}
                                          </p>
                                      </div>
                                      <div className="flex-1 flex items-end pb-4">
                                         <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-foreground/5 border border-foreground/5">
-                                            <div className="w-2 h-2 rounded-full bg-yellow-500/50 animate-pulse" />
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">System: Ready</span>
+                                            <div className="w-2 h-2 rounded-full bg-green-500/50 animate-pulse" />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Ready to learn</span>
                                         </div>
                                      </div>
                                  </Card>
