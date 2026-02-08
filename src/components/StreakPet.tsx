@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Bird, Flame, Ghost, Heart, Star, Zap, Utensils } from 'lucide-react';
 import gsap from 'gsap';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface PetProps {
   streak: number;
@@ -19,6 +20,12 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
   const petRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
   const [isFeeding, setIsFeeding] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const toggleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsOpen(!isOpen);
+  };
 
   const handleFeed = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -57,7 +64,7 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
 
     switch (type) {
       case 'owl': return <Bird size={64} className="text-primary" />;
-      case 'dragon': return <Flame size={64} className="text-primary" />;
+      case 'dragon': return <Flame size={64} className="text-primary fill-primary" />;
       default: return <Bird size={64} className="text-primary" />;
     }
   };
@@ -73,7 +80,11 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
         {/* Main Pet Orb */}
         <div 
             ref={petRef}
-            className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-hero border-2 border-primary/50 shadow-[0_0_30px_rgba(59,130,246,0.5)] flex items-center justify-center cursor-pointer relative z-20 overflow-hidden"
+            onClick={toggleOpen}
+            className={cn(
+                "w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-hero border-2 shadow-[0_0_30px_rgba(59,130,246,0.5)] flex items-center justify-center cursor-pointer relative z-20 overflow-hidden transition-all duration-300",
+                isOpen ? "border-primary scale-110" : "border-primary/50"
+            )}
         >
           <div className="scale-75 md:scale-90 relative">
              {getPetIcon()}
@@ -91,14 +102,17 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
           {streak > 5 && <Star size={16} className="absolute top-2 right-2 text-yellow-500 fill-yellow-500 animate-pulse" />}
           
           {/* Active Streak Badge */}
-          <div className="absolute -bottom-1 -right-1 bg-orange-600 border border-white/20 rounded-full px-1.5 py-0.5 flex items-center gap-0.5 shadow-lg">
-             <Flame size={10} fill="white" className="text-white" />
-             <span className="text-[10px] font-black text-white">{streak}</span>
+          <div className="absolute -bottom-1 -right-1 bg-orange-600 border border-white/20 rounded-full px-2 py-0.5 flex items-center gap-1 shadow-lg">
+             <Flame size={14} fill="white" className="text-white" />
+             <span className="text-xs font-black text-white">{streak}</span>
           </div>
         </div>
 
-        {/* Hover Info Card */}
-        <div className="absolute bottom-full right-0 mb-4 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 w-64">
+        {/* Info Card */}
+        <div className={cn(
+            "absolute bottom-full right-0 mb-4 transition-all duration-300 w-64",
+            isOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto"
+        )}>
            <div className="glass border-primary/20 p-5 rounded-3xl shadow-2xl space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">Companion</span>
@@ -121,7 +135,7 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
 
               <div className="flex items-center justify-between pt-1">
                  <div className="flex items-center gap-1.5">
-                    <div className="p-1 rounded-lg bg-orange-500/20 text-orange-500"><Flame size={12} fill="currentColor" /></div>
+                    <div className="p-1 rounded-lg bg-orange-500/20 text-orange-500"><Flame size={14} fill="currentColor" /></div>
                     <span className="text-xs font-bold">{streak} Day Streak</span>
                  </div>
                  
