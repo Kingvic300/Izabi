@@ -3,8 +3,48 @@ import { AppSidebar } from "@/components/AppSidebar"
 import { Outlet } from "react-router-dom"
 import { Separator } from "@/components/ui/separator"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
+import StreakPet from "@/components/StreakPet"
+import { useState, useEffect } from "react"
+import { api } from "@/lib/apiClient"
 
 const Dashboard = () => {
+    const [userStats, setUserStats] = useState<any>(null)
+    const userId = localStorage.getItem("userId")
+
+    const fetchStats = async () => {
+        if (!userId) return
+        try {
+            const res = await api.getUserStats(userId)
+            setUserStats(res)
+        } catch (err) {
+            console.error("Failed to fetch global stats", err)
+        }
+    }
+
+    useEffect(() => {
+        fetchStats()
+    }, [userId])
+
+    const handleFeedPet = async () => {
+        if (!userId) return
+        try {
+            const res = await api.feedPet(userId)
+            if (res.success) {
+                // Optimistic update
+                setUserStats((prev: any) => ({
+                    ...prev,
+                    data: {
+                        ...prev.data,
+                        totalPoints: res.data.points,
+                        pet: res.data.pet
+                    }
+                }))
+            }
+        } catch (err) {
+            console.error("Failed to feed pet", err)
+        }
+    }
+
     return (
         <ErrorBoundary>
             <SidebarProvider>
@@ -44,6 +84,15 @@ const Dashboard = () => {
                             </div>
                         </main>
                     </div>
+
+                    {userStats?.data && (
+                        <StreakPet 
+                            streak={userStats.data.studyStreak || 0} 
+                            petData={userStats.data.pet} 
+                            userPoints={userStats.data.totalPoints || 0}
+                            onFeed={handleFeedPet}
+                        />
+                    )}
                 </div>
             </SidebarProvider>
         </ErrorBoundary>

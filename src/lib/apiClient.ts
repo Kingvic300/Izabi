@@ -190,7 +190,8 @@ export const api = {
 
     // Leaderboard API
     async getLeaderboard() {
-        const response = await apiClient.get("/api/study/leaderboard")
+        const userId = localStorage.getItem("userId")
+        const response = await apiClient.get(`/api/study/leaderboard${userId ? `?userId=${userId}` : ""}`)
         return response.data
     },
 

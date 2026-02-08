@@ -32,7 +32,11 @@ import { useGSAP } from "@gsap/react"
 import { Loader2 } from "lucide-react"
 
 export default function DashboardLeaderboard() {
-    const [leaderboardData, setLeaderboardData] = useState<{ topStudents: any[], topStreaks: any[] }>({ topStudents: [], topStreaks: [] })
+    const [leaderboardData, setLeaderboardData] = useState<{ 
+        topStudents: any[], 
+        topStreaks: any[],
+        userRank?: { xp: string, streak: string }
+    }>({ topStudents: [], topStreaks: [] })
     const [isLoading, setIsLoading] = useState(true)
     const [activeTab, setActiveTab] = useState("xp")
     const containerRef = useRef(null)
@@ -41,8 +45,10 @@ export default function DashboardLeaderboard() {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                const data = await api.getLeaderboard()
-                setLeaderboardData(data)
+                const res = await api.getLeaderboard()
+                if (res.success && res.data) {
+                    setLeaderboardData(res.data)
+                }
                 setIsLoading(false)
             } catch (error) {
                 console.error("Failed to fetch leaderboard", error)
@@ -83,29 +89,39 @@ export default function DashboardLeaderboard() {
     }
 
     const Podium = ({ users, type }: { users: any[], type: 'xp' | 'streak' }) => {
-        if (users.length < 3) return null;
-        const [first, second, third] = users;
+        if (!users || users.length === 0) return null;
+        
+        const first = users[0];
+        const second = users[1];
+        const third = users[2];
 
         return (
             <div className="flex flex-col md:flex-row items-end justify-center gap-4 md:gap-8 mb-12 min-h-[300px] px-4">
                 {/* Second Place */}
-                <div className="podium-card order-2 md:order-1 flex flex-col items-center w-full md:w-1/3 max-w-[240px]">
-                    <div className="relative mb-4">
-                        <Avatar className="w-20 h-20 border-4 border-gray-300 shadow-[0_0_20px_rgba(209,213,219,0.3)]">
-                            <AvatarImage src={second.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${second.email}`} />
-                            <AvatarFallback className="bg-gray-300 text-gray-900 font-bold text-xl">{second.firstName[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gray-300 text-gray-900 font-bold px-3 py-0.5 rounded-full text-xs shadow-lg">#2</div>
+                {second && (
+                    <div className="podium-card order-2 md:order-1 flex flex-col items-center w-full md:w-1/3 max-w-[240px]">
+                        <div className="relative mb-4">
+                            <Avatar className="w-20 h-20 border-4 border-gray-300 shadow-[0_0_20px_rgba(209,213,219,0.3)]">
+                                <AvatarImage src={second.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${second.email}`} />
+                                <AvatarFallback className="bg-gray-300 text-gray-900 font-bold text-xl">{(second.firstName || 'U')[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gray-300 text-gray-900 font-bold px-3 py-0.5 rounded-full text-xs shadow-lg">#2</div>
+                        </div>
+                        <div className="text-center p-6 bg-white/5 border border-white/10 rounded-3xl w-full backdrop-blur-md relative overflow-hidden group hover:border-gray-300/30 transition-all">
+                            <div className="absolute inset-0 bg-gradient-to-b from-gray-300/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="flex items-center justify-center gap-2 mb-1">
+                                <h3 className="font-bold text-lg truncate leading-tight">
+                                    {(second.firstName || '') + ' ' + (second.lastName || '') || 'Scholar'}
+                                </h3>
+                                {second._id === currentUserId && <Badge className="bg-primary/20 text-primary border-none text-[10px] px-2 py-0">You</Badge>}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground truncate mb-3 font-medium uppercase tracking-wider">{second.institution || "Scholar"}</p>
+                            <Badge variant="outline" className="border-gray-300/30 text-gray-300 bg-gray-300/10 px-3 py-1 text-lg font-bold">
+                                {type === 'xp' ? second.points.toLocaleString() : second.streak}
+                            </Badge>
+                        </div>
                     </div>
-                    <div className="text-center p-6 bg-white/5 border border-white/10 rounded-3xl w-full backdrop-blur-md relative overflow-hidden group hover:border-gray-300/30 transition-all">
-                        <div className="absolute inset-0 bg-gradient-to-b from-gray-300/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <h3 className="font-bold text-lg truncate mb-1">{second.firstName}</h3>
-                        <p className="text-xs font-bold uppercase tracking-widest opacity-50 mb-3">{type === 'xp' ? 'Total XP' : 'Day Streak'}</p>
-                        <Badge variant="outline" className="border-gray-300/30 text-gray-300 bg-gray-300/10 px-3 py-1 text-lg font-bold">
-                            {type === 'xp' ? second.points.toLocaleString() : second.streak}
-                        </Badge>
-                    </div>
-                </div>
+                )}
 
                 {/* First Place */}
                 <div className="podium-card order-1 md:order-2 flex flex-col items-center w-full md:w-1/3 max-w-[280px] -mt-12 md:-mt-0 z-10">
@@ -113,17 +129,19 @@ export default function DashboardLeaderboard() {
                         <Crown className="absolute -top-12 left-1/2 -translate-x-1/2 text-yellow-400 w-10 h-10 animate-bounce drop-shadow-glow" />
                         <Avatar className="w-28 h-28 border-4 border-yellow-400 shadow-[0_0_30px_rgba(250,204,21,0.4)]">
                             <AvatarImage src={first.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${first.email}`} />
-                            <AvatarFallback className="bg-yellow-400 text-yellow-900 font-bold text-3xl">{first.firstName[0]}</AvatarFallback>
+                            <AvatarFallback className="bg-yellow-400 text-yellow-900 font-bold text-3xl">{(first.firstName || 'U')[0]}</AvatarFallback>
                         </Avatar>
                         <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-300 to-yellow-500 text-yellow-950 font-black px-4 py-1 rounded-full text-sm shadow-xl border-2 border-yellow-200">#1</div>
                     </div>
                     <div className="text-center p-8 bg-gradient-to-b from-yellow-400/10 to-transparent border border-yellow-400/30 rounded-[2rem] w-full backdrop-blur-xl relative overflow-hidden shadow-[0_0_50px_rgba(250,204,21,0.1)] group hover:scale-[1.02] transition-transform duration-300">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-400/10 via-transparent to-transparent opacity-50" />
-                        <h3 className="font-bold text-2xl truncate mb-1 text-white">{first.firstName}</h3>
-                        <p className="text-xs font-bold uppercase tracking-widest text-yellow-500 mb-4 flex items-center justify-center gap-2">
-                            {type === 'xp' ? <Zap size={12} /> : <Flame size={12} />}
-                            Champion
-                        </p>
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                            <h3 className="font-bold text-2xl truncate text-foreground leading-tight">
+                                {(first.firstName || '') + ' ' + (first.lastName || '') || 'Scholar'}
+                            </h3>
+                            {first._id === currentUserId && <Badge className="bg-yellow-500/20 text-yellow-600 border-yellow-500/20 text-[10px] px-2 py-0">You</Badge>}
+                        </div>
+                        <p className="text-xs text-yellow-600 dark:text-yellow-500/80 truncate mb-4 font-bold tracking-wide uppercase">{(first.institution || "Izabi Champion").substring(0, 20)}</p>
                         <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 drop-shadow-sm">
                             {type === 'xp' ? first.points.toLocaleString() : first.streak}
                         </div>
@@ -132,23 +150,30 @@ export default function DashboardLeaderboard() {
                 </div>
 
                 {/* Third Place */}
-                <div className="podium-card order-3 md:order-3 flex flex-col items-center w-full md:w-1/3 max-w-[240px]">
-                    <div className="relative mb-4">
-                        <Avatar className="w-20 h-20 border-4 border-amber-600 shadow-[0_0_20px_rgba(217,119,6,0.3)]">
-                            <AvatarImage src={third.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${third.email}`} />
-                            <AvatarFallback className="bg-amber-600 text-white font-bold text-xl">{third.firstName[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-amber-600 text-white font-bold px-3 py-0.5 rounded-full text-xs shadow-lg">#3</div>
+                {third && (
+                    <div className="podium-card order-3 md:order-3 flex flex-col items-center w-full md:w-1/3 max-w-[240px]">
+                        <div className="relative mb-4">
+                            <Avatar className="w-20 h-20 border-4 border-amber-600 shadow-[0_0_20px_rgba(217,119,6,0.3)]">
+                                <AvatarImage src={third.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${third.email}`} />
+                                <AvatarFallback className="bg-amber-600 text-white font-bold text-xl">{(third.firstName || 'U')[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-amber-600 text-white font-bold px-3 py-0.5 rounded-full text-xs shadow-lg">#3</div>
+                        </div>
+                        <div className="text-center p-6 bg-white/5 border border-white/10 rounded-3xl w-full backdrop-blur-md relative overflow-hidden group hover:border-amber-600/30 transition-all">
+                            <div className="absolute inset-0 bg-gradient-to-b from-amber-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="flex items-center justify-center gap-2 mb-1">
+                                <h3 className="font-bold text-lg truncate leading-tight">
+                                    {(third.firstName || '') + ' ' + (third.lastName || '') || 'Scholar'}
+                                </h3>
+                                {third._id === currentUserId && <Badge className="bg-primary/20 text-primary border-none text-[10px] px-2 py-0">You</Badge>}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground truncate mb-3 font-medium uppercase tracking-wider">{third.institution || "Scholar"}</p>
+                            <Badge variant="outline" className="border-amber-600/30 text-amber-500 bg-amber-600/10 px-3 py-1 text-lg font-bold">
+                                {type === 'xp' ? third.points.toLocaleString() : third.streak}
+                            </Badge>
+                        </div>
                     </div>
-                    <div className="text-center p-6 bg-white/5 border border-white/10 rounded-3xl w-full backdrop-blur-md relative overflow-hidden group hover:border-amber-600/30 transition-all">
-                        <div className="absolute inset-0 bg-gradient-to-b from-amber-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <h3 className="font-bold text-lg truncate mb-1">{third.firstName}</h3>
-                        <p className="text-xs font-bold uppercase tracking-widest opacity-50 mb-3">{type === 'xp' ? 'Total XP' : 'Day Streak'}</p>
-                        <Badge variant="outline" className="border-amber-600/30 text-amber-500 bg-amber-600/10 px-3 py-1 text-lg font-bold">
-                            {type === 'xp' ? third.points.toLocaleString() : third.streak}
-                        </Badge>
-                    </div>
-                </div>
+                )}
             </div>
         )
     }
@@ -162,13 +187,7 @@ export default function DashboardLeaderboard() {
         )
     }
 
-    const currentUserRank = (list: any[]) => {
-        if (!list || !Array.isArray(list) || list.length === 0) {
-            return 'Not Ranked';
-        }
-        const rank = list.findIndex(u => u._id === currentUserId) + 1
-        return rank > 0 ? rank : 'Not Ranked'
-    }
+
 
     return (
         <div ref={containerRef} className="space-y-8 pb-20 w-full max-w-6xl mx-auto px-4 md:px-0">
@@ -193,8 +212,8 @@ export default function DashboardLeaderboard() {
                         <p className="text-xs font-bold uppercase tracking-widest opacity-50">Your Rank</p>
                         <p className="text-xl font-black">
                             {activeTab === 'xp' 
-                                ? `#${currentUserRank(leaderboardData.topStudents)}` 
-                                : `#${currentUserRank(leaderboardData.topStreaks)}`
+                                ? `#${leaderboardData.userRank?.xp || '...'}` 
+                                : `#${leaderboardData.userRank?.streak || '...'}`
                             }
                         </p>
                     </div>
@@ -235,11 +254,11 @@ export default function DashboardLeaderboard() {
                                             <span className="font-mono font-bold text-lg opacity-30 w-8 text-center">{i + 4}</span>
                                             <Avatar className="w-12 h-12 border border-white/10">
                                                 <AvatarImage src={user.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.email}`} />
-                                                <AvatarFallback className="bg-primary/20 text-primary font-bold">{user.firstName[0]}</AvatarFallback>
+                                                <AvatarFallback className="bg-primary/20 text-primary font-bold">{(user.firstName || 'U')[0]}</AvatarFallback>
                                             </Avatar>
                                             <div>
                                                 <div className="flex items-center gap-2">
-                                                    <h4 className="font-bold text-base">{user.firstName} {user.lastName}</h4>
+                                                    <h4 className="font-bold text-base">{user.firstName || 'Anonymous'} {user.lastName || ''}</h4>
                                                     {user._id === currentUserId && <Badge className="bg-primary/20 text-primary border-none text-[10px] px-2 py-0">You</Badge>}
                                                 </div>
                                                 <p className="text-xs opacity-40 font-medium truncate max-w-[120px] md:max-w-xs">{user.institution || "Scholar"}</p>
@@ -278,11 +297,11 @@ export default function DashboardLeaderboard() {
                                             <span className="font-mono font-bold text-lg opacity-30 w-8 text-center">{i + 4}</span>
                                             <Avatar className="w-12 h-12 border border-white/10">
                                                 <AvatarImage src={user.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.email}`} />
-                                                <AvatarFallback className="bg-orange-500/20 text-orange-500 font-bold">{user.firstName[0]}</AvatarFallback>
+                                                <AvatarFallback className="bg-orange-500/20 text-orange-500 font-bold">{(user.firstName || 'U')[0]}</AvatarFallback>
                                             </Avatar>
                                             <div>
                                                 <div className="flex items-center gap-2">
-                                                    <h4 className="font-bold text-base">{user.firstName} {user.lastName}</h4>
+                                                    <h4 className="font-bold text-base">{user.firstName || 'Anonymous'} {user.lastName || ''}</h4>
                                                     {user._id === currentUserId && <Badge className="bg-primary/20 text-primary border-none text-[10px] px-2 py-0">You</Badge>}
                                                 </div>
                                                 <p className="text-xs opacity-40 font-medium">{user.pet ? `${user.pet.name} (Lvl ${user.pet.level})` : "Scholar"}</p>

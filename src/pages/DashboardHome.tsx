@@ -450,16 +450,6 @@ const DashboardHome = () => {
                                 <span className="text-sm font-bold text-foreground/60 dark:text-foreground/70">Top 12% today</span>
                             </div>
                         </div>
-                        {userStats?.data && (
-                            <div className="hidden md:block">
-                                <StreakPet 
-                                    streak={userStats.data.studyStreak || 0} 
-                                    petData={userStats.data.pet} 
-                                    userPoints={userStats.data.totalPoints || 0}
-                                    onFeed={handleFeedPet}
-                                />
-                            </div>
-                        )}
                     </motion.div>
                 )}
 
