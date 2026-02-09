@@ -345,6 +345,11 @@ export const api = {
         return response.data
     },
 
+    async ingestText(data: { text: string, fileName: string, type: string, options?: any }) {
+        const response = await apiClient.post("/api/study/ingest-text", data)
+        return response.data
+    },
+
     async getJobStatus(jobId: string) {
         const response = await apiClient.get(`/api/study/job-status/${jobId}`)
         return response.data

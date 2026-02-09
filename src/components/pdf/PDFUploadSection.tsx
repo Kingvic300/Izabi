@@ -38,8 +38,8 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
   useEffect(() => {
     if (uploadedFile && scanProgress < 100) {
       const timer = setInterval(() => {
-        setScanProgress(prev => Math.min(prev + (Math.random() * 10), 100));
-      }, 100);
+        setScanProgress(prev => Math.min(prev + (Math.random() * 20), 100));
+      }, 50);
       return () => clearInterval(timer);
     }
   }, [uploadedFile, scanProgress]);
@@ -76,15 +76,6 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (uploadedFile && scanProgress < 100) {
-      const timer = setInterval(() => {
-        setScanProgress(prev => Math.min(prev + (Math.random() * 10), 100));
-      }, 100);
-      return () => clearInterval(timer);
-    }
-  }, [uploadedFile, scanProgress]);
-
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -113,11 +104,11 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
     if (file.type === 'application/pdf') {
       setSelectedPages([]);
       // Auto-switch after a brief "scanning" delay
-      setTimeout(() => setActiveTab('analyze'), 1500);
+      setTimeout(() => setActiveTab('analyze'), 500);
     } else {
       setTotalPages(1);
       setSelectedPages([1]);
-      setTimeout(() => setActiveTab('sync'), 1500);
+      setTimeout(() => setActiveTab('sync'), 500);
     }
   };
 

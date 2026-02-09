@@ -1,5 +1,9 @@
 "use client"
 
+import * as pdfjsLib from 'pdfjs-dist';
+// Set worker path locally to bypass CORS and MIME issues from CDNs
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+
 import { useState, useRef, useEffect, useMemo } from "react"
 import axios from "axios"
 import axiosRetry from "axios-retry"
@@ -273,6 +277,29 @@ const DashboardHome = () => {
         setPdfFile(file)
     }
 
+    const extractTextFromPDF = async (file: File) => {
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            const pdf = await loadingTask.promise;
+            let text = "";
+            const maxPages = Math.min(pdf.numPages, 300); // Support up to 300 pages for textbooks
+            
+            for (let i = 1; i <= maxPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                const pageText = content.items
+                    .map((item: any) => item.str)
+                    .join(" ");
+                text += pageText + "\n\n";
+            }
+            return text;
+        } catch (error) {
+            console.error("[Dashboard] PDF Extraction Error:", error);
+            throw new Error("Failed to extract text from PDF locally.");
+        }
+    };
+
     const pollJobStatus = async (jobId: string, endpoint: string) => {
         const checkStatus = async () => {
             try {
@@ -351,6 +378,27 @@ const DashboardHome = () => {
             const type = typeMap[endpoint] || endpoint;
             const options = includeQuestions ? { count: numberOfQuestions } : {};
 
+            // --- LARGE FILE BYPASS (Neural Client Extraction) ---
+            // If file exceeds Cloudinary's Free 10MB limit, we extract text LOCALLY.
+            // This is O(1) in terms of server upload cost and works for any size.
+            if (pdfFile && pdfFile.size > 10 * 1024 * 1024 && pdfFile.type === 'application/pdf') {
+                console.log("[SmartStudy] Large document (70MB+) detected. Initializing Local Neural Extraction...");
+                
+                const localText = await extractTextFromPDF(pdfFile);
+                console.log(`[SmartStudy] Local extraction finished (${localText.length} chars). bypassing cloud synchronizer...`);
+
+                const ingestRes = await api.ingestText({
+                    text: localText,
+                    fileName: pdfFile.name,
+                    type,
+                    options
+                });
+
+                console.log("[SmartStudy] Job Started (Local Sync). ID:", ingestRes.jobId);
+                pollJobStatus(ingestRes.jobId, endpoint);
+                return;
+            }
+
             // STAGE 1: Get secure signature
             console.log("[SmartStudy] Securing upload channel...");
             const signData = await api.getUploadSignature();
@@ -399,8 +447,20 @@ const DashboardHome = () => {
 
         } catch (err: any) {
             console.error("[SmartStudy] Protocol Failure:", err);
+            
+            // Detailed debugging for Cloudinary 400/401
+            if (err.response?.data) {
+                console.error("[SmartStudy] CDN Detailed Error:", JSON.stringify(err.response.data, null, 2));
+                if (err.response.data.error?.message) {
+                    addError({ message: `CDN Error: ${err.response.data.error.message}`, type: "api" });
+                }
+            }
+
             const errorMsg = err.response?.data?.error?.message || err.message || "Failed to initiate document mapping.";
-            addError({ message: `Flow Error: ${errorMsg}`, type: "api" });
+            if (!err.response?.data?.error?.message) {
+                addError({ message: `Flow Error: ${errorMsg}`, type: "api" });
+            }
+            
             setIsProcessing(false);
             setSummary("")
             setQuestions([])
