@@ -339,43 +339,7 @@ const DashboardHome = () => {
         setShowResults(false)
 
         try {
-            // 1. Get Signed Upload URL from Backend
-            console.log("[SmartStudy] Fetching Cloudinary signature...");
-            const signatureData = await api.getUploadSignature();
-
-            // 2. Upload directly to Cloudinary from Browser
-            console.log("[SmartStudy] Uploading binary to Cloudinary...");
-            const cloudFormData = new FormData();
-            
-            // IMPORTANT: Parameters (except 'file' and 'resource_type') should match what was signed
-            cloudFormData.append("api_key", signatureData.apiKey);
-            cloudFormData.append("timestamp", signatureData.timestamp.toString());
-            cloudFormData.append("signature", signatureData.signature);
-            cloudFormData.append("folder", signatureData.folder);
-            
-            // Meta-data
-            cloudFormData.append("resource_type", "auto");
-            
-            // FILE MUST BE LAST: This allows Cloudinary to validate the signature BEFORE consuming a large binary stream
-            cloudFormData.append("file", pdfFile);
-
-            const uploadRes = await axios.post(
-                `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/auto/upload`,
-                cloudFormData,
-                { 
-                    timeout: 600000,
-                    // Track progress for better UX
-                    onUploadProgress: (progressEvent) => {
-                        const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
-                        console.debug(`[Cloudinary] Upload Progress: ${percentCompleted}%`);
-                    }
-                }
-            );
-
-            const secureUrl = uploadRes.data.secure_url;
-            console.log("[SmartStudy] Upload success. Remote URL:", secureUrl);
-
-            // 3. Ingest via Backend (Low weight, async trigger)
+            // Mapping endpoint to backend types
             const typeMap: any = {
                 'summarize': 'summary',
                 'generate-questions': 'quiz',
@@ -383,13 +347,11 @@ const DashboardHome = () => {
                 'generate-study-material': 'study-guide'
             };
 
-            const ingestRes = await api.ingestRemote({
-                userId,
-                url: secureUrl,
-                fileName: pdfFile.name,
-                type: typeMap[endpoint] || endpoint,
-                options: includeQuestions ? { count: numberOfQuestions } : {}
-            });
+            const type = typeMap[endpoint] || endpoint;
+            const options = includeQuestions ? { count: numberOfQuestions } : {};
+
+            console.log(`[SmartStudy] Sending file to backend for ${type}...`);
+            const ingestRes = await api.ingestDirect(pdfFile, userId, type, options);
 
             console.log("[SmartStudy] Job Started. ID:", ingestRes.jobId);
 
@@ -398,6 +360,9 @@ const DashboardHome = () => {
 
         } catch (err: any) {
             console.error("[SmartStudy] Flow Failure:", err);
+            if (err.response) {
+                console.error("[SmartStudy] Cloudinary Server Response:", err.response.data);
+            }
             
             // Extract the most specific error message possible (Cloudinary often provides details in response.data)
             const errorMsg = err.response?.data?.error?.message || err.message || "Failed to initiate document mapping.";

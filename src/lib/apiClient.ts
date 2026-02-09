@@ -325,10 +325,27 @@ export const api = {
         await apiClient.post("/api/user/logout", { userId });
     },
 
-    // --- CLOUDINARY & BACKGROUND PROCESSING ---
-    async getUploadSignature() {
-        const response = await apiClient.get("/api/study/upload-signature")
-        return response.data
+    // --- BACKGROUND PROCESSING ---
+    // async getUploadSignature() {
+    //     const response = await apiClient.get("/api/study/upload-signature")
+    //     return response.data
+    // },
+
+    async ingestDirect(file: File, userId: string, type: string, options?: any) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('userId', userId);
+        formData.append('type', type);
+        if (options) {
+            formData.append('options', JSON.stringify(options));
+        }
+
+        const response = await apiClient.post("/api/study/ingest-direct", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
     },
 
     async ingestRemote(data: { userId: string, url: string, fileName: string, type: string, options?: any }) {
