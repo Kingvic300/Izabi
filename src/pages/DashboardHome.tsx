@@ -356,22 +356,21 @@ const DashboardHome = () => {
             const signData = await api.getUploadSignature();
 
             // STAGE 2: Direct-to-Cloudinary Upload
-            // This is the heavy part - we send it to Cloudinary directly which has no 30s timeout
             console.log("[SmartStudy] Synchronizing document to neural CDN...");
             const formData = new FormData();
             formData.append("file", pdfFile);
             formData.append("api_key", signData.apiKey);
             formData.append("timestamp", signData.timestamp.toString());
             formData.append("signature", signData.signature);
-            formData.append("folder", "izabi_pdfs");
+            formData.append("folder", signData.folder || "izabi_pdfs");
 
-            // Use independent axios call for the external CDN to avoid interceptor side effects
+            // Use independent axios call for the external CDN
             const uploadRes = await axios.post(
                 `https://api.cloudinary.com/v1_1/${signData.cloudName}/auto/upload`,
                 formData,
                 { 
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                    timeout: 0, // No timeout for the binary upload stage
+                    // NOTE: Do NOT set Content-Type manually, let browser set the boundary
+                    timeout: 0, 
                     onUploadProgress: (p) => {
                         if (p.total) {
                             const pct = Math.round((p.loaded * 100) / p.total);
