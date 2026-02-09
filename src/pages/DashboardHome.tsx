@@ -356,6 +356,11 @@ const DashboardHome = () => {
      * 3. Sends the resulting URL to the backend for asynchronous AI processing.
      * Why: Fixes "No Reaction" and "30000ms Timeout" issues on poor network conditions or large files.
      */
+    /*
+     * How: Uploads the selected PDF file directly to the backend processing queue.
+     * Why: Simplifies the pipeline by removing external Cloudinary dependency for initial upload.
+     *      Large files are handled via local extraction if needed, or streamed to backend.
+     */
     const handleRequest = async (endpoint: string, includeQuestions = false) => {
         if (!pdfFile || !pdfSelection) {
             addError({ message: "Upload required: Please initialize a document node first.", type: "validation" })
@@ -379,10 +384,9 @@ const DashboardHome = () => {
             const options = includeQuestions ? { count: numberOfQuestions } : {};
 
             // --- LARGE FILE BYPASS (Neural Client Extraction) ---
-            // If file exceeds Cloudinary's Free 10MB limit, we extract text LOCALLY.
-            // This is O(1) in terms of server upload cost and works for any size.
+            // If file exceeds 10MB limit, we extract text LOCALLY to avoid timeout/payload issues.
             if (pdfFile && pdfFile.size > 10 * 1024 * 1024 && pdfFile.type === 'application/pdf') {
-                console.log("[SmartStudy] Large document (70MB+) detected. Initializing Local Neural Extraction...");
+                console.log("[SmartStudy] Large document detected (10MB+). Initializing Local Neural Extraction...");
                 
                 const localText = await extractTextFromPDF(pdfFile);
                 console.log(`[SmartStudy] Local extraction finished (${localText.length} chars). bypassing cloud synchronizer...`);
@@ -399,67 +403,21 @@ const DashboardHome = () => {
                 return;
             }
 
-            // STAGE 1: Get secure signature
-            console.log("[SmartStudy] Securing upload channel...");
-            const signData = await api.getUploadSignature();
-
-            // STAGE 2: Direct-to-Cloudinary Upload
-            console.log("[SmartStudy] Synchronizing document to neural CDN...");
-            const formData = new FormData();
-            formData.append("file", pdfFile);
-            formData.append("api_key", signData.apiKey);
-            formData.append("timestamp", signData.timestamp.toString());
-            formData.append("signature", signData.signature);
-            formData.append("folder", signData.folder || "izabi_pdfs");
-
-            // Use independent axios call for the external CDN
-            const uploadRes = await axios.post(
-                `https://api.cloudinary.com/v1_1/${signData.cloudName}/auto/upload`,
-                formData,
-                { 
-                    // NOTE: Do NOT set Content-Type manually, let browser set the boundary
-                    timeout: 0, 
-                    onUploadProgress: (p) => {
-                        if (p.total) {
-                            const pct = Math.round((p.loaded * 100) / p.total);
-                            console.log(`[SmartStudy] Uploading: ${pct}%`);
-                        }
-                    }
-                }
-            );
-
-            const fileUrl = uploadRes.data.secure_url;
-            console.log("[SmartStudy] CDN Handshake Successful:", fileUrl);
-
-            // STAGE 3: Notify Backend (Job Initiation)
-            // This request is O(1) in size, so it's immune to upload lag
-            const ingestRes = await api.ingestRemote({
-                url: fileUrl,
-                fileName: pdfFile.name,
-                type,
-                options
-            });
+            // STANDARD UPLOAD: Direct to Backend
+            console.log("[SmartStudy] Securely syncing document to neural core...");
+            
+            const ingestRes = await api.ingestDirect(pdfFile, type, options);
 
             console.log("[SmartStudy] Job Started. ID:", ingestRes.jobId);
 
-            // STAGE 4: Background Polling
+            // Background Polling
             pollJobStatus(ingestRes.jobId, endpoint);
 
         } catch (err: any) {
             console.error("[SmartStudy] Protocol Failure:", err);
             
-            // Detailed debugging for Cloudinary 400/401
-            if (err.response?.data) {
-                console.error("[SmartStudy] CDN Detailed Error:", JSON.stringify(err.response.data, null, 2));
-                if (err.response.data.error?.message) {
-                    addError({ message: `CDN Error: ${err.response.data.error.message}`, type: "api" });
-                }
-            }
-
-            const errorMsg = err.response?.data?.error?.message || err.message || "Failed to initiate document mapping.";
-            if (!err.response?.data?.error?.message) {
-                addError({ message: `Flow Error: ${errorMsg}`, type: "api" });
-            }
+            const errorMsg = err.response?.data?.message || err.message || "Failed to initiate document mapping.";
+            addError({ message: `Flow Error: ${errorMsg}`, type: "api" });
             
             setIsProcessing(false);
             setSummary("")

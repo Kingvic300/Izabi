@@ -319,11 +319,6 @@ export const api = {
     },
 
     // --- BACKGROUND PROCESSING ---
-    async getUploadSignature() {
-        const response = await apiClient.get("/api/study/upload-signature")
-        return response.data
-    },
-
     async ingestDirect(file: File, type: string, options?: any) {
         const formData = new FormData();
         formData.append('file', file);
@@ -338,11 +333,6 @@ export const api = {
             }
         });
         return response.data;
-    },
-
-    async ingestRemote(data: { url: string, fileName: string, type: string, options?: any }) {
-        const response = await apiClient.post("/api/study/ingest-remote", data)
-        return response.data
     },
 
     async ingestText(data: { text: string, fileName: string, type: string, options?: any }) {
