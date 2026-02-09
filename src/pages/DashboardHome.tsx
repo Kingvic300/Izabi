@@ -346,16 +346,30 @@ const DashboardHome = () => {
             // 2. Upload directly to Cloudinary from Browser
             console.log("[SmartStudy] Uploading binary to Cloudinary...");
             const cloudFormData = new FormData();
-            cloudFormData.append("file", pdfFile);
+            
+            // IMPORTANT: Parameters (except 'file' and 'resource_type') should match what was signed
             cloudFormData.append("api_key", signatureData.apiKey);
             cloudFormData.append("timestamp", signatureData.timestamp.toString());
             cloudFormData.append("signature", signatureData.signature);
             cloudFormData.append("folder", signatureData.folder);
+            
+            // Meta-data
+            cloudFormData.append("resource_type", "auto");
+            
+            // FILE MUST BE LAST: This allows Cloudinary to validate the signature BEFORE consuming a large binary stream
+            cloudFormData.append("file", pdfFile);
 
             const uploadRes = await axios.post(
                 `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/auto/upload`,
                 cloudFormData,
-                { timeout: 600000 }
+                { 
+                    timeout: 600000,
+                    // Track progress for better UX
+                    onUploadProgress: (progressEvent) => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+                        console.debug(`[Cloudinary] Upload Progress: ${percentCompleted}%`);
+                    }
+                }
             );
 
             const secureUrl = uploadRes.data.secure_url;
@@ -384,7 +398,11 @@ const DashboardHome = () => {
 
         } catch (err: any) {
             console.error("[SmartStudy] Flow Failure:", err);
-            addError(err.message || "Failed to initiate document mapping.");
+            
+            // Extract the most specific error message possible (Cloudinary often provides details in response.data)
+            const errorMsg = err.response?.data?.error?.message || err.message || "Failed to initiate document mapping.";
+            
+            addError({ message: `Flow Error: ${errorMsg}`, type: "api" });
             setIsProcessing(false);
             setSummary("")
             setQuestions([])

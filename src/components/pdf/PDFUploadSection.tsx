@@ -100,7 +100,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
       'image/jpeg'
     ];
 
-    const maxSize = 500 * 1024 * 1024; // 500MB
+    const maxSize = 100 * 1024 * 1024; // 100MB (limit for non-chunked Cloudinary uploads)
     if (file.size > maxSize) {
       addError({ message: 'File exceeds 500MB capacity limit.', type: 'validation' });
       return;
