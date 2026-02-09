@@ -327,11 +327,7 @@ export const api = {
             formData.append('options', JSON.stringify(options));
         }
 
-        const response = await apiClient.post("/api/study/ingest-direct", formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        const response = await apiClient.post("/api/study/ingest-direct", formData);
         return response.data;
     },
 
