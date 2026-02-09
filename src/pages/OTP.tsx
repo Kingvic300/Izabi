@@ -248,11 +248,6 @@ const OTP = () => {
                     backdrop-filter: blur(40px);
                     -webkit-backdrop-filter: blur(40px);
                 }
-                .text-gradient {
-                    background: linear-gradient(to right, #60a5fa, #a855f7, #ec4899);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                }
                 .shadow-glow {
                     box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
                 }

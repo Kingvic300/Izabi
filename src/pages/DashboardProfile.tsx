@@ -323,11 +323,6 @@ const DashboardProfile = () => {
             </div>
 
             <style>{`
-                .text-gradient {
-                    background: linear-gradient(to right, #3b82f6, #60a5fa);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                }
             `}</style>
         </div>
     )

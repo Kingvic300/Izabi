@@ -237,11 +237,6 @@ const Login = () => {
                     backdrop-filter: blur(40px);
                     -webkit-backdrop-filter: blur(40px);
                 }
-                .text-gradient {
-                    background: linear-gradient(to right, #3b82f6, #2dd4bf, #10b981);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                }
                 .shadow-glow {
                     box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
                 }

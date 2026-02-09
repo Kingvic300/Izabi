@@ -167,11 +167,6 @@ const DashboardExams = () => {
                 .shadow-glow {
                     box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
                 }
-                .text-gradient {
-                    background: linear-gradient(to right, #3b82f6, #2dd4bf, #10b981);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                }
             `}</style>
         </div>
     );

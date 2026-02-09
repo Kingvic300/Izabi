@@ -148,11 +148,6 @@ const Testimonials = () => {
                     backdrop-filter: blur(20px);
                     -webkit-backdrop-filter: blur(20px);
                 }
-                .text-gradient {
-                    background: linear-gradient(to right, #3b82f6, #2dd4bf, #10b981);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                }
                 .shadow-glow {
                     box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
                 }
