@@ -322,6 +322,13 @@ const DashboardHome = () => {
      * How: Uploads the selected PDF file directly to Cloudinary (signed) and then notifies the backend to process it asynchronously.
      * Why: This architecture prevents Render memory crashes by bypassing the backend for large files and avoids timeouts via background polling.
      */
+    /*
+     * How: Multi-stage upload process to bypass platform timeouts.
+     * 1. Fetches a secure signature from the backend.
+     * 2. Uploads the file directly to Cloudinary (External CDN) to bypass Render 30s limits.
+     * 3. Sends the resulting URL to the backend for asynchronous AI processing.
+     * Why: Fixes "No Reaction" and "30000ms Timeout" issues on poor network conditions or large files.
+     */
     const handleRequest = async (endpoint: string, includeQuestions = false) => {
         if (!pdfFile || !pdfSelection) {
             addError({ message: "Upload required: Please initialize a document node first.", type: "validation" })
@@ -334,7 +341,6 @@ const DashboardHome = () => {
         setShowResults(false)
 
         try {
-            // Mapping endpoint to backend types
             const typeMap: any = {
                 'summarize': 'summary',
                 'generate-questions': 'quiz',
@@ -345,23 +351,56 @@ const DashboardHome = () => {
             const type = typeMap[endpoint] || endpoint;
             const options = includeQuestions ? { count: numberOfQuestions } : {};
 
-            console.log(`[SmartStudy] Sending file to backend for ${type}...`);
-            const ingestRes = await api.ingestDirect(pdfFile, type, options);
+            // STAGE 1: Get secure signature
+            console.log("[SmartStudy] Securing upload channel...");
+            const signData = await api.getUploadSignature();
+
+            // STAGE 2: Direct-to-Cloudinary Upload
+            // This is the heavy part - we send it to Cloudinary directly which has no 30s timeout
+            console.log("[SmartStudy] Synchronizing document to neural CDN...");
+            const formData = new FormData();
+            formData.append("file", pdfFile);
+            formData.append("api_key", signData.apiKey);
+            formData.append("timestamp", signData.timestamp.toString());
+            formData.append("signature", signData.signature);
+            formData.append("folder", "izabi_pdfs");
+
+            // Use independent axios call for the external CDN to avoid interceptor side effects
+            const uploadRes = await axios.post(
+                `https://api.cloudinary.com/v1_1/${signData.cloudName}/auto/upload`,
+                formData,
+                { 
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    timeout: 0, // No timeout for the binary upload stage
+                    onUploadProgress: (p) => {
+                        if (p.total) {
+                            const pct = Math.round((p.loaded * 100) / p.total);
+                            console.log(`[SmartStudy] Uploading: ${pct}%`);
+                        }
+                    }
+                }
+            );
+
+            const fileUrl = uploadRes.data.secure_url;
+            console.log("[SmartStudy] CDN Handshake Successful:", fileUrl);
+
+            // STAGE 3: Notify Backend (Job Initiation)
+            // This request is O(1) in size, so it's immune to upload lag
+            const ingestRes = await api.ingestRemote({
+                url: fileUrl,
+                fileName: pdfFile.name,
+                type,
+                options
+            });
 
             console.log("[SmartStudy] Job Started. ID:", ingestRes.jobId);
 
-            // 4. Start Polling for Result
+            // STAGE 4: Background Polling
             pollJobStatus(ingestRes.jobId, endpoint);
 
         } catch (err: any) {
-            console.error("[SmartStudy] Flow Failure:", err);
-            if (err.response) {
-                console.error("[SmartStudy] Cloudinary Server Response:", err.response.data);
-            }
-            
-            // Extract the most specific error message possible (Cloudinary often provides details in response.data)
+            console.error("[SmartStudy] Protocol Failure:", err);
             const errorMsg = err.response?.data?.error?.message || err.message || "Failed to initiate document mapping.";
-            
             addError({ message: `Flow Error: ${errorMsg}`, type: "api" });
             setIsProcessing(false);
             setSummary("")

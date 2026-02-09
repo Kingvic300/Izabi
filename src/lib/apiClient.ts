@@ -14,7 +14,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const apiClient = axios.create({
     baseURL: BASE_URL,
     withCredentials: true,
-    timeout: 30000, // Reduced timeout for faster failure/retry on bad networks
+    timeout: 120000, // Increased timeout for heavy AI generation or processing
 })
 
 // --- LOW NETWORK OPTIMIZATIONS ---
@@ -319,10 +319,10 @@ export const api = {
     },
 
     // --- BACKGROUND PROCESSING ---
-    // async getUploadSignature() {
-    //     const response = await apiClient.get("/api/study/upload-signature")
-    //     return response.data
-    // },
+    async getUploadSignature() {
+        const response = await apiClient.get("/api/study/upload-signature")
+        return response.data
+    },
 
     async ingestDirect(file: File, type: string, options?: any) {
         const formData = new FormData();
