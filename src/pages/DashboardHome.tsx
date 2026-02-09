@@ -117,9 +117,8 @@ const DashboardHome = () => {
     const userId = localStorage.getItem("userId")
 
     const handleFeedPet = async () => {
-        if (!userId) return;
         try {
-            const res = await api.feedPet(userId);
+            const res = await api.feedPet();
             if (res.success) {
                 // Optimistic update
                 setUserStats((prev: any) => ({
@@ -139,12 +138,9 @@ const DashboardHome = () => {
     };
     
     const handleBrainDropAnswer = async (answer: string, isCorrect: boolean) => {
-        if (!userId) return;
-        
         try {
             // Award points
             await api.submitQuizResult({
-                userId,
                 score: isCorrect ? 100 : 0,
                 totalQuestions: 1,
                 correctAnswers: isCorrect ? 1 : 0,
@@ -243,24 +239,23 @@ const DashboardHome = () => {
     }, { scope: containerRef })
 
     const fetchStats = async () => {
-        if (!userId) return
         try {
             // Daily Check-in to update streak
-            await apiClient.post('/api/user/check-in', { userId })
+            await apiClient.post('/api/user/check-in')
             
             const [statsRes, profileRes] = await Promise.all([
-                apiClient.get(`/api/user/stats?userId=${userId}`),
-                apiClient.get(`/api/user/profile/${userId}`)
+                api.getUserStats(),
+                api.getUserProfile()
             ])
 
-            setUserStats(statsRes.data)
+            setUserStats(statsRes)
             
-            if (profileRes.data?.data?.pet) {
+            if (profileRes.data?.pet) {
                 setUserStats((prev: any) => ({
                     ...prev,
                     data: {
                         ...prev?.data,
-                        pet: profileRes.data.data.pet
+                        pet: profileRes.data.pet
                     }
                 }))
             }
@@ -271,7 +266,7 @@ const DashboardHome = () => {
 
     useEffect(() => {
         fetchStats()
-    }, [userId])
+    }, [])
 
     const handleSelectionComplete = ({ selection, file }: { selection: PDFSelection; file: File }) => {
         setPdfSelection(selection)
@@ -328,7 +323,7 @@ const DashboardHome = () => {
      * Why: This architecture prevents Render memory crashes by bypassing the backend for large files and avoids timeouts via background polling.
      */
     const handleRequest = async (endpoint: string, includeQuestions = false) => {
-        if (!pdfFile || !userId || !pdfSelection) {
+        if (!pdfFile || !pdfSelection) {
             addError({ message: "Upload required: Please initialize a document node first.", type: "validation" })
             return
         }
@@ -351,7 +346,7 @@ const DashboardHome = () => {
             const options = includeQuestions ? { count: numberOfQuestions } : {};
 
             console.log(`[SmartStudy] Sending file to backend for ${type}...`);
-            const ingestRes = await api.ingestDirect(pdfFile, userId, type, options);
+            const ingestRes = await api.ingestDirect(pdfFile, type, options);
 
             console.log("[SmartStudy] Job Started. ID:", ingestRes.jobId);
 
@@ -411,7 +406,6 @@ const DashboardHome = () => {
 
         try {
             await api.submitQuizResult({
-                userId,
                 score: percentage,
                 totalQuestions: total,
                 correctAnswers: score,

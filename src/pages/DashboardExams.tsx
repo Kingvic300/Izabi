@@ -78,17 +78,13 @@ const DashboardExams = () => {
     const percentage = Math.round((score / total) * 100);
 
     try {
-      const userId = localStorage.getItem("userId");
-      if (userId) {
-        await api.submitQuizResult({
-          userId,
-          score: percentage,
-          totalQuestions: total,
-          correctAnswers: score,
-          subject: selectedExam.subject || "Examination",
-          date: new Date().toISOString()
-        });
-      }
+      await api.submitQuizResult({
+        score: percentage,
+        totalQuestions: total,
+        correctAnswers: score,
+        subject: selectedExam.subject || "Examination",
+        date: new Date().toISOString()
+      });
     } catch (err) {
       console.error("Failed to submit exam result:", err);
     }

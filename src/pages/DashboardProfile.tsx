@@ -42,10 +42,7 @@ const DashboardProfile = () => {
          */
         const loadProfile = async () => {
             try {
-                const userId = localStorage.getItem("userId")
-                if (!userId) return
-
-                const response = await apiClient.get(`/api/user/profile/${userId}`)
+                const response = await apiClient.get(`/api/user/profile`)
                 const userData = response.data.data
                 setProfileData((prev) => ({
                     ...prev,
@@ -97,7 +94,7 @@ const DashboardProfile = () => {
                 email: localStorage.getItem("userEmail") || profileData.email,
             }
 
-            const response = await apiClient.put(`/api/user/profile/${profileData.id}`, updatedProfileData)
+            const response = await apiClient.put(`/api/user/profile`, updatedProfileData)
             const updatedProfile = response.data.data
 
             setProfileData((prev) => ({

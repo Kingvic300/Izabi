@@ -1,8 +1,21 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, BarChart3, Calendar, Trophy, BookOpen, Target, Clock, Zap } from "lucide-react"
+import { 
+    TrendingUp, 
+    BarChart3, 
+    Calendar, 
+    Trophy, 
+    BookOpen, 
+    Target, 
+    Clock, 
+    Zap, 
+    Activity, 
+    Brain, 
+    FileText 
+} from "lucide-react"
 import { api } from "@/lib/apiClient"
+import { cn } from "@/lib/utils"
 import { useEffect, useState, useRef } from "react"
 import { PageLoader } from "@/components/PageLoader"
 import gsap from "gsap"
@@ -26,6 +39,7 @@ const DashboardProgress = () => {
         totalQuizzes: 0,
         averageScore: 0,
         studyStreak: 0,
+        activityStreaks: {} as any,
         totalStudyHours: 0,
         perfectScore: false,
     })
@@ -72,6 +86,7 @@ const DashboardProgress = () => {
                         totalQuizzes: res.data.studyStats?.quizzes || quizData.length,
                         averageScore: avgScore,
                         studyStreak: res.data.studyStreak || 0,
+                        activityStreaks: res.data.activityStreaks || {},
                         totalStudyHours: Math.round((res.data.totalStudyMinutes || 0) / 60),
                         perfectScore: quizData.some((q: any) => q.score === 100),
                     })
@@ -186,6 +201,55 @@ const DashboardProgress = () => {
                         <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Time Invested</p>
                     </CardContent>
                 </Card>
+            </div>
+
+            {/* Multi-Streak Tracks */}
+            <div className="space-y-4">
+                <h2 className="text-xl font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
+                    <Activity size={18} className="text-primary" />
+                    Multi-Track Consistency
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                        { 
+                            label: "Quiz Master", 
+                            streak: progressData.activityStreaks?.quizzes?.current || 0, 
+                            icon: Brain, 
+                            color: "text-purple-400",
+                            desc: "Daily assessment streak"
+                        },
+                        { 
+                            label: "Note Architect", 
+                            streak: progressData.activityStreaks?.summaries?.current || 0, 
+                            icon: FileText, 
+                            color: "text-blue-400",
+                            desc: "Daily knowledge indexing"
+                        },
+                        { 
+                            label: "Daily Voyager", 
+                            streak: progressData.activityStreaks?.login?.current || 0, 
+                            icon: Zap, 
+                            color: "text-yellow-400",
+                            desc: "Platform check-in streak"
+                        }
+                    ].map((track, i) => (
+                        <div key={i} className="glass p-6 rounded-3xl border-white/5 bg-white/[0.02] flex items-center justify-between group hover:bg-white/[0.04] transition-all">
+                            <div className="flex items-center gap-4">
+                                <div className={cn("p-4 rounded-2xl bg-white/5", track.color)}>
+                                    <track.icon size={24} />
+                                </div>
+                                <div>
+                                    <p className="font-bold text-lg leading-tight">{track.label}</p>
+                                    <p className="text-[10px] font-medium opacity-40 uppercase tracking-widest">{track.desc}</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className={cn("text-2xl font-black", track.color)}>{track.streak}</div>
+                                <p className="text-[8px] font-bold opacity-30 uppercase tracking-tighter">Days</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

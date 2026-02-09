@@ -45,7 +45,6 @@ const DashboardAIAssistant = () => {
     const [inputValue, setInputValue] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [historyGroups, setHistoryGroups] = useState<{ [key: string]: Message[] }>({})
-    const userId = localStorage.getItem("userId") || "default-user"
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -75,7 +74,7 @@ const DashboardAIAssistant = () => {
          */
         const fetchHistory = async () => {
             try {
-                const res = await api.getChatHistory(userId)
+                const res = await api.getChatHistory()
                 if (res.success && res.data && res.data.messages) {
                     const formattedMessages = res.data.messages.map((m: any) => ({
                         id: m._id || Math.random().toString(),
@@ -105,7 +104,7 @@ const DashboardAIAssistant = () => {
             }
         }
         fetchHistory()
-    }, [userId])
+    }, [])
 
     useEffect(() => {
         scrollToBottom()
@@ -144,7 +143,6 @@ const DashboardAIAssistant = () => {
             let fullResponse = ""
             api.getAIStream(
                 inputValue,
-                userId,
                 (chunk) => {
                     fullResponse += chunk
                     setMessages((prev) =>
@@ -186,7 +184,7 @@ const DashboardAIAssistant = () => {
     const handleClearHistory = async () => {
         if (!confirm("Are you sure you want to delete all chat history? This cannot be undone.")) return;
         try {
-            const res = await api.clearChatHistory(userId);
+            const res = await api.clearChatHistory();
             if (res.success) {
                 setHistoryGroups({});
                 startNewChat();

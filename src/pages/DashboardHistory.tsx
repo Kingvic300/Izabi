@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BASE_URL } from "@/constants";
+import { api } from "@/lib/apiClient";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
     Search,
@@ -49,27 +48,24 @@ const DashboardHistory = () => {
          */
         const fetchHistory = async () => {
             try {
-                const userId = localStorage.getItem("userId");
-                if (!userId) return;
+                const data = await api.getStudyHistory()
+                console.log("Backend study history:", data)
 
-                const response = await axios.get(`${BASE_URL}/api/study/history?userId=${userId}`);
-                console.log("Backend study history:", response.data);
-
-                const materials = Array.isArray(response.data) ? response.data : [];
+                const materials = Array.isArray(data) ? data : []
                 const normalized = materials.map((m) => ({
                     ...m,
                     keyPoints: m.keyPoints || [],
                     questions: m.questions || []
-                }));
+                }))
 
-                setStudyMaterials(normalized);
+                setStudyMaterials(normalized)
             } catch (err) {
-                console.error("Error fetching study history:", err);
-                setStudyMaterials([]);
+                console.error("Error fetching study history:", err)
+                setStudyMaterials([])
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
-        };
+        }
 
         fetchHistory();
     }, []);

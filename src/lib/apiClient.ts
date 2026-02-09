@@ -111,15 +111,13 @@ export const api = {
      * How: CRUD operations for study notes.
      * Why: Users need to create, read, update, and delete their generated notes.
      */
-    async getNotes(userId?: string) {
-        const id = userId || localStorage.getItem("userId")
-        const response = await apiClient.get(`/api/notes${id ? `?userId=${id}` : ""}`)
+    async getNotes() {
+        const response = await apiClient.get(`/api/notes`)
         return response.data
     },
 
     async createNote(note: any) {
-        const userId = note.userId || localStorage.getItem("userId")
-        const response = await apiClient.post("/api/notes", { ...note, userId })
+        const response = await apiClient.post("/api/notes", note)
         return response.data
     },
 
@@ -130,14 +128,12 @@ export const api = {
     },
 
     async deleteNote(id: string) {
-        const userId = localStorage.getItem("userId")
-        await apiClient.delete(`/api/notes/${id}${userId ? `?userId=${userId}` : ""}`)
+        await apiClient.delete(`/api/notes/${id}`)
     },
 
     // Quiz Results API
     async getQuizResults() {
-        const userId = localStorage.getItem("userId")
-        const response = await apiClient.get(`/api/quiz/results${userId ? `?userId=${userId}` : ""}`)
+        const response = await apiClient.get(`/api/quiz/results`)
         return response.data
     },
 
@@ -147,8 +143,7 @@ export const api = {
     },
 
     async getDailyChallenge() {
-        const userId = localStorage.getItem("userId")
-        const response = await apiClient.get(`/api/quiz/daily-challenge${userId ? `?userId=${userId}` : ""}`)
+        const response = await apiClient.get(`/api/quiz/daily-challenge`)
         return response.data
     },
 
@@ -157,15 +152,14 @@ export const api = {
         return response.data
     },
 
-    async feedPet(userId: string) {
-        const response = await apiClient.post("/api/user/pet/feed", { userId })
+    async feedPet() {
+        const response = await apiClient.post("/api/user/pet/feed")
         return response.data
     },
 
     // User Stats API
-    async getUserStats(userId?: string) {
-        const id = userId || localStorage.getItem("userId")
-        const response = await apiClient.get(`/api/user/stats${id ? `?userId=${id}` : ""}`)
+    async getUserStats() {
+        const response = await apiClient.get(`/api/user/stats`)
         return response.data
     },
 
@@ -192,8 +186,7 @@ export const api = {
 
     // Leaderboard API
     async getLeaderboard() {
-        const userId = localStorage.getItem("userId")
-        const response = await apiClient.get(`/api/study/leaderboard${userId ? `?userId=${userId}` : ""}`)
+        const response = await apiClient.get(`/api/study/leaderboard`)
         return response.data
     },
 
@@ -206,9 +199,10 @@ export const api = {
      * How: Establishes an EventSource connection for streaming AI responses.
      * Why: To provide a real-time, typewriter-style chat experience for long AI generations.
      */
-    getAIStream(message: string, userId: string, onChunk: (text: string) => void, onError: (err: any) => void, onComplete?: () => void) {
-        const url = `${BASE_URL}/api/ai/stream?message=${encodeURIComponent(message)}&userId=${encodeURIComponent(userId)}`
-        const eventSource = new EventSource(url, { withCredentials: true })
+    getAIStream(message: string, onChunk: (text: string) => void, onError: (err: any) => void, onComplete?: () => void) {
+        const token = localStorage.getItem("authToken")
+        const url = `${BASE_URL}/api/ai/stream?message=${encodeURIComponent(message)}&token=${token}`
+        const eventSource = new EventSource(url)
 
         eventSource.onmessage = (event) => {
             if (event.data === "[DONE]") {
@@ -262,35 +256,35 @@ export const api = {
         return eventSource
     },
 
-    async getChatHistory(userId: string) {
-        const response = await apiClient.get(`/api/ai/history?userId=${userId}`)
+    async getChatHistory() {
+        const response = await apiClient.get(`/api/ai/history`)
         return response.data
     },
 
-    async clearChatHistory(userId: string) {
-        const response = await apiClient.post(`/api/ai/clear-history`, { userId })
+    async clearChatHistory() {
+        const response = await apiClient.post(`/api/ai/clear-history`)
         return response.data
     },
 
     // Study History API
-    async getStudyHistory(userId: string) {
-        const response = await apiClient.get(`/api/study/history?userId=${userId}`)
+    async getStudyHistory() {
+        const response = await apiClient.get(`/api/study/history`)
         return response.data
     },
 
     // User Profile API
-    async getUserProfile(userId: string) {
-        const response = await apiClient.get(`/api/user/profile/${userId}`)
+    async getUserProfile() {
+        const response = await apiClient.get(`/api/user/profile`)
         return response.data
     },
 
-    async updateUserProfile(userId: string, updates: any) {
-        const response = await apiClient.put(`/api/user/profile/${userId}`, updates)
+    async updateUserProfile(updates: any) {
+        const response = await apiClient.put(`/api/user/profile`, updates)
         return response.data
     },
 
-    async submitGroqKey(userId: string, apiKey: string) {
-        const response = await apiClient.post("/api/user/submit-groq-key", { userId, apiKey })
+    async submitGroqKey(apiKey: string) {
+        const response = await apiClient.post("/api/user/submit-groq-key", { apiKey })
         return response.data
     },
 
@@ -320,9 +314,8 @@ export const api = {
         await apiClient.delete(`/api/admin/users/${userId}`)
     },
 
-    async logout(userId: string | null) {
-        if (!userId) return;
-        await apiClient.post("/api/user/logout", { userId });
+    async logout() {
+        await apiClient.post("/api/user/logout");
     },
 
     // --- BACKGROUND PROCESSING ---
@@ -331,10 +324,9 @@ export const api = {
     //     return response.data
     // },
 
-    async ingestDirect(file: File, userId: string, type: string, options?: any) {
+    async ingestDirect(file: File, type: string, options?: any) {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('userId', userId);
         formData.append('type', type);
         if (options) {
             formData.append('options', JSON.stringify(options));
@@ -348,7 +340,7 @@ export const api = {
         return response.data;
     },
 
-    async ingestRemote(data: { userId: string, url: string, fileName: string, type: string, options?: any }) {
+    async ingestRemote(data: { url: string, fileName: string, type: string, options?: any }) {
         const response = await apiClient.post("/api/study/ingest-remote", data)
         return response.data
     },
