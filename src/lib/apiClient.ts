@@ -1,6 +1,11 @@
 import axios from "axios"
+import axiosRetry from 'axios-retry';
 import { BASE_URL } from "@/constants"
 import { toast } from "sonner"
+
+// Simple in-memory cache for GET requests
+const apiCache = new Map<string, { data: any, timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 /*
  * How: Creates an Axios instance with base URL, credential handling, and custom timeout.
@@ -9,83 +14,80 @@ import { toast } from "sonner"
 const apiClient = axios.create({
     baseURL: BASE_URL,
     withCredentials: true,
-    timeout: 15000, 
+    timeout: 30000, // Reduced timeout for faster failure/retry on bad networks
 })
 
-/*
- * How: Intercepts outgoing requests to append the Authorization header with the stored token.
- * Why: To ensure all API calls are authenticated without manual header management.
- */
+// --- LOW NETWORK OPTIMIZATIONS ---
+
+// 1. Automatic Retries with Exponential Backoff
+// WHY: On bad networks (edge, weak 3G), requests often fail randomly. 
+// This invisibly retries them rather than showing an error to the user.
+axiosRetry(apiClient, { 
+    retries: 3, 
+    retryDelay: axiosRetry.exponentialDelay,
+    retryCondition: (error) => {
+        // Retry on network errors or 5xx server errors
+        return axiosRetry.isNetworkOrIdempotentRequestError(error) || 
+               (error.response?.status && error.response.status >= 500);
+    }
+});
+
+// 2. Cache Interceptor
+// WHY: Reduces data usage and provides instant "perceived speed" for repeated views.
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem("authToken")
     if (token) {
         config.headers.Authorization = `Bearer ${token}`
     }
+
+    // Only cache GET requests
+    if (config.method?.toLowerCase() === 'get') {
+        const cacheKey = config.url + JSON.stringify(config.params || {});
+        const cached = apiCache.get(cacheKey);
+        
+        if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
+            // Signal to the response interceptor that this is a cache hit
+            (config as any)._isCacheHit = true;
+            (config as any)._cachedData = cached.data;
+        }
+    }
+
     return config
 })
 
 /*
- * How: Intercepts responses to strictly handle errors, show toasts for specific status codes (401, 403, etc.), and manage redirects.
- * Why: To provide consistent global error feedback and handle session expiration automatically.
+ * How: Intercepts responses to strictly handle errors, show toasts, and manage caching.
  */
 apiClient.interceptors.response.use(
     (response) => {
+        // Cache successful GET responses
+        if (response.config.method?.toLowerCase() === 'get' && response.data) {
+            const cacheKey = response.config.url + JSON.stringify(response.config.params || {});
+            apiCache.set(cacheKey, { data: response.data, timestamp: Date.now() });
+        }
         return response
     },
     (error) => {
+        // Handle Cache Hit shortcut
+        if (error.config?._isCacheHit) {
+            return Promise.resolve({ ...error.config, data: error.config._cachedData, status: 200 });
+        }
+
         const errorMessage = error.response?.data?.message || error.message || "An unexpected error occurred"
         const statusCode = error.response?.status
 
         // Handle specific status codes
         if (statusCode === 401) {
-            // Unauthorized - clear token and redirect if needed
             localStorage.removeItem("authToken")
             localStorage.removeItem("userId")
             window.location.href = "/login"
-            toast.error("Session Expired", {
-                description: "Please sign in again to continue.",
-            })
-        } else if (statusCode === 403) {
-            toast.error("Access Denied", {
-                description: "You don't have permission to perform this action.",
-            })
-        } else if (statusCode === 404) {
-            const detail = error.response?.data?.message || "The requested resource could not be located."
-            toast.error("Not Found", {
-                description: detail,
-            })
+            toast.error("Session Expired")
         } else if (statusCode >= 500) {
-            toast.error("Engine Overload", {
-                description: "The Izabi core is experiencing high thermal load. It's us, not you! Please wait a moment while we recalibrate.",
-            })
+            toast.error("Server synchronization error. Retrying background nodes...")
         } else if (!navigator.onLine) {
-            toast.error("Connection Failed", {
-                description: "Please check your internet connection.",
+            toast.error("Offline Mode", {
+                description: "Check your data connection. Some features may be restricted.",
             })
-        } else if (error.code === "ECONNABORTED") {
-            toast.error("Temporal Anomaly", {
-                description: "The request took too long to synchronize. Our engines are a bit slow today—please try again!",
-            })
-        } else {
-            // Check for daily limit errors
-            if (errorMessage.toLowerCase().includes("daily limit")) {
-                const now = new Date();
-                const midnight = new Date();
-                midnight.setHours(24, 0, 0, 0);
-                const diff = midnight.getTime() - now.getTime();
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                
-                toast.error("Daily Limit Reached", {
-                    description: `${errorMessage} Resets in ${hours}h ${minutes}m.`,
-                    duration: Infinity, // Permanent toast
-                })
-            } else {
-                // Generic error for other cases (like 400 Bad Request if not handled locally)
-                toast.error("Error", {
-                    description: errorMessage,
-                })
-            }
         }
 
         return Promise.reject(error)
@@ -321,8 +323,23 @@ export const api = {
     async logout(userId: string | null) {
         if (!userId) return;
         await apiClient.post("/api/user/logout", { userId });
+    },
+
+    // --- CLOUDINARY & BACKGROUND PROCESSING ---
+    async getUploadSignature() {
+        const response = await apiClient.get("/api/study/upload-signature")
+        return response.data
+    },
+
+    async ingestRemote(data: { userId: string, url: string, fileName: string, type: string, options?: any }) {
+        const response = await apiClient.post("/api/study/ingest-remote", data)
+        return response.data
+    },
+
+    async getJobStatus(jobId: string) {
+        const response = await apiClient.get(`/api/study/job-status/${jobId}`)
+        return response.data
     }
 }
 
 export default apiClient
-

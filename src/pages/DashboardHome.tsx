@@ -1,7 +1,17 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
+import axios from "axios"
+import axiosRetry from "axios-retry"
 import apiClient, { api } from "@/lib/apiClient"
+
+// Configure retry for external calls (Cloudinary)
+axiosRetry(axios, { 
+    retries: 2, 
+    retryDelay: axiosRetry.exponentialDelay,
+    retryCondition: (error) => axiosRetry.isNetworkOrIdempotentRequestError(error)
+});
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BASE_URL } from "@/constants"
@@ -26,13 +36,12 @@ import StreakPet from "@/components/StreakPet"
 import BrainDrop from "@/components/BrainDrop"
 import IntentCards from "@/components/IntentCards"
 import ContextCard from "@/components/ContextCard"
-import { useEffect, useState as react_useState, useMemo } from "react"
 
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
 const SummaryViewer = ({ content, t }: { content: string; t: any }) => {
-    const [isExpanded, setIsExpanded] = react_useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     const isLong = content.length > 800;
     
     return (
@@ -269,9 +278,54 @@ const DashboardHome = () => {
         setPdfFile(file)
     }
 
+    const pollJobStatus = async (jobId: string, endpoint: string) => {
+        const checkStatus = async () => {
+            try {
+                const jobData = await api.getJobStatus(jobId);
+                console.log("[SmartStudy] Job Status Update:", jobData.status);
+
+                if (jobData.status === 'COMPLETED') {
+                    setIsProcessing(false);
+                    
+                    if (endpoint === 'summarize' || endpoint === 'generate-study-material') {
+                        setSummary(jobData.summary || "");
+                        setShowSummary(true);
+                        setQuestions([]);
+                        setFlashcards([]);
+                    } else if (endpoint === 'generate-questions') {
+                        setQuestions(jobData.questions || []);
+                        setShowQuestions((jobData.questions?.length || 0) > 0);
+                        setSummary("");
+                        setFlashcards([]);
+                    } else if (endpoint === 'flashcards') {
+                        setFlashcards(jobData.flashcards || []);
+                        setShowFlashcards((jobData.flashcards?.length || 0) > 0);
+                        setSummary("");
+                        setQuestions([]);
+                    }
+                    return true;
+                } else if (jobData.status === 'FAILED') {
+                    setIsProcessing(false);
+                    addError({ message: "Document analysis failed: " + (jobData.metadata?.error || "Unknown error"), type: "api" });
+                    return true;
+                }
+                return false;
+            } catch (err) {
+                console.warn("[SmartStudy] Polling error:", err);
+                return false;
+            }
+        };
+
+        // Poll every 1.5 seconds for snappier feedback
+        const interval = setInterval(async () => {
+            const finished = await checkStatus();
+            if (finished) clearInterval(interval);
+        }, 1500);
+    };
+
     /*
-     * How: Uploads the selected PDF file and parameters to the specified backend endpoint to generate study materials (summary, questions, etc.).
-     * Why: Core functionality allowing users to transform their documents into interactive learning content.
+     * How: Uploads the selected PDF file directly to Cloudinary (signed) and then notifies the backend to process it asynchronously.
+     * Why: This architecture prevents Render memory crashes by bypassing the backend for large files and avoids timeouts via background polling.
      */
     const handleRequest = async (endpoint: string, includeQuestions = false) => {
         if (!pdfFile || !userId || !pdfSelection) {
@@ -285,58 +339,59 @@ const DashboardHome = () => {
         setShowResults(false)
 
         try {
-            const formData = new FormData()
-            formData.append("file", pdfFile)
-            formData.append("userId", userId)
+            // 1. Get Signed Upload URL from Backend
+            console.log("[SmartStudy] Fetching Cloudinary signature...");
+            const signatureData = await api.getUploadSignature();
 
-            if (pdfSelection.selectedPages?.length) {
-                formData.append("selectedPages", JSON.stringify(pdfSelection.selectedPages))
-            }
-            if (includeQuestions) {
-                formData.append("numberOfQuestions", String(numberOfQuestions))
-            }
+            // 2. Upload directly to Cloudinary from Browser
+            console.log("[SmartStudy] Uploading binary to Cloudinary...");
+            const cloudFormData = new FormData();
+            cloudFormData.append("file", pdfFile);
+            cloudFormData.append("api_key", signatureData.apiKey);
+            cloudFormData.append("timestamp", signatureData.timestamp.toString());
+            cloudFormData.append("signature", signatureData.signature);
+            cloudFormData.append("folder", signatureData.folder);
 
-            const { data } = await apiClient.post(`/api/study/${endpoint}`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            })
+            const uploadRes = await axios.post(
+                `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/auto/upload`,
+                cloudFormData,
+                { timeout: 600000 }
+            );
 
-            const responseYield = data.yield;
-            
-            if (endpoint === 'summarize') {
-                setSummary(responseYield || "")
-                setShowSummary(true)
-                setQuestions([])
-                setFlashcards([])
-            } else if (endpoint === 'generate-questions') {
-                const questionsData: StudyQuestionResponse[] = Array.isArray(responseYield) ? responseYield : []
-                setQuestions(questionsData)
-                setShowQuestions(questionsData.length > 0)
-                setSummary("")
-                setFlashcards([])
-            } else if (endpoint === 'flashcards') {
-                setFlashcards(Array.isArray(responseYield) ? responseYield : [])
-                setShowFlashcards(true)
-                setSummary("")
-                setQuestions([])
-            } else if (endpoint === 'generate-study-material') {
-                setSummary(responseYield || "")
-                setShowSummary(true)
-                setQuestions([])
-                setFlashcards([])
-            }
+            const secureUrl = uploadRes.data.secure_url;
+            console.log("[SmartStudy] Upload success. Remote URL:", secureUrl);
 
-            // You could also store telemetry in state if you want to display it
-            console.log("[SmartStudy] Telemetry Received:", data.telemetry);
+            // 3. Ingest via Backend (Low weight, async trigger)
+            const typeMap: any = {
+                'summarize': 'summary',
+                'generate-questions': 'quiz',
+                'flashcards': 'flashcards',
+                'generate-study-material': 'study-guide'
+            };
 
-        } catch (err) {
-            addError(err)
+            const ingestRes = await api.ingestRemote({
+                userId,
+                url: secureUrl,
+                fileName: pdfFile.name,
+                type: typeMap[endpoint] || endpoint,
+                options: includeQuestions ? { count: numberOfQuestions } : {}
+            });
+
+            console.log("[SmartStudy] Job Started. ID:", ingestRes.jobId);
+
+            // 4. Start Polling for Result
+            pollJobStatus(ingestRes.jobId, endpoint);
+
+        } catch (err: any) {
+            console.error("[SmartStudy] Flow Failure:", err);
+            addError(err.message || "Failed to initiate document mapping.");
+            setIsProcessing(false);
             setSummary("")
             setQuestions([])
             setFlashcards([])
-        } finally {
-            setIsProcessing(false)
         }
     }
+
 
     const handleAnswerSelect = (qIndex: number, option: string) => {
         if (!showResults) setSelectedAnswers((prev) => ({ ...prev, [qIndex]: option }))

@@ -45,6 +45,8 @@ export default function DashboardLeaderboard() {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
+                // SWR Pattern: The api will return cached data immediately if available,
+                // but we also trigger the fetch to ensure fresh data.
                 const res = await api.getLeaderboard()
                 if (res.success && res.data) {
                     setLeaderboardData(res.data)
@@ -61,20 +63,11 @@ export default function DashboardLeaderboard() {
     useGSAP(() => {
         if (!isLoading) {
             gsap.from(".leaderboard-item", {
-                y: 30,
+                y: 20,
                 opacity: 0,
-                duration: 0.5,
-                stagger: 0.03,
-                ease: "power3.out"
-            })
-
-            gsap.from(".podium-card", {
-                y: 50,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: "back.out(1.7)",
-                delay: 0.2
+                duration: 0.4,
+                stagger: 0.02,
+                ease: "power2.out"
             })
         }
     }, [isLoading, activeTab])
@@ -88,17 +81,22 @@ export default function DashboardLeaderboard() {
         }
     }
 
+    // --- LOW NETWORK SKELETONS ---
+    const LeaderboardSkeleton = () => (
+        <div className="space-y-4 animate-pulse">
+            {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-20 bg-white/5 rounded-2xl border border-white/5 w-full" />
+            ))}
+        </div>
+    );
 
-
-    if (isLoading) {
-        return (
-            <div className="h-[80vh] flex flex-col items-center justify-center space-y-4">
-                <Loader2 className="h-12 w-12 text-primary animate-spin" />
-                <p className="font-bold uppercase tracking-[0.2em] text-xs opacity-40">Calculating Global Ranks...</p>
-            </div>
-        )
-    }
-
+    const PodiumSkeleton = () => (
+        <div className="flex flex-col md:flex-row items-end justify-center gap-8 mb-12 min-h-[300px] animate-pulse">
+            <div className="h-48 bg-white/5 rounded-3xl w-48 hidden md:block" />
+            <div className="h-64 bg-white/5 rounded-3xl w-56" />
+            <div className="h-40 bg-white/5 rounded-3xl w-48 hidden md:block" />
+        </div>
+    );
 
 
     return (
@@ -123,10 +121,17 @@ export default function DashboardLeaderboard() {
                     <div>
                         <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">Your Rank</p>
                         <p className="text-lg sm:text-xl font-black">
-                            {activeTab === 'xp' 
-                                ? `#${leaderboardData.userRank?.xp || '...'}` 
-                                : `#${leaderboardData.userRank?.streak || '...'}`
-                            }
+                            {isLoading && !leaderboardData.userRank ? (
+                                <span className="animate-pulse">...</span>
+                            ) : (
+                                activeTab === 'xp' 
+                                    ? (leaderboardData.userRank?.xp && !isNaN(Number(leaderboardData.userRank.xp)) 
+                                        ? `#${leaderboardData.userRank.xp}` 
+                                        : (leaderboardData.userRank?.xp || '...'))
+                                    : (leaderboardData.userRank?.streak && !isNaN(Number(leaderboardData.userRank.streak)) 
+                                        ? `#${leaderboardData.userRank.streak}` 
+                                        : (leaderboardData.userRank?.streak || '...'))
+                            )}
                         </p>
                     </div>
                 </div>

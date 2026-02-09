@@ -31,8 +31,50 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
   const [success, setSuccess] = useState<string | null>(null);
   const [numQuestions, setNumQuestions] = useState<number>(5);
   const [scanProgress, setScanProgress] = useState(0);
+  const [topicText, setTopicText] = useState<string>('');
 
   const { errors, addError, clearErrors, clearError } = useApiError();
+
+  useEffect(() => {
+    if (uploadedFile && scanProgress < 100) {
+      const timer = setInterval(() => {
+        setScanProgress(prev => Math.min(prev + (Math.random() * 10), 100));
+      }, 100);
+      return () => clearInterval(timer);
+    }
+  }, [uploadedFile, scanProgress]);
+
+  const handleTopicSubmit = () => {
+    if (!topicText.trim()) {
+      addError({ message: 'Please enter a topic or question.', type: 'validation' });
+      return;
+    }
+
+    if (topicText.trim().length < 3) {
+      addError({ message: 'Topic must be at least 3 characters.', type: 'validation' });
+      return;
+    }
+
+    clearErrors();
+    
+    // Create a virtual text file from the topic input
+    const blob = new Blob([topicText], { type: 'text/plain' });
+    const virtualFile = new File([blob], 'topic.txt', { type: 'text/plain' });
+    
+    setUploadedFile(virtualFile);
+    setTotalPages(1);
+    setSelectedPages([1]);
+    setScanProgress(100);
+    setTimeout(() => setActiveTab('sync'), 500);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Submit on Enter (without Shift for multi-line)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleTopicSubmit();
+    }
+  };
 
   useEffect(() => {
     if (uploadedFile && scanProgress < 100) {
@@ -53,12 +95,14 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
       'application/msword',
       'text/plain',
       'text/csv',
-      'text/markdown'
+      'text/markdown',
+      'image/png',
+      'image/jpeg'
     ];
 
-    const maxSize = 100 * 1024 * 1024; // 100MB
+    const maxSize = 500 * 1024 * 1024; // 500MB
     if (file.size > maxSize) {
-      addError({ message: 'File exceeds 100MB capacity limit.', type: 'validation' });
+      addError({ message: 'File exceeds 500MB capacity limit.', type: 'validation' });
       return;
     }
 
@@ -127,6 +171,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
     clearErrors();
     setNumQuestions(5);
     setScanProgress(0);
+    setTopicText(''); // Clear text input as well
   };
 
   return (
@@ -175,55 +220,205 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
 
             <TabsContent key="load" value="load" className="m-0 outline-none">
                 <motion.div 
-                initial={{ opacity: 0, x: -20 }} 
-                animate={{ opacity: 1, x: 0 }} 
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-6"
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.4 }}
+                className="space-y-6 md:space-y-8"
                 >
-                    <div className="group relative border-2 border-dashed border-foreground/10 hover:border-primary/40 rounded-2xl p-6 md:p-12 text-center transition-all duration-500 bg-foreground/[0.01] hover:bg-foreground/[0.03] overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    
-                    <input type="file" onChange={handleFileUpload} className="hidden" id="pdf-upload" />
-                    <label htmlFor="pdf-upload" className="cursor-pointer block relative z-10">
-                        <div className="w-16 h-16 md:w-24 md:h-24 rounded-2xl glass flex items-center justify-center mx-auto mb-6 md:mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all shadow-2xl border border-white/5">
-                            <Upload className="h-8 w-8 md:h-10 md:w-10 text-primary" />
-                        </div>
-                        <h3 className="text-2xl font-bold mb-3 tracking-tight">{uploadedFile ? 'Node Loaded' : 'Ingest Intelligence'}</h3>
-                        <p className="text-muted-foreground font-medium max-w-xs mx-auto mb-6">
-                        {uploadedFile
-                            ? uploadedFile.name
-                            : 'Deploy documents into the neural environment'}
+                    {/* Header */}
+                    <div className="text-center space-y-2 sm:space-y-3 px-4">
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                            className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-primary/20 via-primary/10 to-transparent border border-primary/20"
+                        >
+                            <Zap size={16} className="sm:w-5 sm:h-5 text-primary" fill="currentColor" />
+                            <span className="font-bold text-xs sm:text-sm uppercase tracking-wider">AI-Powered Study Generator</span>
+                        </motion.div>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent px-2">
+                            Start Learning Smarter
+                        </h2>
+                        <p className="text-muted-foreground text-xs sm:text-sm md:text-base max-w-2xl mx-auto px-4">
+                            Choose your preferred method to generate personalized study materials
                         </p>
-                        
-                        {uploadedFile && (
-                            <div className="w-full max-w-xs mx-auto h-2 bg-foreground/5 rounded-2xl overflow-hidden mb-6">
-                                <motion.div 
-                                    className="h-full bg-primary shadow-glow" 
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${scanProgress}%` }}
-                                />
-                            </div>
-                        )}
-
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-foreground/5 border border-foreground/5 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-                            Protocols: PDF / DOCX / TXT
-                        </div>
-                    </label>
                     </div>
 
-                    {uploadedFile && scanProgress === 100 && (
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center">
-                        <Button 
-                            onClick={() => setActiveTab(uploadedFile.type === 'application/pdf' ? 'analyze' : 'sync')}
-                            size="lg"
-                            className="rounded-2xl px-10 h-16 bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-glow transition-all hover:scale-105 gap-3"
+                    {/* Main Content - Two Column Grid on Desktop */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+                        
+                        {/* Option 1: Quick Topic Input */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="relative group"
                         >
-                            START MAPPING
-                            <ArrowRight size={20} />
-                        </Button>
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary/50 rounded-xl md:rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                            <div className="relative h-full bg-card border border-foreground/10 rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 hover:border-primary/30 transition-all">
+                                {/* Icon Header */}
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="space-y-1.5 sm:space-y-2 flex-1 min-w-0">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
+                                            <FileText size={20} className="sm:w-6 sm:h-6 text-white" />
+                                        </div>
+                                        <h3 className="text-lg sm:text-xl font-bold">Type a Topic</h3>
+                                        <p className="text-xs sm:text-sm text-muted-foreground">
+                                            Quick generation from any subject
+                                        </p>
+                                    </div>
+                                    <div className="px-2 sm:px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] sm:text-xs font-bold shrink-0">
+                                        FASTEST
+                                    </div>
+                                </div>
+
+                                {/* Text Input */}
+                                <div className="space-y-2 sm:space-y-3">
+                                    <textarea
+                                        value={topicText}
+                                        onChange={(e) => setTopicText(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder="E.g., Photosynthesis, World War II, Quantum Physics..."
+                                        className="w-full h-28 sm:h-32 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-foreground/5 border border-foreground/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm placeholder:text-muted-foreground/50"
+                                        maxLength={500}
+                                    />
+                                    
+                                    <div className="flex items-center justify-between text-[10px] sm:text-xs">
+                                        <span className="text-muted-foreground/60">{topicText.length}/500</span>
+                                        <span className="text-muted-foreground/40 hidden sm:inline">Enter to submit • Shift+Enter for new line</span>
+                                    </div>
+                                </div>
+
+                                {/* Submit Button */}
+                                <Button 
+                                    onClick={handleTopicSubmit}
+                                    disabled={!topicText.trim() || topicText.trim().length < 3}
+                                    className="w-full h-11 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                >
+                                    <Zap size={16} className="sm:w-[18px] sm:h-[18px]" fill="currentColor" />
+                                    <span className="ml-2">Generate Now</span>
+                                </Button>
+                            </div>
                         </motion.div>
-                    )}
+
+                        {/* Option 2: File Upload */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="relative group"
+                        >
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-primary rounded-xl md:rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                            <div className="relative h-full bg-card border border-foreground/10 rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 hover:border-primary/30 transition-all">
+                                {/* Icon Header */}
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="space-y-1.5 sm:space-y-2 flex-1 min-w-0">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary/70 to-primary/50 flex items-center justify-center shadow-lg shadow-primary/10 shrink-0">
+                                            <Upload size={20} className="sm:w-6 sm:h-6 text-white" />
+                                        </div>
+                                        <h3 className="text-lg sm:text-xl font-bold">Upload Files</h3>
+                                        <p className="text-xs sm:text-sm text-muted-foreground">
+                                            PDF, images, documents & more
+                                        </p>
+                                    </div>
+                                    <div className="px-2 sm:px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] sm:text-xs font-bold shrink-0 whitespace-nowrap">
+                                        500MB
+                                    </div>
+                                </div>
+
+                                {/* Upload Area */}
+                                <input type="file" onChange={handleFileUpload} className="hidden" id="file-upload-redesign" accept=".pdf,.docx,.doc,.txt,.csv,.md,.png,.jpg,.jpeg" />
+                                <label 
+                                    htmlFor="file-upload-redesign" 
+                                    className="block cursor-pointer"
+                                >
+                                    <div className="relative border-2 border-dashed border-foreground/20 hover:border-primary/50 rounded-lg sm:rounded-xl p-6 sm:p-8 text-center transition-all group/upload bg-foreground/[0.02] hover:bg-foreground/[0.05] active:scale-[0.98]">
+                                        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover/upload:opacity-100 rounded-lg sm:rounded-xl transition-opacity"></div>
+                                        
+                                        <div className="relative space-y-3 sm:space-y-4">
+                                            {uploadedFile ? (
+                                                <>
+                                                    <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
+                                                        <FileText size={24} className="sm:w-7 sm:h-7 text-primary" />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <p className="font-semibold text-xs sm:text-sm truncate px-2 sm:px-4">{uploadedFile.name}</p>
+                                                        <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+                                                            <motion.div 
+                                                                className="h-full bg-gradient-to-r from-primary to-primary/70" 
+                                                                initial={{ width: 0 }}
+                                                                animate={{ width: `${scanProgress}%` }}
+                                                                transition={{ duration: 0.3 }}
+                                                            />
+                                                        </div>
+                                                        <p className="text-xs text-muted-foreground">{scanProgress}% Complete</p>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center group-hover/upload:border-primary/50 group-hover/upload:scale-110 transition-all">
+                                                        <Upload size={24} className="sm:w-7 sm:h-7 text-muted-foreground group-hover/upload:text-primary transition-colors" />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <p className="font-semibold text-sm">Click to browse</p>
+                                                        <p className="text-xs text-muted-foreground hidden sm:block">or drag and drop your files here</p>
+                                                        <p className="text-xs text-muted-foreground sm:hidden">Tap to select files</p>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </label>
+
+                                {/* File Types */}
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+                                    {['PDF', 'DOCX', 'TXT', 'PNG', 'JPEG'].map((type) => (
+                                        <span key={type} className="px-2 sm:px-3 py-1 rounded-full bg-foreground/5 text-[10px] sm:text-xs font-medium text-muted-foreground border border-foreground/10">
+                                            {type}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                {/* Continue Button */}
+                                {uploadedFile && scanProgress === 100 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                    >
+                                        <Button 
+                                            onClick={() => setActiveTab(uploadedFile.type === 'application/pdf' ? 'analyze' : 'sync')}
+                                            className="w-full h-11 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 text-sm sm:text-base"
+                                        >
+                                            Continue
+                                            <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px] ml-2" />
+                                        </Button>
+                                    </motion.div>
+                                )}
+                            </div>
+                        </motion.div>
+
+                    </div>
+
+                    {/* Features Footer */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 pt-2 sm:pt-4"
+                    >
+                        {[
+                            { icon: '⚡', label: 'Instant Generation' },
+                            { icon: '🎯', label: 'AI-Powered' },
+                            { icon: '📚', label: 'Multiple Formats' },
+                            { icon: '🔒', label: 'Secure & Private' }
+                        ].map((feature, idx) => (
+                            <div key={idx} className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg sm:rounded-xl bg-foreground/[0.02] border border-foreground/5">
+                                <span className="text-base sm:text-xl shrink-0">{feature.icon}</span>
+                                <span className="text-[10px] sm:text-xs font-medium text-muted-foreground truncate">{feature.label}</span>
+                            </div>
+                        ))}
+                    </motion.div>
+
                 </motion.div>
             </TabsContent>
 
