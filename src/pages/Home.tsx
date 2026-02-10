@@ -174,7 +174,7 @@ const Home = () => {
                             {features.map((feature, i) => (
                                 <Card
                                     key={i}
-                                    className="feature-card glass-card hover-lift border-white/5 p-8 relative group overflow-hidden"
+                                    className="feature-card glass-card hover-lift border-foreground/5 p-8 relative group overflow-hidden"
                                 >
                                     <div className={`w-16 h-16 rounded-xl ${feature.bg} ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl`}>
                                         {feature.icon}
@@ -189,7 +189,7 @@ const Home = () => {
                 </section>
 
                 {/* How It Works Showcase */}
-                <section id="how-it-works" className="py-32 bg-white/[0.01] border-y border-white/5">
+                <section id="how-it-works" className="py-32 bg-foreground/5 border-y border-foreground/5">
                     <div className="w-full px-6 lg:px-12 text-center">
                         <div className="mb-20">
                             <span className="text-xs font-bold uppercase tracking-widest text-primary mb-4 block">{t("how.title")}</span>
@@ -197,7 +197,7 @@ const Home = () => {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-16 relative">
                             {/* Connector Line */}
-                            <div className="hidden lg:block absolute top-[60px] left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                            <div className="hidden lg:block absolute top-[60px] left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
                             
                             {[
                                 { step: "01", title: "Upload", desc: "Upload your PDFs, notes, or raw texts.", icon: <FileText /> },
@@ -205,7 +205,7 @@ const Home = () => {
                                 { step: "03", title: "Learn", desc: "Simulate exams and master the curriculum.", icon: <Sparkles /> },
                             ].map((item, i) => (
                                 <div key={i} className="relative group">
-                                    <div className="w-32 h-32 glass rounded-2xl border border-white/10 flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:border-primary/50 transition-colors">
+                                    <div className="w-32 h-32 glass rounded-2xl border border-foreground/10 flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:border-primary/50 transition-colors">
                                         <span className="text-4xl">{item.icon}</span>
                                         <div className="absolute -top-4 -right-4 w-12 h-12 rounded-xl bg-primary flex items-center justify-center font-bold text-white shadow-glow text-xl">
                                             {item.step}
@@ -252,7 +252,7 @@ const Home = () => {
                                     grad: "bg-blue-700"
                                 },
                             ].map((testimonial, i) => (
-                                <Card key={i} className="glass shadow-2xl border-white/5 p-10 hover-lift relative group">
+                                <Card key={i} className="glass shadow-2xl border-foreground/5 p-10 hover-lift relative group">
                                     <div className="flex items-center gap-5 mb-8">
                                         <div className={`w-14 h-14 rounded-xl ${testimonial.grad} flex items-center justify-center text-white font-bold text-xl shadow-lg`}>
                                             {testimonial.avatar}
@@ -302,10 +302,10 @@ const Home = () => {
                             ].map((plan, i) => (
                                 <Card
                                     key={i}
-                                    className={`p-10 border-white/5 transition-all relative overflow-hidden flex flex-col ${
+                                    className={`p-10 border-foreground/5 transition-all relative overflow-hidden flex flex-col ${
                                         plan.hot
                                             ? "glass shadow-[0_0_80px_rgba(59,130,246,0.15)] ring-2 ring-primary scale-110 z-20 py-16"
-                                            : "glass bg-white/[0.02] opacity-80"
+                                            : "glass bg-foreground/5 opacity-80"
                                     }`}
                                 >
                                     {plan.hot && (
@@ -334,7 +334,7 @@ const Home = () => {
                                             className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${
                                                 plan.hot 
                                                     ? "bg-primary hover:bg-primary/90 text-white shadow-glow" 
-                                                    : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                                                    : "bg-foreground/5 hover:bg-foreground/10 text-white border border-foreground/10"
                                             }`}
                                         >
                                             Get Started
@@ -347,7 +347,7 @@ const Home = () => {
                 </section>
 
                 {/* About Brief */}
-                <section id="about" className="py-32 bg-white/[0.01]">
+                <section id="about" className="py-32 bg-foreground/5">
                     <div className="w-full px-6 lg:px-12">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
                             <div>
@@ -368,7 +368,7 @@ const Home = () => {
                                     { label: "Papers", val: "50M+" },
                                     { label: "Hours Saved", val: "200K" }
                                 ].map((stat, i) => (
-                                    <div key={i} className="glass p-8 rounded-2xl border border-white/10 text-center hover-lift">
+                                    <div key={i} className="glass p-8 rounded-2xl border border-foreground/10 text-center hover-lift">
                                         <div className="text-3xl font-bold text-primary mb-1">{stat.val}</div>
                                         <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{stat.label}</p>
                                     </div>

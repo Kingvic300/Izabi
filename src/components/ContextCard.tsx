@@ -26,10 +26,10 @@ const ContextCard: React.FC<ContextCardProps> = ({ onSelect, onDismiss }) => {
             {/* Dismiss button */}
             <button
                 onClick={onDismiss}
-                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-foreground/10 dark:bg-white/10 hover:bg-foreground/20 dark:hover:bg-white/20 flex items-center justify-center transition-colors"
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-card/10 dark:bg-card/10 hover:bg-card/20 dark:hover:bg-card/20 flex items-center justify-center transition-colors"
                 aria-label="Dismiss"
             >
-                <X size={16} className="text-foreground/60 dark:text-white/60" />
+                <X size={16} className="text-foreground/60 dark:text-foreground/60" />
             </button>
 
             {/* Content */}
@@ -55,14 +55,14 @@ const ContextCard: React.FC<ContextCardProps> = ({ onSelect, onDismiss }) => {
                         <button
                             key={type.id}
                             onClick={() => onSelect(type.id)}
-                            className="px-6 py-3 rounded-xl bg-foreground/10 dark:bg-white/10 hover:bg-primary/20 border border-foreground/20 dark:border-white/20 hover:border-primary/40 font-bold text-sm text-foreground transition-all hover:scale-105 active:scale-95"
+                            className="px-6 py-3 rounded-xl bg-card/10 dark:bg-card/10 hover:bg-primary/20 border border-foreground/20 dark:border-foreground/20 hover:border-primary/40 font-bold text-sm text-primary-foreground transition-all hover:scale-105 active:scale-95"
                         >
                             {type.label}
                         </button>
                     ))}
                     <button
                         onClick={onDismiss}
-                        className="px-6 py-3 rounded-xl bg-transparent border border-foreground/10 dark:border-white/10 hover:border-foreground/30 dark:hover:border-white/30 font-bold text-sm text-foreground/50 dark:text-foreground/60 hover:text-foreground dark:hover:text-foreground/80 transition-all"
+                        className="px-6 py-3 rounded-xl bg-transparent border border-foreground/10 dark:border-foreground/10 hover:border-foreground/30 dark:hover:border-foreground/30 font-bold text-sm text-foreground/50 dark:text-foreground/60 hover:text-foreground dark:hover:text-foreground/80 transition-all"
                     >
                         Skip
                     </button>

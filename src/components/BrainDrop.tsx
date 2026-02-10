@@ -86,7 +86,7 @@ const BrainDrop: React.FC<BrainDropProps> = ({ question, onAnswer, totalAnswered
                                 disabled={showResult}
                                 className={cn(
                                     "text-left px-6 py-4 rounded-2xl border-2 transition-all font-bold text-sm md:text-base flex items-center gap-3 group/btn text-foreground",
-                                    !showResult && "bg-foreground/5 dark:bg-white/5 hover:bg-foreground/10 dark:hover:bg-white/10 border-foreground/10 dark:border-white/10 hover:border-primary/40 hover:scale-[1.02]",
+                                    !showResult && "bg-card/5 dark:bg-card/5 hover:bg-card/10 dark:hover:bg-card/10 border-foreground/10 dark:border-foreground/10 hover:border-primary/40 hover:scale-[1.02]",
                                     isSelected && !showResult && "bg-primary/20 border-primary/50",
                                     isCorrectAnswer && "bg-green-500/20 border-green-500/50",
                                     isWrongAnswer && "bg-red-500/20 border-red-500/50",
@@ -95,10 +95,10 @@ const BrainDrop: React.FC<BrainDropProps> = ({ question, onAnswer, totalAnswered
                             >
                                 <div className={cn(
                                     "w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold transition-colors flex-shrink-0",
-                                    !showResult && "bg-foreground/10 dark:bg-white/10 text-foreground group-hover/btn:bg-primary group-hover/btn:text-primary-foreground",
+                                    !showResult && "bg-card/10 dark:bg-card/10 text-foreground group-hover/btn:bg-primary group-hover/btn:text-primary-foreground",
                                     isSelected && !showResult && "bg-primary text-primary-foreground",
-                                    isCorrectAnswer && "bg-green-500 text-white",
-                                    isWrongAnswer && "bg-red-500 text-white"
+                                    isCorrectAnswer && "bg-green-500 text-foreground",
+                                    isWrongAnswer && "bg-red-500 text-foreground"
                                 )}>
                                     {String.fromCharCode(65 + idx)}
                                 </div>

@@ -41,8 +41,8 @@
         --ring: 217 91% 60%;
 
         /* Professional Blues - Solidified */
-        --gradient-primary: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary)));
-        --gradient-hero: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary)));
+        --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+        --gradient-hero: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
         
         /* Shadows */
         --shadow-glow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
@@ -184,4 +184,19 @@
 
 .animate-pulse-glow {
     animation: pulse-glow 4s ease-in-out infinite;
+}
+@layer utilities {
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: hsl(var(--foreground) / 0.1);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--foreground) / 0.2);
+    }
 }

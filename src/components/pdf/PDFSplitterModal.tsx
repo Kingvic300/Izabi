@@ -122,14 +122,14 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-4xl max-h-[90vh] overflow-y-auto"
       >
         <Card className="glass border-primary/20 shadow-2xl">
-          <CardHeader className="border-b border-white/5 pb-6">
+          <CardHeader className="border-b border-foreground/5 pb-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -155,16 +155,16 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
 
             {/* Document Stats */}
             <div className="flex flex-wrap gap-3 mt-6">
-              <Badge className="bg-white/5 text-white border-white/10 px-4 py-2 text-sm">
+              <Badge className="bg-card/5 text-foreground border-foreground/10 px-4 py-2 text-sm">
                 <FileText size={14} className="mr-2" />
                 {analysis.pageCount} Pages
               </Badge>
-              <Badge className="bg-white/5 text-white border-white/10 px-4 py-2 text-sm">
+              <Badge className="bg-card/5 text-foreground border-foreground/10 px-4 py-2 text-sm">
                 <Layers size={14} className="mr-2" />
                 ~{Math.round(analysis.estimatedChars / 1000)}K chars
               </Badge>
               {analysis.fileSizeMB && (
-                <Badge className="bg-white/5 text-white border-white/10 px-4 py-2 text-sm">
+                <Badge className="bg-card/5 text-foreground border-foreground/10 px-4 py-2 text-sm">
                   {analysis.fileSizeMB.toFixed(1)} MB
                 </Badge>
               )}
@@ -248,7 +248,7 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-4"
                 >
-                  <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="p-6 rounded-2xl bg-card/5 border border-foreground/10">
                     <h3 className="text-lg font-bold mb-4">Custom Page Range</h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -259,7 +259,7 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
                           max={analysis.pageCount}
                           value={customStart}
                           onChange={(e) => setCustomStart(parseInt(e.target.value) || 1)}
-                          className="bg-white/5 border-white/10 h-12"
+                          className="bg-card/5 border-foreground/10 h-12"
                         />
                       </div>
                       <div className="space-y-2">
@@ -270,7 +270,7 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
                           max={analysis.pageCount}
                           value={customEnd}
                           onChange={(e) => setCustomEnd(parseInt(e.target.value) || analysis.pageCount)}
-                          className="bg-white/5 border-white/10 h-12"
+                          className="bg-card/5 border-foreground/10 h-12"
                         />
                       </div>
                     </div>
@@ -291,7 +291,7 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 pt-4 border-t border-white/5">
+            <div className="flex gap-4 pt-4 border-t border-foreground/5">
               <Button
                 variant="outline"
                 onClick={onCancel}
@@ -334,15 +334,15 @@ const SuggestionCard: React.FC<{
         'p-4 rounded-2xl border-2 cursor-pointer transition-all group',
         selected
           ? 'border-primary bg-primary/10 shadow-glow'
-          : 'border-white/5 bg-white/[0.02] hover:bg-white/5 hover:border-white/10'
+          : 'border-foreground/5 bg-card/[0.02] hover:bg-card/5 hover:border-foreground/10'
       )}
     >
       <div className="flex items-start gap-4">
         <div className={cn(
           'w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 mt-0.5',
-          selected ? 'border-primary bg-primary' : 'border-white/20'
+          selected ? 'border-primary bg-primary' : 'border-foreground/20'
         )}>
-          {selected && <CheckCircle2 size={14} className="text-white" />}
+          {selected && <CheckCircle2 size={14} className="text-foreground" />}
         </div>
 
         <div className="flex-1 min-w-0">
@@ -356,13 +356,13 @@ const SuggestionCard: React.FC<{
           </div>
 
           <div className="flex flex-wrap gap-3 mb-2">
-            <span className="text-xs font-mono bg-white/5 px-2 py-1 rounded">
+            <span className="text-xs font-mono bg-card/5 px-2 py-1 rounded">
               Pages {suggestion.pageStart}–{suggestion.pageEnd}
             </span>
-            <span className="text-xs font-mono bg-white/5 px-2 py-1 rounded">
+            <span className="text-xs font-mono bg-card/5 px-2 py-1 rounded">
               ~{Math.round(suggestion.estimatedChars / 1000)}K chars
             </span>
-            <span className="text-xs font-mono bg-white/5 px-2 py-1 rounded">
+            <span className="text-xs font-mono bg-card/5 px-2 py-1 rounded">
               {suggestion.pageEnd - suggestion.pageStart + 1} pages
             </span>
           </div>

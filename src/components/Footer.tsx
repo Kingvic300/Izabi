@@ -53,7 +53,7 @@ export const Footer = () => {
                                 { icon: Linkedin, href: "#" },
                                 { icon: Mail, href: "#" }
                             ].map((social, i) => (
-                                <a key={i} href={social.href} className="w-10 h-10 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground">
+                                <a key={i} href={social.href} className="w-10 h-10 rounded-xl bg-card/5 border border-foreground/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary/50 transition-all text-muted-foreground hover:text-primary-foreground">
                                     <social.icon size={18} />
                                 </a>
                             ))}

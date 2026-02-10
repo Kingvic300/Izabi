@@ -56,7 +56,7 @@ const LazyPage: React.FC<{
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className={cn(
-                "relative cursor-pointer transition-all duration-500 rounded-2xl overflow-hidden group min-h-[250px] bg-foreground/5",
+                "relative cursor-pointer transition-all duration-500 rounded-2xl overflow-hidden group min-h-[250px] bg-card/5",
                 isSelected && "ring-4 ring-primary ring-offset-4 ring-offset-black scale-105",
                 "hover:scale-[1.08] hover:shadow-[0_0_30px_hsla(var(--primary)/0.2)]"
             )}
@@ -78,7 +78,7 @@ const LazyPage: React.FC<{
                         className="opacity-90 group-hover:opacity-100 transition-opacity"
                     />
 
-                    <div className="absolute top-4 left-4 px-2 py-0.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 text-[10px] font-bold tracking-widest text-white uppercase">
+                    <div className="absolute top-4 left-4 px-2 py-0.5 rounded-2xl bg-card/40 backdrop-blur-md border border-foreground/10 text-[10px] font-bold tracking-widest text-foreground uppercase">
                         SEG {pageNumber}
                     </div>
 
@@ -90,7 +90,7 @@ const LazyPage: React.FC<{
                                 exit={{ scale: 0.5, opacity: 0 }}
                                 className="absolute top-4 right-4 z-10"
                             >
-                                <div className="bg-primary text-white rounded-2xl p-1 shadow-glow ring-2 ring-white/20">
+                                <div className="bg-primary text-primary-foreground rounded-2xl p-1 shadow-glow ring-2 ring-foreground/20">
                                     <CheckCircle2 size={16} />
                                 </div>
                             </motion.div>
@@ -98,7 +98,7 @@ const LazyPage: React.FC<{
                     </AnimatePresence>
 
                     {!isLoaded && (
-                        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-20">
+                        <div className="absolute inset-0 bg-background/20 backdrop-blur-sm flex items-center justify-center z-20">
                             <LoadingSpinner size="sm" />
                         </div>
                     )}

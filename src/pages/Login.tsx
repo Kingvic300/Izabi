@@ -170,7 +170,7 @@ const Login = () => {
                                         value={email}
                                         onChange={handleEmailChange}
                                         className={cn(
-                                            "h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground",
+                                            "h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground",
                                             emailError && "border-destructive/50"
                                         )}
                                     />
@@ -191,7 +191,7 @@ const Login = () => {
                                         value={password}
                                         onChange={handlePasswordChange}
                                         className={cn(
-                                            "h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground",
+                                            "h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground",
                                             passwordError && "border-destructive/50"
                                         )}
                                     />
@@ -234,16 +234,6 @@ const Login = () => {
                 </Card>
             </div>
 
-            <style>{`
-                .glass {
-                    background: rgba(255, 255, 255, 0.03);
-                    backdrop-filter: blur(40px);
-                    -webkit-backdrop-filter: blur(40px);
-                }
-                .shadow-glow {
-                    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-                }
-            `}</style>
         </div>
     )
 }

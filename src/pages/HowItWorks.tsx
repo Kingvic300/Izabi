@@ -124,17 +124,17 @@ const HowItWorks = () => {
                                     </div>
                                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         {step.details.map((detail, j) => (
-                                            <li key={j} className="flex items-center gap-3 glass p-4 rounded-xl border border-white/5">
+                                            <li key={j} className="flex items-center gap-3 glass p-4 rounded-xl border border-foreground/5">
                                                 <CheckCircle size={18} className="text-primary flex-shrink-0" />
                                                 <span className="text-sm font-bold opacity-80">{detail}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="flex-1 w-full aspect-square glass rounded-xl border border-white/5 relative overflow-hidden group shadow-2xl">
+                                <div className="flex-1 w-full aspect-square glass rounded-xl border border-foreground/5 relative overflow-hidden group shadow-2xl">
                                     <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                     <div className="absolute inset-0 flex items-center justify-center p-20">
-                                       <div className="w-full h-full bg-white/5 rounded-xl animate-pulse border border-white/10 flex items-center justify-center text-primary/20">
+                                       <div className="w-full h-full bg-card/5 rounded-xl animate-pulse border border-foreground/10 flex items-center justify-center text-primary/20">
                                             {step.icon}
                                        </div>
                                     </div>
@@ -149,7 +149,7 @@ const HowItWorks = () => {
             </section>
 
             {/* Quick Timeline */}
-            <section className="py-32 bg-white/[0.01] border-y border-white/5">
+            <section className="py-32 bg-card/[0.01] border-y border-foreground/5">
                 <div className="w-full px-6 lg:px-12">
                     <h2 className="text-4xl font-bold text-center mb-16">Deployment Latency</h2>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
@@ -159,7 +159,7 @@ const HowItWorks = () => {
                             { label: t("hiw.lat_neural"), time: "30 sec" },
                             { label: t("hiw.lat_mastery"), time: "Instant" }
                         ].map((stat, i) => (
-                            <Card key={i} className="glass p-10 border-white/5 hover-lift text-center group">
+                            <Card key={i} className="glass p-10 border-foreground/5 hover-lift text-center group">
                                 <div className="text-3xl font-bold text-primary mb-2 group-hover:scale-110 transition-transform">{stat.time}</div>
                                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{stat.label}</p>
                             </Card>
@@ -170,7 +170,7 @@ const HowItWorks = () => {
 
             {/* Final CTA */}
             <section className="py-44 relative z-10">
-                <div className="w-full px-6 lg:px-12 text-center bg-gradient-hero/5 py-24 rounded-[64px] border border-white/5 relative overflow-hidden">
+                <div className="w-full px-6 lg:px-12 text-center bg-gradient-hero/5 py-24 rounded-[64px] border border-foreground/5 relative overflow-hidden">
                     <h2 className="text-5xl font-bold mb-8 leading-tight text-foreground">{t("hiw.cta_title")}</h2>
                     <Link to="/signup">
                         <Button size="lg" className="h-20 px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xl shadow-glow group">
@@ -183,16 +183,6 @@ const HowItWorks = () => {
 
             <Footer />
 
-            <style>{`
-                .glass {
-                    background: rgba(255, 255, 255, 0.03);
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                }
-                .shadow-glow {
-                    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-                }
-            `}</style>
         </div>
     )
 }

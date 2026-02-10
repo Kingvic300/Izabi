@@ -185,7 +185,7 @@ const OTP = () => {
                 <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
                     <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6 md:space-y-8">
                         <div className="flex flex-col items-center gap-2 text-center">
-                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-foreground/5 flex items-center justify-center mb-1 md:mb-2">
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-card/5 flex items-center justify-center mb-1 md:mb-2">
                                 <Mail className="text-primary h-5 w-5 md:h-6 md:w-6" />
                             </div>
                             <p className="text-xs md:text-sm font-bold text-muted-foreground">Code sent to:</p>
@@ -205,7 +205,7 @@ const OTP = () => {
                                         onChange={(e) => handleChange(e.target.value, index)}
                                         onKeyDown={(e) => handleKeyDown(e, index)}
                                         onPaste={handlePaste}
-                                        className="w-9 h-11 sm:w-12 sm:h-14 md:w-14 md:h-16 rounded-lg sm:rounded-xl text-center text-lg sm:text-xl md:text-2xl font-bold bg-foreground/5 border-foreground/10 focus:border-primary focus:ring-2 sm:focus:ring-4 focus:ring-primary/20 transition-all text-foreground p-0"
+                                        className="w-9 h-11 sm:w-12 sm:h-14 md:w-14 md:h-16 rounded-lg sm:rounded-xl text-center text-lg sm:text-xl md:text-2xl font-bold bg-card/5 border-foreground/10 focus:border-primary focus:ring-2 sm:focus:ring-4 focus:ring-primary/20 transition-all text-foreground p-0"
                                     />
                                 ))}
                             </div>
@@ -213,7 +213,7 @@ const OTP = () => {
                             <Button
                                 type="submit"
                                 disabled={loading || otp.join("").length < 6}
-                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-white hover:bg-primary/90 font-bold text-lg sm:text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
+                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
                             >
                                 {loading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />
@@ -226,7 +226,7 @@ const OTP = () => {
                             </Button>
                         </form>
 
-                        <div className="pt-6 border-t border-white/5 text-center flex flex-col gap-4">
+                        <div className="pt-6 border-t border-foreground/5 text-center flex flex-col gap-4">
                             <button
                                 type="button"
                                 onClick={handleResendOtp}
@@ -237,7 +237,7 @@ const OTP = () => {
                             </button>
                             <p className="text-xs font-bold text-muted-foreground">
                                 Wrong email?{" "}
-                                <Link to="/signup" className="text-white hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
+                                <Link to="/signup" className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
                                     Change email address
                                 </Link>
                             </p>
@@ -246,16 +246,6 @@ const OTP = () => {
                 </Card>
             </div>
 
-            <style>{`
-                .glass {
-                    background: rgba(255, 255, 255, 0.03);
-                    backdrop-filter: blur(40px);
-                    -webkit-backdrop-filter: blur(40px);
-                }
-                .shadow-glow {
-                    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-                }
-            `}</style>
         </div>
     )
 }

@@ -150,8 +150,8 @@ const DashboardProfile = () => {
                         variant="outline" 
                         onClick={() => setIsEditing(!isEditing)}
                         className={`
-                            h-12 rounded-2xl border-white/10 px-6 font-bold transition-all
-                            ${isEditing ? 'bg-foreground/10 text-foreground' : 'glass hover:bg-foreground/5'}
+                            h-12 rounded-2xl border-foreground/10 px-6 font-bold transition-all
+                            ${isEditing ? 'bg-card/10 text-foreground' : 'glass hover:bg-card/5'}
                         `}
                     >
                         <Edit className="h-4 w-4 mr-2" />
@@ -191,7 +191,7 @@ const DashboardProfile = () => {
                                     </AvatarFallback>
                                 </Avatar>
                                 {isEditing && (
-                                    <label className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-white rounded-2xl flex items-center justify-center cursor-pointer hover:bg-primary-glow shadow-lg z-20 transition-transform active:scale-95">
+                                    <label className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center cursor-pointer hover:bg-primary-glow shadow-lg z-20 transition-transform active:scale-95">
                                         <Camera className="h-5 w-5" />
                                         <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
                                     </label>
@@ -207,7 +207,7 @@ const DashboardProfile = () => {
                             </div>
 
                             <div className="w-full space-y-4">
-                                <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/5 w-full flex items-center gap-4">
+                                <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 w-full flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                                        <Shield size={20} />
                                     </div>
@@ -216,7 +216,7 @@ const DashboardProfile = () => {
                                         <p className="font-bold">Standard User</p>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/5 w-full flex items-center gap-4">
+                                <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 w-full flex items-center gap-4">
                                      <div className="w-10 h-10 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-500">
                                        <MapPin size={20} />
                                     </div>
@@ -302,7 +302,7 @@ const DashboardProfile = () => {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-8">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-2xl bg-foreground/[0.02] border border-foreground/5 hover:bg-foreground/[0.04] transition-colors">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-2xl bg-card/[0.02] border border-foreground/5 hover:bg-card/[0.04] transition-colors">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                                         <KeyRound size={24} />
@@ -319,8 +319,6 @@ const DashboardProfile = () => {
                 </div>
             </div>
 
-            <style>{`
-            `}</style>
         </div>
     )
 }

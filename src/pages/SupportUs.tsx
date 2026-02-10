@@ -95,7 +95,7 @@ export default function SupportUs() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 {/* Left Column: The Form */}
                 <div className="space-y-8 animate-in fade-in slide-in-from-left-5">
-                    <Card className="support-card glass shadow-2xl border-white/5 rounded-2xl overflow-hidden group">
+                    <Card className="support-card glass shadow-2xl border-foreground/5 rounded-2xl overflow-hidden group">
                         <CardHeader className="p-6 md:p-10 pb-4 md:pb-6">
                             <CardTitle className="flex items-center gap-3 text-3xl font-bold">
                                 <Key className="text-primary" />
@@ -130,7 +130,7 @@ export default function SupportUs() {
                                                 placeholder="gsk-..."
                                                 value={apiKey}
                                                 onChange={(e) => setApiKey(e.target.value)}
-                                                className="h-16 rounded-2xl glass border-white/10 px-6 font-mono text-lg focus:ring-primary/20"
+                                                className="h-16 rounded-2xl glass border-foreground/10 px-6 font-mono text-lg focus:ring-primary/20"
                                                 autoComplete="off"
                                             />
                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -149,10 +149,10 @@ export default function SupportUs() {
                                     <Button 
                                         type="submit" 
                                         disabled={isLoading || !apiKey.trim()} 
-                                        className="w-full h-20 rounded-2xl bg-primary hover:bg-primary-glow text-white font-bold text-2xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3"
+                                        className="w-full h-20 rounded-2xl bg-primary hover:bg-primary-glow text-primary-foreground font-bold text-2xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3"
                                     >
                                         {isLoading ? (
-                                            <div className="animate-spin h-6 w-6 border-2 border-white/30 border-t-white rounded-2xl" />
+                                            <div className="animate-spin h-6 w-6 border-2 border-foreground/30 border-t-foreground rounded-2xl" />
                                         ) : (
                                             <>
                                                 <Sparkles />
@@ -166,14 +166,14 @@ export default function SupportUs() {
                     </Card>
 
                     <div className="support-card grid grid-cols-2 gap-6">
-                        <Card className="glass border-white/5 p-8 rounded-2xl space-y-4 hover-lift">
+                        <Card className="glass border-foreground/5 p-8 rounded-2xl space-y-4 hover-lift">
                             <div className="p-3 rounded-2xl bg-primary/10 text-primary w-fit"><Share2 size={24} /></div>
                             <div>
                                 <h4 className="font-bold text-lg">Spread the Word</h4>
                                 <p className="text-sm opacity-60 font-medium leading-normal">Tell your classmates about Izabi. Growth is support.</p>
                             </div>
                         </Card>
-                        <Card className="glass border-white/5 p-8 rounded-2xl space-y-4 hover-lift">
+                        <Card className="glass border-foreground/5 p-8 rounded-2xl space-y-4 hover-lift">
                             <div className="p-3 rounded-2xl bg-primary/10 text-primary w-fit"><Shield size={24} /></div>
                             <div>
                                 <h4 className="font-bold text-lg">Safe & Secure</h4>
@@ -191,7 +191,7 @@ export default function SupportUs() {
                             How to get your key
                         </h2>
 
-                        <div className="space-y-12 relative before:absolute before:left-6 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/5">
+                        <div className="space-y-12 relative before:absolute before:left-6 before:top-2 before:bottom-2 before:w-0.5 before:bg-card/5">
                             {[
                                 {
                                     step: 1,
@@ -220,7 +220,7 @@ export default function SupportUs() {
                                 }
                             ].map((item, i) => (
                                 <div key={i} className="relative flex items-start gap-8 group">
-                                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center font-bold text-lg shrink-0 z-10 group-hover:bg-primary/20 group-hover:border-primary/30 transition-all">
+                                    <div className="w-12 h-12 rounded-2xl bg-card/5 border border-foreground/10 flex items-center justify-center font-bold text-lg shrink-0 z-10 group-hover:bg-primary/20 group-hover:border-primary/30 transition-all">
                                         {item.step}
                                     </div>
                                     <div className="space-y-2 pt-1">
@@ -231,7 +231,7 @@ export default function SupportUs() {
                                                     href={item.link} 
                                                     target="_blank" 
                                                     rel="noopener noreferrer"
-                                                    className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-colors"
+                                                    className="w-8 h-8 rounded-lg bg-card/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-colors"
                                                 >
                                                     {item.icon}
                                                 </a>
@@ -248,17 +248,6 @@ export default function SupportUs() {
                 </div>
             </div>
 
-            <style>{`
-                .shadow-glow {
-                    box-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
-                }
-                .hover-lift {
-                    transition: transform 0.3s ease;
-                }
-                .hover-lift:hover {
-                    transform: translateY(-5px);
-                }
-            `}</style>
         </div>
     )
 }

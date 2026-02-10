@@ -75,9 +75,9 @@ const Testimonials = () => {
             {/* Hero */}
             <section className="relative pt-44 pb-20">
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-white/10">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                         <Sparkles size={14} className="text-secondary" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Voices of the Consortium</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">Voices of the Consortium</span>
                     </div>
                     <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         Validated by <span className="text-gradient">10,000+ Scholars</span>
@@ -95,15 +95,15 @@ const Testimonials = () => {
                         {testimonials.map((t, i) => (
                             <Card
                                 key={i}
-                                className="testimonial-card glass p-10 border-white/5 hover-lift relative group overflow-hidden"
+                                className="testimonial-card glass p-10 border-foreground/5 hover-lift relative group overflow-hidden"
                             >
                                 <Quote className="absolute top-6 right-8 text-primary/10" size={60} />
                                 <div className="flex items-center gap-4 mb-8">
                                     <Avatar className="w-14 h-14 border-2 border-primary/20 bg-gradient-hero">
-                                        <AvatarFallback className="font-bold text-white">{t.initials}</AvatarFallback>
+                                        <AvatarFallback className="font-bold text-foreground">{t.initials}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <h3 className="font-bold text-white">{t.name}</h3>
+                                        <h3 className="font-bold text-foreground">{t.name}</h3>
                                         <p className="text-xs font-bold uppercase tracking-widest text-primary/60">{t.role}</p>
                                     </div>
                                 </div>
@@ -122,7 +122,7 @@ const Testimonials = () => {
             </section>
 
             {/* Impact Metrics */}
-            <section className="py-32 relative z-10 border-y border-white/5 bg-white/[0.01]">
+            <section className="py-32 relative z-10 border-y border-foreground/5 bg-card/[0.01]">
                 <div className="w-full px-6 lg:px-12">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
                         {[
@@ -142,16 +142,6 @@ const Testimonials = () => {
 
             <Footer />
 
-            <style>{`
-                .glass {
-                    background: rgba(255, 255, 255, 0.03);
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                }
-                .shadow-glow {
-                    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-                }
-            `}</style>
         </div>
     )
 }

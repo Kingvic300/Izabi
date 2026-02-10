@@ -85,9 +85,9 @@ const FAQ = () => {
             {/* Hero */}
             <section className="relative pt-44 pb-20">
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-white/10">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                         <HelpCircle size={14} className="text-secondary" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Neural Support System</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">Neural Support System</span>
                     </div>
                     <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         Frequently Asked <span className="text-gradient">Neural Queries</span>
@@ -110,7 +110,7 @@ const FAQ = () => {
                                         <AccordionItem
                                             key={index}
                                             value={`${category.category}-${index}`}
-                                            className="border border-white/5 bg-white/[0.02] rounded-xl px-8 shadow-2xl transition-all data-[state=open]:border-primary/30"
+                                            className="border border-foreground/5 bg-card/[0.02] rounded-xl px-8 shadow-2xl transition-all data-[state=open]:border-primary/30"
                                         >
                                             <AccordionTrigger className="hover:no-underline py-6">
                                                 <span className="text-left font-bold text-lg">{item.q}</span>
@@ -128,15 +128,15 @@ const FAQ = () => {
             </section>
 
             {/* Support CTA */}
-            <section className="py-32 relative z-10 border-t border-white/5">
-                <div className="w-full max-w-6xl mx-auto px-6 lg:px-12 text-center bg-primary/5 py-24 rounded-[48px] border border-white/5">
+            <section className="py-32 relative z-10 border-t border-foreground/5">
+                <div className="w-full max-w-6xl mx-auto px-6 lg:px-12 text-center bg-primary/5 py-24 rounded-[48px] border border-foreground/5">
                     <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center mx-auto mb-8">
                         <Sparkles className="text-primary" size={32} />
                     </div>
                     <h2 className="text-4xl font-bold mb-6">Need a human link?</h2>
                     <p className="text-lg text-muted-foreground mb-10 font-medium">Our help descriptors are available for direct neural link support.</p>
                     <Link to="/contact">
-                        <Button className="h-16 px-10 rounded-xl bg-white text-black font-bold text-lg hover:bg-white/90 shadow-glow">
+                        <Button className="h-16 px-10 rounded-xl bg-card text-black font-bold text-lg hover:bg-card/5 shadow-glow">
                             Initialize Direct Link
                         </Button>
                     </Link>
@@ -145,16 +145,6 @@ const FAQ = () => {
 
             <Footer />
 
-            <style>{`
-                .glass {
-                    background: rgba(255, 255, 255, 0.03);
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                }
-                .shadow-glow {
-                    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-                }
-            `}</style>
         </div>
     )
 }

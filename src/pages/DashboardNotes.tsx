@@ -172,7 +172,7 @@ export default function DashboardNotes() {
 
             {isAddingNote && (
                 <Card className="glass shadow-2xl border-foreground/10 overflow-hidden stagger-card">
-                    <CardHeader className="bg-foreground/5 border-b border-foreground/5">
+                    <CardHeader className="bg-card/5 border-b border-foreground/5">
                         <CardTitle className="flex items-center gap-2">
                             <Sparkles className="h-5 w-5 text-primary" />
                             <span>Create New Note</span>
@@ -187,7 +187,7 @@ export default function DashboardNotes() {
                                     value={newNote.title}
                                     onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
                                     placeholder="Enter note title..."
-                                    className={`rounded-2xl h-12 bg-foreground/5 border-foreground/10 ${errors.title ? "border-destructive" : ""}`}
+                                    className={`rounded-2xl h-12 bg-card/5 border-foreground/10 ${errors.title ? "border-destructive" : ""}`}
                                 />
                                 {errors.title && (
                                     <p className="text-xs text-destructive flex items-center gap-1">
@@ -202,7 +202,7 @@ export default function DashboardNotes() {
                                     value={newNote.subject}
                                     onChange={(e) => setNewNote({ ...newNote, subject: e.target.value })}
                                     placeholder="e.g., Biology, Math..."
-                                    className="rounded-2xl h-12 bg-foreground/5 border-foreground/10"
+                                    className="rounded-2xl h-12 bg-card/5 border-foreground/10"
                                 />
                             </div>
                         </div>
@@ -246,7 +246,7 @@ export default function DashboardNotes() {
                                     <div className="space-y-4 flex-1 flex flex-col">
                                         <Input
                                             value={note.title}
-                                            className="rounded-2xl bg-foreground/5 border-foreground/10"
+                                            className="rounded-2xl bg-card/5 border-foreground/10"
                                             onChange={(e) =>
                                                 setNotes((prev) =>
                                                     prev.map((n) => (n.id === note.id ? { ...n, title: e.target.value } : n))
@@ -314,7 +314,7 @@ export default function DashboardNotes() {
                                             <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 space-y-4 z-20">
                                                 <p className="text-xs font-bold uppercase tracking-wider text-center">Permanently remove this note?</p>
                                                 <div className="flex gap-2 w-full">
-                                                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)} className="flex-1 rounded-2xl bg-foreground/10 border-foreground/20 text-foreground hover:bg-foreground/20">
+                                                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(null)} className="flex-1 rounded-2xl bg-card/10 border-foreground/20 text-foreground hover:bg-card/20">
                                                         Cancel
                                                     </Button>
                                                     <Button
@@ -335,7 +335,7 @@ export default function DashboardNotes() {
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-24 glass rounded-2xl border-dashed space-y-6">
-                    <div className="w-24 h-24 rounded-2xl bg-foreground/5 flex items-center justify-center border border-foreground/10">
+                    <div className="w-24 h-24 rounded-2xl bg-card/5 flex items-center justify-center border border-foreground/10">
                         <FileText size={48} className="text-muted-foreground/30" />
                     </div>
                     <div className="text-center space-y-2">
@@ -348,11 +348,6 @@ export default function DashboardNotes() {
                 </div>
             )}
 
-            <style>{`
-                .mask-fade {
-                    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-                }
-            `}</style>
         </div>
     )
 }

@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Zap, Send, Loader, User, Brain, History, Sparkles, Plus, Search, Calendar, XCircle } from "lucide-react"
+import { Zap, Send, Loader, User, Brain, History, Sparkles, Plus, Search, Calendar, XCircle, BookOpen, Target } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { api } from "@/lib/apiClient"
 import gsap from "gsap"
@@ -221,7 +221,7 @@ const DashboardAIAssistant = () => {
                     
                     <Sheet>
                         <SheetTrigger asChild>
-                            <Button variant="outline" size="sm" className="flex items-center gap-2 glass-card font-bold hover:bg-foreground/5">
+                            <Button variant="outline" size="sm" className="flex items-center gap-2 glass-card font-bold hover:bg-card/5">
                                 <History className="h-4 w-4" />
                                 <span className="hidden sm:inline">History</span>
                             </Button>
@@ -236,7 +236,7 @@ const DashboardAIAssistant = () => {
                                     Browse your past interactions with Izabi.
                                 </SheetDescription>
                             </SheetHeader>
-                            <Separator className="bg-foreground/5" />
+                            <Separator className="bg-card/5" />
                             <ScrollArea className="flex-1 px-4 py-6">
                                 <div className="space-y-8">
                                     {Object.keys(historyGroups).length === 0 ? (
@@ -288,7 +288,7 @@ const DashboardAIAssistant = () => {
                                 <Button 
                                     variant="destructive" 
                                     onClick={handleClearHistory}
-                                    className="w-full rounded-xl font-bold gap-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all"
+                                    className="w-full rounded-xl font-bold gap-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-foreground transition-all"
                                 >
                                     <XCircle size={16} />
                                     Clear All History
@@ -320,11 +320,11 @@ const DashboardAIAssistant = () => {
                                 <div
                                     className={`max-w-[85%] lg:max-w-[70%] px-5 py-4 rounded-2xl shadow-sm leading-relaxed
                                         ${message.role === "user"
-                                            ? "bg-primary text-white rounded-tr-none"
+                                            ? "bg-primary text-primary-foreground rounded-tr-none"
                                             : "bg-muted/50 backdrop-blur-sm border border-foreground/5 rounded-tl-none"
                                     }`}
                                 >
-                                    <div className="text-sm md:text-base prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
+                                    <div className="text-sm md:text-base prose prose-sm dark:prose-invert max-w-none foregroundspace-pre-wrap">
                                         {message.content === "" ? (
                                             <div className="flex gap-1 py-1">
                                                 <div className="w-1.5 h-1.5 bg-accent animate-bounce" />
@@ -354,10 +354,31 @@ const DashboardAIAssistant = () => {
                     </div>
 
                     {/* Input Area */}
-                    <div className="p-6 pt-0">
-                        <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                    <div className="p-6 pt-0 space-y-4">
+                        {/* Smart Suggestions */}
+                        {!inputValue && !isLoading && (
+                            <div className="flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                {[
+                                    { label: "Generate Flashcards", icon: <Zap size={12} />, prompt: "Generate flashcards for: " },
+                                    { label: "Study Guide", icon: <BookOpen size={12} />, prompt: "Create a detailed study guide for: " },
+                                    { label: "Practice Quiz", icon: <Target size={12} />, prompt: "Give me a practice quiz on: " }
+                                ].map((s, idx) => (
+                                    <Button 
+                                        key={idx}
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setInputValue(s.prompt)}
+                                        className="h-8 rounded-full bg-primary/5 border-primary/20 text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-wider gap-2 transition-all hover:scale-105"
+                                    >
+                                        {s.icon} {s.label}
+                                    </Button>
+                                ))}
+                            </div>
+                        )}
+
+                        <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-card/5 backdrop-blur-xl">
                             <Input
-                                placeholder="Ask Izabi anything..."
+                                placeholder="Ask Izabi to generate something or explain a topic..."
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyPress={handleKeyPress}
@@ -368,9 +389,10 @@ const DashboardAIAssistant = () => {
                                 onClick={handleSendMessage} 
                                 disabled={isLoading || !inputValue.trim()} 
                                 size="icon"
-                                className="h-10 w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary-glow"
+                                className="h-10 w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary/90 shadow-glow shadow-primary/20 relative overflow-hidden group/btn"
                             >
-                                <Send className="h-5 w-5" />
+                                <Send className="h-5 w-5 relative z-10" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
                             </Button>
                         </div>
                         <p className="text-[10px] text-center mt-3 text-muted-foreground/60 uppercase tracking-widest font-medium">

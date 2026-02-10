@@ -28,28 +28,28 @@ export const Logo: React.FC<LogoProps> = ({ className = "", size = 40, showText 
               {/* Outer Brain Shape */}
               <path 
                 d="M50 15C30.67 15 15 30.67 15 50C15 69.33 30.67 85 50 85C69.33 85 85 69.33 85 50C85 30.67 69.33 15 50 15ZM50 80C33.43 80 20 66.57 20 50C20 33.43 33.43 20 50 20C66.57 20 80 33.43 80 50C80 66.57 66.57 80 50 80Z" 
-                fill="white" 
+                fill="foreground" 
                 fillOpacity="0.3"
               />
               
               {/* Inner Node - Stylized 'I' / Person */}
               <path 
                 d="M50 35C44.48 35 40 39.48 40 45V65H60V45C60 39.48 55.52 35 50 35Z" 
-                fill="white"
+                fill="foreground"
               />
-              <circle cx="50" cy="28" r="5" fill="white" />
+              <circle cx="50" cy="28" r="5" fill="foreground" />
               
               {/* Tech/AI Accents */}
               <path 
                 d="M25 45L35 35M75 45L65 35M25 55L35 65M75 55L65 65" 
-                stroke="white" 
+                stroke="foreground" 
                 strokeWidth="3" 
                 strokeLinecap="round"
                 strokeOpacity="0.6"
               />
               
               {/* Pulse Animation Node */}
-              <circle cx="50" cy="50" r="15" stroke="white" strokeWidth="2" strokeDasharray="4 4">
+              <circle cx="50" cy="50" r="15" stroke="foreground" strokeWidth="2" strokeDasharray="4 4">
                 <animateTransform 
                   attributeName="transform"
                   type="rotate"

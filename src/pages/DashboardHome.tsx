@@ -630,19 +630,19 @@ const DashboardHome = () => {
                     <motion.div 
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20"
+                        className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-gradient-to-r from-blue-500/10 via-blue-400/5 to-transparent border border-blue-500/20"
                     >
                         <div className="flex items-center gap-6">
                             <div className="flex items-center gap-2">
-                                <Flame size={20} className="text-orange-500" fill="currentColor" />
-                                <span className="text-sm font-bold text-foreground">{userStats.data.studyStreak || 0} day streak</span>
+                                <Flame size={20} className="text-blue-500" fill="currentColor" />
+                                <span className="text-sm font-bold text-foreground">{(userStats.data.streakData?.academicStreak ?? userStats.data.studyStreak) || 0} day streak</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Trophy size={20} className="text-yellow-500" />
+                                <Trophy size={20} className="text-blue-400" />
                                 <span className="text-sm font-bold text-foreground">{userStats.data.totalPoints || 0} XP</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <TrendingUp size={20} className="text-green-500" />
+                                <TrendingUp size={20} className="text-blue-600" />
                                 <span className="text-sm font-bold text-foreground/60 dark:text-foreground/70">Top 12% today</span>
                             </div>
                         </div>
@@ -662,26 +662,28 @@ const DashboardHome = () => {
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-primary/10 via-accent/5 to-transparent border border-primary/20 p-8 md:p-12 text-center"
+                                className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-blue-600/10 via-blue-400/5 to-transparent border border-blue-500/20 p-8 md:p-14 text-center group"
                             >
-                                <div className="absolute top-0 right-0 p-8 opacity-5">
-                                    <Brain size={180} className="stroke-primary" />
+                                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <Brain size={180} className="stroke-blue-500" />
                                 </div>
-                                <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+                                <div className="relative z-10 max-w-2xl mx-auto space-y-8">
                                     <div className="flex justify-center">
-                                        <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
-                                            <Sparkles size={32} />
+                                        <div className="w-20 h-20 rounded-[28px] bg-blue-500/20 flex items-center justify-center text-blue-500 shadow-xl shadow-blue-500/10">
+                                            <Sparkles size={40} />
                                         </div>
                                     </div>
-                                    <h3 className="text-2xl md:text-3xl font-bold text-foreground">
-                                        Personalize your <span className="text-gradient">Daily Brain Drop</span>
-                                    </h3>
-                                    <p className="text-lg text-muted-foreground font-medium">
-                                        Upload your class notes or a textbook PDF, and we'll generate daily personalized questions to help you mastery your specific subjects.
-                                    </p>
+                                    <div className="space-y-4">
+                                        <h3 className="text-3xl md:text-5xl font-black text-foreground tracking-tighter italic">
+                                            Personalize your <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">Brain Drop</span>
+                                        </h3>
+                                        <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed opacity-80">
+                                            Upload class notes or a textbook PDF. We'll generate daily personalized challenges to sync with your learning goals.
+                                        </p>
+                                    </div>
                                     <button 
-                                        onClick={() => updateSession({ pdfSelection: null, pdfFile: null, fileName: '' })} // Or whatever scrolls them to upload
-                                        className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all shadow-glow hover:scale-105"
+                                        onClick={() => updateSession({ pdfSelection: null, pdfFile: null, fileName: '' })}
+                                        className="inline-flex items-center gap-3 px-10 py-5 rounded-[20px] bg-blue-600 text-white font-black uppercase tracking-widest text-sm hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95"
                                     >
                                         <Upload size={20} />
                                         Upload Your First Note
@@ -733,7 +735,7 @@ const DashboardHome = () => {
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="px-8 pb-8 space-y-6">
-                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-foreground/5 border border-foreground/5">
+                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-card/5 border border-foreground/5">
                                             <div className="flex items-center gap-3">
                                                 <Layers size={18} className="text-primary/60" />
                                                 <span className="text-xs font-bold opacity-60">Status</span>
@@ -767,13 +769,13 @@ const DashboardHome = () => {
 
                             {/* Main Hub Controls */}
                             <div className="xl:col-span-8 flex flex-col gap-6">
-                                <Card className="glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden relative border border-white/5">
-                                    <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-white/5">
+                                <Card className="glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden relative border border-foreground/5">
+                                    <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-foreground/5">
                                         {[
                                             { id: 'summarize', icon: Brain, label: t("dashboard.mod_summary"), desc: t("dashboard.mod_summary_desc"), color: "text-blue-400" },
                                             { id: 'quiz', icon: Zap, label: t("dashboard.mod_quiz"), desc: t("dashboard.mod_quiz_desc"), color: "text-yellow-400" },
                                             { id: 'guide', icon: FileText, label: t("dashboard.mod_guide"), desc: t("dashboard.mod_guide_desc"), color: "text-emerald-400" },
-                                            { id: 'cards', icon: Layers, label: t("dashboard.mod_flashcards"), desc: t("dashboard.mod_flashcards_desc"), color: "text-purple-400" }
+                                            { id: 'cards', icon: Layers, label: t("dashboard.mod_flashcards"), desc: t("dashboard.mod_flashcards_desc"), color: "text-blue-400" }
                                         ].map((module) => (
                                             <button
                                                 key={module.id}
@@ -784,9 +786,9 @@ const DashboardHome = () => {
                                                     if (module.id === 'cards') handleRequest("flashcards")
                                                 }}
                                                 disabled={isProcessing}
-                                                className="flex-1 p-8 hover:bg-white/[0.03] active:bg-white/[0.05] transition-all group flex flex-col items-center text-center gap-4"
+                                                className="flex-1 p-8 hover:bg-card/[0.03] active:bg-card/[0.05] transition-all group flex flex-col items-center text-center gap-4"
                                             >
-                                                <div className={cn("p-4 rounded-3xl bg-foreground/5 transition-all group-hover:scale-110 group-hover:shadow-glow", module.color)}>
+                                                <div className={cn("p-4 rounded-3xl bg-card/5 transition-all group-hover:scale-110 group-hover:shadow-glow", module.color)}>
                                                     <module.icon size={28} />
                                                 </div>
                                                 <div>
@@ -797,10 +799,10 @@ const DashboardHome = () => {
                                         ))}
                                     </div>
                                     
-                                    <div className="p-6 bg-white/[0.02] border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                                    <div className="p-6 bg-card/[0.02] border-t border-foreground/5 flex flex-col md:flex-row items-center justify-between gap-4">
                                         <div className="flex items-center gap-4">
                                             <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 px-4">Session Settings</div>
-                                            <div className="flex items-center gap-2 bg-black/20 p-1.5 rounded-2xl border border-white/5">
+                                            <div className="flex items-center gap-2 bg-background/20 p-1.5 rounded-2xl border border-foreground/5">
                                                 <Select
                                                     value={String(numberOfQuestions)}
                                                     onValueChange={(val) => updateSession({ numberOfQuestions: Number(val) })}
@@ -809,7 +811,7 @@ const DashboardHome = () => {
                                                     <SelectTrigger className="w-[80px] h-8 rounded-xl bg-transparent border-0 focus:ring-0 font-bold text-xs uppercase">
                                                         <SelectValue />
                                                     </SelectTrigger>
-                                                    <SelectContent className="glass border-white/10">
+                                                    <SelectContent className="glass border-foreground/10">
                                                         {[3, 5, 8, 10, 15].map((num) => (
                                                             <SelectItem key={num} value={String(num)} className="font-bold text-xs">{num} items</SelectItem>
                                                         ))}
@@ -850,7 +852,7 @@ const DashboardHome = () => {
                              </div>
                              <div className="xl:col-span-4 space-y-6">
                                  <Card className="glass shadow-2xl p-10 md:p-14 rounded-[48px] flex flex-col items-center text-center space-y-8 h-full min-h-[400px] border-0">
-                                     <div className="w-24 h-24 rounded-[32px] bg-foreground/5 flex items-center justify-center border border-foreground/5 shadow-2xl rotate-3 group-hover:rotate-0 transition-all mt-4">
+                                     <div className="w-24 h-24 rounded-[32px] bg-card/5 flex items-center justify-center border border-foreground/5 shadow-2xl rotate-3 group-hover:rotate-0 transition-all mt-4">
                                          <Cpu size={48} className="text-primary animate-float" />
                                      </div>
                                      <div className="space-y-4 pt-4">
@@ -860,7 +862,7 @@ const DashboardHome = () => {
                                          </p>
                                      </div>
                                      <div className="flex-1 flex items-end pb-4">
-                                        <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-foreground/5 border border-foreground/5">
+                                        <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-card/5 border border-foreground/5">
                                             <div className="w-2 h-2 rounded-full bg-green-500/50 animate-pulse" />
                                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Ready to learn</span>
                                         </div>
@@ -892,7 +894,7 @@ const DashboardHome = () => {
                                                         <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">{flashcards.length} {t("dashboard.res_flashcards_desc")}</p>
                                                     </div>
                                                 </div>
-                                                <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
+                                                <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
                                                     {showFlashcards ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                                 </div>
                                             </button>
@@ -905,7 +907,7 @@ const DashboardHome = () => {
                                                 >
                                                     <div className={`relative w-full h-full transition-all duration-500 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
                                                         {/* Front */}
-                                                        <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-8 rounded-3xl glass bg-foreground/[0.02] border-2 border-primary/20 shadow-xl overflow-hidden">
+                                                        <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-8 rounded-3xl glass bg-card/[0.02] border-2 border-primary/20 shadow-xl overflow-hidden">
                                                             <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30">Front</div>
                                                             <p className="text-2xl font-bold text-center text-foreground">{flashcards[currentCardIndex]?.front}</p>
                                                         </div>
@@ -921,7 +923,7 @@ const DashboardHome = () => {
                                                     <Button 
                                                         variant="outline" 
                                                         size="icon" 
-                                                        className="h-12 w-12 rounded-3xl glass hover:bg-foreground/10"
+                                                        className="h-12 w-12 rounded-3xl glass hover:bg-card/10"
                                                         onClick={() => {
                                                             setIsFlipped(false)
                                                             setCurrentCardIndex((prev) => (prev > 0 ? prev - 1 : flashcards.length - 1))
@@ -935,7 +937,7 @@ const DashboardHome = () => {
                                                     <Button 
                                                         variant="outline" 
                                                         size="icon" 
-                                                        className="h-12 w-12 rounded-3xl glass hover:bg-foreground/10"
+                                                        className="h-12 w-12 rounded-3xl glass hover:bg-card/10"
                                                         onClick={() => {
                                                             setIsFlipped(false)
                                                             setCurrentCardIndex((prev) => (prev < flashcards.length - 1 ? prev + 1 : 0))
@@ -986,7 +988,7 @@ const DashboardHome = () => {
                                                     >
                                                         <Download size={18} />
                                                     </Button>
-                                                    <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
+                                                    <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
                                                         {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                                     </div>
                                                 </div>
@@ -1025,7 +1027,7 @@ const DashboardHome = () => {
                                                     >
                                                         <Download size={18} />
                                                     </Button>
-                                                    <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-foreground/5 transition-all">
+                                                    <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
                                                         {showQuestions ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                                     </div>
                                                 </div>
@@ -1039,7 +1041,7 @@ const DashboardHome = () => {
                                                     const correct = isShort && userAnswer ? isShortAnswerCorrect(userAnswer, q.answer || "") : userAnswer === q.answer
 
                                                     return (
-                                                        <Card key={i} className="bg-foreground/[0.02] border-foreground/5 rounded-2xl md:rounded-3xl p-4 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group">
+                                                        <Card key={i} className="bg-card/[0.02] border-foreground/5 rounded-2xl md:rounded-3xl p-4 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group">
                                                             
                                                             <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-6">
                                                                 <div className="space-y-2 md:space-y-3">
@@ -1048,7 +1050,7 @@ const DashboardHome = () => {
                                                                 </div>
                                                                  {showResults && (
                                                                     <div className={`w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-3xl text-[10px] font-bold tracking-widest uppercase flex items-center gap-2 shadow-2xl transition-all
-                                                                        ${correct ? "bg-primary text-white shadow-primary/20" : "bg-destructive text-white shadow-destructive/20"}`}>
+                                                                        ${correct ? "bg-primary text-foreground shadow-primary/20" : "bg-destructive text-primary-foreground shadow-destructive/20"}`}>
                                                                         {correct ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
                                                                         {correct ? "Correct" : "Incorrect"}
                                                                     </div>
@@ -1068,14 +1070,14 @@ const DashboardHome = () => {
                                                                                 onClick={() => handleAnswerSelect(i, opt)}
                                                                                 disabled={showResults}
                                                                                 className={`h-auto py-4 md:py-6 px-4 md:px-8 justify-start text-left rounded-2xl md:rounded-3xl transition-all duration-300 font-bold border border-foreground/5 w-full
-                                                                                    ${isSelected ? "bg-primary text-primary-foreground shadow-glow" : "bg-foreground/5 hover:bg-foreground/10 text-foreground/70"}
+                                                                                    ${isSelected ? "bg-primary text-primary-foreground shadow-glow" : "bg-card/5 hover:bg-card/10 text-primary-foreground/70"}
                                                                                     ${isCorrect ? "bg-primary/20 border-primary/50 text-primary !bg-opacity-20" : ""}
                                                                                     ${isWrong ? "bg-destructive/20 border-destructive/50 text-destructive-foreground !bg-opacity-20" : ""}
                                                                                 `}
                                                                             >
                                                                                 <div className="flex items-start gap-3 md:gap-4 w-full">
                                                                                     <div className={`w-7 h-7 md:w-8 md:h-8 rounded-2xl md:rounded-3xl flex items-center justify-center font-bold text-xs transition-opacity flex-shrink-0
-                                                                                        ${isSelected ? "bg-black/10" : "bg-foreground/10 opacity-30"}`}>
+                                                                                        ${isSelected ? "bg-background/10" : "bg-card/10 opacity-30"}`}>
                                                                                         {String.fromCharCode(65 + idx)}
                                                                                     </div>
                                                                                     <span className="text-sm md:text-base break-words flex-1">{opt}</span>
@@ -1091,7 +1093,7 @@ const DashboardHome = () => {
                                                                         placeholder="Type your answer here..."
                                                                         onChange={(e) => handleShortAnswerChange(i, e.target.value)}
                                                                         disabled={showResults}
-                                                                        className="rounded-2xl md:rounded-3xl h-14 md:h-16 bg-foreground/5 border-foreground/5 focus:bg-foreground/10 transition-all font-bold px-4 md:px-8 text-sm md:text-base text-foreground w-full"
+                                                                        className="rounded-2xl md:rounded-3xl h-14 md:h-16 bg-card/5 border-foreground/5 focus:bg-card/10 transition-all font-bold px-4 md:px-8 text-sm md:text-base text-foreground w-full"
                                                                     />
                                                                     {showResults && !correct && (
                                                                         <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5">
@@ -1122,16 +1124,16 @@ const DashboardHome = () => {
                                                             </Button>
                                                         ) : (
                                                             <div id="mastery-verdict" className="p-4 md:p-10 rounded-2xl md:rounded-3xl bg-gradient-hero relative overflow-hidden group shadow-glow">
-                                                                <div className="absolute inset-0 bg-black/10 transition-colors" />
+                                                                <div className="absolute inset-0 bg-background/10 transition-colors" />
                                                                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
                                                                     <div className="space-y-2 text-center md:text-left">
-                                                                        <h3 className="text-2xl md:text-4xl font-bold text-white tracking-tighter">{t("dashboard.mastery_confirmed")}</h3>
+                                                                        <h3 className="text-2xl md:text-4xl font-bold text-foreground tracking-tighter">{t("dashboard.mastery_confirmed")}</h3>
                                                                         <p className="text-foreground/70 font-bold text-base md:text-lg">{t("dashboard.mastery_desc")}</p>
                                                                     </div>
-                                                                    <div className="flex items-center gap-4 md:gap-8 glass p-4 md:p-8 rounded-2xl md:rounded-3xl border-foreground/20 bg-black/20">
+                                                                    <div className="flex items-center gap-4 md:gap-8 glass p-4 md:p-8 rounded-2xl md:rounded-3xl border-foreground/20 bg-background/20">
                                                                         <div className="text-center">
-                                                                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-2">{t("dashboard.resultant_yield")}</div>
-                                                                            <div className="text-2xl md:text-4xl font-bold text-white">{scoreQuiz()} / {questions.length}</div>
+                                                                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50 mb-2">{t("dashboard.resultant_yield")}</div>
+                                                                            <div className="text-2xl md:text-4xl font-bold text-foreground">{scoreQuiz()} / {questions.length}</div>
                                                                         </div>
                                                                         <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-primary text-primary-foreground flex items-center justify-center text-lg md:text-2xl font-bold shadow-glow">
                                                                             {Math.round((scoreQuiz()/questions.length)*100)}%
@@ -1150,23 +1152,6 @@ const DashboardHome = () => {
                         </div>
                     )}
                 </div>
-                <style>{`
-                .shadow-glow {
-                    box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
-                }
-                .perspective-1000 {
-                    perspective: 1000px;
-                }
-                .preserve-3d {
-                    transform-style: preserve-3d;
-                }
-                .backface-hidden {
-                    backface-visibility: hidden;
-                }
-                .rotate-y-180 {
-                    transform: rotateY(180deg);
-                }
-            `}</style>
             </div>
 
             {/* Modals */}

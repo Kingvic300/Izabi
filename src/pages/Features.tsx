@@ -106,9 +106,9 @@ const Features = () => {
             {/* Hero */}
             <section className="relative pt-44 pb-20">
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-white/10">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                         <Trophy size={14} className="text-yellow-500" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Features built for excellence</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">Features built for excellence</span>
                     </div>
                     <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         Propel Your <span className="text-gradient">Academic Trajectory</span>
@@ -126,7 +126,7 @@ const Features = () => {
                         {features.map((feature, i) => (
                             <Card
                                 key={i}
-                                className="feature-card glass shadow-2xl border-white/5 p-10 hover-lift group overflow-hidden"
+                                className="feature-card glass shadow-2xl border-foreground/5 p-10 hover-lift group overflow-hidden"
                             >
                                 <div className={`w-16 h-16 rounded-xl ${feature.bg} ${feature.color} flex items-center justify-center mb-8 shadow-xl group-hover:scale-110 transition-transform duration-500`}>
                                     {feature.icon}
@@ -150,12 +150,12 @@ const Features = () => {
             </section>
 
             {/* CTA */}
-            <section className="py-32 bg-white/[0.01] border-y border-white/10 relative z-10 overflow-hidden">
+            <section className="py-32 bg-card/[0.01] border-y border-foreground/10 relative z-10 overflow-hidden">
                 
                 <div className="w-full px-6 lg:px-12 text-center relative z-10">
                     <h2 className="text-5xl font-bold mb-10 leading-none">Ready to deploy these modules?</h2>
                     <Link to="/signup">
-                        <Button size="lg" className="h-20 px-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xl shadow-glow group">
+                        <Button size="lg" className="h-20 px-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xl shadow-glow group">
                             <span>Initialize Enlistment</span>
                             <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                         </Button>
@@ -165,16 +165,6 @@ const Features = () => {
 
             <Footer />
 
-            <style>{`
-                .glass {
-                    background: rgba(255, 255, 255, 0.03);
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                }
-                .shadow-glow {
-                    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-                }
-            `}</style>
         </div>
     )
 }

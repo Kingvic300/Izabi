@@ -42,7 +42,7 @@ const JobStatusToast: React.FC<JobStatusToastProps> = ({ job, onClose }) => {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 100, scale: 0.9 }}
             className={cn(
-                "relative group w-80 sm:w-96 overflow-hidden rounded-xl border border-white/10 bg-[#0f172a]/95 backdrop-blur-xl shadow-2xl",
+                "relative group w-80 sm:w-96 overflow-hidden rounded-xl border border-foreground/10 bg-card/95 backdrop-blur-xl shadow-2xl",
                 "before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1",
                 isCompleted ? "before:bg-green-500" : isFailed ? "before:bg-red-500" : "before:bg-primary"
             )}

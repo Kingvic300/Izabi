@@ -89,9 +89,9 @@ const About = () => {
             {/* Hero */}
             <section className="relative pt-44 pb-20">
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-white/10">
+                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                         <Sparkles size={14} className="text-primary" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Our Academic Manifesto</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">Our Academic Manifesto</span>
                     </div>
                     <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         The Future of <span className="text-gradient">Scholastic Mastery</span>
@@ -105,7 +105,7 @@ const About = () => {
             {/* Manifesto Content */}
             <section className="about-section py-20 relative z-10">
                 <div className="w-full max-w-6xl mx-auto px-6 lg:px-12">
-                    <div className="glass p-12 rounded-[48px] border border-white/5 space-y-10 shadow-2xl">
+                    <div className="glass p-12 rounded-[48px] border border-foreground/5 space-y-10 shadow-2xl">
                         <div className="flex items-center gap-4">
                             <div className="w-1.5 h-12 bg-primary rounded-xl" />
                             <h2 className="text-4xl font-bold">Our Origin</h2>
@@ -116,12 +116,12 @@ const About = () => {
                                 We observed thousands of hours wasted on rote memorization rather than deep conceptual mastery.
                             </p>
                             <p>
-                                In 2023, our chief architect <span className="text-white">Chioma Okafor</span> initiated Izabi with a singular objective: 
+                                In 2023, our chief architect <span className="text-foreground">Chioma Okafor</span> initiated Izabi with a singular objective: 
                                 To leverage the power of advanced neural models to create a personalized, localized learning environment 
                                 that adapts to the scholar—not the other way around.
                             </p>
                             <p>
-                                Today, Izabi stands as the primary neural laboratory for over <span className="text-white">10,000 scholars across Africa</span>, 
+                                Today, Izabi stands as the primary neural laboratory for over <span className="text-foreground">10,000 scholars across Africa</span>, 
                                 yielding an average GPA increase of 1.2 points and reclaiming 500+ study hours annually for our users.
                             </p>
                         </div>
@@ -135,7 +135,7 @@ const About = () => {
                     <h2 className="text-sm font-bold uppercase tracking-[0.4em] text-center opacity-40 mb-16">Core Principles</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {values.map((v, i) => (
-                            <Card key={i} className="glass p-10 border-white/5 hover-lift text-center group">
+                            <Card key={i} className="glass p-10 border-foreground/5 hover-lift text-center group">
                                 <div className={`w-16 h-16 rounded-xl ${v.bg} ${v.color} flex items-center justify-center mx-auto mb-8 shadow-xl group-hover:scale-110 transition-transform`}>
                                     {v.icon}
                                 </div>
@@ -148,7 +148,7 @@ const About = () => {
             </section>
 
             {/* Neural Council */}
-            <section className="about-section py-32 bg-white/[0.01] border-y border-white/5 relative z-10">
+            <section className="about-section py-32 bg-card/[0.01] border-y border-foreground/5 relative z-10">
                 <div className="w-full px-6 lg:px-12">
                     <div className="text-center mb-20">
                         <h2 className="text-5xl font-bold mb-6">The Neural Council</h2>
@@ -156,8 +156,8 @@ const About = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {team.map((member, i) => (
-                            <Card key={i} className="glass p-8 border-white/5 hover-lift relative overflow-hidden group">
-                                <div className="w-16 h-16 bg-gradient-hero rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-glow mb-6 group-hover:rotate-6 transition-transform">
+                            <Card key={i} className="glass p-8 border-foreground/5 hover-lift relative overflow-hidden group">
+                                <div className="w-16 h-16 bg-gradient-hero rounded-xl flex items-center justify-center text-foreground font-bold text-2xl shadow-glow mb-6 group-hover:rotate-6 transition-transform">
                                     {member.initials}
                                 </div>
                                 <h3 className="text-xl font-bold mb-1">{member.name}</h3>
@@ -178,7 +178,7 @@ const About = () => {
                     </div>
                     <h2 className="text-6xl font-bold mb-10 leading-none tracking-tighter">Become Part of the <br /> Scholars Movement</h2>
                     <Link to="/signup">
-                        <Button size="lg" className="h-20 px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-white font-bold text-xl shadow-glow group">
+                        <Button size="lg" className="h-20 px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xl shadow-glow group">
                             <span>Initialize Enlistment</span>
                             <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                         </Button>
@@ -188,16 +188,6 @@ const About = () => {
 
             <Footer />
 
-            <style>{`
-                .glass {
-                    background: rgba(255, 255, 255, 0.03);
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                }
-                .shadow-glow {
-                    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-                }
-            `}</style>
         </div>
     )
 }

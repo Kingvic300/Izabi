@@ -40,14 +40,14 @@ export const Header = () => {
                     </Link>
 
                     {/* Desktop Links */}
-                    <div className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-foreground/5 border border-foreground/5 backdrop-blur-md">
+                    <div className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-card/5 border border-foreground/5 backdrop-blur-md">
                         {navLinks.map((link) => (
                             <Link 
                                 key={link.href} 
                                 to={link.href}
                                 className={cn(
                                     "px-4 py-2 text-sm font-bold tracking-tight rounded-xl transition-all duration-300",
-                                    location.pathname === link.href ? "bg-foreground/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                                    location.pathname === link.href ? "bg-card/10 text-primary" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 {link.name}
@@ -60,7 +60,7 @@ export const Header = () => {
                         <LanguageToggle />
                         <ThemeToggle />
                         <Link to="/login">
-                            <Button variant="ghost" className="font-bold text-sm tracking-tight hover:bg-foreground/5">
+                            <Button variant="ghost" className="font-bold text-sm tracking-tight hover:bg-card/5">
                                 {t("nav.client_portal")}
                             </Button>
                         </Link>
@@ -74,7 +74,7 @@ export const Header = () => {
 
                     {/* Mobile Menu Button */}
                     <button
-                        className="lg:hidden p-3 bg-foreground/5 hover:bg-foreground/10 rounded-xl transition-colors border border-foreground/5"
+                        className="lg:hidden p-3 bg-card/5 hover:bg-card/10 rounded-xl transition-colors border border-foreground/5"
                         onClick={() => setIsOpen(!isOpen)}
                         aria-label="Toggle menu"
                     >
@@ -91,7 +91,7 @@ export const Header = () => {
                                     key={link.href} 
                                     to={link.href}
                                     onClick={() => setIsOpen(false)}
-                                    className="p-4 rounded-xl bg-foreground/5 font-bold text-lg"
+                                    className="p-4 rounded-xl bg-card/5 font-bold text-lg"
                                 >
                                     {link.name}
                                 </Link>

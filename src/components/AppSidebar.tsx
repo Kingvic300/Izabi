@@ -182,7 +182,7 @@ export function AppSidebar() {
                                             asChild 
                                             isActive={active}
                                             className={`h-12 rounded-3xl transition-all duration-300 px-4 group
-                                                ${active ? "bg-primary/10 text-primary shadow-[inset_0_0_20px_hsla(var(--primary)/0.1)]" : "hover:bg-foreground/5"}
+                                                ${active ? "bg-primary/10 text-primary shadow-[inset_0_0_20px_hsla(var(--primary)/0.1)]" : "hover:bg-card/5"}
                                             `}
                                         >
                                             <a
@@ -229,7 +229,7 @@ export function AppSidebar() {
                                             asChild 
                                             isActive={active}
                                             className={`h-12 rounded-3xl transition-all duration-300 px-4 group
-                                                ${active ? "bg-foreground/10 text-foreground shadow-xl" : "hover:bg-foreground/5"}
+                                                ${active ? "bg-card/10 text-foreground shadow-xl" : "hover:bg-card/5"}
                                             `}
                                         >
                                             <a
@@ -277,7 +277,7 @@ export function AppSidebar() {
                             size="lg"
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-14 rounded-3xl transition-all"
                         >
-                            <Avatar className="h-9 w-9 rounded-lg border border-white/10 shadow-sm">
+                            <Avatar className="h-9 w-9 rounded-lg border border-foreground/10 shadow-sm">
                                 <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userInfo.email}`} alt={userInfo.email} />
                                 <AvatarFallback className="rounded-lg font-bold bg-primary/20 text-primary">{userInfo.initial}</AvatarFallback>
                             </Avatar>

@@ -64,7 +64,7 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({ isOpen, onClose, 
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 backdrop-blur-sm">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -84,7 +84,7 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({ isOpen, onClose, 
                                 </p>
                             </div>
                         </div>
-                        <button onClick={handleClose} className="p-2 hover:bg-foreground/10 rounded-full transition-colors">
+                        <button onClick={handleClose} className="p-2 hover:bg-card/10 rounded-full transition-colors">
                             <X size={20} />
                         </button>
                     </div>
@@ -180,7 +180,7 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({ isOpen, onClose, 
                                     </p>
                                 </div>
 
-                                <div className="p-6 rounded-2xl bg-foreground/5 border border-foreground/10">
+                                <div className="p-6 rounded-2xl bg-card/5 border border-foreground/10">
                                     <div className="text-sm font-medium opacity-60 uppercase tracking-widest mb-2">Accuracy</div>
                                     <div className="text-4xl font-black">{Math.round((score / questions.length) * 100)}%</div>
                                 </div>

@@ -59,14 +59,15 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
    */
   const getPetIcon = () => {
     const type = petData?.type || 'owl';
-    const mood = petData?.mood || (streak > 0 ? 'happy' : 'sad');
+    // Default to happy if they just started (streak 0 is common for new users)
+    const mood = petData?.mood || (streak >= 0 ? 'happy' : 'sad');
 
-    if (mood === 'sad') return <Ghost size={64} className="text-gray-400 opacity-50" />;
+    if (mood === 'sad') return <Ghost size={64} className="text-primary-foreground/40 animate-pulse" />;
 
     switch (type) {
-      case 'owl': return <Bird size={64} className="text-primary" />;
-      case 'dragon': return <Flame size={64} className="text-primary fill-primary" />;
-      default: return <Bird size={64} className="text-primary" />;
+      case 'owl': return <Bird size={64} className="text-primary-foreground fill-primary-foreground/20" />;
+      case 'dragon': return <Flame size={64} className="text-primary-foreground fill-primary-foreground/40 text-orange-400" />;
+      default: return <Bird size={64} className="text-primary-foreground" />;
     }
   };
 
@@ -94,7 +95,7 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
                     initial={{ y: 0, opacity: 0 }}
                     animate={{ y: -20, opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute -top-12 left-1/2 -translate-x-1/2 text-green-400 font-bold text-xs whitespace-nowrap"
+                    className="absolute -top-12 left-1/2 -translate-x-1/2 text-green-400 font-bold text-xs foregroundspace-nowrap"
                  >
                     +XP Yummy! 
                  </motion.div>
@@ -120,7 +121,7 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
                 <p className="text-[10px] font-medium opacity-50 uppercase tracking-widest">{petData?.mood || (streak > 0 ? 'Extremely Happy' : 'Needs Love')}</p>
               </div>
 
-              <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-card/10 rounded-full overflow-hidden">
                 <div 
                     className="h-full bg-gradient-to-r from-primary to-purple-500" 
                     style={{ width: `${(streak % 5) * 20 || 20}%` }} 
@@ -146,7 +147,7 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${
                                 userPoints >= 50 
                                 ? 'bg-amber-500 text-black hover:bg-amber-400' 
-                                : 'bg-white/5 text-white/30 cursor-not-allowed'
+                                : 'bg-card/5 text-foreground/30 cursor-not-allowed'
                             }`}
                         >
                             <Utensils size={10} />

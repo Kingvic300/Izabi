@@ -194,8 +194,12 @@ export const api = {
         return response.data
     },
 
-    async getSimulation(category: string, subject: string) {
-        const response = await apiClient.get(`/api/exams/simulation?category=${category}&subject=${subject}`)
+    async getSimulation(config: any) {
+        const params = new URLSearchParams()
+        Object.entries(config).forEach(([key, value]) => {
+            if (value !== undefined) params.append(key, value.toString())
+        })
+        const response = await apiClient.get(`/api/exams/simulation?${params.toString()}`)
         return response.data
     },
     
@@ -206,7 +210,8 @@ export const api = {
 
     // Leaderboard API
     async getLeaderboard() {
-        const response = await apiClient.get(`/api/study/leaderboard`)
+        const userId = localStorage.getItem("userId")
+        const response = await apiClient.get(`/api/study/leaderboard${userId ? `?userId=${userId}` : ''}`)
         return response.data
     },
 

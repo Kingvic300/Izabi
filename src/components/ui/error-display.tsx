@@ -73,7 +73,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onDismiss, onRetry }
                             </h4>
                             <p className="font-bold text-foreground/90 leading-tight">{error.message}</p>
                             <div className="flex items-center gap-2 mt-2">
-                                <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest px-2 py-0.5 rounded-2xl bg-foreground/5">
+                                <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest px-2 py-0.5 rounded-2xl bg-card/5">
                                     {new Date(error.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>
@@ -86,7 +86,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onDismiss, onRetry }
                                 variant="ghost" 
                                 size="sm" 
                                 onClick={onRetry} 
-                                className="h-10 w-10 p-0 rounded-2xl hover:bg-white/10 transition-colors"
+                                className="h-10 w-10 p-0 rounded-2xl hover:bg-card/10 transition-colors"
                             >
                                 <RotateCcw className="h-4 w-4" />
                             </Button>
@@ -111,13 +111,13 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onDismiss, onRetry }
                                 <Button 
                                     variant="ghost" 
                                     size="sm" 
-                                    className="h-8 text-[10px] font-bold uppercase tracking-widest opacity-40 hover:opacity-100 hover:bg-white/5 transition-all"
+                                    className="h-8 text-[10px] font-bold uppercase tracking-widest opacity-40 hover:opacity-100 hover:bg-card/5 transition-all"
                                 >
                                     {showDetails ? "Encrypt Terminal" : "Decrypt Terminal"}
                                 </Button>
                             </CollapsibleTrigger>
                             <CollapsibleContent>
-                                    <pre className="text-[11px] font-mono text-primary/80 overflow-auto max-h-40 whitespace-pre-wrap leading-relaxed">
+                                    <pre className="text-[11px] font-mono text-primary/80 overflow-auto max-h-40 foregroundspace-pre-wrap leading-relaxed">
                                         {error.details}
                                     </pre>
                             </CollapsibleContent>

@@ -109,7 +109,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({ isOpen, onClose, onComp
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 backdrop-blur-sm">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -142,7 +142,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({ isOpen, onClose, onComp
                                 )}
                                 <button
                                     onClick={handleClose}
-                                    className="w-10 h-10 rounded-full hover:bg-foreground/10 flex items-center justify-center transition-colors"
+                                    className="w-10 h-10 rounded-full hover:bg-card/10 flex items-center justify-center transition-colors"
                                 >
                                     <X size={20} />
                                 </button>
@@ -172,7 +172,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({ isOpen, onClose, onComp
                         {testData && !results && (
                             <div className="space-y-6">
                                 {testData.questions.map((question: QuickTestQuestion, index: number) => (
-                                    <div key={question.id} className="p-6 rounded-2xl bg-foreground/5 border border-foreground/10">
+                                    <div key={question.id} className="p-6 rounded-2xl bg-card/5 border border-foreground/10">
                                         <div className="flex items-start gap-4 mb-4">
                                             <div className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">
                                                 {index + 1}
@@ -304,7 +304,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({ isOpen, onClose, onComp
                                                         </p>
                                                     )}
                                                     {result.explanation && (
-                                                        <p className="text-sm mt-3 p-3 rounded-lg bg-foreground/5">
+                                                        <p className="text-sm mt-3 p-3 rounded-lg bg-card/5">
                                                             {result.explanation}
                                                         </p>
                                                     )}

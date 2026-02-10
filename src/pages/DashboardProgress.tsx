@@ -44,6 +44,8 @@ const DashboardProgress = () => {
         perfectScore: false,
     })
     const [isLoading, setIsLoading] = useState(true)
+    const [usage, setUsage] = useState<any>(null)
+    const [subscription, setSubscription] = useState<any>(null)
 
     const [chartData, setChartData] = useState([])
     const [subjectData, setSubjectData] = useState([])
@@ -74,69 +76,94 @@ const DashboardProgress = () => {
                 const [res, results] = await Promise.all([
                     api.getUserStats(),
                     api.getQuizResults()
-                ])
-                
+                ]);
+
                 if (res.success && res.data) {
-                    const quizData = results?.data || []
+                    setSubscription({
+                        status: res.data.subscriptionStatus,
+                        expiry: res.data.subscriptionExpiry
+                    });
+                    setUsage(res.data.usage);
+
+                    const quizData = results?.data || [];
                     const avgScore = quizData.length > 0 
                         ? Math.round(quizData.reduce((acc: number, q: any) => acc + q.score, 0) / quizData.length)
-                        : 0
+                        : 0;
 
                     setProgressData({
                         totalQuizzes: res.data.studyStats?.quizzes || quizData.length,
                         averageScore: avgScore,
-                        studyStreak: res.data.studyStreak || 0,
-                        activityStreaks: res.data.activityStreaks || {},
+                        studyStreak: res.data.streakData?.academicStreak || 0,
+                        activityStreaks: res.data.streakData?.activityStreaks || {},
                         totalStudyHours: Math.round((res.data.totalStudyMinutes || 0) / 60),
                         perfectScore: quizData.some((q: any) => q.score === 100),
-                    })
+                    });
 
-                    // Growth Trend Chart (Last 7 Sessions)
-                    const growthData = quizData.slice(0, 7).reverse().map((q: any) => ({
-                        date: new Date(q.createdAt || q.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-                        score: q.score
-                    }))
-                    setChartData(growthData)
+                    // Fallback Demo Data if empty
+                    if (quizData.length === 0) {
+                        setChartData([
+                            { date: "Day 1", score: 0 },
+                            { date: "Day 2", score: 45 },
+                            { date: "Day 3", score: 30 },
+                            { date: "Day 4", score: 75 },
+                            { date: "Day 5", score: 60 },
+                            { date: "Day 6", score: 90 },
+                            { date: "Day 7", score: 85 },
+                        ] as any);
+                        setSubjectData([
+                            { subject: "Math", score: 70 },
+                            { subject: "Physics", score: 85 },
+                            { subject: "English", score: 60 },
+                            { subject: "History", score: 95 },
+                        ] as any);
+                    } else {
+                        // Growth Trend Chart (Last 7 Sessions)
+                        const growthData = quizData.slice(0, 7).reverse().map((q: any) => ({
+                            date: new Date(q.createdAt || q.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                            score: q.score
+                        }));
+                        setChartData(growthData);
 
-                    // Subject Mastery Chart
-                    const subjects: Record<string, { total: number, count: number }> = {}
-                    quizData.forEach((q: any) => {
-                        const sub = q.subject || q.quizTitle || "General"
-                        if (!subjects[sub]) subjects[sub] = { total: 0, count: 0 }
-                        subjects[sub].total += q.score
-                        subjects[sub].count += 1
-                    })
-                    const subData = Object.keys(subjects).map(sub => ({
-                        subject: sub,
-                        score: Math.round(subjects[sub].total / subjects[sub].count)
-                    }))
-                    setSubjectData(subData as any)
+                        // Subject Mastery Chart
+                        const subjects: Record<string, { total: number, count: number }> = {};
+                        quizData.forEach((q: any) => {
+                            const sub = q.subject || q.quizTitle || "General";
+                            if (!subjects[sub]) subjects[sub] = { total: 0, count: 0 };
+                            subjects[sub].total += q.score;
+                            subjects[sub].count += 1;
+                        });
+                        const subData = Object.keys(subjects).map(sub => ({
+                            subject: sub,
+                            score: Math.round(subjects[sub].total / subjects[sub].count)
+                        }));
+                        setSubjectData(subData as any);
+                    }
                 }
             } catch (error) {
-                console.error("Failed to fetch user stats:", error)
+                console.error("Failed to fetch user stats:", error);
             } finally {
-                setIsLoading(false)
+                setIsLoading(false);
             }
-        }
-        fetchProgress()
-    }, [])
+        };
+        fetchProgress();
+    }, []);
 
     if (isLoading) {
         return (
             <div className="space-y-6">
-                <h1 className="text-4xl font-bold bg-gradient-hero bg-clip-text text-transparent">Learning Progress</h1>
+                <h1 className="text-5xl font-extrabold tracking-tighter italic bg-gradient-to-r from-blue-500 to-emerald-500 bg-clip-text text-transparent">Learning Progress</h1>
                 <p className="text-muted-foreground">Track your learning journey and see your improvement over time.</p>
                 <PageLoader variant="skeleton-cards" itemCount={4} text="Calculating your progress..." />
             </div>
-        )
+        );
     }
 
     return (
         <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12">
             <div className="prog-header flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-5xl font-extrabold tracking-tighter mb-2">
-                        Your <span className="text-gradient">Performance</span>
+                    <h1 className="text-5xl font-extrabold tracking-tighter mb-2 italic">
+                        Your <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent">Performance</span>
                     </h1>
                     <p className="text-muted-foreground text-lg">Real-time analytics of your academic growth.</p>
                 </div>
@@ -148,7 +175,51 @@ const DashboardProgress = () => {
                 )}
             </div>
 
-            {/* Stats Cards */}
+            {/* Usage & Subscription Banner */}
+            {usage && (
+                <div className="p-1 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/5 to-transparent border border-primary/10">
+                    <div className="glass-card rounded-[22px] p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex items-center gap-6 text-center md:text-left">
+                            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 animate-pulse">
+                                <Zap className="text-primary" size={32} />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-black uppercase tracking-tight">
+                                    {subscription?.status === 'premium' ? 'PREMIUM ACCESS ACTIVE' : 'FREE TIER LIMITS'}
+                                </h2>
+                                <p className="text-sm opacity-60 font-medium">
+                                    {subscription?.status === 'premium' 
+                                        ? `Unlimited usage until ${new Date(subscription.expiry).toLocaleDateString()}`
+                                        : 'Upgrade to remove daily processing restrictions.'}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-8">
+                            <div className="text-center">
+                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1">Uploads</p>
+                                <div className="text-2xl font-black">{usage.dailyDocs} / {usage.limits.dailyDocs}</div>
+                                <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden">
+                                    <div 
+                                        className="h-full bg-primary transition-all duration-1000" 
+                                        style={{ width: `${(usage.dailyDocs / usage.limits.dailyDocs) * 100}%` }} 
+                                    />
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1">AI Chats</p>
+                                <div className="text-2xl font-black">{usage.dailyMessages} / {usage.limits.dailyMessages}</div>
+                                <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden">
+                                    <div 
+                                        className="h-full bg-primary transition-all duration-1000" 
+                                        style={{ width: `${(usage.dailyMessages / usage.limits.dailyMessages) * 100}%` }} 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="stat-card glass-card group hover-lift relative overflow-hidden">
                     <CardHeader className="pb-2">
@@ -166,12 +237,12 @@ const DashboardProgress = () => {
                 <Card className="stat-card glass-card group hover-lift relative overflow-hidden">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60 flex items-center gap-2">
-                            <Target size={14} className="text-green-500" />
+                            <Target size={14} className="text-blue-500" />
                             Average Score
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-bold text-green-400">{progressData.averageScore}%</div>
+                        <div className="text-4xl font-bold text-blue-400">{progressData.averageScore}%</div>
                         <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Mastery Level</p>
                     </CardContent>
                 </Card>
@@ -215,7 +286,7 @@ const DashboardProgress = () => {
                             label: "Quiz Master", 
                             streak: progressData.activityStreaks?.quizzes?.current || 0, 
                             icon: Brain, 
-                            color: "text-purple-400",
+                            color: "text-blue-500",
                             desc: "Daily assessment streak"
                         },
                         { 
@@ -233,9 +304,9 @@ const DashboardProgress = () => {
                             desc: "Platform check-in streak"
                         }
                     ].map((track, i) => (
-                        <div key={i} className="glass p-6 rounded-3xl border-white/5 bg-white/[0.02] flex items-center justify-between group hover:bg-white/[0.04] transition-all">
+                        <div key={i} className="glass p-6 rounded-3xl border-foreground/5 bg-card/[0.02] flex items-center justify-between group hover:bg-card/[0.04] transition-all">
                             <div className="flex items-center gap-4">
-                                <div className={cn("p-4 rounded-2xl bg-white/5", track.color)}>
+                                <div className={cn("p-4 rounded-2xl bg-card/5", track.color)}>
                                     <track.icon size={24} />
                                 </div>
                                 <div>
@@ -255,7 +326,7 @@ const DashboardProgress = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Weekly Progress Chart */}
                 <Card className="chart-card glass-card border-foreground/10 shadow-2xl overflow-hidden">
-                    <CardHeader className="border-b border-foreground/10 bg-foreground/5">
+                    <CardHeader className="border-b border-foreground/10 bg-card/5">
                         <CardTitle className="flex items-center gap-3">
                             <div className="p-2 rounded-xl bg-primary/20 text-primary">
                                 <TrendingUp className="h-5 w-5" />
@@ -305,7 +376,7 @@ const DashboardProgress = () => {
 
                 {/* Subject Performance */}
                 <Card className="chart-card glass-card border-foreground/10 shadow-2xl overflow-hidden">
-                    <CardHeader className="border-b border-foreground/10 bg-foreground/5">
+                    <CardHeader className="border-b border-foreground/10 bg-card/5">
                         <CardTitle className="flex items-center gap-3">
                             <div className="p-2 rounded-xl bg-accent/20 text-accent">
                                 <BarChart3 className="h-5 w-5" />
@@ -317,7 +388,7 @@ const DashboardProgress = () => {
                     <CardContent className="pt-8">
                         <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={subjectData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--white)/0.05)" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--foreground)/0.05)" vertical={false} />
                                 <XAxis 
                                     dataKey="subject" 
                                     axisLine={false} 
@@ -347,7 +418,7 @@ const DashboardProgress = () => {
 
             {/* Achievements Section */}
             <Card className="chart-card glass-card border-foreground/10 shadow-2xl overflow-hidden">
-                <CardHeader className="border-b border-foreground/10 bg-foreground/5">
+                <CardHeader className="border-b border-foreground/10 bg-card/5">
                     <CardTitle className="flex items-center gap-3">
                         <div className="p-2 rounded-xl bg-yellow-500/20 text-yellow-500">
                             <Calendar className="h-5 w-5" />
@@ -381,7 +452,7 @@ const DashboardProgress = () => {
                                 isUnlocked: progressData.perfectScore
                             }
                         ].map((ach, i) => (
-                            <div key={i} className={`flex items-center gap-6 p-8 transition-colors group ${ach.isUnlocked ? 'hover:bg-foreground/[0.02]' : 'opacity-30 grayscale'}`}>
+                            <div key={i} className={`flex items-center gap-6 p-8 transition-colors group ${ach.isUnlocked ? 'hover:bg-card/[0.02]' : 'opacity-30 grayscale'}`}>
                                 <span className={`text-5xl ${ach.isUnlocked ? 'group-hover:scale-125' : ''} transition-transform duration-500`}>{ach.icon}</span>
                                 <div>
                                     <p className="font-bold text-lg">{ach.title}</p>

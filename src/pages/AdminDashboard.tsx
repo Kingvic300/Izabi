@@ -298,7 +298,7 @@ export default function AdminDashboard() {
     return (
         <div ref={containerRef} className="space-y-10 w-full pb-20 px-4 md:px-6 lg:px-12 pt-8 max-w-[1700px] mx-auto">
             {/* Header Section */}
-            <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-2 border-b border-white/5">
+            <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-2 border-b border-foreground/5">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2 mb-2">
                         <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-[10px] tracking-widest uppercase">
@@ -310,7 +310,7 @@ export default function AdminDashboard() {
                     </h1>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
-                    <Button variant="outline" className="glass h-12 rounded-2xl border-white/10 hover:bg-white/5 transition-all w-full lg:w-auto">
+                    <Button variant="outline" className="glass h-12 rounded-2xl border-foreground/10 hover:bg-card/5 transition-all w-full lg:w-auto">
                         <RefreshCw className="mr-2 h-4 w-4" /> Sync Registry
                     </Button>
                     <Button className="h-12 rounded-2xl bg-primary shadow-glow hover:bg-primary-glow font-bold px-8 w-full lg:w-auto">
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
                     { label: "Knowledge Base", value: stats.totalNotes, sub: "Student notes indexed", icon: Database, color: "text-primary", trend: "up" },
                     { label: "AI Fuel Level", value: stats.contributedKeys, sub: "Active Groq keys", icon: Key, color: "text-primary", trend: "down" },
                 ].map((stat, i) => (
-                    <Card key={i} className="admin-card glass border-white/5 shadow-xl hover-lift group overflow-hidden">
+                    <Card key={i} className="admin-card glass border-foreground/5 shadow-xl hover-lift group overflow-hidden">
                         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-40">{stat.label}</CardTitle>
                             <stat.icon size={18} className={cn(stat.color, "group-hover:scale-110 transition-transform")} />
@@ -348,16 +348,16 @@ export default function AdminDashboard() {
 
             <Tabs defaultValue="overview" className="w-full">
                 <ScrollArea className="w-full pb-4">
-                    <TabsList className="h-14 bg-white/5 border border-white/10 p-1.5 rounded-2xl mb-4 w-full md:w-auto inline-flex">
-                        <TabsTrigger value="overview" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Overview</TabsTrigger>
-                        <TabsTrigger value="users" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all">User Registry</TabsTrigger>
-                        <TabsTrigger value="keys" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all">API Inventory</TabsTrigger>
+                    <TabsList className="h-14 bg-card/5 border border-foreground/10 p-1.5 rounded-2xl mb-4 w-full md:w-auto inline-flex">
+                        <TabsTrigger value="overview" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Overview</TabsTrigger>
+                        <TabsTrigger value="users" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">User Registry</TabsTrigger>
+                        <TabsTrigger value="keys" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">API Inventory</TabsTrigger>
                     </TabsList>
                 </ScrollArea>
 
                 <TabsContent value="overview" className="space-y-8 animate-in fade-in slide-in-from-bottom-5">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <Card className="lg:col-span-8 glass border-white/5 p-4 md:p-8 rounded-2xl shadow-2xl">
+                        <Card className="lg:col-span-8 glass border-foreground/5 p-4 md:p-8 rounded-2xl shadow-2xl">
                             <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
                                 <div>
                                     <h3 className="text-2xl font-bold tracking-tight">System Utilization</h3>
@@ -411,7 +411,7 @@ export default function AdminDashboard() {
                         </Card>
 
                         <div className="lg:col-span-4 space-y-6">
-                            <Card className="glass border-white/5 p-6 md:p-8 rounded-2xl shadow-2xl h-full flex flex-col">
+                            <Card className="glass border-foreground/5 p-6 md:p-8 rounded-2xl shadow-2xl h-full flex flex-col">
                                 <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                                     <TrendingUp className="text-primary" size={20} />
                                     Live Activity Stream
@@ -421,11 +421,11 @@ export default function AdminDashboard() {
                                         {recentActivities.length > 0 ? recentActivities.map((item, i) => (
                                             <div 
                                                 key={i} 
-                                                className="flex justify-between items-start group cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-all"
+                                                className="flex justify-between items-start group cursor-pointer hover:bg-card/5 p-2 rounded-lg transition-all"
                                                 onClick={() => item.user && handleViewUser(item.user._id || item.user)}
                                             >
                                                 <div className="flex gap-4 items-start">
-                                                    <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center font-bold text-xs group-hover:bg-primary/20 transition-all shrink-0">
+                                                    <div className="w-10 h-10 rounded-2xl bg-card/5 flex items-center justify-center font-bold text-xs group-hover:bg-primary/20 transition-all shrink-0">
                                                         {getActivityIcon(item.type)}
                                                     </div>
                                                     <div>
@@ -435,7 +435,7 @@ export default function AdminDashboard() {
                                                         <p className="text-[11px] font-medium opacity-60 line-clamp-1">{getActivityText(item)}</p>
                                                     </div>
                                                 </div>
-                                                <span className="text-[10px] font-bold opacity-30 italic whitespace-nowrap ml-2">{formatTimeAgo(item.date)}</span>
+                                                <span className="text-[10px] font-bold opacity-30 italic foregroundspace-nowrap ml-2">{formatTimeAgo(item.date)}</span>
                                             </div>
                                         )) : (
                                             <div className="flex flex-col items-center justify-center opacity-40 py-10">
@@ -451,7 +451,7 @@ export default function AdminDashboard() {
                 </TabsContent>
 
                 <TabsContent value="users" className="animate-in fade-in slide-in-from-bottom-5">
-                    <Card className="glass border-white/5 rounded-2xl overflow-hidden shadow-2xl">
+                    <Card className="glass border-foreground/5 rounded-2xl overflow-hidden shadow-2xl">
                         <div className="p-4 md:p-8 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div>
                                 <h3 className="text-3xl font-bold">Account Registry</h3>
@@ -471,12 +471,12 @@ export default function AdminDashboard() {
                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                                     <Input 
                                         placeholder="Search by ID or email..." 
-                                        className="pl-12 rounded-2xl glass border-white/10 h-14 font-medium w-full"
+                                        className="pl-12 rounded-2xl glass border-foreground/10 h-14 font-medium w-full"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                     />
                                 </div>
-                                <Button className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 p-0 text-white hover:bg-white/10 shrink-0">
+                                <Button className="h-14 w-14 rounded-2xl bg-card/5 border border-foreground/10 p-0 text-foreground hover:bg-card/10 shrink-0">
                                     <Filter size={20} />
                                 </Button>
                             </div>
@@ -485,7 +485,7 @@ export default function AdminDashboard() {
                         <div className="p-4 md:p-8 pt-4 overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="border-white/5 hover:bg-transparent uppercase tracking-widest text-[10px] font-bold opacity-40">
+                                    <TableRow className="border-foreground/5 hover:bg-transparent uppercase tracking-widest text-[10px] font-bold opacity-40">
                                         <TableHead>User Identification</TableHead>
                                         <TableHead className="hidden md:table-cell">Account Status</TableHead>
                                         <TableHead className="hidden md:table-cell">Engagement</TableHead>
@@ -498,7 +498,7 @@ export default function AdminDashboard() {
                                         filteredUsers.map((user) => (
                                         <TableRow 
                                             key={user.id} 
-                                            className="border-white/5 hover:bg-white/[0.02] transition-colors py-4 cursor-pointer"
+                                            className="border-foreground/5 hover:bg-card/5 transition-colors py-4 cursor-pointer"
                                             onClick={() => handleViewUser(user.id)}
                                         >
                                             <TableCell className="py-6">
@@ -522,7 +522,7 @@ export default function AdminDashboard() {
                                             <TableCell className="hidden md:table-cell">
                                                 <div className="space-y-1">
                                                     <p className="text-sm font-bold">{user.studyStreak || 0} Streak</p>
-                                                    <div className="w-24 h-1 bg-white/5 rounded-2xl overflow-hidden">
+                                                    <div className="w-24 h-1 bg-card/5 rounded-2xl overflow-hidden">
                                                         <div className="h-full bg-primary" style={{width: `${Math.min((user.studyStreak || 0) * 10, 100)}%`}} />
                                                     </div>
                                                 </div>
@@ -533,11 +533,11 @@ export default function AdminDashboard() {
                                             <TableCell className="text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                                        <Button variant="ghost" className="h-10 w-10 p-0 rounded-2xl hover:bg-white/5">
+                                                        <Button variant="ghost" className="h-10 w-10 p-0 rounded-2xl hover:bg-card/5">
                                                             <MoreVertical size={18} />
                                                         </Button>
                                                     </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="glass border-white/10 rounded-2xl p-2 w-48 shadow-2xl">
+                                                    <DropdownMenuContent align="end" className="glass border-foreground/10 rounded-2xl p-2 w-48 shadow-2xl">
                                                         <DropdownMenuItem 
                                                             className="rounded-2xl px-4 py-3 font-bold cursor-pointer"
                                                             onClick={(e) => { e.stopPropagation(); handleViewUser(user.id); }}
@@ -568,8 +568,8 @@ export default function AdminDashboard() {
 
                 <TabsContent value="keys" className="animate-in fade-in slide-in-from-bottom-5">
                     <div className="grid grid-cols-1 gap-6">
-                        <Card className="glass border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-                            <CardHeader className="p-10 pb-6 border-b border-white/5 flex flex-row items-center justify-between">
+                        <Card className="glass border-foreground/5 rounded-2xl overflow-hidden shadow-2xl">
+                            <CardHeader className="p-10 pb-6 border-b border-foreground/5 flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="text-3xl font-bold">AI Inventory</CardTitle>
                                     <CardDescription className="text-lg">Monitoring donated Groq API resources for student compute</CardDescription>
@@ -581,7 +581,7 @@ export default function AdminDashboard() {
                             <CardContent className="p-10 pt-6">
                                 <div className="space-y-6">
                                     {keys.length > 0 ? keys.map((key, i) => (
-                                        <div key={i} className="flex items-center justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all group">
+                                        <div key={i} className="flex items-center justify-between p-6 rounded-2xl bg-card/5 border border-foreground/5 hover:bg-card/10 transition-all group">
                                             <div className="flex gap-6 items-center">
                                                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                                                     <Database size={24} />
@@ -618,20 +618,20 @@ export default function AdminDashboard() {
             </Tabs>
 
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                <SheetContent side="right" className="w-full sm:max-w-xl p-0 glass border-l border-white/10 gap-0 overflow-hidden flex flex-col">
+                <SheetContent side="right" className="w-full sm:max-w-xl p-0 glass border-l border-foreground/10 gap-0 overflow-hidden flex flex-col">
                     {userDetails ? (
                         <>
-                            <div className="p-6 md:p-8 border-b border-white/5 relative overflow-hidden">
+                            <div className="p-6 md:p-8 border-b border-foreground/5 relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-50" />
                                 <div className="relative z-10 flex items-center gap-6">
-                                    <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 shadow-lg flex items-center justify-center text-3xl font-bold text-white/80">
+                                    <div className="w-20 h-20 rounded-3xl bg-card/5 border border-foreground/10 shadow-lg flex items-center justify-center text-3xl font-bold text-foreground/60">
                                         {userDetails.user.email?.[0]?.toUpperCase() || 'U'}
                                     </div>
                                     <div>
                                         <h2 className="text-3xl font-bold tracking-tight">{userDetails.user.firstName} {userDetails.user.lastName}</h2>
                                         <div className="flex flex-wrap items-center gap-3 mt-2">
-                                            <Badge variant="outline" className="border-white/10 bg-white/5 text-xs font-medium">{userDetails.user.email}</Badge>
-                                            <Badge className="bg-primary text-white hover:bg-primary/80 border-none">{userDetails.user.points} XP</Badge>
+                                            <Badge variant="outline" className="border-foreground/10 bg-card/5 text-xs font-medium">{userDetails.user.email}</Badge>
+                                            <Badge className="bg-primary text-primary-foreground hover:bg-primary/80 border-none">{userDetails.user.points} XP</Badge>
                                         </div>
                                     </div>
                                 </div>
@@ -658,14 +658,14 @@ export default function AdminDashboard() {
 
                                     {/* Stats Grid */}
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5">
                                             <div className="flex items-center gap-2 mb-2 opacity-50">
                                                 <Calendar size={14} />
                                                 <span className="text-xs font-bold uppercase tracking-wider">Joined</span>
                                             </div>
                                             <p className="font-mono font-bold">{new Date(userDetails.user.createdAt).toLocaleDateString()}</p>
                                         </div>
-                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5">
                                             <div className="flex items-center gap-2 mb-2 opacity-50">
                                                 <Award size={14} />
                                                 <span className="text-xs font-bold uppercase tracking-wider">Streak</span>
@@ -679,19 +679,19 @@ export default function AdminDashboard() {
                                         <h3 className="text-sm font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
                                             <Clock size={14} /> Intelligence Timeline
                                         </h3>
-                                        <div className="relative pl-4 space-y-8 border-l border-white/10 ml-2">
+                                        <div className="relative pl-4 space-y-8 border-l border-foreground/10 ml-2">
                                             {userDetails.history && userDetails.history.length > 0 ? userDetails.history.map((event: any, i: number) => (
                                                 <div key={i} className="relative pl-6">
                                                     <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-background" />
                                                     <div className="space-y-1">
                                                         <p className="text-xs font-bold opacity-40 uppercase tracking-widest mb-1">{new Date(event.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</p>
-                                                        <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-colors">
+                                                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 hover:bg-card/10 transition-colors">
                                                             <div className="flex items-center gap-3 mb-2">
                                                                 {getActivityIcon(event.type)}
                                                                 <span className="font-bold text-sm">{getActivityText(event.details ? { ...event.details, type: event.type } : { type: event.type })}</span>
                                                             </div>
                                                             {event.details && event.details.score !== undefined && (
-                                                                <Badge variant="secondary" className="bg-white/10 mt-1">
+                                                                <Badge variant="secondary" className="bg-card/10 mt-1">
                                                                     Score: {event.details.score}%
                                                                 </Badge>
                                                             )}
@@ -714,11 +714,6 @@ export default function AdminDashboard() {
                 </SheetContent>
             </Sheet>
 
-            <style>{`
-                .glass {
-                    /* Defined globally */
-                }
-            `}</style>
         </div>
     )
 

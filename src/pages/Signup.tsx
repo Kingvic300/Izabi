@@ -185,7 +185,7 @@ const Signup = () => {
                                         value={formData.firstName}
                                         onChange={handleChange}
                                         required
-                                        className="h-12 sm:h-14 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground"
+                                        className="h-12 sm:h-14 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -197,7 +197,7 @@ const Signup = () => {
                                         value={formData.lastName}
                                         onChange={handleChange}
                                         required
-                                        className="h-12 sm:h-14 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground"
+                                        className="h-12 sm:h-14 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground"
                                     />
                                 </div>
                             </div>
@@ -212,7 +212,7 @@ const Signup = () => {
                                         placeholder="scholar@example.com"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className={`h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.email ? "border-destructive/50" : ""}`}
+                                        className={`h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.email ? "border-destructive/50" : ""}`}
                                     />
                                 </div>
                                 {errors.email && <p className="text-xs text-destructive font-bold px-1">{errors.email}</p>}
@@ -229,7 +229,7 @@ const Signup = () => {
                                             placeholder="••••••••"
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.password ? "border-destructive/50" : ""}`}
+                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.password ? "border-destructive/50" : ""}`}
                                         />
                                         <button
                                             type="button"
@@ -251,7 +251,7 @@ const Signup = () => {
                                             placeholder="••••••••"
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
-                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-foreground/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.confirmPassword ? "border-destructive/50" : ""}`}
+                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.confirmPassword ? "border-destructive/50" : ""}`}
                                         />
                                         <button
                                             type="button"
@@ -293,16 +293,6 @@ const Signup = () => {
                 </Card>
             </div>
 
-            <style>{`
-                .glass {
-                    background: rgba(255, 255, 255, 0.03);
-                    backdrop-filter: blur(40px);
-                    -webkit-backdrop-filter: blur(40px);
-                }
-                .shadow-glow {
-                    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-                }
-            `}</style>
         </div>
     )
 }

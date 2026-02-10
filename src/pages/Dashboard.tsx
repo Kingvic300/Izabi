@@ -10,6 +10,7 @@ import { useStudy } from "@/contexts/StudyContext"
 import { cn } from "@/lib/utils"
 import JobStatusToast from "@/components/JobStatusToast"
 import { AnimatePresence } from "framer-motion"
+import FloatingAI from "@/components/FloatingAI"
 
 const Dashboard = () => {
     const { activeJobs, removeJob } = useStudy()
@@ -65,10 +66,10 @@ const Dashboard = () => {
                     
                     <div className="flex-1 flex flex-col relative z-10">
                         {/* Modern Header */}
-                        <header className="h-20 border-b border-white/5 bg-background/50 backdrop-blur-xl px-6 md:px-12 flex items-center justify-between shrink-0">
+                        <header className="h-20 border-b border-foreground/5 bg-background/50 backdrop-blur-xl px-6 md:px-12 flex items-center justify-between shrink-0">
                             <div className="flex items-center space-x-6">
                                 <SidebarTrigger className="text-muted-foreground hover:text-primary transition-colors scale-125" />
-                                <Separator orientation="vertical" className="h-8 bg-white/10" />
+                                <Separator orientation="vertical" className="h-8 bg-card/10" />
                                 <div className="flex flex-col">
                                     <h1 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">System Node</h1>
                                     <p className="text-lg font-bold tracking-tight">Izabi Workspace</p>
@@ -80,7 +81,7 @@ const Dashboard = () => {
                                     <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">Aura Sync Active</span>
                                     <span className="text-[10px] font-mono opacity-20">EST-992-BETA</span>
                                 </div>
-                                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary/20 to-transparent p-[1px] border border-white/10 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary/20 to-transparent p-[1px] border border-foreground/10 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
                                     <div className="w-full h-full rounded-[14px] bg-background flex items-center justify-center">
                                         <div className="w-3 h-3 rounded-full bg-primary/40 animate-pulse" />
                                     </div>
@@ -111,16 +112,16 @@ const Dashboard = () => {
                     </div>
 
                     {userStats?.data && (
-                        <div className="relative z-[110]">
-                            <StreakPet 
-                                streak={userStats.data.streakData?.academicStreak || userStats.data.studyStreak || 0} 
-                                petData={userStats.data.pet} 
-                                userPoints={userStats.data.totalPoints || 0}
-                                streakFreezes={userStats.data.streakData?.streakFreezes || 0}
-                                onFeed={handleFeedPet}
-                            />
-                        </div>
+                        <StreakPet 
+                            streak={userStats.data.streakData?.academicStreak || userStats.data.studyStreak || 0} 
+                            petData={userStats.data.pet} 
+                            userPoints={userStats.data.totalPoints || 0}
+                            streakFreezes={userStats.data.streakData?.streakFreezes || 0}
+                            onFeed={handleFeedPet}
+                        />
                     )}
+
+                    <FloatingAI />
                 </div>
             </SidebarProvider>
         </ErrorBoundary>

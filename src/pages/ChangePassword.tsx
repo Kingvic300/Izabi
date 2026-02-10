@@ -79,7 +79,7 @@ const ChangePassword = () => {
                     Reset Access
                 </Button>
             </DialogTrigger>
-            <DialogContent className="glass border-white/10 rounded-2xl sm:max-w-md">
+            <DialogContent className="glass border-foreground/10 rounded-2xl sm:max-w-md">
                 <DialogHeader className="space-y-4">
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-2">
                         <KeyRound size={24} />
@@ -107,7 +107,7 @@ const ChangePassword = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="scholar@example.com"
-                                        className="pl-12 h-14 rounded-xl bg-white/5 border-white/10 focus:border-primary/50"
+                                        className="pl-12 h-14 rounded-xl bg-card/5 border-foreground/10 focus:border-primary/50"
                                     />
                                 </div>
                             </div>
@@ -134,7 +134,7 @@ const ChangePassword = () => {
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value)}
                                     placeholder="000000"
-                                    className="h-14 rounded-xl bg-white/5 border-white/10 font-mono text-center text-lg tracking-widest"
+                                    className="h-14 rounded-xl bg-card/5 border-foreground/10 font-mono text-center text-lg tracking-widest"
                                     maxLength={6}
                                 />
                             </div>
@@ -147,7 +147,7 @@ const ChangePassword = () => {
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
                                     placeholder="••••••••"
-                                    className="h-14 rounded-xl bg-white/5 border-white/10"
+                                    className="h-14 rounded-xl bg-card/5 border-foreground/10"
                                 />
                             </div>
 
