@@ -142,23 +142,31 @@ const SummaryViewer = ({ content, t }: { content: string; t: any }) => {
 
 const DashboardHome = () => {
     const { t } = useLanguage()
-    const { addJob } = useStudy()
+    const { addJob, session, updateSession } = useStudy()
     const containerRef = useRef<HTMLDivElement>(null)
     const [isProcessing, setIsProcessing] = useState(false)
-    const [summary, setSummary] = useState<string>("")
-    const [questions, setQuestions] = useState<StudyQuestionResponse[]>([])
+    
+    // UI visibility states (local for transitions, but initialized from session)
     const [showSummary, setShowSummary] = useState(false)
     const [showQuestions, setShowQuestions] = useState(false)
-    const [pdfSelection, setPdfSelection] = useState<PDFSelection | null>(null)
-    const [pdfFile, setPdfFile] = useState<File | null>(null)
-    const [numberOfQuestions, setNumberOfQuestions] = useState<number>(5)
+    const [showFlashcards, setShowFlashcards] = useState(false)
+    
     const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({})
     const [showResults, setShowResults] = useState(false)
     const [userStats, setUserStats] = useState<any>(null)
-    const [flashcards, setFlashcards] = useState<{ front: string; back: string }[]>([])
-    const [showFlashcards, setShowFlashcards] = useState(false)
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
     const [isFlipped, setIsFlipped] = useState(false)
+
+    const { summary, questions, flashcards, pdfFile, pdfSelection, numberOfQuestions } = session;
+
+    // Sync visibility with session data on mount
+    useEffect(() => {
+        if (summary) setShowSummary(true);
+        if (questions?.length > 0) setShowQuestions(true);
+        if (flashcards?.length > 0) setShowFlashcards(true);
+    }, []);
+
+
 
     // Brain Drop State
     const [brainDropQuestion, setBrainDropQuestion] = useState<any>(null)
@@ -232,10 +240,12 @@ const DashboardHome = () => {
             if (res.success) {
                 setPracticeQuestions(res.data);
                 setShowPracticeQuiz(true);
-                setQuestions(res.data);
+                updateSession({ 
+                    questions: res.data,
+                    summary: "",
+                    flashcards: []
+                });
                 setShowQuestions(true);
-                setSummary("");
-                setFlashcards([]);
             }
         } catch (err) {
             addError({ message: "Failed to load practice questions", type: "validation" });
@@ -347,8 +357,20 @@ const DashboardHome = () => {
     }, [])
 
     const handleSelectionComplete = ({ selection, file }: { selection: PDFSelection; file: File }) => {
-        setPdfSelection(selection)
-        setPdfFile(file)
+        updateSession({ 
+            pdfSelection: selection, 
+            pdfFile: file, 
+            fileName: file.name,
+            summary: "",
+            questions: [],
+            flashcards: []
+        });
+        // Reset visibility states for the new document
+        setShowSummary(false);
+        setShowQuestions(false);
+        setShowFlashcards(false);
+        setSelectedAnswers({});
+        setShowResults(false);
     }
 
     const extractTextFromPDF = async (file: File) => {
@@ -384,20 +406,26 @@ const DashboardHome = () => {
                     setIsProcessing(false);
                     
                     if (endpoint === 'summarize' || endpoint === 'generate-study-material') {
-                        setSummary(jobData.summary || "");
+                        updateSession({ 
+                            summary: jobData.summary || "", 
+                            questions: [], 
+                            flashcards: [] 
+                        });
                         setShowSummary(true);
-                        setQuestions([]);
-                        setFlashcards([]);
                     } else if (endpoint === 'generate-questions') {
-                        setQuestions(jobData.questions || []);
+                        updateSession({ 
+                            questions: jobData.questions || [], 
+                            summary: "", 
+                            flashcards: [] 
+                        });
                         setShowQuestions((jobData.questions?.length || 0) > 0);
-                        setSummary("");
-                        setFlashcards([]);
                     } else if (endpoint === 'flashcards') {
-                        setFlashcards(jobData.flashcards || []);
+                        updateSession({ 
+                            flashcards: jobData.flashcards || [], 
+                            summary: "", 
+                            questions: [] 
+                        });
                         setShowFlashcards((jobData.flashcards?.length || 0) > 0);
-                        setSummary("");
-                        setQuestions([]);
                     }
                     return true;
                 } else if (jobData.status === 'FAILED') {
@@ -496,9 +524,7 @@ const DashboardHome = () => {
             addError({ message: `Flow Error: ${errorMsg}`, type: "api" });
             
             setIsProcessing(false);
-            setSummary("")
-            setQuestions([])
-            setFlashcards([])
+            updateSession({ summary: "", questions: [], flashcards: [] });
         }
     }
 
@@ -658,7 +684,7 @@ const DashboardHome = () => {
                                         Upload your class notes or a textbook PDF, and we'll generate daily personalized questions to help you mastery your specific subjects.
                                     </p>
                                     <button 
-                                        onClick={() => setPdfSelection(null)} // Or whatever scrolls them to upload
+                                        onClick={() => updateSession({ pdfSelection: null, pdfFile: null, fileName: '' })} // Or whatever scrolls them to upload
                                         className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all shadow-glow hover:scale-105"
                                     >
                                         <Upload size={20} />
@@ -676,7 +702,7 @@ const DashboardHome = () => {
                         onPracticeSkills={handlePracticeSkills}
                         onQuickTest={handleQuickTest}
                         onLearnTricks={handleLearnTricks}
-                        onUploadDocument={() => setPdfSelection(null)}
+                        onUploadDocument={() => updateSession({ pdfSelection: null, pdfFile: null, fileName: '' })}
                     />
                 </div>
 
@@ -720,7 +746,7 @@ const DashboardHome = () => {
                                         </div>
                                         <Button 
                                             variant="ghost" 
-                                            onClick={() => setPdfSelection(null)}
+                                            onClick={() => updateSession({ pdfSelection: null, pdfFile: null, fileName: '' })}
                                             className="w-full h-12 rounded-2xl border border-foreground/5 hover:bg-destructive/10 hover:text-destructive font-bold text-xs gap-2 transition-all"
                                         >
                                             <RotateCcw size={14} />
@@ -781,7 +807,7 @@ const DashboardHome = () => {
                                             <div className="flex items-center gap-2 bg-black/20 p-1.5 rounded-2xl border border-white/5">
                                                 <Select
                                                     value={String(numberOfQuestions)}
-                                                    onValueChange={(val) => setNumberOfQuestions(Number(val))}
+                                                    onValueChange={(val) => updateSession({ numberOfQuestions: Number(val) })}
                                                     disabled={isProcessing}
                                                 >
                                                     <SelectTrigger className="w-[80px] h-8 rounded-xl bg-transparent border-0 focus:ring-0 font-bold text-xs uppercase">

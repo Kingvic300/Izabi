@@ -13,6 +13,7 @@ import { LoadingSpinner } from '@/components/ui/loading';
 import { useApiError } from '@/hooks/useApiError';
 import { PDFSelection } from '@/types/pdf';
 import { cn } from '@/lib/utils';
+import { useStudy } from '@/contexts/StudyContext';
 
 interface PDFUploadSectionProps {
   onSelectionComplete?: (data: { selection: PDFSelection; file: File }) => void;
@@ -23,13 +24,16 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
   onSelectionComplete,
   className
 }) => {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [selectedPages, setSelectedPages] = useState<number[]>([]);
-  const [activeTab, setActiveTab] = useState<string>('load');
+  const { session, updateSession, clearSession } = useStudy();
+
+  const [uploadedFile, setUploadedFile] = useState<File | null>(session.pdfFile || null);
+  const [totalPages, setTotalPages] = useState<number>(session.pdfSelection?.metadata?.totalPages || 0);
+  const [selectedPages, setSelectedPages] = useState<number[]>(session.pdfSelection?.selectedPages || []);
+  const [activeTab, setActiveTab] = useState<string>(session.pdfFile ? 'sync' : 'load');
   const [isProcessing, setIsProcessing] = useState(false);
+
   const [success, setSuccess] = useState<string | null>(null);
-  const [numQuestions, setNumQuestions] = useState<number>(5);
+  const [numQuestions, setNumQuestions] = useState<number>(session.numberOfQuestions || 5);
   const [scanProgress, setScanProgress] = useState(0);
   const [topicText, setTopicText] = useState<string>('');
 
@@ -43,6 +47,23 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
       return () => clearInterval(timer);
     }
   }, [uploadedFile, scanProgress]);
+
+  // Sync back to context for persistence
+  useEffect(() => {
+    updateSession({
+        pdfFile: uploadedFile,
+        numberOfQuestions: numQuestions,
+        pdfSelection: uploadedFile ? {
+            selectedPages,
+            metadata: {
+                totalPages,
+                fileName: uploadedFile.name,
+                fileSize: uploadedFile.size
+            }
+        } : null
+    });
+  }, [uploadedFile, numQuestions, selectedPages, totalPages]);
+
 
   const handleTopicSubmit = () => {
     if (!topicText.trim()) {
@@ -162,7 +183,10 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
     clearErrors();
     setNumQuestions(5);
     setScanProgress(0);
-    setTopicText(''); // Clear text input as well
+    setTopicText('');
+    
+    // Global clear as well
+    clearSession();
   };
 
   return (

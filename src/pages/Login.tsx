@@ -92,14 +92,17 @@ const Login = () => {
                 { withCredentials: true },
             )
 
-            const { userId, accessToken, role } = response.data
+            const { user, tokens } = response.data
+            const accessToken = tokens.accessToken
+            const userId = user._id || user.id
+            const role = user.role
 
             localStorage.setItem("userId", userId)
             localStorage.setItem("authToken", accessToken)
             localStorage.setItem("userEmail", email)
             localStorage.setItem("userRole", role || "USER")
-            if (response.data.firstName) localStorage.setItem("userFirstName", response.data.firstName)
-            if (response.data.lastName) localStorage.setItem("userLastName", response.data.lastName)
+            if (user.firstName) localStorage.setItem("userFirstName", user.firstName)
+            if (user.lastName) localStorage.setItem("userLastName", user.lastName)
 
             // Check if user is admin and redirect accordingly
             const isAdmin = role === "ADMIN"

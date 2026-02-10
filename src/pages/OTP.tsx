@@ -103,7 +103,11 @@ const OTP = () => {
                 role: "USER",
             })
 
-            const { userId, accessToken, role, email: userEmail } = response.data
+            const { user, tokens } = response.data
+            const accessToken = tokens.accessToken
+            const userId = user._id || user.id
+            const role = user.role
+            const userEmail = user.email
 
             localStorage.setItem("userId", userId)
             localStorage.setItem("authToken", accessToken)

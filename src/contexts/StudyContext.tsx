@@ -11,24 +11,69 @@ interface StudyJob {
     result?: any;
 }
 
+interface StudySession {
+    fileName: string;
+    pdfFile?: File | null;
+    pdfSelection?: any | null;
+    numberOfQuestions: number;
+    summary: string;
+    questions: any[];
+    flashcards: any[];
+    studyGuide: string;
+    lastJobId?: string;
+}
+
 interface StudyContextType {
     activeJobs: StudyJob[];
+    session: StudySession;
     addJob: (jobId: string, fileName: string, type: string) => void;
     removeJob: (jobId: string) => void;
+    updateSession: (updates: Partial<StudySession>) => void;
+    clearSession: () => void;
 }
 
 const StudyContext = createContext<StudyContextType | undefined>(undefined);
 
+
 export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [activeJobs, setActiveJobs] = useState<StudyJob[]>([]);
+    const [session, setSession] = useState<StudySession>({
+        fileName: '',
+        pdfFile: null,
+        pdfSelection: null,
+        numberOfQuestions: 5,
+        summary: '',
+        questions: [],
+        flashcards: [],
+        studyGuide: '',
+    });
 
     const addJob = useCallback((id: string, fileName: string, type: string) => {
         setActiveJobs(prev => [...prev, { id, fileName, status: 'PENDING', progress: 0, type }]);
+        setSession(prev => ({ ...prev, lastJobId: id, fileName }));
+    }, []);
+
+    const updateSession = useCallback((updates: Partial<StudySession>) => {
+        setSession(prev => ({ ...prev, ...updates }));
+    }, []);
+
+    const clearSession = useCallback(() => {
+        setSession({
+            fileName: '',
+            pdfFile: null,
+            pdfSelection: null,
+            numberOfQuestions: 5,
+            summary: '',
+            questions: [],
+            flashcards: [],
+            studyGuide: '',
+        });
     }, []);
 
     const removeJob = useCallback((id: string) => {
         setActiveJobs(prev => prev.filter(j => j.id !== id));
     }, []);
+
 
     const updateJobStatus = useCallback((id: string, updates: Partial<StudyJob>) => {
         setActiveJobs(prev => prev.map(j => j.id === id ? { ...j, ...updates } : j));
@@ -49,6 +94,18 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                             progress: 100, 
                             result: statusData 
                         });
+
+                        // Automatically update session if it matches the current active document
+                        if (session.lastJobId === job.id) {
+                            if (job.type === 'summary' || job.type === 'study-guide') {
+                                updateSession({ summary: statusData.summary || "" });
+                            } else if (job.type === 'quiz') {
+                                updateSession({ questions: statusData.questions || [] });
+                            } else if (job.type === 'flashcards') {
+                                updateSession({ flashcards: statusData.flashcards || [] });
+                            }
+                        }
+
                         toast.success(`Analysis Complete: ${job.fileName}`, {
                             description: "Your study material is ready."
                         });
@@ -72,7 +129,7 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, [activeJobs, updateJobStatus]);
 
     return (
-        <StudyContext.Provider value={{ activeJobs, addJob, removeJob }}>
+        <StudyContext.Provider value={{ activeJobs, session, addJob, removeJob, updateSession, clearSession }}>
             {children}
         </StudyContext.Provider>
     );
