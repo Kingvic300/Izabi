@@ -12,11 +12,14 @@ import { Switch } from "@/components/ui/switch"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 import { Badge } from "@/components/ui/badge"
+import { useTour } from "@/contexts/TourContext"
+import { Map } from "lucide-react"
 
 const DashboardSettings = () => {
     const containerRef = useRef<HTMLDivElement>(null)
     const appToast = useAppToast()
     const { theme, setTheme: setGlobalTheme } = useTheme()
+    const { startTour } = useTour()
     
     const [settings, setSettings] = useState({
         emailNotifications: true,
@@ -244,6 +247,36 @@ const DashboardSettings = () => {
                                 )}
                             </Button>
                         </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* System Tour */}
+            <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
+                <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
+                    <CardTitle className="flex items-center gap-3 text-xl font-bold">
+                        <Map className="text-primary" />
+                        System Tour
+                    </CardTitle>
+                    <CardDescription>Revisit the platform walkthrough</CardDescription>
+                </CardHeader>
+                <CardContent className="p-8">
+                     <div className="rounded-xl border border-foreground/5 p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-background/20">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                                <Map size={24} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-lg">Restart Tour</h3>
+                                <p className="text-sm opacity-60">Reset the onboarding experience</p>
+                            </div>
+                        </div>
+                        <Button 
+                            onClick={startTour}
+                            className="h-12 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground border border-foreground/10 font-bold px-6 min-w-[180px]"
+                        >
+                            Start Tour
+                        </Button>
                     </div>
                 </CardContent>
             </Card>

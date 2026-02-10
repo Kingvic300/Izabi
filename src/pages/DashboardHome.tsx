@@ -187,6 +187,24 @@ const DashboardHome = () => {
     const { errors, addError, clearError } = useApiError()
     const userId = localStorage.getItem("userId")
 
+    const handleUploadDocument = () => {
+        updateSession({ 
+            pdfSelection: null, 
+            pdfFile: null, 
+            fileName: '', 
+            summary: null, 
+            questions: [], 
+            flashcards: [] 
+        });
+        
+        setTimeout(() => {
+            const element = document.getElementById("upload-section");
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }, 100);
+    };
+
     const handleFeedPet = async () => {
         try {
             const res = await api.feedPet();
@@ -253,6 +271,11 @@ const DashboardHome = () => {
     };
     
     const handleQuickTest = () => {
+        if (!pdfFile) {
+            addError({ message: "Please upload a PDF document first to perform a Quick Test.", type: "validation" });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
         setShowQuickTestModal(true);
     };
     
@@ -616,7 +639,7 @@ const DashboardHome = () => {
                 <ErrorList errors={errors} onDismiss={clearError} />
 
                 {/* Welcome Section - GSAP Target */}
-                <div className="welcome-text space-y-2">
+                <div id="dashboard-welcome" className="welcome-text space-y-2">
                     <h1 className="text-4xl md:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/40 leading-tight">
                         {t("dashboard.greeting") || "Welcome back,"} {userStats?.data?.firstName || "Scholar"}
                     </h1>
@@ -651,7 +674,7 @@ const DashboardHome = () => {
 
                 {/* Brain Drop - Instant Engagement (Priority #1) */}
                 {!isBrainDropCompleted && (
-                    <div className="stagger-card">
+                    <div id="brain-drop-section" className="stagger-card">
                         {brainDropQuestion ? (
                             <BrainDrop 
                                 question={brainDropQuestion}
@@ -700,7 +723,7 @@ const DashboardHome = () => {
                         onPracticeSkills={handlePracticeSkills}
                         onQuickTest={handleQuickTest}
                         onLearnTricks={handleLearnTricks}
-                        onUploadDocument={() => updateSession({ pdfSelection: null, pdfFile: null, fileName: '' })}
+                        onUploadDocument={handleUploadDocument}
                     />
                 </div>
 
@@ -770,7 +793,7 @@ const DashboardHome = () => {
                             {/* Main Hub Controls */}
                             <div className="xl:col-span-8 flex flex-col gap-6">
                                 <Card className="glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden relative border border-foreground/5">
-                                    <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-foreground/5">
+                                    <div id="study-modes-grid" className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-foreground/5">
                                         {[
                                             { id: 'summarize', icon: Brain, label: t("dashboard.mod_summary"), desc: t("dashboard.mod_summary_desc"), color: "text-blue-400" },
                                             { id: 'quiz', icon: Zap, label: t("dashboard.mod_quiz"), desc: t("dashboard.mod_quiz_desc"), color: "text-yellow-400" },
@@ -834,7 +857,7 @@ const DashboardHome = () => {
                     ) : (
                         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 stagger-card">
                              <div className="xl:col-span-8">
-                                <Card className="h-full glass shadow-2xl rounded-[48px] overflow-hidden group relative border-0">
+                                <Card id="upload-section" className="h-full glass shadow-2xl rounded-[48px] overflow-hidden group relative border-0">
                                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
                                     <CardHeader className="p-10 md:p-14 text-center md:text-left text-foreground">
                                         <CardTitle className="text-4xl md:text-5xl font-bold font-mono tracking-tighter mb-6 relative uppercase">

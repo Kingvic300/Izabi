@@ -19,15 +19,15 @@ const App = () => (
             <LanguageProvider>
                 <StudyProvider>
                     <ErrorProvider>
-                    <QueryClientProvider client={queryClient}>
-                        <TooltipProvider>
-                            <Heartbeat />
-                            <Toaster />
-                            <Sonner />
-                            <AppRouter />
-                        </TooltipProvider>
-                    </QueryClientProvider>
-                </ErrorProvider>
+                        <QueryClientProvider client={queryClient}>
+                            <TooltipProvider>
+                                <Heartbeat />
+                                <Toaster />
+                                <Sonner />
+                                <AppRouter />
+                            </TooltipProvider>
+                        </QueryClientProvider>
+                    </ErrorProvider>
                 </StudyProvider>
             </LanguageProvider>
         </ThemeProvider>

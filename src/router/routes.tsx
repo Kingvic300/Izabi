@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import ErrorBoundary from "@/components/ErrorBoundary"
 import { PageLoader } from "@/components/PageLoader"
 import { lazyRetry as lazy } from "@/lib/lazyLoad"
+import { TourProvider } from "@/contexts/TourContext"
+import { TourOverlay } from "@/components/common/TourGuide"
 
 // Lazy-loaded Pages
 const Home = lazy(() => import("@/pages/Home"), "Home")
@@ -28,6 +30,7 @@ const About = lazy(() => import("@/pages/About"), "About")
 const SupportUs = lazy(() => import("@/pages/SupportUs"), "SupportUs")
 const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"), "AdminDashboard")
 const DashboardLeaderboard = lazy(() => import("@/pages/DashboardLeaderboard"), "DashboardLeaderboard")
+const DashboardSupport = lazy(() => import("@/pages/DashboardSupport"), "DashboardSupport")
 
 const withErrorBoundary = (Component: React.ComponentType, text?: string) => (
     <ErrorBoundary>
@@ -68,36 +71,40 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 const routes = () => {
     return (
         <BrowserRouter>
-            <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={withErrorBoundary(Home, "your landing page is loading")} />
-                <Route path="/features" element={withErrorBoundary(Features)} />
-                <Route path="/how-it-works" element={withErrorBoundary(HowItWorks)} />
-                <Route path="/testimonials" element={withErrorBoundary(Testimonials)} />
-                <Route path="/pricing" element={withErrorBoundary(Pricing)} />
-                <Route path="/faq" element={withErrorBoundary(FAQ)} />
-                <Route path="/about" element={withErrorBoundary(About)} />
-                <Route path="/otp" element={withErrorBoundary(OTP)} />
-                <Route path="/login" element={withErrorBoundary(Login)} />
-                <Route path="/signup" element={withErrorBoundary(Signup)} />
+            <TourProvider>
+                <TourOverlay />
+                <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={withErrorBoundary(Home, "your landing page is loading")} />
+                    <Route path="/features" element={withErrorBoundary(Features)} />
+                    <Route path="/how-it-works" element={withErrorBoundary(HowItWorks)} />
+                    <Route path="/testimonials" element={withErrorBoundary(Testimonials)} />
+                    <Route path="/pricing" element={withErrorBoundary(Pricing)} />
+                    <Route path="/faq" element={withErrorBoundary(FAQ)} />
+                    <Route path="/about" element={withErrorBoundary(About)} />
+                    <Route path="/otp" element={withErrorBoundary(OTP)} />
+                    <Route path="/login" element={withErrorBoundary(Login)} />
+                    <Route path="/signup" element={withErrorBoundary(Signup)} />
 
-                <Route path="/dashboard" element={<ProtectedRoute>{withErrorBoundary(Dashboard)}</ProtectedRoute>}>
-                    <Route index element={withErrorBoundary(DashboardHome)} />
-                    <Route path="notes" element={withErrorBoundary(DashboardNotes)} />
-                    <Route path="ai-assistant" element={withErrorBoundary(DashboardAIAssistant)} />
-                    <Route path="progress" element={withErrorBoundary(DashboardProgress)} />
-                    <Route path="history" element={withErrorBoundary(DashboardHistory)} />
-                    <Route path="profile" element={withErrorBoundary(DashboardProfile, "your profile page is loading")} />
-                    <Route path="settings" element={withErrorBoundary(DashboardSettings)} />
-                    <Route path="exams" element={withErrorBoundary(DashboardExams)} />
-                    <Route path="support" element={withErrorBoundary(SupportUs)} />
-                    <Route path="admin" element={<AdminRoute>{withErrorBoundary(AdminDashboard)}</AdminRoute>} />
-                    <Route path="leaderboard" element={withErrorBoundary(DashboardLeaderboard)} />
-                </Route>
+                    <Route path="/dashboard" element={<ProtectedRoute>{withErrorBoundary(Dashboard)}</ProtectedRoute>}>
+                        <Route index element={withErrorBoundary(DashboardHome)} />
+                        <Route path="notes" element={withErrorBoundary(DashboardNotes)} />
+                        <Route path="ai-assistant" element={withErrorBoundary(DashboardAIAssistant)} />
+                        <Route path="progress" element={withErrorBoundary(DashboardProgress)} />
+                        <Route path="history" element={withErrorBoundary(DashboardHistory)} />
+                        <Route path="profile" element={withErrorBoundary(DashboardProfile, "your profile page is loading")} />
+                        <Route path="settings" element={withErrorBoundary(DashboardSettings)} />
+                        <Route path="exams" element={withErrorBoundary(DashboardExams)} />
+                        <Route path="support" element={withErrorBoundary(SupportUs)} />
+                        <Route path="admin" element={<AdminRoute>{withErrorBoundary(AdminDashboard)}</AdminRoute>} />
+                        <Route path="leaderboard" element={withErrorBoundary(DashboardLeaderboard)} />
+                        <Route path="contact" element={withErrorBoundary(DashboardSupport)} />
+                    </Route>
 
-                {/* Catch-all route */}
-                <Route path="*" element={withErrorBoundary(NotFound)} />
-            </Routes>
+                    {/* Catch-all route */}
+                    <Route path="*" element={withErrorBoundary(NotFound)} />
+                </Routes>
+            </TourProvider>
         </BrowserRouter>
     )
 }

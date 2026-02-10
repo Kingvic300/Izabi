@@ -347,13 +347,13 @@ export default function AdminDashboard() {
             </div>
 
             <Tabs defaultValue="overview" className="w-full">
-                <ScrollArea className="w-full pb-4">
-                    <TabsList className="h-14 bg-card/5 border border-foreground/10 p-1.5 rounded-2xl mb-4 w-full md:w-auto inline-flex">
-                        <TabsTrigger value="overview" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Overview</TabsTrigger>
-                        <TabsTrigger value="users" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">User Registry</TabsTrigger>
-                        <TabsTrigger value="keys" className="flex-1 md:flex-none rounded-xl px-4 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">API Inventory</TabsTrigger>
+                <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
+                    <TabsList className="h-14 bg-card/5 border border-foreground/10 p-1.5 rounded-2xl mb-4 w-full md:w-auto inline-flex min-w-max">
+                        <TabsTrigger value="overview" className="flex-1 md:flex-none rounded-xl px-6 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Overview</TabsTrigger>
+                        <TabsTrigger value="users" className="flex-1 md:flex-none rounded-xl px-6 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">User Registry</TabsTrigger>
+                        <TabsTrigger value="keys" className="flex-1 md:flex-none rounded-xl px-6 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">API Inventory</TabsTrigger>
                     </TabsList>
-                </ScrollArea>
+                </div>
 
                 <TabsContent value="overview" className="space-y-8 animate-in fade-in slide-in-from-bottom-5">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -521,9 +521,9 @@ export default function AdminDashboard() {
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">
                                                 <div className="space-y-1">
-                                                    <p className="text-sm font-bold">{user.studyStreak || 0} Streak</p>
+                                                    <p className="text-sm font-bold">{user.streak || 0} Streak</p>
                                                     <div className="w-24 h-1 bg-card/5 rounded-2xl overflow-hidden">
-                                                        <div className="h-full bg-primary" style={{width: `${Math.min((user.studyStreak || 0) * 10, 100)}%`}} />
+                                                        <div className="h-full bg-primary" style={{width: `${Math.min((user.streak || 0) * 10, 100)}%`}} />
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -581,7 +581,7 @@ export default function AdminDashboard() {
                             <CardContent className="p-10 pt-6">
                                 <div className="space-y-6">
                                     {keys.length > 0 ? keys.map((key, i) => (
-                                        <div key={i} className="flex items-center justify-between p-6 rounded-2xl bg-card/5 border border-foreground/5 hover:bg-card/10 transition-all group">
+                                        <div key={i} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 rounded-2xl bg-card/5 border border-foreground/5 hover:bg-card/10 transition-all group gap-4">
                                             <div className="flex gap-6 items-center">
                                                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                                                     <Database size={24} />
@@ -594,7 +594,7 @@ export default function AdminDashboard() {
                                                     <p className="text-sm opacity-40 font-medium">Contributed by User ID: <span className="font-mono text-xs">{key.userId}</span></p>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-4 items-center">
+                                            <div className="flex gap-4 items-center w-full sm:w-auto justify-end">
                                                 <div className="text-right hidden md:block mr-4">
                                                     <p className="text-xs font-bold uppercase tracking-widest opacity-30 mb-1">Last Validated</p>
                                                     <p className="font-bold text-sm">{new Date(key.createdAt || Date.now()).toLocaleDateString()}</p>
@@ -670,7 +670,7 @@ export default function AdminDashboard() {
                                                 <Award size={14} />
                                                 <span className="text-xs font-bold uppercase tracking-wider">Streak</span>
                                             </div>
-                                            <p className="font-mono font-bold">{userDetails.user.streak} Days</p>
+                                            <p className="font-mono font-bold">{userDetails.user.streaks?.global || 0} Days</p>
                                         </div>
                                     </div>
 

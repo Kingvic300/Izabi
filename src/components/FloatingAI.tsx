@@ -43,9 +43,8 @@ const FloatingAI = () => {
     return (
         <div className={cn(
             "fixed z-[200] flex flex-col items-start transition-all duration-500 ease-in-out",
-            "bottom-6 left-6", // Mobile
-            "md:bottom-8", // Desktop vertical
-            state === "expanded" ? "md:left-72" : "md:left-24" // Desktop horizontal offset from sidebar
+            "bottom-8 left-4",
+            state === "expanded" ? "md:left-72" : "md:left-20"
         )}>
             <AnimatePresence>
                 {isOpen && (
@@ -129,14 +128,15 @@ const FloatingAI = () => {
 
             {/* Toggle Button */}
             <motion.button
+                id="floating-ai-trigger"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
+                className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
                     isOpen ? 'bg-card text-foreground rotate-90 border border-foreground/10' : 'bg-primary text-primary-foreground shadow-glow'
                 }`}
             >
-                {isOpen ? <X size={24} /> : <MessageCircle size={24} className="fill-current" />}
+                {isOpen ? <X size={28} /> : <MessageCircle size={32} className="fill-current" />}
             </motion.button>
         </div>
     );

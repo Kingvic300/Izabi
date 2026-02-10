@@ -79,6 +79,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
                     return (
                         <motion.button
                             key={card.id}
+                            id={`intent-card-${card.id}`}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}

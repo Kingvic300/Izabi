@@ -72,7 +72,7 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-[100] group">
+    <div id="streak-pet-container" className="fixed bottom-8 right-8 z-[200] group">
       <motion.div 
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

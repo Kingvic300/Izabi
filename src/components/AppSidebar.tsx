@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp, Trophy } from "lucide-react"
+import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp, Trophy, MessageCircle } from "lucide-react"
 import { Logo } from "@/components/Logo"
 import apiClient, { api } from "@/lib/apiClient"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -87,6 +87,12 @@ const settingsItems = [
         url: "/dashboard/settings",
         icon: Settings,
         description: "Preferences and configuration",
+    },
+    {
+        title: "Help & Support",
+        url: "/dashboard/contact",
+        icon: MessageCircle,
+        description: "Get help",
     },
 ]
 
@@ -187,6 +193,7 @@ export function AppSidebar() {
                                         >
                                             <a
                                                 href={item.url}
+                                                id={`nav-item-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
                                                 onClick={(e) => {
                                                     e.preventDefault()
                                                     if ((item as any).status === "unavailable") return

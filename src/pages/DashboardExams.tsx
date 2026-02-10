@@ -331,7 +331,7 @@ const DashboardExams = () => {
                     </motion.div>
                 )}
 
-                <div className="flex bg-card/20 p-1.5 rounded-3xl backdrop-blur-xl border border-foreground/5 shadow-inner">
+                <div className="flex bg-card/20 p-1.5 rounded-3xl backdrop-blur-xl border border-foreground/5 shadow-inner overflow-x-auto scrollbar-hide max-w-full">
                     {(['JAMB', 'WAEC', 'JUPEB', 'UNIVERSITY'] as const).map(tab => (
                         <button
                             key={tab}
@@ -630,12 +630,12 @@ const DashboardExams = () => {
                 </Card>
 
                 {/* Footer Navigation */}
-                <div className="mt-8 flex justify-center gap-4 pb-12">
+                <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pb-12 w-full max-w-md mx-auto">
                     <Button 
                         variant="ghost" 
                         onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
                         disabled={currentQuestionIndex === 0}
-                        className="w-32 h-12 rounded-xl font-bold border border-foreground/5 hover:bg-card"
+                        className="w-full sm:w-32 h-12 rounded-xl font-bold border border-foreground/5 hover:bg-card"
                     >
                         Previous
                     </Button>
@@ -643,14 +643,14 @@ const DashboardExams = () => {
                     {currentQuestionIndex === (currentExam?.questions.length || 0) - 1 ? (
                         <Button 
                             onClick={submitExam}
-                            className="w-40 h-14 rounded-2xl font-black uppercase tracking-widest text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-2xl shadow-blue-600/20 active:scale-95 transition-all"
+                            className="w-full sm:w-48 h-14 rounded-2xl font-black uppercase tracking-widest text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-2xl shadow-blue-600/20 active:scale-95 transition-all"
                         >
                             Final Submission
                         </Button>
                     ) : (
                         <Button 
                             onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
-                            className="w-32 h-12 rounded-[14px] font-black uppercase tracking-widest text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all active:scale-95"
+                            className="w-full sm:w-32 h-12 rounded-[14px] font-black uppercase tracking-widest text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all active:scale-95"
                         >
                             Next
                         </Button>
