@@ -71,18 +71,18 @@ const Dashboard = () => {
                                 <Separator orientation="vertical" className="h-8 bg-white/10" />
                                 <div className="flex flex-col">
                                     <h1 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">System Node</h1>
-                                    <p className="text-lg font-bold tracking-tight">Scholar Environment</p>
+                                    <p className="text-lg font-bold tracking-tight">Izabi Workspace</p>
                                 </div>
                             </div>
                             
                             <div className="flex items-center gap-4">
                                 <div className="hidden md:flex flex-col items-end mr-2">
-                                    <span className="text-[10px] font-bold opacity-60 uppercase tracking-widest">Session active</span>
-                                    <span className="text-[10px] font-mono opacity-40">CORE-992-BETA</span>
+                                    <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">Aura Sync Active</span>
+                                    <span className="text-[10px] font-mono opacity-20">EST-992-BETA</span>
                                 </div>
-                                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary/20 to-transparent p-[1px] border border-white/10">
+                                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary/20 to-transparent p-[1px] border border-white/10 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
                                     <div className="w-full h-full rounded-[14px] bg-background flex items-center justify-center">
-                                        <div className="w-4 h-4 rounded-full bg-primary/20 animate-pulse" />
+                                        <div className="w-3 h-3 rounded-full bg-primary/40 animate-pulse" />
                                     </div>
                                 </div>
                             </div>
@@ -96,9 +96,9 @@ const Dashboard = () => {
                         </main>
                     </div>
 
-                    {/* Background Jobs Progress Container */}
-                    <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-4 pointer-events-none">
-                        <AnimatePresence>
+                    {/* Background Jobs Progress Container - Moved to Top Right below header */}
+                    <div className="fixed top-24 right-6 z-[100] flex flex-col gap-4 pointer-events-none">
+                        <AnimatePresence mode="popLayout">
                             {activeJobs.map(job => (
                                 <div key={job.id} className="pointer-events-auto">
                                     <JobStatusToast 
@@ -111,13 +111,15 @@ const Dashboard = () => {
                     </div>
 
                     {userStats?.data && (
-                        <StreakPet 
-                            streak={userStats.data.streakData?.academicStreak || userStats.data.studyStreak || 0} 
-                            petData={userStats.data.pet} 
-                            userPoints={userStats.data.totalPoints || 0}
-                            streakFreezes={userStats.data.streakData?.streakFreezes || 0}
-                            onFeed={handleFeedPet}
-                        />
+                        <div className="relative z-[110]">
+                            <StreakPet 
+                                streak={userStats.data.streakData?.academicStreak || userStats.data.studyStreak || 0} 
+                                petData={userStats.data.pet} 
+                                userPoints={userStats.data.totalPoints || 0}
+                                streakFreezes={userStats.data.streakData?.streakFreezes || 0}
+                                onFeed={handleFeedPet}
+                            />
+                        </div>
                     )}
                 </div>
             </SidebarProvider>
