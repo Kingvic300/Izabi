@@ -92,7 +92,8 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     const [currentStepIndex, setCurrentStepIndex] = useState(0)
     const location = useLocation()
 
-    // Auto-start for new users
+    // Auto-start for new users - DISABLED
+    /*
     useEffect(() => {
         const hasSeenTour = localStorage.getItem("hasSeenTour_v1")
         // Only start if on dashboard and haven't seen tour
@@ -103,6 +104,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
             }, 1000)
         }
     }, [location.pathname])
+    */
 
     const startTour = useCallback(() => {
         localStorage.removeItem("hasSeenTour_v1")
