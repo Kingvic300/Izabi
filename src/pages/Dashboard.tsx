@@ -6,15 +6,24 @@ import { ErrorBoundary } from "@/components/ErrorBoundary"
 import StreakPet from "@/components/StreakPet"
 import { useState, useEffect } from "react"
 import { api } from "@/lib/apiClient"
+import { useStudy } from "@/contexts/StudyContext"
+import { cn } from "@/lib/utils"
 
 const Dashboard = () => {
+    const { activeJobs } = useStudy()
     const [userStats, setUserStats] = useState<any>(null)
     const userId = localStorage.getItem("userId")
+
+    const activeProcessingJobs = activeJobs.filter(j => j.status === 'PENDING' || j.status === 'PROCESSING')
+    const hasActiveJobs = activeProcessingJobs.length > 0
+    const progress = hasActiveJobs 
+        ? activeProcessingJobs.reduce((acc, j) => acc + j.progress, 0) / activeProcessingJobs.length 
+        : 0
 
     const fetchStats = async () => {
         if (!userId) return
         try {
-            const res = await api.getUserStats(userId)
+            const res = await api.getUserStats()
             setUserStats(res)
         } catch (err) {
             console.error("Failed to fetch global stats", err)
@@ -28,7 +37,7 @@ const Dashboard = () => {
     const handleFeedPet = async () => {
         if (!userId) return
         try {
-            const res = await api.feedPet(userId)
+            const res = await api.feedPet()
             if (res.success) {
                 // Optimistic update
                 setUserStats((prev: any) => ({
@@ -50,6 +59,20 @@ const Dashboard = () => {
             <SidebarProvider>
                 <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
                     
+                    {/* Global Tiny Progress Bar */}
+                    <div className={cn(
+                        "fixed top-0 left-0 right-0 z-[100] h-1.5 transition-all duration-500 ease-out",
+                        hasActiveJobs ? "opacity-100" : "opacity-0 pointer-events-none"
+                    )}>
+                        <div className="absolute inset-0 bg-primary/20" />
+                        <div 
+                            className="h-full bg-primary shadow-[0_0_15px_theme(colors.primary.DEFAULT)] transition-all duration-300 relative overflow-hidden"
+                            style={{ width: `${progress}%` }}
+                        >
+                            <div className="absolute inset-0 bg-white/30 animate-pulse" />
+                        </div>
+                    </div>
+
                     <AppSidebar />
                     
                     <div className="flex-1 flex flex-col relative z-10">
@@ -87,9 +110,10 @@ const Dashboard = () => {
 
                     {userStats?.data && (
                         <StreakPet 
-                            streak={userStats.data.studyStreak || 0} 
+                            streak={userStats.data.streakData?.academicStreak || userStats.data.studyStreak || 0} 
                             petData={userStats.data.pet} 
                             userPoints={userStats.data.totalPoints || 0}
+                            streakFreezes={userStats.data.streakData?.streakFreezes || 0}
                             onFeed={handleFeedPet}
                         />
                     )}

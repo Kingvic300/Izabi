@@ -152,6 +152,16 @@ export const api = {
         return response.data
     },
 
+    async startQuickTest() {
+        const response = await apiClient.post("/api/quiz/quick-test/start")
+        return response.data
+    },
+
+    async submitQuickTest(quizId: string, answers: Record<string, string>) {
+        const response = await apiClient.post("/api/quiz/quick-test/submit", { quizId, answers })
+        return response.data
+    },
+
     async feedPet() {
         const response = await apiClient.post("/api/user/pet/feed")
         return response.data

@@ -14,9 +14,10 @@ interface PetProps {
   };
   onFeed?: () => void;
   userPoints?: number;
+  streakFreezes?: number;
 }
 
-const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0 }) => {
+const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0, streakFreezes = 0 }) => {
   const petRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
   const [isFeeding, setIsFeeding] = React.useState(false);
@@ -133,18 +134,25 @@ const StreakPet: React.FC<PetProps> = ({ streak, petData, onFeed, userPoints = 0
                  </div>
                  
                  {onFeed && (
-                    <button 
-                        onClick={handleFeed}
-                        disabled={userPoints < 50 || isFeeding}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${
-                            userPoints >= 50 
-                            ? 'bg-amber-500 text-black hover:bg-amber-400' 
-                            : 'bg-white/5 text-white/30 cursor-not-allowed'
-                        }`}
-                    >
-                        <Utensils size={10} />
-                        {isFeeding ? 'Yum!' : 'Feed'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {streakFreezes > 0 && (
+                            <div className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-500 text-[9px] font-black uppercase flex items-center gap-1">
+                                ❄️ {streakFreezes}
+                            </div>
+                        )}
+                        <button 
+                            onClick={handleFeed}
+                            disabled={userPoints < 50 || isFeeding}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${
+                                userPoints >= 50 
+                                ? 'bg-amber-500 text-black hover:bg-amber-400' 
+                                : 'bg-white/5 text-white/30 cursor-not-allowed'
+                            }`}
+                        >
+                            <Utensils size={10} />
+                            {isFeeding ? 'Yum!' : 'Feed'}
+                        </button>
+                    </div>
                  )}
               </div>
            </div>

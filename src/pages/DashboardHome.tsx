@@ -40,6 +40,10 @@ import StreakPet from "@/components/StreakPet"
 import BrainDrop from "@/components/BrainDrop"
 import IntentCards from "@/components/IntentCards"
 import ContextCard from "@/components/ContextCard"
+import QuickTestModal from "@/components/QuickTestModal"
+import StudyTricksModal from "@/components/StudyTricksModal"
+import PracticeQuizModal from "@/components/PracticeQuizModal"
+import { useStudy } from "@/contexts/StudyContext"
 
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -138,6 +142,7 @@ const SummaryViewer = ({ content, t }: { content: string; t: any }) => {
 
 const DashboardHome = () => {
     const { t } = useLanguage()
+    const { addJob } = useStudy()
     const containerRef = useRef<HTMLDivElement>(null)
     const [isProcessing, setIsProcessing] = useState(false)
     const [summary, setSummary] = useState<string>("")
@@ -166,6 +171,10 @@ const DashboardHome = () => {
     // Context Card State
     const [showContextCard, setShowContextCard] = useState(false)
     const [userExamType, setUserExamType] = useState<string | null>(null)
+
+    // Modal State
+    const [showQuickTestModal, setShowQuickTestModal] = useState(false)
+    const [showStudyTricksModal, setShowStudyTricksModal] = useState(false)
 
     const { errors, addError, clearError } = useApiError()
     const userId = localStorage.getItem("userId")
@@ -233,14 +242,21 @@ const DashboardHome = () => {
         }
     };
     
-    const handleQuickTest = async () => {
-        // TODO: Implement timed test feature
-        addError({ message: "Quick Test coming soon!", type: "validation" });
+    const handleQuickTest = () => {
+        setShowQuickTestModal(true);
     };
     
     const handleLearnTricks = () => {
-        // TODO: Implement study tricks feature
-        addError({ message: "Study Tricks coming soon!", type: "validation" });
+        setShowStudyTricksModal(true);
+    };
+
+    const handleQuickTestComplete = (score: number, pointsEarned: number) => {
+        // Refresh stats to show new points
+        fetchStats();
+        // Optionally show a success toast
+        if (score >= 70) {
+            addError({ message: `Great job! You earned ${pointsEarned} XP!`, type: "validation" });
+        }
     };
     
     const handleContextSelect = (examType: string) => {
@@ -264,8 +280,16 @@ const DashboardHome = () => {
                 }
 
                 const res = await api.getDailyChallenge();
-                if (res.success) {
-                    setBrainDropQuestion(res.data);
+                if (res.success && res.data) {
+                    // Validate that we have a proper question structure
+                    if (res.data.question && res.data.options && Array.isArray(res.data.options) && res.data.options.length > 0) {
+                        setBrainDropQuestion(res.data);
+                    } else {
+                        console.warn("Brain Drop: Invalid question structure", res.data);
+                    }
+                } else {
+                    // User has no notes yet - this is expected for new users
+                    console.log("Brain Drop:", res.message || "No content available yet");
                 }
                 
                 // Check if user has set exam type
@@ -449,6 +473,7 @@ const DashboardHome = () => {
                 });
 
                 console.log("[SmartStudy] Job Started (Local Sync). ID:", ingestRes.jobId);
+                addJob(ingestRes.jobId, pdfFile.name, type);
                 pollJobStatus(ingestRes.jobId, endpoint);
                 return;
             }
@@ -459,6 +484,7 @@ const DashboardHome = () => {
             const ingestRes = await api.ingestDirect(pdfFile, type, options);
 
             console.log("[SmartStudy] Job Started. ID:", ingestRes.jobId);
+            addJob(ingestRes.jobId, pdfFile.name, type);
 
             // Background Polling
             pollJobStatus(ingestRes.jobId, endpoint);
@@ -1120,6 +1146,22 @@ const DashboardHome = () => {
                 }
             `}</style>
             </div>
+
+            {/* Modals */}
+            <QuickTestModal 
+                isOpen={showQuickTestModal} 
+                onClose={() => setShowQuickTestModal(false)}
+                onComplete={handleQuickTestComplete}
+            />
+            <StudyTricksModal 
+                isOpen={showStudyTricksModal} 
+                onClose={() => setShowStudyTricksModal(false)}
+            />
+            <PracticeQuizModal 
+                isOpen={showPracticeQuiz} 
+                onClose={() => setShowPracticeQuiz(false)} 
+                questions={practiceQuestions} 
+            />
         </ErrorBoundary>
     )
 }

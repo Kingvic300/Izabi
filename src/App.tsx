@@ -9,6 +9,7 @@ import { Heartbeat } from "@/components/Heartbeat"
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { LanguageProvider } from "@/contexts/LanguageContext"
+import { StudyProvider } from "@/contexts/StudyContext"
 
 const queryClient = new QueryClient()
 
@@ -16,7 +17,8 @@ const App = () => (
     <ErrorBoundary>
         <ThemeProvider defaultTheme="dark" storageKey="izabi-theme-v3">
             <LanguageProvider>
-                <ErrorProvider>
+                <StudyProvider>
+                    <ErrorProvider>
                     <QueryClientProvider client={queryClient}>
                         <TooltipProvider>
                             <Heartbeat />
@@ -26,6 +28,7 @@ const App = () => (
                         </TooltipProvider>
                     </QueryClientProvider>
                 </ErrorProvider>
+                </StudyProvider>
             </LanguageProvider>
         </ThemeProvider>
     </ErrorBoundary>

@@ -60,7 +60,6 @@ const navigationItems = [
         url: "/dashboard/exams",
         icon: GraduationCap,
         description: "Practice past questions",
-        status: "unavailable",
     },
     {
         title: "Leaderboard",
@@ -136,7 +135,7 @@ export function AppSidebar() {
      */
     const handleLogout = async () => {
         try {
-            await api.logout(localStorage.getItem("userId"))
+            await api.logout()
             // Clear local storage
             localStorage.removeItem("userId")
             localStorage.removeItem("authToken")
