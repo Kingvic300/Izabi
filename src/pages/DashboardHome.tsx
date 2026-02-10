@@ -397,53 +397,49 @@ const DashboardHome = () => {
     };
 
     const pollJobStatus = async (jobId: string, endpoint: string) => {
-        const checkStatus = async () => {
+        const interval = setInterval(async () => {
             try {
-                const jobData = await api.getJobStatus(jobId);
-                console.log("[SmartStudy] Job Status Update:", jobData.status);
+                const response = await api.getJobStatus(jobId);
+                // The backend returns { success: true, data: { status, result, ... } }
+                const job = response.data;
+                
+                console.log("[SmartStudy] Job Status Update:", job?.status);
 
-                if (jobData.status === 'COMPLETED') {
+                if (job?.status === 'COMPLETED') {
                     setIsProcessing(false);
+                    clearInterval(interval);
                     
+                    const result = job.result;
                     if (endpoint === 'summarize' || endpoint === 'generate-study-material') {
                         updateSession({ 
-                            summary: jobData.summary || "", 
+                            summary: result?.summary || "", 
                             questions: [], 
                             flashcards: [] 
                         });
                         setShowSummary(true);
                     } else if (endpoint === 'generate-questions') {
                         updateSession({ 
-                            questions: jobData.questions || [], 
                             summary: "", 
+                            questions: result?.questions || [], 
                             flashcards: [] 
                         });
-                        setShowQuestions((jobData.questions?.length || 0) > 0);
+                        setShowQuestions(true);
                     } else if (endpoint === 'flashcards') {
                         updateSession({ 
-                            flashcards: jobData.flashcards || [], 
                             summary: "", 
-                            questions: [] 
+                            questions: [], 
+                            flashcards: result?.flashcards || [] 
                         });
-                        setShowFlashcards((jobData.flashcards?.length || 0) > 0);
+                        setShowFlashcards(true);
                     }
-                    return true;
-                } else if (jobData.status === 'FAILED') {
+                } else if (job?.status === 'FAILED') {
                     setIsProcessing(false);
-                    addError({ message: "Document analysis failed: " + (jobData.metadata?.error || "Unknown error"), type: "api" });
-                    return true;
+                    clearInterval(interval);
+                    addError({ message: job?.error || "Neural Protocol failure.", type: "api" });
                 }
-                return false;
-            } catch (err) {
-                console.warn("[SmartStudy] Polling error:", err);
-                return false;
+            } catch (error) {
+                console.error("[Dashboard] Polling Error:", error);
             }
-        };
-
-        // Poll every 1.5 seconds for snappier feedback
-        const interval = setInterval(async () => {
-            const finished = await checkStatus();
-            if (finished) clearInterval(interval);
         }, 1500);
     };
 
@@ -1050,7 +1046,7 @@ const DashboardHome = () => {
                                                                     <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Question {i+1}</div>
                                                                     <h4 className="text-base md:text-xl font-bold leading-tight text-foreground break-words">{q.question}</h4>
                                                                 </div>
-                                                                {showResults && (
+                                                                 {showResults && (
                                                                     <div className={`w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-3xl text-[10px] font-bold tracking-widest uppercase flex items-center gap-2 shadow-2xl transition-all
                                                                         ${correct ? "bg-primary text-white shadow-primary/20" : "bg-destructive text-white shadow-destructive/20"}`}>
                                                                         {correct ? <CheckCircle2 size={12} /> : <XCircle size={12} />}

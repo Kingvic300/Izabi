@@ -87,43 +87,45 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             for (const job of jobsToPoll) {
                 try {
                     const statusData = await api.getJobStatus(job.id);
+                    // Standardize access to the nested data property
+                    const jobInfo = statusData.data;
                     
-                    if (statusData.status === 'COMPLETED') {
+                    if (jobInfo?.status === 'COMPLETED') {
                         updateJobStatus(job.id, { 
                             status: 'COMPLETED', 
                             progress: 100, 
-                            result: statusData 
+                            result: jobInfo.result 
                         });
 
                         // Automatically update session if it matches the current active document
                         if (session.lastJobId === job.id) {
                             if (job.type === 'summary' || job.type === 'study-guide') {
-                                updateSession({ summary: statusData.summary || "" });
+                                updateSession({ summary: jobInfo.result?.summary || "" });
                             } else if (job.type === 'quiz') {
-                                updateSession({ questions: statusData.questions || [] });
+                                updateSession({ questions: jobInfo.result?.questions || [] });
                             } else if (job.type === 'flashcards') {
-                                updateSession({ flashcards: statusData.flashcards || [] });
+                                updateSession({ flashcards: jobInfo.result?.flashcards || [] });
                             }
                         }
 
                         toast.success(`Analysis Complete: ${job.fileName}`, {
                             description: "Your study material is ready."
                         });
-                    } else if (statusData.status === 'FAILED') {
+                    } else if (jobInfo?.status === 'FAILED') {
                         updateJobStatus(job.id, { status: 'FAILED' });
                         toast.error(`Analysis Failed: ${job.fileName}`, {
-                            description: statusData.metadata?.error || "Unknown error"
+                            description: jobInfo.error || "Unknown error"
                         });
                     } else {
-                        // Estimate progress if not provided by backend
-                        const currentProgress = job.progress >= 90 ? 95 : job.progress + 5;
+                        // Use backend progress if available, else estimate
+                        const currentProgress = jobInfo?.progress || (job.progress >= 92 ? 98 : job.progress + 8);
                         updateJobStatus(job.id, { status: 'PROCESSING', progress: currentProgress });
                     }
                 } catch (err) {
                     console.error("Polling error for job", job.id, err);
                 }
             }
-        }, 3000); // Poll every 3 seconds for global state
+        }, 1500); // Halved interval for better responsiveness
 
         return () => clearInterval(interval);
     }, [activeJobs, updateJobStatus]);
