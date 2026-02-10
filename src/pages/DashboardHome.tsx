@@ -20,7 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { BASE_URL } from "@/constants"
 import { motion, AnimatePresence } from "framer-motion"
-import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw, Activity, Cpu, Download, Loader2, Flame, Trophy, TrendingUp, Upload } from "lucide-react"
+import { FileText, Brain, Zap, ChevronDown, ChevronUp, Sparkles, CheckCircle2, XCircle, BarChart3, Clock, LayoutGrid, Terminal, Layers, RotateCcw, Activity, Cpu, Download, Loader2, Flame, Trophy, TrendingUp, Upload, Volume2, Pause } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import PDFUploadSection from "@/components/pdf/PDFUploadSection"
 import type { PDFSelection, StudyQuestionResponse } from "@/types/pdf"
@@ -46,10 +46,60 @@ import remarkGfm from 'remark-gfm'
 
 const SummaryViewer = ({ content, t }: { content: string; t: any }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
     const isLong = content.length > 800;
     
+    const handlePlaySummary = async () => {
+        if (isPlaying) {
+            audioRef.current?.pause();
+            setIsPlaying(false);
+            return;
+        }
+
+        if (audioRef.current && audioRef.current.src) {
+            audioRef.current.play();
+            setIsPlaying(true);
+            return;
+        }
+
+        setIsLoadingAudio(true);
+        try {
+            const res = await api.generateVoice(content.substring(0, 1000)); // Limit for now
+            if (res.success && res.voiceUrl) {
+                const audio = new Audio(res.voiceUrl);
+                audioRef.current = audio;
+                
+                audio.onended = () => setIsPlaying(false);
+                audio.onpause = () => setIsPlaying(false);
+                
+                await audio.play();
+                setIsPlaying(true);
+            }
+        } catch (err) {
+            console.error("Voice generation failed", err);
+            // Optionally trigger a toast here if passed down
+        } finally {
+            setIsLoadingAudio(false);
+        }
+    };
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-4">
+            <div className="flex justify-end">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handlePlaySummary}
+                    disabled={isLoadingAudio}
+                    className="rounded-full bg-primary/10 text-primary hover:bg-primary/20 gap-2 font-bold text-xs"
+                >
+                    {isLoadingAudio ? <Loader2 className="animate-spin h-3 w-3" /> : (isPlaying ? <Pause className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />)}
+                    {isPlaying ? "Pause Audio" : "Listen to Summary"}
+                </Button>
+            </div>
+            
             <div className={cn(
                 "prose prose-sm md:prose-base dark:prose-invert max-w-none leading-relaxed text-muted-foreground/90 font-medium selection:bg-primary/30 transition-all duration-700 ease-in-out",
                 !isExpanded && isLong && "max-h-[400px] overflow-hidden relative"

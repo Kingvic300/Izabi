@@ -179,8 +179,18 @@ export const api = {
      * How: Generates a new exam based on topic/type using AI or backend logic.
      * Why: To provide on-demand practice material.
      */
-    async generateMockExam(topic: string, type: string) {
-        const response = await apiClient.post("/api/exams/generate-mock", { topic, type })
+    async generatePracticeExam(config: any) {
+        const response = await apiClient.post("/api/exams/generate", config)
+        return response.data
+    },
+
+    async getSimulation(category: string, subject: string) {
+        const response = await apiClient.get(`/api/exams/simulation?category=${category}&subject=${subject}`)
+        return response.data
+    },
+    
+    async generateVoice(text: string, lang: string = 'en', isPidgin: boolean = false) {
+        const response = await apiClient.post("/api/study/generate-voice", { text, lang, isPidgin })
         return response.data
     },
 
@@ -339,6 +349,26 @@ export const api = {
     async getJobStatus(jobId: string) {
         const response = await apiClient.get(`/api/study/job-status/${jobId}`)
         return response.data
+    },
+
+    // PDF Splitting API
+    async analyzePDF(file: File) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await apiClient.post("/api/study/analyze-pdf", formData);
+        return response.data;
+    },
+
+    async processPDFSection(data: {
+        fileUrl: string;
+        pageStart: number;
+        pageEnd: number;
+        sectionTitle?: string;
+        type: 'summary' | 'flashcards' | 'quiz' | 'study-guide';
+        options?: any;
+    }) {
+        const response = await apiClient.post("/api/study/process-pdf-section", data);
+        return response.data;
     }
 }
 
