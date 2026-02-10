@@ -13,11 +13,17 @@ export const Logo: React.FC<LogoProps> = ({ className = "", size = 40, showText 
         style={{ width: size, height: size }} 
         className="relative group"
       >
-        {/* Logo Image */}
+        {/* Light Mode Logo */}
         <img 
-          src="/logo.png" 
+          src="/light-mode-logo.png" 
           alt="Izabi Logo" 
-          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-lg"
+          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-lg dark:hidden"
+        />
+        {/* Dark Mode Logo */}
+        <img 
+          src="/dark-mode-logo.png" 
+          alt="Izabi Logo" 
+          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-lg hidden dark:block"
         />
       </div>
       

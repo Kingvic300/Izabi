@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Check, Zap, Crown, Sparkles, ArrowRight, Loader2 } from "lucide-react"
+import { Check, Zap, Crown, Sparkles, ArrowRight, Loader2, XCircle, Clock } from "lucide-react"
 import { api } from "@/lib/apiClient"
 import { useAppToast } from "@/hooks/useAppToast"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
@@ -44,6 +44,27 @@ const DashboardSubscription = () => {
             appToast.error({ 
                 title: "Payment Error", 
                 description: err.message || "Could not initialize payment" 
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleCancelAutoRenew = async () => {
+        if (!confirm("Are you sure you want to cancel auto-renewal? Your benefits will remain active until the end of your current billing cycle.")) return
+        
+        setLoading(true)
+        try {
+            const res = await api.cancelAutoRenew()
+            appToast.success({ 
+                title: "Auto-renew Cancelled", 
+                description: res.message 
+            })
+            fetchUserStats()
+        } catch (err: any) {
+            appToast.error({ 
+                title: "Error", 
+                description: err.message || "Failed to cancel auto-renewal" 
             })
         } finally {
             setLoading(false)
@@ -117,42 +138,69 @@ const DashboardSubscription = () => {
                             Subscription <span className="text-gradient">Plans</span>
                         </h1>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            Choose the plan that fits your learning needs
+                            Choose the plan that fits your learning needs. Manage your recurring billing below.
                         </p>
                     </div>
 
                     {/* Current Usage Stats */}
                     {stats && (
-                        <Card className="glass border-primary/20 max-w-4xl mx-auto">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-3">
-                                    <div className="w-3 h-6 bg-primary rounded-full" />
-                                    Your Current Usage
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="p-4 rounded-xl bg-card/5 border border-foreground/5">
-                                        <p className="text-sm font-bold opacity-40 uppercase tracking-widest mb-2">Documents</p>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-3xl font-black">{stats.usage.dailyDocs}</span>
-                                            <span className="text-sm opacity-40">/ {stats.usage.limits.dailyDocs} per day</span>
+                        <div className="max-w-4xl mx-auto space-y-4">
+                            <Card className="glass border-primary/20">
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                                    <CardTitle className="flex items-center gap-3">
+                                        <div className="w-3 h-6 bg-primary rounded-full" />
+                                        Your Current Usage
+                                    </CardTitle>
+                                    {stats.paystackSubscriptionCode && (
+                                        <Button 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            onClick={handleCancelAutoRenew}
+                                            disabled={loading}
+                                            className="text-destructive hover:text-destructive hover:bg-destructive/10 font-bold"
+                                        >
+                                            {loading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <XCircle size={16} className="mr-2" />}
+                                            Cancel Auto-renew
+                                        </Button>
+                                    )}
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="p-4 rounded-xl bg-card/5 border border-foreground/5">
+                                            <p className="text-sm font-bold opacity-40 uppercase tracking-widest mb-2">Documents</p>
+                                            <div className="flex items-baseline gap-2">
+                                                <span className="text-3xl font-black">{stats.usage.dailyDocs}</span>
+                                                <span className="text-sm opacity-40">/ {stats.usage.limits.dailyDocs} per day</span>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 rounded-xl bg-card/5 border border-foreground/5">
+                                            <p className="text-sm font-bold opacity-40 uppercase tracking-widest mb-2">AI Messages</p>
+                                            <div className="flex items-baseline gap-2">
+                                                <span className="text-3xl font-black">{stats.usage.dailyMessages}</span>
+                                                <span className="text-sm opacity-40">/ {stats.usage.limits.dailyMessages} per day</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="p-4 rounded-xl bg-card/5 border border-foreground/5">
-                                        <p className="text-sm font-bold opacity-40 uppercase tracking-widest mb-2">AI Messages</p>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-3xl font-black">{stats.usage.dailyMessages}</span>
-                                            <span className="text-sm opacity-40">/ {stats.usage.limits.dailyMessages} per day</span>
+                                    {stats.subscriptionExpiry && stats.subscriptionStatus !== 'free' && (
+                                        <div className="mt-4 pt-4 border-t border-foreground/5 flex items-center justify-between">
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                <Clock size={14} />
+                                                Plan expires on: <span className="font-bold text-foreground ml-1">{new Date(stats.subscriptionExpiry).toLocaleDateString()}</span>
+                                            </div>
+                                            {stats.paystackSubscriptionCode ? (
+                                                <Badge className="bg-green-500/10 text-green-500 border-0">Auto-renew Active</Badge>
+                                            ) : (
+                                                <Badge className="bg-amber-500/10 text-amber-500 border-0">Auto-renew Off</Badge>
+                                            )}
                                         </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </div>
                     )}
 
                     {/* Plans Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto pt-4">
                         {plans.map((plan, idx) => {
                             const Icon = plan.icon
                             const isCurrent = plan.id === currentTier
@@ -225,7 +273,7 @@ const DashboardSubscription = () => {
                                                         <ArrowRight size={16} className="ml-2" />
                                                     </>
                                                 ) : (
-                                                    "Downgrade Not Available"
+                                                    "Higher Plan Active"
                                                 )}
                                             </Button>
                                         </CardContent>
@@ -236,8 +284,10 @@ const DashboardSubscription = () => {
                     </div>
 
                     {/* Footer Note */}
-                    <div className="text-center text-sm text-muted-foreground max-w-2xl mx-auto">
-                        <p>All plans automatically renew monthly. You can cancel anytime from your account settings.</p>
+                    <div className="text-center text-sm text-muted-foreground max-w-2xl mx-auto space-y-4 pt-8 border-t border-foreground/5">
+                        <p className="font-bold text-foreground">Terms & Conditions</p>
+                        <p>All paid plans automatically renew monthly unless cancelled. By subscribing, you agree to IZABI's automatic billing protocol. You can cancel auto-renewal at any time from this dashboard; your benefits will remain active until the end of your current paid period.</p>
+                        <p className="opacity-60">Payments are processed securely via Paystack. Subscription cycles are exactly 30 days from the moment of activation.</p>
                     </div>
                 </div>
             </ErrorBoundary>

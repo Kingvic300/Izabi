@@ -388,12 +388,17 @@ export const api = {
 
     // Payment/Subscription APIs
     async startPayment(plan: 'pro_monthly' | 'premium_monthly') {
-        const response = await apiClient.post("/api/payments/start", { plan });
+        const response = await apiClient.post("/api/payments/initialize", { plan });
         return response.data;
     },
 
     async verifyPayment(reference: string) {
         const response = await apiClient.get(`/api/payments/verify/${reference}`);
+        return response.data;
+    },
+
+    async cancelAutoRenew() {
+        const response = await apiClient.post("/api/payments/cancel-auto-renew");
         return response.data;
     }
 }

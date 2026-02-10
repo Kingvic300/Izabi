@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp, Trophy, MessageCircle } from "lucide-react"
+import { History, User, LogOut, Brain, LayoutDashboard, FileText, Zap, TrendingUp, Settings, GraduationCap, Heart, ShieldCheck, ChevronUp, Trophy, MessageCircle, Crown } from "lucide-react"
 import { Logo } from "@/components/Logo"
 import apiClient, { api } from "@/lib/apiClient"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -81,6 +81,12 @@ const settingsItems = [
         url: "/dashboard/profile",
         icon: User,
         description: "Manage your account",
+    },
+    {
+        title: "Subscription",
+        url: "/dashboard/subscription",
+        icon: Crown,
+        description: "Manage your plan",
     },
     {
         title: "Settings",
