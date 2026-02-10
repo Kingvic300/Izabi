@@ -10,6 +10,17 @@ import { useAppToast } from "@/hooks/useAppToast"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { 
+    AlertDialog, 
+    AlertDialogAction, 
+    AlertDialogCancel, 
+    AlertDialogContent, 
+    AlertDialogDescription, 
+    AlertDialogFooter, 
+    AlertDialogHeader, 
+    AlertDialogTitle, 
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog"
 
 const DashboardSubscription = () => {
     const [loading, setLoading] = useState(false)
@@ -51,8 +62,6 @@ const DashboardSubscription = () => {
     }
 
     const handleCancelAutoRenew = async () => {
-        if (!confirm("Are you sure you want to cancel auto-renewal? Your benefits will remain active until the end of your current billing cycle.")) return
-        
         setLoading(true)
         try {
             const res = await api.cancelAutoRenew()
@@ -131,67 +140,90 @@ const DashboardSubscription = () => {
     return (
         <div className="min-h-screen w-full px-4 md:px-12 py-10 pb-32">
             <ErrorBoundary>
-                <div className="space-y-8">
+                <div className="space-y-6 md:space-y-12">
                     {/* Header */}
-                    <div className="text-center space-y-4">
-                        <h1 className="text-5xl font-bold tracking-tighter">
+                    <div className="text-center space-y-2 md:space-y-4">
+                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-tight">
                             Subscription <span className="text-gradient">Plans</span>
                         </h1>
-                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            Choose the plan that fits your learning needs. Manage your recurring billing below.
+                        <p className="text-muted-foreground text-sm md:text-lg max-w-2xl mx-auto px-4">
+                            Choose the plan that fits your learning needs. Manage your billing directly from this workspace.
                         </p>
                     </div>
 
                     {/* Current Usage Stats */}
                     {stats && (
                         <div className="max-w-4xl mx-auto space-y-4">
-                            <Card className="glass border-primary/20">
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                                    <CardTitle className="flex items-center gap-3">
-                                        <div className="w-3 h-6 bg-primary rounded-full" />
-                                        Your Current Usage
+                            <Card className="glass border-primary/20 rounded-3xl overflow-hidden shadow-xl">
+                                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 md:p-6 pb-2">
+                                    <CardTitle className="flex items-center gap-3 text-lg md:text-xl">
+                                        <div className="w-2 h-5 bg-primary rounded-full hidden sm:block" />
+                                        Your Usage
                                     </CardTitle>
                                     {stats.paystackSubscriptionCode && (
-                                        <Button 
-                                            variant="ghost" 
-                                            size="sm" 
-                                            onClick={handleCancelAutoRenew}
-                                            disabled={loading}
-                                            className="text-destructive hover:text-destructive hover:bg-destructive/10 font-bold"
-                                        >
-                                            {loading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <XCircle size={16} className="mr-2" />}
-                                            Cancel Auto-renew
-                                        </Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm" 
+                                                    disabled={loading}
+                                                    className="text-destructive hover:text-destructive hover:bg-destructive/10 font-bold h-9 px-3 rounded-full text-xs"
+                                                >
+                                                    {loading ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <XCircle size={14} className="mr-2" />}
+                                                    Cancel Auto-renew
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent className="glass border-primary/20 rounded-3xl">
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle className="text-xl font-black">Cancel Auto-renewal?</AlertDialogTitle>
+                                                    <AlertDialogDescription className="text-sm font-medium opacity-70">
+                                                        Are you sure you want to cancel auto-renewal? Your benefits will remain active until the end of your current billing cycle ({new Date(stats.subscriptionExpiry).toLocaleDateString()}).
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter className="gap-2">
+                                                    <AlertDialogCancel className="rounded-xl border-foreground/10">Keep Subscription</AlertDialogCancel>
+                                                    <AlertDialogAction 
+                                                        onClick={handleCancelAutoRenew}
+                                                        className="rounded-xl bg-destructive hover:bg-destructive/90 text-white font-bold"
+                                                    >
+                                                        Yes, Cancel Auto-renew
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     )}
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="p-4 rounded-xl bg-card/5 border border-foreground/5">
-                                            <p className="text-sm font-bold opacity-40 uppercase tracking-widest mb-2">Documents</p>
+                                <CardContent className="p-5 md:p-6 pt-0">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 space-y-1">
+                                            <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest">Documents</p>
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-3xl font-black">{stats.usage.dailyDocs}</span>
-                                                <span className="text-sm opacity-40">/ {stats.usage.limits.dailyDocs} per day</span>
+                                                <span className="text-2xl md:text-3xl font-black">{stats.usage.dailyDocs}</span>
+                                                <span className="text-xs opacity-40">/ {stats.usage.limits.dailyDocs}</span>
                                             </div>
                                         </div>
-                                        <div className="p-4 rounded-xl bg-card/5 border border-foreground/5">
-                                            <p className="text-sm font-bold opacity-40 uppercase tracking-widest mb-2">AI Messages</p>
+                                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 space-y-1">
+                                            <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest">AI Messages</p>
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-3xl font-black">{stats.usage.dailyMessages}</span>
-                                                <span className="text-sm opacity-40">/ {stats.usage.limits.dailyMessages} per day</span>
+                                                <span className="text-2xl md:text-3xl font-black">{stats.usage.dailyMessages}</span>
+                                                <span className="text-xs opacity-40">/ {stats.usage.limits.dailyMessages}</span>
                                             </div>
                                         </div>
                                     </div>
                                     {stats.subscriptionExpiry && stats.subscriptionStatus !== 'free' && (
-                                        <div className="mt-4 pt-4 border-t border-foreground/5 flex items-center justify-between">
-                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Clock size={14} />
-                                                Plan expires on: <span className="font-bold text-foreground ml-1">{new Date(stats.subscriptionExpiry).toLocaleDateString()}</span>
+                                        <div className="mt-5 pt-4 border-t border-foreground/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
+                                                <Clock size={14} className="opacity-50" />
+                                                Plan expires on: <span className="font-bold text-foreground">{new Date(stats.subscriptionExpiry).toLocaleDateString()}</span>
                                             </div>
-                                            {stats.paystackSubscriptionCode ? (
-                                                <Badge className="bg-green-500/10 text-green-500 border-0">Auto-renew Active</Badge>
-                                            ) : (
-                                                <Badge className="bg-amber-500/10 text-amber-500 border-0">Auto-renew Off</Badge>
-                                            )}
+                                            <div className="flex items-center gap-2">
+                                                {stats.paystackSubscriptionCode ? (
+                                                    <Badge className="bg-green-500/10 text-green-500 border-0 text-[10px] font-bold py-0.5 px-2">Auto-renew Active</Badge>
+                                                ) : (
+                                                    <Badge className="bg-amber-500/10 text-amber-500 border-0 text-[10px] font-bold py-0.5 px-2">Auto-renew Off</Badge>
+                                                )}
+                                                <Badge className="bg-primary/10 text-primary border-0 text-[10px] font-bold py-0.5 px-2 uppercase tracking-tighter">{stats.subscriptionStatus}</Badge>
+                                            </div>
                                         </div>
                                     )}
                                 </CardContent>
@@ -200,7 +232,7 @@ const DashboardSubscription = () => {
                     )}
 
                     {/* Plans Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto pt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto pt-4 md:pt-8 px-2 md:px-0">
                         {plans.map((plan, idx) => {
                             const Icon = plan.icon
                             const isCurrent = plan.id === currentTier
@@ -213,41 +245,44 @@ const DashboardSubscription = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
+                                    className="h-full"
                                 >
                                     <Card className={cn(
-                                        "glass relative overflow-hidden transition-all h-full flex flex-col",
-                                        plan.id === 'pro' && "border-primary/40 shadow-[0_0_30px_rgba(59,130,246,0.1)] scale-105 z-10",
-                                        isCurrent && "ring-2 ring-primary"
+                                        "glass relative overflow-hidden transition-all h-full flex flex-col rounded-[32px] border-foreground/5",
+                                        plan.id === 'pro' && "md:scale-105 z-10 border-primary/40 shadow-[0_0_40px_rgba(59,130,246,0.15)] bg-gradient-to-b from-primary/5 to-transparent",
+                                        isCurrent && "ring-2 ring-primary ring-offset-4 ring-offset-background"
                                     )}>
                                         {plan.id === 'pro' && (
-                                            <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-bold uppercase animate-pulse">
+                                            <div className="absolute top-6 right-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 animate-pulse">
                                                 Popular
                                             </div>
                                         )}
 
-                                        <CardHeader className="pb-4">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <div className={`p-2 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10`}>
-                                                    <Icon className={plan.color} size={24} />
+                                        <CardHeader className="p-6 md:p-8 pb-4">
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <div className={`p-3 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-inner`}>
+                                                    <Icon className={plan.color} size={28} />
                                                 </div>
                                                 {isCurrent && (
-                                                    <Badge className="bg-primary/20 text-primary border-0">Active</Badge>
+                                                    <Badge className="bg-primary/20 text-primary border-0 font-bold px-3 py-1">Active</Badge>
                                                 )}
                                             </div>
-                                            <CardTitle className="text-2xl font-black">{plan.name}</CardTitle>
-                                            <p className="text-xs font-bold opacity-40 uppercase tracking-widest">{plan.description}</p>
-                                            <div className="flex items-baseline gap-2 mt-4">
+                                            <div className="space-y-1">
+                                                <CardTitle className="text-2xl md:text-3xl font-black">{plan.name}</CardTitle>
+                                                <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest">{plan.description}</p>
+                                            </div>
+                                            <div className="flex items-baseline gap-2 mt-8">
                                                 <span className="text-xl font-bold opacity-40">₦</span>
-                                                <span className="text-4xl font-black">{plan.price}</span>
-                                                <span className="text-xs font-bold opacity-40 uppercase">/month</span>
+                                                <span className="text-4xl md:text-5xl font-black tracking-tight">{plan.price}</span>
+                                                <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">/month</span>
                                             </div>
                                         </CardHeader>
 
-                                        <CardContent className="flex-1 flex flex-col">
-                                            <ul className="space-y-3 mb-6 flex-1">
+                                        <CardContent className="flex-1 flex flex-col p-6 md:p-8 pt-0">
+                                            <ul className="space-y-4 mb-8 flex-1">
                                                 {plan.features.map((feature, i) => (
-                                                    <li key={i} className="flex items-center gap-2 text-sm font-medium">
-                                                        <Check size={16} className="text-primary shrink-0" />
+                                                    <li key={i} className="flex items-start gap-3 text-sm font-semibold opacity-80 leading-snug">
+                                                        <Check size={18} className="text-primary shrink-0 mt-0.5" />
                                                         <span>{feature}</span>
                                                     </li>
                                                 ))}
@@ -257,23 +292,23 @@ const DashboardSubscription = () => {
                                                 onClick={() => plan.plan && handleUpgrade(plan.plan)}
                                                 disabled={isCurrent || loading || !isUpgrade}
                                                 className={cn(
-                                                    "w-full h-12 font-bold rounded-xl transition-all",
+                                                    "w-full h-14 md:h-16 font-black uppercase tracking-widest text-xs rounded-2xl transition-all active:scale-95",
                                                     plan.id === 'pro' 
-                                                        ? "bg-primary hover:bg-primary/90 shadow-glow" 
-                                                        : "bg-card/5 hover:bg-card/10 border border-foreground/10"
+                                                        ? "bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20" 
+                                                        : "bg-foreground/5 hover:bg-foreground/10 border border-foreground/10"
                                                 )}
                                             >
                                                 {loading ? (
                                                     <Loader2 className="animate-spin" size={20} />
                                                 ) : isCurrent ? (
-                                                    "Current Plan"
+                                                    "Current Scholar"
                                                 ) : isUpgrade ? (
                                                     <>
                                                         {plan.cta}
                                                         <ArrowRight size={16} className="ml-2" />
                                                     </>
                                                 ) : (
-                                                    "Higher Plan Active"
+                                                    "Master Active"
                                                 )}
                                             </Button>
                                         </CardContent>
