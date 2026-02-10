@@ -26,6 +26,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
         console.error("[ErrorBoundary] Caught error:", error, errorInfo)
+        import("sonner").then(({ toast }) => {
+            toast.error("Critical System Fault", {
+                description: "An unexpected error occurred in the neural interface.",
+            });
+        });
     }
 
     render() {

@@ -17,6 +17,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { GoogleLogin } from "@react-oauth/google"
 
 const Signup = () => {
     const { t } = useLanguage()
@@ -139,6 +140,53 @@ const Signup = () => {
                     description: errorMessage,
                 })
             }
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleGoogleSuccess = async (credentialResponse: any) => {
+        setIsLoading(true)
+        try {
+            const response = await axios.post(`${BASE_URL}/api/auth/google`, {
+                idToken: credentialResponse.credential
+            })
+
+            const { user, tokens } = response.data
+            const accessToken = tokens.accessToken
+            const userId = user._id || user.id
+            const role = user.role
+
+            localStorage.setItem("userId", userId)
+            localStorage.setItem("authToken", accessToken)
+            localStorage.setItem("userEmail", user.email)
+            localStorage.setItem("userRole", role || "USER")
+            if (user.firstName) localStorage.setItem("userFirstName", user.firstName)
+            if (user.lastName) localStorage.setItem("userLastName", user.lastName)
+
+            appToast.success({
+                title: "Google Sync Successful",
+                description: "Your neural profile is synchronized! Redirecting...",
+            })
+
+            setTimeout(() => navigate("/dashboard"), 1000)
+        } catch (err: any) {
+            console.error(err)
+            const status = err.response?.status;
+            let description = "Something went wrong during Google synchronization.";
+            
+            if (status === 404) {
+                description = "Registration service is currently unavailable. Please contact support.";
+            } else if (err.response?.data?.message) {
+                description = err.response.data.message;
+            } else if (!navigator.onLine) {
+                description = "Check your internet connection and try again.";
+            }
+
+            appToast.error({
+                title: "Google Sync Failed",
+                description
+            })
         } finally {
             setIsLoading(false)
         }
@@ -279,6 +327,31 @@ const Signup = () => {
                                     </>
                                 )}
                             </Button>
+
+                            <div className="relative my-6">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t border-foreground/5"></span>
+                                </div>
+                                <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
+                                    <span className="bg-background px-4 text-muted-foreground/40">Or sync via neural node</span>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-center w-full">
+                                <GoogleLogin
+                                    onSuccess={handleGoogleSuccess}
+                                    onError={() => {
+                                        appToast.error({
+                                            title: "Google Sync Error",
+                                            description: "Neural synchronization failed. Please try again or use standard credentials."
+                                        })
+                                    }}
+                                    useOneTap
+                                    theme="filled_black"
+                                    shape="circle"
+                                    width="100%"
+                                />
+                            </div>
                         </form>
 
                         <div className="pt-6 border-t border-foreground/5 text-center">

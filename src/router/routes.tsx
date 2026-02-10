@@ -31,6 +31,7 @@ const SupportUs = lazy(() => import("@/pages/SupportUs"), "SupportUs")
 const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"), "AdminDashboard")
 const DashboardLeaderboard = lazy(() => import("@/pages/DashboardLeaderboard"), "DashboardLeaderboard")
 const DashboardSupport = lazy(() => import("@/pages/DashboardSupport"), "DashboardSupport")
+const DashboardSubscription = lazy(() => import("@/pages/DashboardSubscription"), "DashboardSubscription")
 
 const withErrorBoundary = (Component: React.ComponentType, text?: string) => (
     <ErrorBoundary>
@@ -99,6 +100,7 @@ const routes = () => {
                         <Route path="admin" element={<AdminRoute>{withErrorBoundary(AdminDashboard)}</AdminRoute>} />
                         <Route path="leaderboard" element={withErrorBoundary(DashboardLeaderboard)} />
                         <Route path="contact" element={withErrorBoundary(DashboardSupport)} />
+                        <Route path="subscription" element={withErrorBoundary(DashboardSubscription)} />
                     </Route>
 
                     {/* Catch-all route */}

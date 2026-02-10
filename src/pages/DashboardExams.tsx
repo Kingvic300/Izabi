@@ -37,7 +37,7 @@ import { useAppToast } from "@/hooks/useAppToast";
 import type { Exam, Question } from "@/types/api";
 
 const DashboardExams = () => {
-    const [view, setView] = useState<'lobby' | 'exam' | 'result'>('lobby');
+    const [view, setView] = useState<'lobby' | 'exam' | 'result' | 'review'>('lobby');
     const [activeTab, setActiveTab] = useState<'JAMB' | 'WAEC' | 'JUPEB' | 'UNIVERSITY'>('JAMB');
     const [exams, setExams] = useState<Exam[]>([]);
     const [loading, setLoading] = useState(false);
@@ -64,6 +64,7 @@ const DashboardExams = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isNotePracticing, setIsNotePracticing] = useState(false);
     const [recentResults, setRecentResults] = useState<any[]>([]);
+    const [selectedResult, setSelectedResult] = useState<any>(null);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const appToast = useAppToast();
@@ -350,7 +351,7 @@ const DashboardExams = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
                 {/* Simulation Card */}
                 <Card className="glass-card stagger-card border-primary/20 shadow-2xl relative overflow-hidden group rounded-[40px]">
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
@@ -407,63 +408,6 @@ const DashboardExams = () => {
                             className="w-full h-16 text-lg font-black uppercase tracking-[0.2em] bg-primary hover:bg-primary/90 text-primary-foreground mt-4 relative z-30 shadow-2xl shadow-primary/20 active:scale-95 transition-all rounded-[20px]"
                         >
                             {isSimulating ? <Loader2 className="animate-spin" /> : "Start Exam"}
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Custom Practice Card */}
-                <Card className="glass-card stagger-card border-blue-500/20 shadow-2xl relative overflow-hidden group rounded-[40px]">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <CardHeader className="relative z-10 p-8">
-                        <CardTitle className="flex items-center gap-4 text-3xl font-black italic tracking-tighter">
-                            <div className="p-3 rounded-2xl bg-blue-500/20 text-blue-500 shadow-inner">
-                                <Target size={24} />
-                            </div>
-                            Custom <span className="text-blue-500">Practice</span>
-                        </CardTitle>
-                        <CardDescription className="text-base font-medium opacity-70">Short, targeted AI-generated tests by subject.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6 relative z-20 p-8 pt-0">
-                        {activeTab === 'UNIVERSITY' ? (
-                            <>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">University</label>
-                                    <Input 
-                                        placeholder="e.g. UNILAG" 
-                                        value={practiceUniName}
-                                        onChange={e => setPracticeUniName(e.target.value)}
-                                        className="bg-background/50 border-foreground/10 h-14 rounded-2xl focus:ring-blue-500/20"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Course Title</label>
-                                    <Input 
-                                        placeholder="e.g. Intro to Computer Science" 
-                                        value={practiceCourseTitle}
-                                        onChange={e => setPracticeCourseTitle(e.target.value)}
-                                        className="bg-background/50 border-foreground/10 h-14 rounded-2xl focus:ring-blue-500/20"
-                                    />
-                                </div>
-                            </>
-                        ) : (
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Topic / Subject</label>
-                                <Input 
-                                    id="practice-subject-input"
-                                    type="text"
-                                    placeholder="e.g. Organic Chemistry" 
-                                    value={practiceSubject}
-                                    onChange={e => setPracticeSubject(e.target.value)}
-                                    className="bg-background/50 border-foreground/10 h-14 rounded-2xl shadow-sm focus:border-blue-500/50 text-lg font-bold"
-                                />
-                            </div>
-                        )}
-                        <Button 
-                            onClick={startCustomExam} 
-                            disabled={isPracticing}
-                            className="w-full h-16 text-lg font-black uppercase tracking-[0.2em] bg-blue-600 hover:bg-blue-500 text-white mt-4 relative z-30 shadow-2xl shadow-blue-500/20 active:scale-95 transition-all rounded-[20px]"
-                        >
-                            {isPracticing ? <Loader2 className="animate-spin" /> : "Start Practice"}
                         </Button>
                     </CardContent>
                 </Card>
@@ -539,7 +483,14 @@ const DashboardExams = () => {
                     {recentResults.length > 0 ? (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {recentResults.map((res, i) => (
-                                <div key={i} className="flex items-center justify-between p-6 bg-card/40 rounded-[24px] border border-foreground/5 hover:border-primary/20 transition-all group/stat hover:translate-x-1">
+                                <button 
+                                    key={i} 
+                                    onClick={() => {
+                                        setSelectedResult(res);
+                                        setView('review');
+                                    }}
+                                    className="flex items-center justify-between p-6 bg-card/40 rounded-[24px] border border-foreground/5 hover:border-primary/20 transition-all group/stat hover:translate-x-1 cursor-pointer text-left w-full"
+                                >
                                     <div className="flex items-center gap-5">
                                         <div className={cn(
                                             "w-16 h-16 rounded-[20px] flex items-center justify-center font-black text-2xl shadow-inner",
@@ -559,10 +510,10 @@ const DashboardExams = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <button className="w-10 h-10 rounded-xl bg-primary/5 text-primary opacity-0 group-hover/stat:opacity-100 transition-all flex items-center justify-center hover:bg-primary hover:text-white">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/5 text-primary opacity-0 group-hover/stat:opacity-100 transition-all flex items-center justify-center group-hover/stat:bg-primary group-hover/stat:text-white">
                                         <ChevronRight size={20} />
-                                    </button>
-                                </div>
+                                    </div>
+                                </button>
                             ))}
                         </div>
                     ) : (
@@ -697,6 +648,108 @@ const DashboardExams = () => {
         </div>
     );
 
+    const renderReview = () => {
+        if (!selectedResult) return null;
+
+        return (
+            <div className="w-full space-y-8 animate-in fade-in duration-700">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <Button 
+                            variant="ghost" 
+                            onClick={() => setView('lobby')}
+                            className="mb-4 h-10 px-4 rounded-xl font-bold hover:bg-card/50 gap-2"
+                        >
+                            <ArrowLeft size={16} />
+                            Back to Lobby
+                        </Button>
+                        <h1 className="text-5xl font-extrabold tracking-tighter mb-2 italic">
+                            Exam <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">Review</span>
+                        </h1>
+                        <p className="text-muted-foreground text-lg font-medium">{selectedResult.subject} • {new Date(selectedResult.date).toLocaleDateString()}</p>
+                    </div>
+
+                    <div className="text-center">
+                        <div className={cn(
+                            "w-32 h-32 rounded-[28px] flex items-center justify-center font-black text-4xl shadow-2xl mb-2",
+                            selectedResult.score >= 70 ? "bg-blue-500/10 text-blue-500 border-2 border-blue-500/20" : 
+                            selectedResult.score >= 45 ? "bg-blue-400/10 text-blue-400 border-2 border-blue-400/20" : 
+                            "bg-destructive/10 text-destructive border-2 border-destructive/20"
+                        )}>
+                            {Math.round(selectedResult.score)}<span className="text-lg opacity-60">%</span>
+                        </div>
+                        <p className="text-sm font-bold opacity-40 uppercase tracking-widest">Final Score</p>
+                    </div>
+                </div>
+
+                {/* Stats Summary */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="p-6 bg-blue-500/5 border-blue-500/20 rounded-2xl">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-500">
+                                <CheckCircle2 size={24} />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-black">{selectedResult.correctAnswers}</p>
+                                <p className="text-xs font-bold opacity-40 uppercase tracking-widest">Correct</p>
+                            </div>
+                        </div>
+                    </Card>
+                    <Card className="p-6 bg-destructive/5 border-destructive/20 rounded-2xl">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center text-destructive">
+                                <XCircle size={24} />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-black">{selectedResult.totalQuestions - selectedResult.correctAnswers}</p>
+                                <p className="text-xs font-bold opacity-40 uppercase tracking-widest">Incorrect</p>
+                            </div>
+                        </div>
+                    </Card>
+                    <Card className="p-6 bg-primary/5 border-primary/20 rounded-2xl">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+                                <Target size={24} />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-black">{selectedResult.totalQuestions}</p>
+                                <p className="text-xs font-bold opacity-40 uppercase tracking-widest">Total Questions</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+
+                {/* Question Breakdown */}
+                <div className="space-y-4">
+                    <h3 className="text-2xl font-black tracking-tighter">Question Breakdown</h3>
+                    <p className="text-sm text-muted-foreground font-medium">Detailed review is coming soon. Full question-by-question analysis will be available in the next update.</p>
+                    
+                    <Card className="p-8 bg-card/40 border-foreground/5 rounded-2xl">
+                        <div className="text-center py-12">
+                            <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mx-auto mb-4">
+                                <Sparkles size={32} className="text-muted-foreground opacity-30" />
+                            </div>
+                            <h4 className="text-lg font-black uppercase tracking-widest opacity-20 mb-2">Feature In Development</h4>
+                            <p className="text-sm opacity-40 max-w-md mx-auto font-medium">
+                                Detailed question-by-question review with explanations and learning insights is being built.
+                            </p>
+                        </div>
+                    </Card>
+                </div>
+
+                <div className="flex gap-4 justify-center pt-8">
+                    <Button 
+                        onClick={() => setView('lobby')}
+                        className="h-14 px-8 rounded-2xl font-black uppercase tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl shadow-primary/20 transition-all active:scale-95"
+                    >
+                        Back to Lobby
+                    </Button>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div ref={containerRef} className="min-h-screen w-full px-4 md:px-12 py-10 pb-32 bg-background">
             <ErrorBoundary>
@@ -729,6 +782,16 @@ const DashboardExams = () => {
                             exit={{ opacity: 0 }}
                         >
                             {renderResult()}
+                        </motion.div>
+                    )}
+                    {view === 'review' && (
+                        <motion.div
+                            key="review"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            {renderReview()}
                         </motion.div>
                     )}
                 </AnimatePresence>

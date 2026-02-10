@@ -10,10 +10,14 @@ import { Heartbeat } from "@/components/Heartbeat"
 import { ThemeProvider } from "@/components/theme-provider"
 import { LanguageProvider } from "@/contexts/LanguageContext"
 import { StudyProvider } from "@/contexts/StudyContext"
+import { GoogleOAuthProvider } from "@react-oauth/google"
 
 const queryClient = new QueryClient()
 
+const GOOGLE_CLIENT_ID = "25223443612-npc3ofle86h0agp5f9mik6842pvpkco5.apps.googleusercontent.com"
+
 const App = () => (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <ErrorBoundary>
         <ThemeProvider defaultTheme="dark" storageKey="izabi-theme-v3">
             <LanguageProvider>
@@ -32,6 +36,7 @@ const App = () => (
             </LanguageProvider>
         </ThemeProvider>
     </ErrorBoundary>
+    </GoogleOAuthProvider>
 )
 
 export default App

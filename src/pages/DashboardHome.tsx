@@ -49,6 +49,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
 const SummaryViewer = ({ content, t }: { content: string; t: any }) => {
+    const { language } = useLanguage();
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoadingAudio, setIsLoadingAudio] = useState(false);
@@ -70,7 +71,22 @@ const SummaryViewer = ({ content, t }: { content: string; t: any }) => {
 
         setIsLoadingAudio(true);
         try {
-            const res = await api.generateVoice(content.substring(0, 1000)); // Limit for now
+            // Map our UI languages to Google TTS codes
+            const langMap: Record<string, string> = {
+                en: 'en',
+                pidgin: 'en', // Google doesn't have pidgin, we use English voice
+                igbo: 'ig',
+                yoruba: 'yo',
+                hausa: 'ha'
+            };
+
+            const isPidgin = language === 'pidgin';
+            const res = await api.generateVoice(
+                content.substring(0, 1000), 
+                langMap[language] || 'en',
+                isPidgin
+            );
+
             if (res.success && res.voiceUrl) {
                 const audio = new Audio(res.voiceUrl);
                 audioRef.current = audio;
@@ -636,7 +652,7 @@ const DashboardHome = () => {
     return (
         <ErrorBoundary>
             <div ref={containerRef} className="space-y-6 md:space-y-12 w-full pb-20 px-4 md:px-8 lg:px-12 pt-6 md:pt-12">
-                <ErrorList errors={errors} onDismiss={clearError} />
+                {/* Error handling through useApiError toasts */}
 
                 {/* Welcome Section - GSAP Target */}
                 <div id="dashboard-welcome" className="welcome-text space-y-2">

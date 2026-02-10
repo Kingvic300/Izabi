@@ -191,7 +191,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
 
   return (
       <div className={cn('space-y-8', className)}>
-        <ErrorList errors={errors} onDismiss={clearError} />
+        {/* Error handling handled via toast in useApiError */}
 
         {success && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
