@@ -49,12 +49,7 @@ export const TOUR_STEPS: TourStep[] = [
         content: "This is your active lab. Once uploaded, select a mode to turn your documents into summaries, quizzes, or flashcards.",
         position: "top"
     },
-    {
-        targetId: "floating-ai-trigger",
-        title: "Your AI Tutor",
-        content: "Stuck on a concept? Chat with Izabi AI here. It knows your uploaded documents and can answer specific questions.",
-        position: "right"
-    },
+
     {
         targetId: "nav-item-notes",
         title: "Note Library",

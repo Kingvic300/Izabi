@@ -10,7 +10,7 @@ import { useStudy } from "@/contexts/StudyContext"
 import { cn } from "@/lib/utils"
 import JobStatusToast from "@/components/JobStatusToast"
 import { AnimatePresence } from "framer-motion"
-import FloatingAI from "@/components/FloatingAI"
+
 
 const Dashboard = () => {
     const { activeJobs, removeJob } = useStudy()
@@ -121,7 +121,6 @@ const Dashboard = () => {
                         />
                     )}
 
-                    <FloatingAI />
                 </div>
             </SidebarProvider>
         </ErrorBoundary>
