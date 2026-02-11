@@ -1,6 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Zap, BookOpen, Upload, Clock, Target, Lightbulb } from 'lucide-react';
+import {
+    Brain,
+    Zap,
+    BookOpen,
+    Upload,
+    Clock,
+    Target,
+    Lightbulb,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface IntentCard {
@@ -24,7 +32,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
     onPracticeSkills,
     onQuickTest,
     onLearnTricks,
-    onUploadDocument
+    onUploadDocument,
 }) => {
     const cards: IntentCard[] = [
         {
@@ -33,7 +41,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
             label: 'Practice Skills',
             description: 'Build critical thinking',
             color: 'from-primary/40 to-primary/30 border-primary/50',
-            onClick: onPracticeSkills
+            onClick: onPracticeSkills,
         },
         {
             id: 'test',
@@ -42,7 +50,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
             description: 'Timed challenge',
             badge: '5 min',
             color: 'from-accent/40 to-accent/30 border-accent/50',
-            onClick: onQuickTest
+            onClick: onQuickTest,
         },
         {
             id: 'tricks',
@@ -50,7 +58,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
             label: 'Study Tricks',
             description: 'Learn smarter',
             color: 'from-primary/35 to-accent/25 border-primary/40',
-            onClick: onLearnTricks
+            onClick: onLearnTricks,
         },
         {
             id: 'upload',
@@ -58,8 +66,8 @@ const IntentCards: React.FC<IntentCardsProps> = ({
             label: 'Help w/ Notes',
             description: 'Upload document',
             color: 'from-accent/35 to-primary/25 border-accent/40',
-            onClick: onUploadDocument
-        }
+            onClick: onUploadDocument,
+        },
     ];
 
     return (
@@ -85,10 +93,10 @@ const IntentCards: React.FC<IntentCardsProps> = ({
                             transition={{ delay: index * 0.1 }}
                             onClick={card.onClick}
                             className={cn(
-                                "group relative overflow-hidden rounded-3xl p-6 text-left transition-all duration-300",
-                                "border-2 bg-gradient-to-br hover:scale-[1.02] active:scale-[0.98]",
-                                "shadow-lg hover:shadow-2xl backdrop-blur-sm",
-                                card.color
+                                'group relative overflow-hidden rounded-3xl p-6 text-left transition-all duration-300',
+                                'border-2 bg-gradient-to-br hover:scale-[1.02] active:scale-[0.98]',
+                                'shadow-lg hover:shadow-2xl backdrop-blur-sm',
+                                card.color,
                             )}
                         >
                             {/* Icon */}

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { LoadingSpinner, SkeletonLoader } from "@/components/ui/loading";
-import ErrorDisplay from "@/components/ui/error-display";
-import { cn } from "@/lib/utils";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-import { Document, Page, pdfjs } from "react-pdf";
-import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2 } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { LoadingSpinner, SkeletonLoader } from '@/components/ui/loading';
+import ErrorDisplay from '@/components/ui/error-display';
+import { cn } from '@/lib/utils';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+import { Document, Page, pdfjs } from 'react-pdf';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2 } from 'lucide-react';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
+    'pdfjs-dist/build/pdf.worker.min.mjs',
+    import.meta.url,
 ).toString();
 
 interface PDFPreviewProps {
@@ -40,7 +40,7 @@ const LazyPage: React.FC<{
                     observer.disconnect();
                 }
             },
-            { rootMargin: "200px" } // Start loading even before it hits the viewport
+            { rootMargin: '200px' }, // Start loading even before it hits the viewport
         );
 
         if (containerRef.current) {
@@ -56,9 +56,10 @@ const LazyPage: React.FC<{
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className={cn(
-                "relative cursor-pointer transition-all duration-500 rounded-2xl overflow-hidden group min-h-[250px] bg-card/5",
-                isSelected && "ring-4 ring-primary ring-offset-4 ring-offset-black scale-105",
-                "hover:scale-[1.08] hover:shadow-[0_0_30px_hsla(var(--primary)/0.2)]"
+                'relative cursor-pointer transition-all duration-500 rounded-2xl overflow-hidden group min-h-[250px] bg-card/5',
+                isSelected &&
+                    'ring-4 ring-primary ring-offset-4 ring-offset-black scale-105',
+                'hover:scale-[1.08] hover:shadow-[0_0_30px_hsla(var(--primary)/0.2)]',
             )}
             onClick={onClick}
         >
@@ -70,7 +71,10 @@ const LazyPage: React.FC<{
                         onLoadSuccess={onLoadSuccess}
                         loading={
                             <div className="flex items-center justify-center h-full min-h-[250px]">
-                                <SkeletonLoader variant="image" className="w-full h-full" />
+                                <SkeletonLoader
+                                    variant="image"
+                                    className="w-full h-full"
+                                />
                             </div>
                         }
                         renderTextLayer={false}
@@ -147,9 +151,9 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
         return (
             <ErrorDisplay
                 error={{
-                    id: "pdf-preview-error",
-                    type: "validation",
-                    message: "Failed to load PDF preview",
+                    id: 'pdf-preview-error',
+                    type: 'validation',
+                    message: 'Failed to load PDF preview',
                     details: error.message,
                     timestamp: Date.now(),
                 }}
@@ -158,7 +162,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
     }
 
     return (
-        <div className={cn("w-full", className)}>
+        <div className={cn('w-full', className)}>
             <Document
                 file={file}
                 onLoadSuccess={handleDocumentLoadSuccess}

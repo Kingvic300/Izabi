@@ -1,220 +1,274 @@
-"use client"
+'use client';
 
-import type React from "react"
-import { useState, useRef } from "react"
-import { Link, useNavigate, useLocation } from "react-router-dom"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Check, X, Mail, Lock, Sparkles, Loader2, ArrowLeft, ShieldCheck, Eye, EyeOff, Star } from "lucide-react"
-import { Logo } from "@/components/Logo"
-import axios from "axios"
-import { BASE_URL } from "@/constants"
-import { useAppToast } from "@/hooks/useAppToast"
-import { formValidation } from "@/lib/formValidation"
-import { ErrorBoundary } from "@/components/ErrorBoundary"
-import gsap from "gsap"
-import { useGSAP } from "@gsap/react"
-import { useLanguage } from "@/contexts/LanguageContext"
-import { GoogleLogin } from "@react-oauth/google"
+import type React from 'react';
+import { useState, useRef } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Check,
+    X,
+    Mail,
+    Lock,
+    Sparkles,
+    Loader2,
+    ArrowLeft,
+    ShieldCheck,
+    Eye,
+    EyeOff,
+    Star,
+} from 'lucide-react';
+import { Logo } from '@/components/Logo';
+import axios from 'axios';
+import { BASE_URL } from '@/constants';
+import { useAppToast } from '@/hooks/useAppToast';
+import { formValidation } from '@/lib/formValidation';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Signup = () => {
-    const { t } = useLanguage()
-    const location = useLocation()
-    const queryParams = new URLSearchParams(location.search)
-    const selectedPlan = queryParams.get("plan")
-    const cardRef = useRef<HTMLDivElement>(null)
+    const { t } = useLanguage();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const selectedPlan = queryParams.get('plan');
+    const cardRef = useRef<HTMLDivElement>(null);
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-    })
-    const [errors, setErrors] = useState<Record<string, string>>({})
-    const [isLoading, setIsLoading] = useState(false)
-    const navigate = useNavigate()
-    const appToast = useAppToast()
-    const [showPassword, setShowPassword] = useState(false)
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+    });
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+    const appToast = useAppToast();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     useGSAP(() => {
         gsap.from(cardRef.current, {
             opacity: 0,
             y: 40,
             duration: 1,
-            ease: "expo.out"
-        })
-    })
+            ease: 'expo.out',
+        });
+    });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
+        const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: value,
-        }))
+        }));
 
         // Real-time validation
-        if (name === "email" && value) {
-            const validation = formValidation.email(value)
+        if (name === 'email' && value) {
+            const validation = formValidation.email(value);
             setErrors((prev) => ({
                 ...prev,
-                email: validation.error || "",
-            }))
-        } else if (name === "password" && value) {
-            const validation = formValidation.password(value)
+                email: validation.error || '',
+            }));
+        } else if (name === 'password' && value) {
+            const validation = formValidation.password(value);
             setErrors((prev) => ({
                 ...prev,
-                password: validation.error || "",
-            }))
-        } else if (name === "confirmPassword" && value && formData.password) {
-            const validation = formValidation.passwordMatch(formData.password, value)
+                password: validation.error || '',
+            }));
+        } else if (name === 'confirmPassword' && value && formData.password) {
+            const validation = formValidation.passwordMatch(
+                formData.password,
+                value,
+            );
             setErrors((prev) => ({
                 ...prev,
-                confirmPassword: validation.error || "",
-            }))
+                confirmPassword: validation.error || '',
+            }));
         }
-    }
+    };
 
     /*
      * How: Validates all form inputs and sends an OTP verification request to the backend.
      * Why: Users must verify their email before completing registration to prevent spam and ensure account security.
      */
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        const emailValidation = formValidation.email(formData.email)
-        const passwordValidation = formValidation.password(formData.password)
-        const matchValidation = formValidation.passwordMatch(formData.password, formData.confirmPassword)
+        const emailValidation = formValidation.email(formData.email);
+        const passwordValidation = formValidation.password(formData.password);
+        const matchValidation = formValidation.passwordMatch(
+            formData.password,
+            formData.confirmPassword,
+        );
 
-        const newErrors: Record<string, string> = {}
-        if (!emailValidation.isValid) newErrors.email = emailValidation.error || ""
-        if (!passwordValidation.isValid) newErrors.password = passwordValidation.error || ""
-        if (!matchValidation.isValid) newErrors.confirmPassword = matchValidation.error || ""
+        const newErrors: Record<string, string> = {};
+        if (!emailValidation.isValid)
+            newErrors.email = emailValidation.error || '';
+        if (!passwordValidation.isValid)
+            newErrors.password = passwordValidation.error || '';
+        if (!matchValidation.isValid)
+            newErrors.confirmPassword = matchValidation.error || '';
 
         if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors)
+            setErrors(newErrors);
             appToast.error({
-                title: "Validation Error",
-                description: "Please check the form for errors and try again.",
-            })
-            return
+                title: 'Validation Error',
+                description: 'Please check the form for errors and try again.',
+            });
+            return;
         }
 
-        setIsLoading(true)
+        setIsLoading(true);
         try {
             await axios.post(`${BASE_URL}/api/user/send-verification-otp`, {
                 email: formData.email.toLowerCase(),
                 password: formData.password,
-                role: "USER",
+                role: 'USER',
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-            })
+            });
 
             appToast.success({
-                title: "Verification Code Sent",
-                description: "Please check your email for the verification code.",
-            })
+                title: 'Verification Code Sent',
+                description:
+                    'Please check your email for the verification code.',
+            });
 
-            navigate("/otp", {
+            navigate('/otp', {
                 state: {
                     email: formData.email.toLowerCase(),
                     password: formData.password,
-                    mode: "verification",
+                    mode: 'verification',
                 },
-            })
+            });
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || "Failed to send verification code"
+            const errorMessage =
+                err.response?.data?.message ||
+                'Failed to send verification code';
 
             if (err.response?.status === 409) {
                 appToast.error({
-                    title: "Account Already Exists",
-                    description: "This email is already registered. Please sign in instead.",
-                })
+                    title: 'Account Already Exists',
+                    description:
+                        'This email is already registered. Please sign in instead.',
+                });
             } else if (!navigator.onLine) {
-                appToast.networkError()
+                appToast.networkError();
             } else {
                 appToast.error({
-                    title: "Registration Failed",
+                    title: 'Registration Failed',
                     description: errorMessage,
-                })
+                });
             }
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     const handleGoogleSuccess = async (credentialResponse: any) => {
-        setIsLoading(true)
+        setIsLoading(true);
         try {
             const response = await axios.post(`${BASE_URL}/api/auth/google`, {
-                idToken: credentialResponse.credential
-            })
+                idToken: credentialResponse.credential,
+            });
 
-            const { user, tokens } = response.data
-            const accessToken = tokens.accessToken
-            const userId = user._id || user.id
-            const role = user.role
+            const { user, tokens } = response.data;
+            const accessToken = tokens.accessToken;
+            const userId = user._id || user.id;
+            const role = user.role;
 
-            localStorage.setItem("userId", userId)
-            localStorage.setItem("authToken", accessToken)
-            localStorage.setItem("userEmail", user.email)
-            localStorage.setItem("userRole", role || "USER")
-            if (user.firstName) localStorage.setItem("userFirstName", user.firstName)
-            if (user.lastName) localStorage.setItem("userLastName", user.lastName)
+            localStorage.setItem('userId', userId);
+            localStorage.setItem('authToken', accessToken);
+            localStorage.setItem('userEmail', user.email);
+            localStorage.setItem('userRole', role || 'USER');
+            if (user.firstName)
+                localStorage.setItem('userFirstName', user.firstName);
+            if (user.lastName)
+                localStorage.setItem('userLastName', user.lastName);
 
             appToast.success({
-                title: "Google Sync Successful",
-                description: "Your neural profile is synchronized! Redirecting...",
-            })
+                title: 'Google Sync Successful',
+                description:
+                    'Your neural profile is synchronized! Redirecting...',
+            });
 
-            setTimeout(() => navigate("/dashboard"), 1000)
+            setTimeout(() => navigate('/dashboard'), 1000);
         } catch (err: any) {
-            console.error(err)
+            console.error(err);
             const status = err.response?.status;
-            let description = "Something went wrong during Google synchronization.";
-            
+            let description =
+                'Something went wrong during Google synchronization.';
+
             if (status === 404) {
-                description = "Registration service is currently unavailable. Please contact support.";
+                description =
+                    'Registration service is currently unavailable. Please contact support.';
             } else if (err.response?.data?.message) {
                 description = err.response.data.message;
             } else if (!navigator.onLine) {
-                description = "Check your internet connection and try again.";
+                description = 'Check your internet connection and try again.';
             }
 
             appToast.error({
-                title: "Google Sync Failed",
-                description
-            })
+                title: 'Google Sync Failed',
+                description,
+            });
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     return (
         <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6">
-
-            <Link to="/" className="absolute top-4 left-4 sm:top-8 sm:left-8 group z-20">
+            <Link
+                to="/"
+                className="absolute top-4 left-4 sm:top-8 sm:left-8 group z-20"
+            >
                 <div className="flex items-center gap-2 text-xs sm:text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
-                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    <ArrowLeft
+                        size={16}
+                        className="group-hover:-translate-x-1 transition-transform"
+                    />
                     <span className="hidden sm:inline">Return Home</span>
                     <span className="sm:hidden">Back</span>
                 </div>
             </Link>
 
-            <div ref={cardRef} className="w-full max-w-[520px] space-y-6 sm:space-y-8 relative z-10">
+            <div
+                ref={cardRef}
+                className="w-full max-w-[520px] space-y-6 sm:space-y-8 relative z-10"
+            >
                 {/* Branding */}
                 <div className="text-center space-y-2 sm:space-y-3">
-                    <Logo size={48} className="justify-center mx-auto sm:w-16 sm:h-16" />
+                    <Logo
+                        size={48}
+                        className="justify-center mx-auto sm:w-16 sm:h-16"
+                    />
                     <div>
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">{t("auth.signup").split(' ')[0]} <span className="text-gradient">{t("auth.signup").split(' ')[1]}</span></h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">Create your account to start your learning journey.</p>
-                        
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
+                            {t('auth.signup').split(' ')[0]}{' '}
+                            <span className="text-gradient">
+                                {t('auth.signup').split(' ')[1]}
+                            </span>
+                        </h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">
+                            Create your account to start your learning journey.
+                        </p>
+
                         {selectedPlan && (
                             <div className="mt-3 sm:mt-4 inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg sm:rounded-xl glass border border-primary/20 bg-primary/5">
-                                <Star size={12} className="text-primary fill-primary animate-pulse" />
-                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-primary">Selected Node: {selectedPlan.replace(/-/g, ' ')}</span>
+                                <Star
+                                    size={12}
+                                    className="text-primary fill-primary animate-pulse"
+                                />
+                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-primary">
+                                    Selected Node:{' '}
+                                    {selectedPlan.replace(/-/g, ' ')}
+                                </span>
                             </div>
                         )}
                     </div>
@@ -222,10 +276,15 @@ const Signup = () => {
 
                 <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
                     <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6">
-                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                        <form
+                            onSubmit={handleSubmit}
+                            className="space-y-4 sm:space-y-6"
+                        >
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">First Name</Label>
+                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                        First Name
+                                    </Label>
                                     <Input
                                         name="firstName"
                                         type="text"
@@ -237,7 +296,9 @@ const Signup = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">Last Name</Label>
+                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                        Last Name
+                                    </Label>
                                     <Input
                                         name="lastName"
                                         type="text"
@@ -251,65 +312,114 @@ const Signup = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">{t("auth.email")}</Label>
+                                <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                    {t('auth.email')}
+                                </Label>
                                 <div className="relative">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
+                                    <Mail
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40"
+                                        size={18}
+                                    />
                                     <Input
                                         name="email"
                                         type="email"
                                         placeholder="scholar@example.com"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className={`h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.email ? "border-destructive/50" : ""}`}
+                                        className={`h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.email ? 'border-destructive/50' : ''}`}
                                     />
                                 </div>
-                                {errors.email && <p className="text-xs text-destructive font-bold px-1">{errors.email}</p>}
+                                {errors.email && (
+                                    <p className="text-xs text-destructive font-bold px-1">
+                                        {errors.email}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 sm:gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">{t("auth.password")}</Label>
+                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                        {t('auth.password')}
+                                    </Label>
                                     <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
+                                        <Lock
+                                            className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40"
+                                            size={18}
+                                        />
                                         <Input
                                             name="password"
-                                            type={showPassword ? "text" : "password"}
+                                            type={
+                                                showPassword
+                                                    ? 'text'
+                                                    : 'password'
+                                            }
                                             placeholder="••••••••"
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.password ? "border-destructive/50" : ""}`}
+                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.password ? 'border-destructive/50' : ''}`}
                                         />
                                         <button
                                             type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
+                                            onClick={() =>
+                                                setShowPassword(!showPassword)
+                                            }
                                             className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
                                         >
-                                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            {showPassword ? (
+                                                <EyeOff size={18} />
+                                            ) : (
+                                                <Eye size={18} />
+                                            )}
                                         </button>
                                     </div>
-                                    {errors.password && <p className="text-xs text-destructive font-bold px-1">{errors.password}</p>}
+                                    {errors.password && (
+                                        <p className="text-xs text-destructive font-bold px-1">
+                                            {errors.password}
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">Confirm</Label>
+                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                        Confirm
+                                    </Label>
                                     <div className="relative">
-                                        <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
+                                        <ShieldCheck
+                                            className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40"
+                                            size={18}
+                                        />
                                         <Input
                                             name="confirmPassword"
-                                            type={showConfirmPassword ? "text" : "password"}
+                                            type={
+                                                showConfirmPassword
+                                                    ? 'text'
+                                                    : 'password'
+                                            }
                                             placeholder="••••••••"
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
-                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.confirmPassword ? "border-destructive/50" : ""}`}
+                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.confirmPassword ? 'border-destructive/50' : ''}`}
                                         />
                                         <button
                                             type="button"
-                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            onClick={() =>
+                                                setShowConfirmPassword(
+                                                    !showConfirmPassword,
+                                                )
+                                            }
                                             className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
                                         >
-                                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            {showConfirmPassword ? (
+                                                <EyeOff size={18} />
+                                            ) : (
+                                                <Eye size={18} />
+                                            )}
                                         </button>
                                     </div>
-                                    {errors.confirmPassword && <p className="text-xs text-destructive font-bold px-1">{errors.confirmPassword}</p>}
+                                    {errors.confirmPassword && (
+                                        <p className="text-xs text-destructive font-bold px-1">
+                                            {errors.confirmPassword}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -333,7 +443,9 @@ const Signup = () => {
                                     <span className="w-full border-t border-foreground/5"></span>
                                 </div>
                                 <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
-                                    <span className="bg-background px-4 text-muted-foreground/40">Or sync via neural node</span>
+                                    <span className="bg-background px-4 text-muted-foreground/40">
+                                        Or sync via neural node
+                                    </span>
                                 </div>
                             </div>
 
@@ -342,9 +454,10 @@ const Signup = () => {
                                     onSuccess={handleGoogleSuccess}
                                     onError={() => {
                                         appToast.error({
-                                            title: "Google Sync Error",
-                                            description: "Neural synchronization failed. Please try again or use standard credentials."
-                                        })
+                                            title: 'Google Sync Error',
+                                            description:
+                                                'Neural synchronization failed. Please try again or use standard credentials.',
+                                        });
                                     }}
                                     useOneTap
                                     theme="filled_black"
@@ -356,24 +469,26 @@ const Signup = () => {
 
                         <div className="pt-6 border-t border-foreground/5 text-center">
                             <p className="text-xs sm:text-sm font-bold text-muted-foreground">
-                                Already have an account?{" "}
-                                <Link to="/login" className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50">
-                                    {t("auth.login")}
+                                Already have an account?{' '}
+                                <Link
+                                    to="/login"
+                                    className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50"
+                                >
+                                    {t('auth.login')}
                                 </Link>
                             </p>
                         </div>
                     </CardContent>
                 </Card>
             </div>
-
         </div>
-    )
-}
+    );
+};
 
 export default function SignupPage() {
     return (
         <ErrorBoundary>
             <Signup />
         </ErrorBoundary>
-    )
+    );
 }

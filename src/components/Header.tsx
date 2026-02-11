@@ -1,53 +1,62 @@
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Menu, X, Sparkles } from "lucide-react"
-import { Logo } from "@/components/Logo"
-import { Link, useLocation } from "react-router-dom"
-import { ThemeToggle } from "@/components/ThemeToggle"
-import { LanguageToggle } from "@/components/LanguageToggle"
-import { useLanguage } from "@/contexts/LanguageContext"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Menu, X, Sparkles } from 'lucide-react';
+import { Logo } from '@/components/Logo';
+import { Link, useLocation } from 'react-router-dom';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 
 export const Header = () => {
-    const { t } = useLanguage()
-    const [isOpen, setIsOpen] = useState(false)
-    const [scrolled, setScrolled] = useState(false)
-    const location = useLocation()
+    const { t } = useLanguage();
+    const [isOpen, setIsOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const location = useLocation();
 
     useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20)
-        window.addEventListener("scroll", handleScroll)
-        return () => window.removeEventListener("scroll", handleScroll)
-    }, [])
+        const handleScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const navLinks = [
-        { name: t("nav.features"), href: "/features" },
-        { name: t("nav.how_it_works"), href: "/how-it-works" },
-        { name: t("nav.pricing"), href: "/pricing" },
-        { name: t("nav.about"), href: "/about" },
-    ]
+        { name: t('nav.features'), href: '/features' },
+        { name: t('nav.how_it_works'), href: '/how-it-works' },
+        { name: t('nav.pricing'), href: '/pricing' },
+        { name: t('nav.about'), href: '/about' },
+    ];
 
     return (
-        <nav className={cn(
-            "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-            scrolled ? "py-4 bg-card/50 backdrop-blur-xl border-b border-foreground/5" : "py-6 bg-transparent"
-        )}>
+        <nav
+            className={cn(
+                'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+                scrolled
+                    ? 'py-4 bg-card/50 backdrop-blur-xl border-b border-foreground/5'
+                    : 'py-6 bg-transparent',
+            )}
+        >
             <div className="w-full px-6 lg:px-12">
                 <div className="flex justify-between items-center h-12">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center group relative z-10">
+                    <Link
+                        to="/"
+                        className="flex items-center group relative z-10"
+                    >
                         <Logo showText size={40} />
                     </Link>
 
                     {/* Desktop Links */}
                     <div className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-card/5 border border-foreground/5 backdrop-blur-md">
                         {navLinks.map((link) => (
-                            <Link 
-                                key={link.href} 
+                            <Link
+                                key={link.href}
                                 to={link.href}
                                 className={cn(
-                                    "px-4 py-2 text-sm font-bold tracking-tight rounded-xl transition-all duration-300",
-                                    location.pathname === link.href ? "bg-card/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                                    'px-4 py-2 text-sm font-bold tracking-tight rounded-xl transition-all duration-300',
+                                    location.pathname === link.href
+                                        ? 'bg-card/10 text-primary'
+                                        : 'text-muted-foreground hover:text-foreground',
                                 )}
                             >
                                 {link.name}
@@ -60,14 +69,20 @@ export const Header = () => {
                         <LanguageToggle />
                         <ThemeToggle />
                         <Link to="/login">
-                            <Button variant="ghost" className="font-bold text-sm tracking-tight hover:bg-card/5">
-                                {t("nav.client_portal")}
+                            <Button
+                                variant="ghost"
+                                className="font-bold text-sm tracking-tight hover:bg-card/5"
+                            >
+                                {t('nav.client_portal')}
                             </Button>
                         </Link>
                         <Link to="/signup">
                             <Button className="font-bold text-sm tracking-tight rounded-xl h-11 px-6 bg-primary hover:bg-primary/90 shadow-glow flex items-center gap-2 group">
-                                <Sparkles size={16} className="group-hover:rotate-12 transition-transform" />
-                                <span>{t("nav.get_early_access")}</span>
+                                <Sparkles
+                                    size={16}
+                                    className="group-hover:rotate-12 transition-transform"
+                                />
+                                <span>{t('nav.get_early_access')}</span>
                             </Button>
                         </Link>
                     </div>
@@ -78,7 +93,11 @@ export const Header = () => {
                         onClick={() => setIsOpen(!isOpen)}
                         aria-label="Toggle menu"
                     >
-                        {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                        {isOpen ? (
+                            <X className="h-6 w-6" />
+                        ) : (
+                            <Menu className="h-6 w-6" />
+                        )}
                     </button>
                 </div>
 
@@ -87,8 +106,8 @@ export const Header = () => {
                     <div className="lg:hidden absolute top-full left-0 right-0 mt-4 mx-6 p-6 space-y-4 rounded-2xl bg-background/90 backdrop-blur-3xl border border-foreground/10 shadow-2xl shimmer">
                         <div className="grid grid-cols-1 gap-2">
                             {navLinks.map((link) => (
-                                <Link 
-                                    key={link.href} 
+                                <Link
+                                    key={link.href}
                                     to={link.href}
                                     onClick={() => setIsOpen(false)}
                                     className="p-4 rounded-xl bg-card/5 font-bold text-lg"
@@ -102,14 +121,25 @@ export const Header = () => {
                                 <LanguageToggle />
                                 <ThemeToggle />
                             </div>
-                            <Link to="/login" onClick={() => setIsOpen(false)} className="block">
-                                <Button variant="ghost" className="w-full h-14 font-bold text-lg rounded-xl">
-                                    {t("nav.client_portal")}
+                            <Link
+                                to="/login"
+                                onClick={() => setIsOpen(false)}
+                                className="block"
+                            >
+                                <Button
+                                    variant="ghost"
+                                    className="w-full h-14 font-bold text-lg rounded-xl"
+                                >
+                                    {t('nav.client_portal')}
                                 </Button>
                             </Link>
-                            <Link to="/signup" onClick={() => setIsOpen(false)} className="block">
+                            <Link
+                                to="/signup"
+                                onClick={() => setIsOpen(false)}
+                                className="block"
+                            >
                                 <Button className="w-full h-14 font-bold text-lg rounded-xl bg-primary hover:bg-primary/90 shadow-glow">
-                                    {t("nav.get_started")}
+                                    {t('nav.get_started')}
                                 </Button>
                             </Link>
                         </div>
@@ -117,5 +147,5 @@ export const Header = () => {
                 )}
             </div>
         </nav>
-    )
-}
+    );
+};

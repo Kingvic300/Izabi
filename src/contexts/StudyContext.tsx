@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    useCallback,
+} from 'react';
 import { api } from '@/lib/apiClient';
 import { toast } from 'sonner';
 
@@ -34,8 +40,9 @@ interface StudyContextType {
 
 const StudyContext = createContext<StudyContextType | undefined>(undefined);
 
-
-export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
     const [activeJobs, setActiveJobs] = useState<StudyJob[]>([]);
     const [session, setSession] = useState<StudySession>({
         fileName: '',
@@ -49,12 +56,15 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     const addJob = useCallback((id: string, fileName: string, type: string) => {
-        setActiveJobs(prev => [...prev, { id, fileName, status: 'PENDING', progress: 0, type }]);
-        setSession(prev => ({ ...prev, lastJobId: id, fileName }));
+        setActiveJobs((prev) => [
+            ...prev,
+            { id, fileName, status: 'PENDING', progress: 0, type },
+        ]);
+        setSession((prev) => ({ ...prev, lastJobId: id, fileName }));
     }, []);
 
     const updateSession = useCallback((updates: Partial<StudySession>) => {
-        setSession(prev => ({ ...prev, ...updates }));
+        setSession((prev) => ({ ...prev, ...updates }));
     }, []);
 
     const clearSession = useCallback(() => {
@@ -71,58 +81,79 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, []);
 
     const removeJob = useCallback((id: string) => {
-        setActiveJobs(prev => prev.filter(j => j.id !== id));
+        setActiveJobs((prev) => prev.filter((j) => j.id !== id));
     }, []);
 
-
-    const updateJobStatus = useCallback((id: string, updates: Partial<StudyJob>) => {
-        setActiveJobs(prev => prev.map(j => j.id === id ? { ...j, ...updates } : j));
-    }, []);
+    const updateJobStatus = useCallback(
+        (id: string, updates: Partial<StudyJob>) => {
+            setActiveJobs((prev) =>
+                prev.map((j) => (j.id === id ? { ...j, ...updates } : j)),
+            );
+        },
+        [],
+    );
 
     // Polling logic for all active jobs
     useEffect(() => {
         const interval = setInterval(async () => {
-            const jobsToPoll = activeJobs.filter(j => j.status === 'PENDING' || j.status === 'PROCESSING');
-            
+            const jobsToPoll = activeJobs.filter(
+                (j) => j.status === 'PENDING' || j.status === 'PROCESSING',
+            );
+
             for (const job of jobsToPoll) {
                 try {
                     const statusData = await api.getJobStatus(job.id);
                     // Standardize access to the nested data property
                     const jobInfo = statusData.data;
-                    
+
                     if (jobInfo?.status === 'COMPLETED') {
-                        updateJobStatus(job.id, { 
-                            status: 'COMPLETED', 
-                            progress: 100, 
-                            result: jobInfo.result 
+                        updateJobStatus(job.id, {
+                            status: 'COMPLETED',
+                            progress: 100,
+                            result: jobInfo.result,
                         });
 
                         // Automatically update session if it matches the current active document
                         if (session.lastJobId === job.id) {
-                            if (job.type === 'summary' || job.type === 'study-guide') {
-                                updateSession({ summary: jobInfo.result?.summary || "" });
+                            if (
+                                job.type === 'summary' ||
+                                job.type === 'study-guide'
+                            ) {
+                                updateSession({
+                                    summary: jobInfo.result?.summary || '',
+                                });
                             } else if (job.type === 'quiz') {
-                                updateSession({ questions: jobInfo.result?.questions || [] });
+                                updateSession({
+                                    questions: jobInfo.result?.questions || [],
+                                });
                             } else if (job.type === 'flashcards') {
-                                updateSession({ flashcards: jobInfo.result?.flashcards || [] });
+                                updateSession({
+                                    flashcards:
+                                        jobInfo.result?.flashcards || [],
+                                });
                             }
                         }
 
                         toast.success(`Analysis Complete: ${job.fileName}`, {
-                            description: "Your study material is ready."
+                            description: 'Your study material is ready.',
                         });
                     } else if (jobInfo?.status === 'FAILED') {
                         updateJobStatus(job.id, { status: 'FAILED' });
                         toast.error(`Analysis Failed: ${job.fileName}`, {
-                            description: jobInfo.error || "Unknown error"
+                            description: jobInfo.error || 'Unknown error',
                         });
                     } else {
                         // Use backend progress if available, else estimate
-                        const currentProgress = jobInfo?.progress || (job.progress >= 92 ? 98 : job.progress + 8);
-                        updateJobStatus(job.id, { status: 'PROCESSING', progress: currentProgress });
+                        const currentProgress =
+                            jobInfo?.progress ||
+                            (job.progress >= 92 ? 98 : job.progress + 8);
+                        updateJobStatus(job.id, {
+                            status: 'PROCESSING',
+                            progress: currentProgress,
+                        });
                     }
                 } catch (err) {
-                    console.error("Polling error for job", job.id, err);
+                    console.error('Polling error for job', job.id, err);
                 }
             }
         }, 1500); // Halved interval for better responsiveness
@@ -131,7 +162,16 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, [activeJobs, updateJobStatus]);
 
     return (
-        <StudyContext.Provider value={{ activeJobs, session, addJob, removeJob, updateSession, clearSession }}>
+        <StudyContext.Provider
+            value={{
+                activeJobs,
+                session,
+                addJob,
+                removeJob,
+                updateSession,
+                clearSession,
+            }}
+        >
             {children}
         </StudyContext.Provider>
     );

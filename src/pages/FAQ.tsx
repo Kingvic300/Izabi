@@ -1,85 +1,95 @@
-"use client"
+'use client';
 
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
-import { Button } from "@/components/ui/button"
-import { Link } from "react-router-dom"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { HelpCircle, Sparkles } from "lucide-react"
-import { useRef } from "react"
-import gsap from "gsap"
-import { useGSAP } from "@gsap/react"
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
+import { HelpCircle, Sparkles } from 'lucide-react';
+import { useRef } from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
 const FAQ = () => {
-    const containerRef = useRef<HTMLDivElement>(null)
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    useGSAP(() => {
-        gsap.from(".faq-section", {
-            opacity: 0,
-            y: 30,
-            stagger: 0.1,
-            duration: 1,
-            ease: "expo.out"
-        })
-    }, { scope: containerRef })
+    useGSAP(
+        () => {
+            gsap.from('.faq-section', {
+                opacity: 0,
+                y: 30,
+                stagger: 0.1,
+                duration: 1,
+                ease: 'expo.out',
+            });
+        },
+        { scope: containerRef },
+    );
 
     const faqs = [
         {
-            category: "Portal Initialization",
+            category: 'Portal Initialization',
             items: [
                 {
-                    q: "How do I initialize my scholar portal?",
+                    q: 'How do I initialize my scholar portal?',
                     a: "Enlist via the 'Get Started' portal. Enter your neural credentials and synchronize your email via the provided OTP code.",
                 },
                 {
-                    q: "What data architectures do you support?",
-                    a: "We currently support PDF, RAW Text, and High-Resolution Images (JPG, PNG). Our neural engine extracts data with 99.8% precision.",
+                    q: 'What data architectures do you support?',
+                    a: 'We currently support PDF, RAW Text, and High-Resolution Images (JPG, PNG). Our neural engine extracts data with 99.8% precision.',
                 },
                 {
-                    q: "Are there volumetric constraints on uploads?",
-                    a: "Neural scans are unlimited for Pro Scholars. Initiate plans have a 5-scan cap per solar cycle (month).",
+                    q: 'Are there volumetric constraints on uploads?',
+                    a: 'Neural scans are unlimited for Pro Scholars. Initiate plans have a 5-scan cap per solar cycle (month).',
                 },
             ],
         },
         {
-            category: "Neural Modules",
+            category: 'Neural Modules',
             items: [
                 {
-                    q: "How does the AI Synthesis engine operate?",
+                    q: 'How does the AI Synthesis engine operate?',
                     a: "Izabi identifies the core semantic nodes in your text and generates a structured summary that explains the 'Why', not just the 'What'.",
                 },
                 {
-                    q: "Can I calibrate quiz difficulty?",
+                    q: 'Can I calibrate quiz difficulty?',
                     a: "Yes. The environment allows for 'Initiate', 'Scholastic', and 'Grandmaster' difficulty settings for all quizzes.",
                 },
                 {
-                    q: "Is the Sonic Lexicon available for all dialects?",
-                    a: "Currently, we support Academic English and Local Pidgin inflection. More linguistic modules are in the development pipeline.",
+                    q: 'Is the Sonic Lexicon available for all dialects?',
+                    a: 'Currently, we support Academic English and Local Pidgin inflection. More linguistic modules are in the development pipeline.',
                 },
             ],
         },
         {
-            category: "Scholar Economics",
+            category: 'Scholar Economics',
             items: [
                 {
-                    q: "How do I upgrade my architecture?",
+                    q: 'How do I upgrade my architecture?',
                     a: "Navigate to the 'Pricing' terminal and select your preferred module. Upgrades are synchronized instantly across all devices.",
                 },
                 {
-                    q: "Is my data sovereignty protected?",
-                    a: "Yes. All note uploads are encrypted at the hardware level. We do not use user data to train global neural models.",
+                    q: 'Is my data sovereignty protected?',
+                    a: 'Yes. All note uploads are encrypted at the hardware level. We do not use user data to train global neural models.',
                 },
                 {
-                    q: "Do you offer group-level licenses?",
-                    a: "Academic institutions and study guilds can apply for Team Architectures via our specialized support portal.",
+                    q: 'Do you offer group-level licenses?',
+                    a: 'Academic institutions and study guilds can apply for Team Architectures via our specialized support portal.',
                 },
             ],
         },
-    ]
+    ];
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-background relative overflow-hidden">
-
+        <div
+            ref={containerRef}
+            className="min-h-screen bg-background relative overflow-hidden"
+        >
             <Header />
 
             {/* Hero */}
@@ -87,10 +97,13 @@ const FAQ = () => {
                 <div className="w-full px-6 lg:px-12 relative z-10 text-center">
                     <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                         <HelpCircle size={14} className="text-secondary" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">Neural Support System</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
+                            Neural Support System
+                        </span>
                     </div>
                     <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
-                        Frequently Asked <span className="text-gradient">Neural Queries</span>
+                        Frequently Asked{' '}
+                        <span className="text-gradient">Neural Queries</span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
                         Comprehensive answers for the modern AI Scholar.
@@ -104,8 +117,14 @@ const FAQ = () => {
                     <div className="space-y-20">
                         {faqs.map((category, i) => (
                             <div key={i} className="faq-section">
-                                <h2 className="text-sm font-bold uppercase tracking-[0.3em] opacity-40 mb-8 px-1">{category.category}</h2>
-                                <Accordion type="single" collapsible className="space-y-4">
+                                <h2 className="text-sm font-bold uppercase tracking-[0.3em] opacity-40 mb-8 px-1">
+                                    {category.category}
+                                </h2>
+                                <Accordion
+                                    type="single"
+                                    collapsible
+                                    className="space-y-4"
+                                >
                                     {category.items.map((item, index) => (
                                         <AccordionItem
                                             key={index}
@@ -113,7 +132,9 @@ const FAQ = () => {
                                             className="border border-foreground/5 bg-card/[0.02] rounded-xl px-8 shadow-2xl transition-all data-[state=open]:border-primary/30"
                                         >
                                             <AccordionTrigger className="hover:no-underline py-6">
-                                                <span className="text-left font-bold text-lg">{item.q}</span>
+                                                <span className="text-left font-bold text-lg">
+                                                    {item.q}
+                                                </span>
                                             </AccordionTrigger>
                                             <AccordionContent className="text-muted-foreground pb-8 font-medium leading-[1.8]">
                                                 {item.a}
@@ -133,8 +154,13 @@ const FAQ = () => {
                     <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center mx-auto mb-8">
                         <Sparkles className="text-primary" size={32} />
                     </div>
-                    <h2 className="text-4xl font-bold mb-6">Need a human link?</h2>
-                    <p className="text-lg text-muted-foreground mb-10 font-medium">Our help descriptors are available for direct neural link support.</p>
+                    <h2 className="text-4xl font-bold mb-6">
+                        Need a human link?
+                    </h2>
+                    <p className="text-lg text-muted-foreground mb-10 font-medium">
+                        Our help descriptors are available for direct neural
+                        link support.
+                    </p>
                     <Link to="/contact">
                         <Button className="h-16 px-10 rounded-xl bg-card text-black font-bold text-lg hover:bg-card/5 shadow-glow">
                             Initialize Direct Link
@@ -144,9 +170,8 @@ const FAQ = () => {
             </section>
 
             <Footer />
-
         </div>
-    )
-}
+    );
+};
 
-export default FAQ
+export default FAQ;

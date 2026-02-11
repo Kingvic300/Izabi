@@ -18,7 +18,10 @@ export const useApiError = () => {
                 case 500:
                     return 'Server error. Please try again later.';
                 default:
-                    return error.response?.data?.message || 'An unexpected error occurred.';
+                    return (
+                        error.response?.data?.message ||
+                        'An unexpected error occurred.'
+                    );
             }
         }
 
@@ -30,9 +33,11 @@ export const useApiError = () => {
     };
 
     const categorizeError = (error: any): ErrorType['type'] => {
-        if (error.response?.status >= 400 && error.response?.status < 500) return 'validation';
+        if (error.response?.status >= 400 && error.response?.status < 500)
+            return 'validation';
         if (error.response?.status >= 500) return 'backend';
-        if (error.code === 'NETWORK_ERROR' || !navigator.onLine) return 'network';
+        if (error.code === 'NETWORK_ERROR' || !navigator.onLine)
+            return 'network';
         return 'backend';
     };
 
@@ -48,7 +53,7 @@ export const useApiError = () => {
             timestamp: Date.now(),
         };
 
-        setErrors(prev => [...prev, errorObj]);
+        setErrors((prev) => [...prev, errorObj]);
 
         // TRIGGER TOAST AUTOMATICALLY
         if (type === 'network') {
@@ -76,7 +81,7 @@ export const useApiError = () => {
         if (!id) {
             setErrors([]); // If no id provided, clear all errors
         } else {
-            setErrors(prev => prev.filter(error => error.id !== id));
+            setErrors((prev) => prev.filter((error) => error.id !== id));
         }
     }, []);
 

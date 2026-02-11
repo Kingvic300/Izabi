@@ -16,7 +16,11 @@ interface BrainDropProps {
     totalAnswered?: number;
 }
 
-const BrainDrop: React.FC<BrainDropProps> = ({ question, onAnswer, totalAnswered = 0 }) => {
+const BrainDrop: React.FC<BrainDropProps> = ({
+    question,
+    onAnswer,
+    totalAnswered = 0,
+}) => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [showResult, setShowResult] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
@@ -76,8 +80,12 @@ const BrainDrop: React.FC<BrainDropProps> = ({ question, onAnswer, totalAnswered
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mb-6">
                     {question.options.map((option, idx) => {
                         const isSelected = selectedAnswer === option;
-                        const isCorrectAnswer = showResult && option === question.answer;
-                        const isWrongAnswer = showResult && isSelected && option !== question.answer;
+                        const isCorrectAnswer =
+                            showResult && option === question.answer;
+                        const isWrongAnswer =
+                            showResult &&
+                            isSelected &&
+                            option !== question.answer;
 
                         return (
                             <button
@@ -85,26 +93,51 @@ const BrainDrop: React.FC<BrainDropProps> = ({ question, onAnswer, totalAnswered
                                 onClick={() => handleAnswerClick(option)}
                                 disabled={showResult}
                                 className={cn(
-                                    "text-left px-6 py-4 rounded-2xl border-2 transition-all font-bold text-sm md:text-base flex items-center gap-3 group/btn text-foreground",
-                                    !showResult && "bg-card/5 dark:bg-card/5 hover:bg-card/10 dark:hover:bg-card/10 border-foreground/10 dark:border-foreground/10 hover:border-primary/40 hover:scale-[1.02]",
-                                    isSelected && !showResult && "bg-primary/20 border-primary/50",
-                                    isCorrectAnswer && "bg-green-500/20 border-green-500/50",
-                                    isWrongAnswer && "bg-red-500/20 border-red-500/50",
-                                    showResult && !isSelected && !isCorrectAnswer && "opacity-40"
+                                    'text-left px-6 py-4 rounded-2xl border-2 transition-all font-bold text-sm md:text-base flex items-center gap-3 group/btn text-foreground',
+                                    !showResult &&
+                                        'bg-card/5 dark:bg-card/5 hover:bg-card/10 dark:hover:bg-card/10 border-foreground/10 dark:border-foreground/10 hover:border-primary/40 hover:scale-[1.02]',
+                                    isSelected &&
+                                        !showResult &&
+                                        'bg-primary/20 border-primary/50',
+                                    isCorrectAnswer &&
+                                        'bg-green-500/20 border-green-500/50',
+                                    isWrongAnswer &&
+                                        'bg-red-500/20 border-red-500/50',
+                                    showResult &&
+                                        !isSelected &&
+                                        !isCorrectAnswer &&
+                                        'opacity-40',
                                 )}
                             >
-                                <div className={cn(
-                                    "w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold transition-colors flex-shrink-0",
-                                    !showResult && "bg-card/10 dark:bg-card/10 text-foreground group-hover/btn:bg-primary group-hover/btn:text-primary-foreground",
-                                    isSelected && !showResult && "bg-primary text-primary-foreground",
-                                    isCorrectAnswer && "bg-green-500 text-foreground",
-                                    isWrongAnswer && "bg-red-500 text-foreground"
-                                )}>
+                                <div
+                                    className={cn(
+                                        'w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold transition-colors flex-shrink-0',
+                                        !showResult &&
+                                            'bg-card/10 dark:bg-card/10 text-foreground group-hover/btn:bg-primary group-hover/btn:text-primary-foreground',
+                                        isSelected &&
+                                            !showResult &&
+                                            'bg-primary text-primary-foreground',
+                                        isCorrectAnswer &&
+                                            'bg-green-500 text-foreground',
+                                        isWrongAnswer &&
+                                            'bg-red-500 text-foreground',
+                                    )}
+                                >
                                     {String.fromCharCode(65 + idx)}
                                 </div>
                                 <span className="flex-1">{option}</span>
-                                {isCorrectAnswer && <CheckCircle size={20} className="text-green-500 flex-shrink-0" />}
-                                {isWrongAnswer && <XCircle size={20} className="text-red-500 flex-shrink-0" />}
+                                {isCorrectAnswer && (
+                                    <CheckCircle
+                                        size={20}
+                                        className="text-green-500 flex-shrink-0"
+                                    />
+                                )}
+                                {isWrongAnswer && (
+                                    <XCircle
+                                        size={20}
+                                        className="text-red-500 flex-shrink-0"
+                                    />
+                                )}
                             </button>
                         );
                     })}
@@ -119,20 +152,35 @@ const BrainDrop: React.FC<BrainDropProps> = ({ question, onAnswer, totalAnswered
                             exit={{ opacity: 0, height: 0 }}
                             className="overflow-hidden"
                         >
-                            <div className={cn(
-                                "p-6 rounded-2xl border-2 mt-4",
-                                isCorrect ? "bg-green-500/10 border-green-500/30" : "bg-amber-500/10 border-amber-500/30"
-                            )}>
+                            <div
+                                className={cn(
+                                    'p-6 rounded-2xl border-2 mt-4',
+                                    isCorrect
+                                        ? 'bg-green-500/10 border-green-500/30'
+                                        : 'bg-amber-500/10 border-amber-500/30',
+                                )}
+                            >
                                 <div className="flex items-center gap-3 mb-3">
                                     {isCorrect ? (
                                         <>
-                                            <CheckCircle size={24} className="text-green-500" />
-                                            <span className="text-lg font-bold text-green-500">Correct! 🎉</span>
+                                            <CheckCircle
+                                                size={24}
+                                                className="text-green-500"
+                                            />
+                                            <span className="text-lg font-bold text-green-500">
+                                                Correct! 🎉
+                                            </span>
                                         </>
                                     ) : (
                                         <>
-                                            <XCircle size={24} className="text-amber-500" />
-                                            <span className="text-lg font-bold text-amber-500">Not quite, but you learned something!</span>
+                                            <XCircle
+                                                size={24}
+                                                className="text-amber-500"
+                                            />
+                                            <span className="text-lg font-bold text-amber-500">
+                                                Not quite, but you learned
+                                                something!
+                                            </span>
                                         </>
                                     )}
                                 </div>

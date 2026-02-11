@@ -13,7 +13,7 @@ const ContextCard: React.FC<ContextCardProps> = ({ onSelect, onDismiss }) => {
         { id: 'waec', label: 'WAEC' },
         { id: 'jamb', label: 'JAMB' },
         { id: 'university', label: 'University' },
-        { id: 'learning', label: 'Just Learning' }
+        { id: 'learning', label: 'Just Learning' },
     ];
 
     return (
@@ -29,7 +29,10 @@ const ContextCard: React.FC<ContextCardProps> = ({ onSelect, onDismiss }) => {
                 className="absolute top-4 right-4 w-8 h-8 rounded-full bg-card/10 dark:bg-card/10 hover:bg-card/20 dark:hover:bg-card/20 flex items-center justify-center transition-colors"
                 aria-label="Dismiss"
             >
-                <X size={16} className="text-foreground/60 dark:text-foreground/60" />
+                <X
+                    size={16}
+                    className="text-foreground/60 dark:text-foreground/60"
+                />
             </button>
 
             {/* Content */}

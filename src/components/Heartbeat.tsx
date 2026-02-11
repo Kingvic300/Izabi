@@ -10,7 +10,10 @@ export const Heartbeat = () => {
         const pingBackend = async () => {
             try {
                 // We use fetch directly to avoid triggering global error handlers/toasts if the ping fails silently
-                await fetch(`${BASE_URL}/api`, { method: 'GET', keepalive: true });
+                await fetch(`${BASE_URL}/api`, {
+                    method: 'GET',
+                    keepalive: true,
+                });
                 // console.debug('[Heartbeat] Backend ping successful');
             } catch (error) {
                 // console.warn('[Heartbeat] Backend ping failed', error);
