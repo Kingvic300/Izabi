@@ -136,7 +136,7 @@ const Login = () => {
                     : 'Welcome back! Redirecting to your dashboard...',
             });
 
-            setTimeout(() => navigate(redirectPath), 1000);
+            navigate(redirectPath);
         } catch (err: any) {
             const errorMessage = err.response?.data?.message || 'Login failed';
 
@@ -192,7 +192,7 @@ const Login = () => {
                     : 'Welcome! Redirecting to your dashboard...',
             });
 
-            setTimeout(() => navigate(redirectPath), 1000);
+            navigate(redirectPath);
         } catch (err: any) {
             const status = err.response?.status;
             let description =

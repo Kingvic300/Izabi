@@ -14,8 +14,11 @@ import { GlobalErrorHandlers } from '@/components/GlobalErrorHandlers';
 
 const queryClient = new QueryClient();
 
-const GOOGLE_CLIENT_ID =
+const DEFAULT_GOOGLE_CLIENT_ID =
     '25223443612-npc3ofle86h0agp5f9mik6842pvpkco5.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() ||
+    DEFAULT_GOOGLE_CLIENT_ID;
 
 const App = () => (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
