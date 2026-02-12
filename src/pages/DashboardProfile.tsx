@@ -281,6 +281,16 @@ const DashboardProfile = () => {
                                 </Avatar>
                                 {isEditing && (
                                     <>
+                                        <button
+                                            type="button"
+                                            onClick={handleRemoveAvatar}
+                                            disabled={!isCustomAvatar}
+                                            aria-label="Remove profile photo"
+                                            title="Remove profile photo"
+                                            className="absolute top-0 right-0 w-9 h-9 bg-destructive/90 text-destructive-foreground rounded-2xl flex items-center justify-center shadow-lg z-20 transition-transform active:scale-95 hover:bg-destructive disabled:cursor-not-allowed disabled:opacity-40"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
                                         <label className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center cursor-pointer hover:bg-primary-glow shadow-lg z-20 transition-transform active:scale-95">
                                             <Camera className="h-5 w-5" />
                                             <input
@@ -290,15 +300,6 @@ const DashboardProfile = () => {
                                                 className="hidden"
                                             />
                                         </label>
-                                        <button
-                                            type="button"
-                                            onClick={handleRemoveAvatar}
-                                            disabled={!isCustomAvatar}
-                                            className="absolute -bottom-12 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full border border-destructive/30 bg-destructive/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-destructive hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-40"
-                                        >
-                                            <Trash2 className="h-3 w-3" />
-                                            Remove Photo
-                                        </button>
                                     </>
                                 )}
                             </div>
