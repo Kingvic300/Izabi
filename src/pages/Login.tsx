@@ -29,6 +29,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
+    const normalizeRole = (role?: string) =>
+        role?.trim().toUpperCase() || 'USER';
     const getDefaultAvatar = (mail: string) =>
         `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(mail || 'scholar@izabi.ai')}`;
     const { t } = useLanguage();
@@ -108,12 +110,12 @@ const Login = () => {
             const { user, tokens } = response.data;
             const accessToken = tokens.accessToken;
             const userId = user._id || user.id;
-            const role = user.role;
+            const role = normalizeRole(user.role);
 
             localStorage.setItem('userId', userId);
             localStorage.setItem('authToken', accessToken);
             localStorage.setItem('userEmail', user.email || email);
-            localStorage.setItem('userRole', role || 'USER');
+            localStorage.setItem('userRole', role);
             if (user.firstName)
                 localStorage.setItem('userFirstName', user.firstName);
             if (user.lastName)
@@ -166,12 +168,12 @@ const Login = () => {
             const { user, tokens } = response.data;
             const accessToken = tokens.accessToken;
             const userId = user._id || user.id;
-            const role = user.role;
+            const role = normalizeRole(user.role);
 
             localStorage.setItem('userId', userId);
             localStorage.setItem('authToken', accessToken);
             localStorage.setItem('userEmail', user.email);
-            localStorage.setItem('userRole', role || 'USER');
+            localStorage.setItem('userRole', role);
             if (user.firstName)
                 localStorage.setItem('userFirstName', user.firstName);
             if (user.lastName)
@@ -181,12 +183,16 @@ const Login = () => {
                 user.profilePicturePath || getDefaultAvatar(user.email),
             );
 
+            const isAdmin = role === 'ADMIN';
+            const redirectPath = isAdmin ? '/dashboard/admin' : '/dashboard';
             appToast.success({
                 title: 'Google Login Successful',
-                description: 'Welcome! Redirecting to your dashboard...',
+                description: isAdmin
+                    ? 'Welcome Admin! Redirecting to admin dashboard...'
+                    : 'Welcome! Redirecting to your dashboard...',
             });
 
-            setTimeout(() => navigate('/dashboard'), 1000);
+            setTimeout(() => navigate(redirectPath), 1000);
         } catch (err: any) {
             const status = err.response?.status;
             let description =

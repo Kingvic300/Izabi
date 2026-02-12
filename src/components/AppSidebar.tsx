@@ -126,12 +126,14 @@ export function AppSidebar() {
     const collapsed = state === 'collapsed';
     const getDefaultAvatar = (email: string) =>
         `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(email || 'scholar@izabi.ai')}`;
+    const normalizeRole = (role?: string | null) =>
+        role?.trim().toUpperCase() || 'USER';
     const [userInfo, setUserInfo] = useState({
         name: localStorage.getItem('userFirstName')
             ? `${localStorage.getItem('userFirstName')} ${localStorage.getItem('userLastName') || ''}`.trim()
             : 'Scholar',
         email: localStorage.getItem('userEmail') || 'scholar@izabi.ai',
-        role: localStorage.getItem('userRole'),
+        role: normalizeRole(localStorage.getItem('userRole')),
         avatar:
             localStorage.getItem('userProfilePicturePath') ||
             getDefaultAvatar(localStorage.getItem('userEmail') || ''),
@@ -154,7 +156,7 @@ export function AppSidebar() {
                     ? `${firstName} ${lastName || ''}`.trim()
                     : 'Scholar',
                 email: email,
-                role: localStorage.getItem('userRole'),
+                role: normalizeRole(localStorage.getItem('userRole')),
                 avatar:
                     localStorage.getItem('userProfilePicturePath') ||
                     getDefaultAvatar(email),
@@ -309,7 +311,7 @@ export function AppSidebar() {
                                 );
                             })}
 
-                            {userInfo.role === 'ADMIN' && (
+                            {normalizeRole(userInfo.role) === 'ADMIN' && (
                                 <SidebarMenuItem>
                                     <SidebarMenuButton
                                         isActive={isActive('/dashboard/admin')}

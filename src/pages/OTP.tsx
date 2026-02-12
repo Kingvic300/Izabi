@@ -34,6 +34,8 @@ const OTP_LENGTH = 6;
 const RESEND_COOLDOWN_SECONDS = 30;
 
 const OTP = () => {
+    const normalizeRole = (role?: string) =>
+        role?.trim().toUpperCase() || 'USER';
     const getDefaultAvatar = (mail: string) =>
         `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(mail || 'scholar@izabi.ai')}`;
     const cardRef = useRef<HTMLDivElement>(null);
@@ -183,13 +185,13 @@ const OTP = () => {
             const { user, tokens } = response.data;
             const accessToken = tokens.accessToken;
             const userId = user._id || user.id;
-            const role = user.role;
+            const role = normalizeRole(user.role);
             const userEmail = user.email;
 
             localStorage.setItem('userId', userId);
             localStorage.setItem('authToken', accessToken);
             localStorage.setItem('userEmail', userEmail);
-            localStorage.setItem('userRole', role || 'USER');
+            localStorage.setItem('userRole', role);
             localStorage.setItem(
                 'userProfilePicturePath',
                 user.profilePicturePath || getDefaultAvatar(userEmail),

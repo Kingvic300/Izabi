@@ -98,7 +98,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     const authToken = localStorage.getItem('authToken');
     const userId = localStorage.getItem('userId');
-    const userRole = localStorage.getItem('userRole');
+    const userRole =
+        localStorage.getItem('userRole')?.trim().toUpperCase() || '';
 
     if (!authToken || !userId) {
         return <Navigate to="/login" replace />;
