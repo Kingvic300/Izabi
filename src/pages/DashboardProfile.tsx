@@ -18,6 +18,7 @@ import {
     User,
     Lock,
     Camera,
+    Trash2,
     Save,
     Edit,
     KeyRound,
@@ -55,6 +56,14 @@ const DashboardProfile = () => {
     const defaultAvatar = (email: string) =>
         `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(email || 'scholar@izabi.ai')}`;
 
+    const syncAvatarInStorage = (profilePicturePath: string, email: string) => {
+        localStorage.setItem(
+            'userProfilePicturePath',
+            profilePicturePath || defaultAvatar(email),
+        );
+        window.dispatchEvent(new Event('storage'));
+    };
+
     // Load profile on mount
     useEffect(() => {
         /*
@@ -74,12 +83,10 @@ const DashboardProfile = () => {
                     localStorage.setItem('userFirstName', userData.firstName);
                 if (userData.lastName)
                     localStorage.setItem('userLastName', userData.lastName);
-                localStorage.setItem(
-                    'userProfilePicturePath',
-                    userData.profilePicturePath ||
-                        defaultAvatar(userData.email || profileData.email),
+                syncAvatarInStorage(
+                    userData.profilePicturePath || '',
+                    userData.email || profileData.email,
                 );
-                window.dispatchEvent(new Event('storage'));
             } catch (err) {
                 console.error('Error loading profile:', err);
             }
@@ -144,12 +151,10 @@ const DashboardProfile = () => {
                 localStorage.setItem('userFirstName', updatedProfile.firstName);
             if (updatedProfile.lastName)
                 localStorage.setItem('userLastName', updatedProfile.lastName);
-            localStorage.setItem(
-                'userProfilePicturePath',
-                updatedProfile.profilePicturePath ||
-                    defaultAvatar(updatedProfile.email || profileData.email),
+            syncAvatarInStorage(
+                updatedProfile.profilePicturePath || '',
+                updatedProfile.email || profileData.email,
             );
-            window.dispatchEvent(new Event('storage'));
 
             setIsEditing(false);
 
@@ -176,16 +181,31 @@ const DashboardProfile = () => {
                 profilePicturePath: e.target?.result as string,
             };
             setProfileData(updatedData);
-            localStorage.setItem(
-                'userProfilePicturePath',
-                updatedData.profilePicturePath ||
-                    defaultAvatar(updatedData.email),
+            syncAvatarInStorage(
+                updatedData.profilePicturePath || '',
+                updatedData.email,
             );
-            window.dispatchEvent(new Event('storage'));
             // In a real app, you'd verify upload to backend here or in handleSaveProfile
         };
         reader.readAsDataURL(file);
     };
+
+    const handleRemoveAvatar = () => {
+        const updatedData = {
+            ...profileData,
+            profilePicturePath: '',
+        };
+        setProfileData(updatedData);
+        syncAvatarInStorage('', updatedData.email);
+        appToast.info({
+            title: 'Photo Removed',
+            description: 'Profile photo removed. Click Save Changes to confirm.',
+        });
+    };
+
+    const isCustomAvatar =
+        Boolean(profileData.profilePicturePath) &&
+        profileData.profilePicturePath !== defaultAvatar(profileData.email);
 
     return (
         <div
@@ -260,15 +280,26 @@ const DashboardProfile = () => {
                                     </AvatarFallback>
                                 </Avatar>
                                 {isEditing && (
-                                    <label className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center cursor-pointer hover:bg-primary-glow shadow-lg z-20 transition-transform active:scale-95">
-                                        <Camera className="h-5 w-5" />
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleAvatarUpload}
-                                            className="hidden"
-                                        />
-                                    </label>
+                                    <>
+                                        <label className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center cursor-pointer hover:bg-primary-glow shadow-lg z-20 transition-transform active:scale-95">
+                                            <Camera className="h-5 w-5" />
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleAvatarUpload}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                        <button
+                                            type="button"
+                                            onClick={handleRemoveAvatar}
+                                            disabled={!isCustomAvatar}
+                                            className="absolute -bottom-12 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full border border-destructive/30 bg-destructive/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-destructive hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-40"
+                                        >
+                                            <Trash2 className="h-3 w-3" />
+                                            Remove Photo
+                                        </button>
+                                    </>
                                 )}
                             </div>
 

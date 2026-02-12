@@ -15,6 +15,7 @@ interface PetProps {
     onFeed?: () => void;
     userPoints?: number;
     streakFreezes?: number;
+    className?: string;
 }
 
 const StreakPet: React.FC<PetProps> = ({
@@ -23,6 +24,7 @@ const StreakPet: React.FC<PetProps> = ({
     onFeed,
     userPoints = 0,
     streakFreezes = 0,
+    className,
 }) => {
     const petRef = useRef<HTMLDivElement>(null);
     const infoRef = useRef<HTMLDivElement>(null);
@@ -104,7 +106,7 @@ const StreakPet: React.FC<PetProps> = ({
     return (
         <div
             id="streak-pet-container"
-            className="fixed bottom-8 right-8 z-[200] group"
+            className={cn('fixed bottom-8 right-8 z-[200] group', className)}
         >
             <motion.div
                 initial={{ scale: 0, opacity: 0 }}
@@ -130,7 +132,7 @@ const StreakPet: React.FC<PetProps> = ({
                                 initial={{ y: 0, opacity: 0 }}
                                 animate={{ y: -20, opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="absolute -top-12 left-1/2 -translate-x-1/2 text-green-400 font-bold text-xs foregroundspace-nowrap"
+                                className="absolute -top-12 left-1/2 -translate-x-1/2 text-green-400 font-bold text-xs whitespace-nowrap"
                             >
                                 +XP Yummy!
                             </motion.div>

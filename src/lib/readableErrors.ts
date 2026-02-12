@@ -48,6 +48,19 @@ const extractServerMessage = (error: any) => {
     return '';
 };
 
+const isUnsafeServerMessage = (message: string) => {
+    const text = message.toLowerCase();
+    return (
+        text.includes('cast to objectid') ||
+        text.includes('path "_id"') ||
+        text.includes('mongoose') ||
+        text.includes('mongodb') ||
+        text.includes('stack') ||
+        text.includes('validation failed') ||
+        text.includes('e11000')
+    );
+};
+
 const defaultMessageByStatus = (statusCode: number) => {
     switch (statusCode) {
         case 400:
@@ -177,7 +190,10 @@ export const getReadableError = (error: any): ReadableError => {
 
     if (statusCode) {
         const fallback = defaultMessageByStatus(statusCode);
-        const shouldUseServerMessage = Boolean(serverMessage) && statusCode < 500;
+        const shouldUseServerMessage =
+            Boolean(serverMessage) &&
+            statusCode < 500 &&
+            !isUnsafeServerMessage(serverMessage);
         return {
             ...fallback,
             description: shouldUseServerMessage

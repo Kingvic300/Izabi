@@ -82,6 +82,22 @@ import { useStudy } from '@/contexts/StudyContext';
 import { AIMarkdown } from '@/components/ui/ai-markdown';
 
 const DEFAULT_PRACTICE_QUESTION_COUNT = 2;
+type ModuleCardId = 'summarize' | 'quiz' | 'guide' | 'cards';
+type ModuleCardStatus = 'idle' | 'processing' | 'completed' | 'failed';
+
+const INITIAL_MODULE_STATUSES: Record<ModuleCardId, ModuleCardStatus> = {
+    summarize: 'idle',
+    quiz: 'idle',
+    guide: 'idle',
+    cards: 'idle',
+};
+
+const ENDPOINT_TO_MODULE_ID: Record<string, ModuleCardId> = {
+    summarize: 'summarize',
+    'generate-questions': 'quiz',
+    'generate-study-material': 'guide',
+    flashcards: 'cards',
+};
 
 const shuffleArray = <T,>(items: T[]): T[] => {
     const shuffled = [...items];
@@ -270,6 +286,9 @@ const DashboardHome = () => {
     const { addJob, session, updateSession } = useStudy();
     const containerRef = useRef<HTMLDivElement>(null);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [moduleStatuses, setModuleStatuses] = useState(
+        INITIAL_MODULE_STATUSES,
+    );
 
     // UI visibility states (local for transitions, but initialized from session)
     const [showSummary, setShowSummary] = useState(false);
@@ -321,6 +340,19 @@ const DashboardHome = () => {
     const { errors, addError, clearError } = useApiError();
     const userId = localStorage.getItem('userId');
 
+    const scrollToSection = (
+        sectionId: string,
+        block: ScrollLogicalPosition = 'start',
+        delay = 120,
+    ) => {
+        window.setTimeout(() => {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block });
+            }
+        }, delay);
+    };
+
     const handleUploadDocument = () => {
         updateSession({
             pdfSelection: null,
@@ -330,16 +362,13 @@ const DashboardHome = () => {
             questions: [],
             flashcards: [],
         });
-
-        setTimeout(() => {
-            const element = document.getElementById('upload-section');
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 100);
+        setModuleStatuses(INITIAL_MODULE_STATUSES);
+        setIsProcessing(false);
+        scrollToSection('upload-section');
     };
 
     const handleReadyToLearn = () => {
+        scrollToSection('upload-section');
         const uploadInput = document.getElementById(
             'file-upload-redesign',
         ) as HTMLInputElement | null;
@@ -431,6 +460,7 @@ const DashboardHome = () => {
                 flashcards: [],
             });
             setShowQuestions(true);
+            scrollToSection('questions-result-section', 'start', 220);
         } catch (err) {
             const fallbackQuestions = buildPracticeQuestionSet(
                 [],
@@ -446,6 +476,7 @@ const DashboardHome = () => {
                     flashcards: [],
                 });
                 setShowQuestions(true);
+                scrollToSection('questions-result-section', 'start', 220);
                 return;
             }
 
@@ -463,7 +494,7 @@ const DashboardHome = () => {
                     'Please upload a PDF document first to perform a Quick Test.',
                 type: 'validation',
             });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollToSection('upload-section');
             return;
         }
         setShowQuickTestModal(true);
@@ -606,8 +637,10 @@ const DashboardHome = () => {
         setShowSummary(false);
         setShowQuestions(false);
         setShowFlashcards(false);
+        setModuleStatuses(INITIAL_MODULE_STATUSES);
         setSelectedAnswers({});
         setShowResults(false);
+        scrollToSection('study-modes-grid', 'start', 220);
     };
 
     const extractTextFromPDF = async (file: File) => {
@@ -634,6 +667,7 @@ const DashboardHome = () => {
     };
 
     const pollJobStatus = (jobId: string, endpoint: string) => {
+        const moduleId = ENDPOINT_TO_MODULE_ID[endpoint];
         let attempts = 0;
         const maxAttempts = 120;
         const interval = setInterval(async () => {
@@ -642,6 +676,12 @@ const DashboardHome = () => {
             if (attempts > maxAttempts) {
                 setIsProcessing(false);
                 clearInterval(interval);
+                if (moduleId) {
+                    setModuleStatuses((prev) => ({
+                        ...prev,
+                        [moduleId]: 'failed',
+                    }));
+                }
                 addError({
                     message:
                         'Processing is taking longer than expected. Please try again.',
@@ -657,6 +697,12 @@ const DashboardHome = () => {
                 if (job?.status === 'COMPLETED') {
                     setIsProcessing(false);
                     clearInterval(interval);
+                    if (moduleId) {
+                        setModuleStatuses((prev) => ({
+                            ...prev,
+                            [moduleId]: 'completed',
+                        }));
+                    }
 
                     const result = job.result;
                     if (
@@ -669,6 +715,7 @@ const DashboardHome = () => {
                             flashcards: [],
                         });
                         setShowSummary(true);
+                        scrollToSection('summary-result-section', 'start', 220);
                     } else if (endpoint === 'generate-questions') {
                         updateSession({
                             summary: '',
@@ -676,6 +723,11 @@ const DashboardHome = () => {
                             flashcards: [],
                         });
                         setShowQuestions(true);
+                        scrollToSection(
+                            'questions-result-section',
+                            'start',
+                            220,
+                        );
                     } else if (endpoint === 'flashcards') {
                         updateSession({
                             summary: '',
@@ -683,10 +735,21 @@ const DashboardHome = () => {
                             flashcards: result?.flashcards || [],
                         });
                         setShowFlashcards(true);
+                        scrollToSection(
+                            'flashcards-result-section',
+                            'start',
+                            220,
+                        );
                     }
                 } else if (job?.status === 'FAILED') {
                     setIsProcessing(false);
                     clearInterval(interval);
+                    if (moduleId) {
+                        setModuleStatuses((prev) => ({
+                            ...prev,
+                            [moduleId]: 'failed',
+                        }));
+                    }
                     addError({
                         message:
                             job?.error ||
@@ -698,6 +761,12 @@ const DashboardHome = () => {
                 if (attempts >= maxAttempts) {
                     setIsProcessing(false);
                     clearInterval(interval);
+                    if (moduleId) {
+                        setModuleStatuses((prev) => ({
+                            ...prev,
+                            [moduleId]: 'failed',
+                        }));
+                    }
                     addError({
                         message:
                             'Connection issue while checking progress. Please try again.',
@@ -736,7 +805,15 @@ const DashboardHome = () => {
             return;
         }
 
+        const moduleId = ENDPOINT_TO_MODULE_ID[endpoint];
+
         setIsProcessing(true);
+        if (moduleId) {
+            setModuleStatuses((prev) => ({
+                ...prev,
+                [moduleId]: 'processing',
+            }));
+        }
         clearError();
         setSelectedAnswers({});
         setShowResults(false);
@@ -805,6 +882,12 @@ const DashboardHome = () => {
             addError({ message: errorMsg, type: 'api' });
 
             setIsProcessing(false);
+            if (moduleId) {
+                setModuleStatuses((prev) => ({
+                    ...prev,
+                    [moduleId]: 'failed',
+                }));
+            }
             updateSession({ summary: '', questions: [], flashcards: [] });
         }
     };
@@ -871,7 +954,7 @@ const DashboardHome = () => {
 
     const handleDownload = (content: string, filename: string) => {
         const header = `----------------------------------------\nIZABI STUDY ASSISTANT: STUDY MATERIAL\nTIMESTAMP: ${new Date().toLocaleString()}\nPROTOCOL: STANDARD_V2\n----------------------------------------\n\n`;
-        const blob = new Blob([header + content], { type: 'text/markdown' });
+        const blob = new Blob([header + content], { type: 'text/markdown' });                          
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -998,7 +1081,7 @@ const DashboardHome = () => {
                                             </span>
                                         </h3>
                                         <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium leading-relaxed opacity-80">
-                                            Click Upload Document to add your
+                                            Click to Upload Document to add your
                                             class notes or textbook PDF. We'll
                                             generate daily personalized
                                             challenges to match your learning
@@ -1010,7 +1093,7 @@ const DashboardHome = () => {
                                         className="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-[16px] sm:rounded-[20px] bg-blue-600 text-white font-black uppercase tracking-[0.15em] sm:tracking-widest text-[10px] sm:text-xs md:text-sm hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95"
                                     >
                                         <Upload size={20} />
-                                        Click Upload Document
+                                        Click to Upload Document
                                     </button>
                                 </div>
                             </motion.div>
@@ -1176,7 +1259,46 @@ const DashboardHome = () => {
                                                 ),
                                                 color: 'text-blue-400',
                                             },
-                                        ].map((module) => (
+                                        ].map((module) => {
+                                            const moduleStatus =
+                                                moduleStatuses[
+                                                    module.id as ModuleCardId
+                                                ];
+                                            const statusMeta = {
+                                                idle: {
+                                                    label: 'Ready',
+                                                    className:
+                                                        'bg-card/10 text-foreground/60',
+                                                    icon: null,
+                                                },
+                                                processing: {
+                                                    label: 'Processing',
+                                                    className:
+                                                        'bg-blue-500/15 text-blue-400',
+                                                    icon: (
+                                                        <Loader2
+                                                            size={10}
+                                                            className="animate-spin"
+                                                        />
+                                                    ),
+                                                },
+                                                completed: {
+                                                    label: 'Completed',
+                                                    className:
+                                                        'bg-primary/15 text-primary',
+                                                    icon: (
+                                                        <CheckCircle2 size={10} />
+                                                    ),
+                                                },
+                                                failed: {
+                                                    label: 'Failed',
+                                                    className:
+                                                        'bg-destructive/20 text-destructive',
+                                                    icon: <XCircle size={10} />,
+                                                },
+                                            }[moduleStatus];
+
+                                            return (
                                             <button
                                                 key={module.id}
                                                 onClick={() => {
@@ -1220,9 +1342,21 @@ const DashboardHome = () => {
                                                     <div className="text-[10px] font-bold uppercase tracking-widest opacity-30">
                                                         {module.desc}
                                                     </div>
+                                                    <div
+                                                        className={cn(
+                                                            'mt-3 inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-[0.14em]',
+                                                            statusMeta.className,
+                                                        )}
+                                                    >
+                                                        {statusMeta.icon}
+                                                        <span>
+                                                            {statusMeta.label}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </button>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
 
                                     <div className="p-4 sm:p-6 bg-card/[0.02] border-t border-foreground/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -1348,7 +1482,10 @@ const DashboardHome = () => {
                     {(summary ||
                         questions.length > 0 ||
                         flashcards.length > 0) && (
-                        <div className="space-y-8 pt-12 stagger-card px-4 md:px-0">
+                        <div
+                            id="results-hub"
+                            className="space-y-8 pt-12 stagger-card px-4 md:px-0"
+                        >
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl sm:text-4xl font-bold flex items-center gap-3 sm:gap-4 tracking-tighter">
                                     <div className="w-2 h-10 bg-primary rounded-3xl" />
@@ -1357,24 +1494,25 @@ const DashboardHome = () => {
                             </div>
 
                             {flashcards.length > 0 && (
-                                <Collapsible
-                                    open={showFlashcards}
-                                    onOpenChange={setShowFlashcards}
-                                >
-                                    <Card className="glass border-foreground/5 rounded-none md:rounded-3xl border-x-0 md:border overflow-hidden shadow-2xl">
+                                <div id="flashcards-result-section">
+                                    <Collapsible
+                                        open={showFlashcards}
+                                        onOpenChange={setShowFlashcards}
+                                    >
+                                        <Card className="glass border-foreground/5 rounded-none md:rounded-3xl border-x-0 md:border overflow-hidden shadow-2xl">
                                         <CollapsibleTrigger asChild>
-                                            <button className="w-full text-left p-6 md:p-10 flex items-center justify-between group">
-                                                <div className="flex items-center gap-4 md:gap-6">
+                                            <button className="w-full text-left p-4 sm:p-6 md:p-10 flex items-start sm:items-center justify-between gap-3 group">
+                                                <div className="min-w-0 flex items-center gap-3 sm:gap-4 md:gap-6">
                                                     <div className="w-12 h-12 md:w-14 md:h-14 rounded-3xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
                                                         <Layers className="h-5 w-5 md:h-6 md:w-6" />
                                                     </div>
-                                                    <div>
-                                                        <h3 className="text-xl md:text-2xl font-bold leading-tight">
+                                                    <div className="min-w-0">
+                                                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight break-words">
                                                             {t(
                                                                 'dashboard.res_flashcards',
                                                             )}
                                                         </h3>
-                                                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+                                                        <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.12em] sm:tracking-widest opacity-40">
                                                             {flashcards.length}{' '}
                                                             {t(
                                                                 'dashboard.res_flashcards_desc',
@@ -1394,9 +1532,9 @@ const DashboardHome = () => {
                                             </button>
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
-                                            <CardContent className="p-10 flex flex-col items-center space-y-8">
+                                            <CardContent className="p-4 sm:p-6 md:p-10 flex flex-col items-center space-y-5 sm:space-y-8">
                                                 <div
-                                                    className="relative w-full max-w-md h-64 cursor-pointer perspective-1000"
+                                                    className="relative w-full max-w-sm sm:max-w-md h-[220px] sm:h-64 cursor-pointer perspective-1000"
                                                     onClick={() =>
                                                         setIsFlipped(!isFlipped)
                                                     }
@@ -1405,11 +1543,11 @@ const DashboardHome = () => {
                                                         className={`relative w-full h-full transition-all duration-500 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}
                                                     >
                                                         {/* Front */}
-                                                        <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-8 rounded-3xl glass bg-card/[0.02] border-2 border-primary/20 shadow-xl overflow-hidden">
+                                                        <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-5 sm:p-8 rounded-3xl glass bg-card/[0.02] border-2 border-primary/20 shadow-xl overflow-hidden">
                                                             <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30">
                                                                 Front
                                                             </div>
-                                                            <p className="text-2xl font-bold text-center text-foreground">
+                                                            <p className="text-base sm:text-xl md:text-2xl font-bold text-center text-foreground break-words leading-snug">
                                                                 {
                                                                     flashcards[
                                                                         currentCardIndex
@@ -1418,11 +1556,11 @@ const DashboardHome = () => {
                                                             </p>
                                                         </div>
                                                         {/* Back */}
-                                                        <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-8 rounded-3xl glass bg-primary/10 border-2 border-primary/40 shadow-xl overflow-hidden">
+                                                        <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-5 sm:p-8 rounded-3xl glass bg-primary/10 border-2 border-primary/40 shadow-xl overflow-hidden">
                                                             <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30 text-primary">
                                                                 Back
                                                             </div>
-                                                            <p className="text-xl font-bold text-center text-foreground/90 leading-relaxed">
+                                                            <p className="text-sm sm:text-lg md:text-xl font-bold text-center text-foreground/90 leading-relaxed break-words">
                                                                 {
                                                                     flashcards[
                                                                         currentCardIndex
@@ -1433,11 +1571,11 @@ const DashboardHome = () => {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-6">
+                                                <div className="flex items-center gap-3 sm:gap-6">
                                                     <Button
                                                         variant="outline"
                                                         size="icon"
-                                                        className="h-12 w-12 rounded-3xl glass hover:bg-card/10"
+                                                        className="h-10 w-10 sm:h-12 sm:w-12 rounded-3xl glass hover:bg-card/10"
                                                         onClick={() => {
                                                             setIsFlipped(false);
                                                             setCurrentCardIndex(
@@ -1452,14 +1590,14 @@ const DashboardHome = () => {
                                                     >
                                                         <ChevronDown className="rotate-90" />
                                                     </Button>
-                                                    <span className="text-lg font-bold tracking-tighter">
+                                                    <span className="text-sm sm:text-lg font-bold tracking-tighter whitespace-nowrap">
                                                         {currentCardIndex + 1} /{' '}
                                                         {flashcards.length}
                                                     </span>
                                                     <Button
                                                         variant="outline"
                                                         size="icon"
-                                                        className="h-12 w-12 rounded-3xl glass hover:bg-card/10"
+                                                        className="h-10 w-10 sm:h-12 sm:w-12 rounded-3xl glass hover:bg-card/10"
                                                         onClick={() => {
                                                             setIsFlipped(false);
                                                             setCurrentCardIndex(
@@ -1479,27 +1617,29 @@ const DashboardHome = () => {
 
                                                 <Button
                                                     variant="ghost"
-                                                    className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity gap-2"
+                                                    className="text-[10px] font-bold uppercase tracking-[0.12em] sm:tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity gap-2"
                                                     onClick={() => {
                                                         setCurrentCardIndex(0);
                                                         setIsFlipped(false);
                                                     }}
                                                 >
                                                     <RotateCcw size={14} />
-                                                    Reset Quiz
+                                                    Reset Flashcards
                                                 </Button>
                                             </CardContent>
                                         </CollapsibleContent>
-                                    </Card>
-                                </Collapsible>
+                                        </Card>
+                                    </Collapsible>
+                                </div>
                             )}
 
                             {summary && (
-                                <Collapsible
-                                    open={showSummary}
-                                    onOpenChange={setShowSummary}
-                                >
-                                    <Card className="glass border-foreground/5 rounded-none md:rounded-3xl border-x-0 md:border overflow-hidden shadow-2xl">
+                                <div id="summary-result-section">
+                                    <Collapsible
+                                        open={showSummary}
+                                        onOpenChange={setShowSummary}
+                                    >
+                                        <Card className="glass border-foreground/5 rounded-none md:rounded-3xl border-x-0 md:border overflow-hidden shadow-2xl">
                                         <CollapsibleTrigger asChild>
                                             <button className="w-full text-left p-6 md:p-10 flex items-center justify-between group">
                                                 <div className="flex items-center gap-4 md:gap-6">
@@ -1553,16 +1693,18 @@ const DashboardHome = () => {
                                                 />
                                             </CardContent>
                                         </CollapsibleContent>
-                                    </Card>
-                                </Collapsible>
+                                        </Card>
+                                    </Collapsible>
+                                </div>
                             )}
 
                             {questions.length > 0 && (
-                                <Collapsible
-                                    open={showQuestions}
-                                    onOpenChange={setShowQuestions}
-                                >
-                                    <Card className="glass border-foreground/5 rounded-none md:rounded-3xl border-x-0 md:border overflow-hidden shadow-2xl">
+                                <div id="questions-result-section">
+                                    <Collapsible
+                                        open={showQuestions}
+                                        onOpenChange={setShowQuestions}
+                                    >
+                                        <Card className="glass border-foreground/5 rounded-none md:rounded-3xl border-x-0 md:border overflow-hidden shadow-2xl">
                                         <CollapsibleTrigger asChild>
                                             <button className="w-full text-left p-6 md:p-10 flex items-center justify-between group">
                                                 <div className="flex items-center gap-4 md:gap-6">
@@ -1853,8 +1995,9 @@ const DashboardHome = () => {
                                                 )}
                                             </CardContent>
                                         </CollapsibleContent>
-                                    </Card>
-                                </Collapsible>
+                                        </Card>
+                                    </Collapsible>
+                                </div>
                             )}
                         </div>
                     )}

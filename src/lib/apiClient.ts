@@ -141,8 +141,16 @@ export const api = {
     },
 
     async updateNote(id: string, updates: any) {
+        const normalizedId = String(id || '').trim();
+        if (
+            !normalizedId ||
+            normalizedId === 'undefined' ||
+            normalizedId === 'null'
+        ) {
+            throw new Error('Invalid note identifier');
+        }
         const userId = updates.userId || localStorage.getItem('userId');
-        const response = await apiClient.put(`/api/notes/${id}`, {
+        const response = await apiClient.put(`/api/notes/${normalizedId}`, {
             ...updates,
             userId,
         });
@@ -150,7 +158,15 @@ export const api = {
     },
 
     async deleteNote(id: string) {
-        await apiClient.delete(`/api/notes/${id}`);
+        const normalizedId = String(id || '').trim();
+        if (
+            !normalizedId ||
+            normalizedId === 'undefined' ||
+            normalizedId === 'null'
+        ) {
+            throw new Error('Invalid note identifier');
+        }
+        await apiClient.delete(`/api/notes/${normalizedId}`);
     },
 
     // Quiz Results API

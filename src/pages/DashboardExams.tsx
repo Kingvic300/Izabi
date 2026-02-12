@@ -64,6 +64,7 @@ const DashboardExams = () => {
     const [currentExam, setCurrentExam] = useState<Exam | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<number, string>>({});
+    const [visitedQuestions, setVisitedQuestions] = useState<number[]>([]);
     const [timeLeft, setTimeLeft] = useState(0);
     const [score, setScore] = useState(0);
 
@@ -104,14 +105,28 @@ const DashboardExams = () => {
         const savedAnswers = localStorage.getItem('active_exam_answers');
         const savedIndex = localStorage.getItem('active_exam_index');
         const savedTime = localStorage.getItem('active_exam_time');
+        const savedVisited = localStorage.getItem('active_exam_visited');
 
         if (savedExam && savedView === 'exam') {
             try {
                 setCurrentExam(JSON.parse(savedExam));
                 setView('exam');
                 if (savedAnswers) setAnswers(JSON.parse(savedAnswers));
-                if (savedIndex) setCurrentQuestionIndex(parseInt(savedIndex));
+                if (savedIndex) {
+                    const parsedIndex = parseInt(savedIndex, 10);
+                    if (!Number.isNaN(parsedIndex)) {
+                        setCurrentQuestionIndex(parsedIndex);
+                    }
+                }
                 if (savedTime) setTimeLeft(parseInt(savedTime));
+                if (savedVisited) {
+                    const parsedVisited = JSON.parse(savedVisited);
+                    if (Array.isArray(parsedVisited)) {
+                        setVisitedQuestions(
+                            parsedVisited.filter((v) => Number.isInteger(v)),
+                        );
+                    }
+                }
             } catch (e) {
                 console.error('Failed to restore exam', e);
             }
@@ -132,6 +147,10 @@ const DashboardExams = () => {
                 currentQuestionIndex.toString(),
             );
             localStorage.setItem('active_exam_time', timeLeft.toString());
+            localStorage.setItem(
+                'active_exam_visited',
+                JSON.stringify(visitedQuestions),
+            );
         } else if (view === 'result' || view === 'lobby') {
             // Don't clear if lobby but keep if navigating away?
             // Actually user implies "switch tab" so we keep it.
@@ -142,9 +161,26 @@ const DashboardExams = () => {
                 localStorage.removeItem('active_exam_answers');
                 localStorage.removeItem('active_exam_index');
                 localStorage.removeItem('active_exam_time');
+                localStorage.removeItem('active_exam_visited');
             }
         }
-    }, [view, currentExam, answers, currentQuestionIndex, timeLeft]);
+    }, [
+        view,
+        currentExam,
+        answers,
+        currentQuestionIndex,
+        timeLeft,
+        visitedQuestions,
+    ]);
+
+    useEffect(() => {
+        if (view !== 'exam' || !currentExam) return;
+        setVisitedQuestions((prev) =>
+            prev.includes(currentQuestionIndex)
+                ? prev
+                : [...prev, currentQuestionIndex],
+        );
+    }, [view, currentExam, currentQuestionIndex]);
 
     const fetchHistory = async () => {
         try {
@@ -200,6 +236,7 @@ const DashboardExams = () => {
             setCurrentExam(exam);
             setTimeLeft(exam.duration * 60);
             setAnswers({});
+            setVisitedQuestions([0]);
             setCurrentQuestionIndex(0);
             setView('exam');
             appToast.success({
@@ -255,6 +292,7 @@ const DashboardExams = () => {
             setCurrentExam(exam);
             setTimeLeft(exam.duration * 60);
             setAnswers({});
+            setVisitedQuestions([0]);
             setCurrentQuestionIndex(0);
             setView('exam');
         } catch (err: any) {
@@ -314,6 +352,7 @@ const DashboardExams = () => {
             setCurrentExam(examData);
             setTimeLeft(examData.duration * 60 || 1800);
             setAnswers({});
+            setVisitedQuestions([0]);
             setCurrentQuestionIndex(0);
             setView('exam');
             appToast.success({
@@ -725,6 +764,59 @@ const DashboardExams = () => {
                     className={`px-3 sm:px-4 py-2 rounded-xl font-mono font-black text-lg sm:text-2xl ${timeLeft < 60 ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-blue-500/10 text-blue-500'}`}
                 >
                     {formatTime(timeLeft)}
+                </div>
+            </div>
+
+            {/* CBT Question Navigator */}
+            <div className="sticky top-[78px] sm:top-[96px] z-40 mb-4 sm:mb-6 rounded-2xl border border-foreground/10 bg-card/80 backdrop-blur-md p-3 sm:p-4 shadow-lg">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest opacity-80">
+                        Question Navigator
+                    </p>
+                    <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold">
+                        <span className="rounded-md bg-foreground/5 px-2 py-1">
+                            Total: {currentExam?.questions.length || 0}
+                        </span>
+                        <span className="rounded-md bg-green-500/15 px-2 py-1 text-green-500">
+                            Answered: {Object.keys(answers).length}
+                        </span>
+                        <span className="rounded-md bg-foreground/5 px-2 py-1">
+                            Left:{' '}
+                            {(currentExam?.questions.length || 0) -
+                                Object.keys(answers).length}
+                        </span>
+                    </div>
+                </div>
+                <div className="mb-2 text-[10px] sm:text-xs font-bold opacity-50">
+                    Tap any number to jump
+                </div>
+                <div className="grid grid-cols-6 gap-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12">
+                    {currentExam?.questions.map((_, index) => {
+                        const isCurrent = index === currentQuestionIndex;
+                        const isAnswered = answers[index] !== undefined;
+                        const isVisited = visitedQuestions.includes(index);
+
+                        return (
+                            <button
+                                key={index}
+                                type="button"
+                                onClick={() => setCurrentQuestionIndex(index)}
+                                aria-label={`Go to question ${index + 1}`}
+                                className={cn(
+                                    'h-9 sm:h-10 rounded-lg border text-xs sm:text-sm font-black transition-all',
+                                    isAnswered
+                                        ? 'border-green-500 bg-green-500 text-white shadow-lg shadow-green-500/20'
+                                        : isCurrent
+                                          ? 'border-foreground/50 ring-2 ring-foreground/20 bg-background text-foreground'
+                                          : isVisited
+                                            ? 'border-foreground/20 bg-background text-foreground hover:bg-card/80'
+                                            : 'border-foreground/10 bg-background/60 text-foreground hover:bg-card/80',
+                                )}
+                            >
+                                {index + 1}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 

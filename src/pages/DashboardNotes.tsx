@@ -39,12 +39,24 @@ import { useGSAP } from '@gsap/react';
 
 interface Note {
     id: string;
+    _id?: string;
     title: string;
     content: string;
     subject?: string;
+    category?: string;
     createdAt: Date;
     updatedAt: Date;
 }
+
+const getNoteId = (note: Partial<Note> | any): string =>
+    String(note?.id || note?._id || '');
+
+const normalizeNote = (note: any): Note => ({
+    ...note,
+    id: getNoteId(note),
+    _id: note?._id,
+    subject: note?.subject || note?.category || '',
+});
 
 export default function DashboardNotes() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -97,7 +109,12 @@ export default function DashboardNotes() {
         const fetchNotes = async () => {
             try {
                 const data = await api.getNotes();
-                setNotes(data);
+                const normalized = Array.isArray(data)
+                    ? data
+                          .map(normalizeNote)
+                          .filter((note) => Boolean(getNoteId(note)))
+                    : [];
+                setNotes(normalized);
             } catch (err: any) {
                 console.error('Failed to fetch notes:', err);
             } finally {
@@ -137,7 +154,11 @@ export default function DashboardNotes() {
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
-            setNotes([created, ...notes]);
+            const normalizedCreated = normalizeNote(created);
+            if (!getNoteId(normalizedCreated)) {
+                throw new Error('Note was created without a valid id.');
+            }
+            setNotes((prev) => [normalizedCreated, ...prev]);
             setNewNote({ title: '', content: '', subject: '' });
             setErrors({});
             setIsAddingNote(false);
@@ -160,6 +181,15 @@ export default function DashboardNotes() {
         title: string,
         content: string,
     ) => {
+        if (!id) {
+            appToast.error({
+                title: 'Invalid note',
+                description:
+                    'This note has an invalid identifier. Refresh and try again.',
+            });
+            return;
+        }
+
         const titleCheck = formValidation.noteTitle(title);
         const contentCheck = formValidation.noteContent(content);
         if (!titleCheck.isValid || !contentCheck.isValid) {
@@ -173,13 +203,12 @@ export default function DashboardNotes() {
         try {
             setSavingId(id);
             const updated = await api.updateNote(id, { title, content });
-            const normalizedUpdated = {
-                ...updated,
-                id: updated?.id || updated?._id || id,
-            };
+            const normalizedUpdated = normalizeNote({ ...updated, id });
             setNotes((prev) =>
                 prev.map((note) =>
-                    note.id === id ? { ...note, ...normalizedUpdated } : note,
+                    getNoteId(note) === id
+                        ? { ...note, ...normalizedUpdated }
+                        : note,
                 ),
             );
             setEditingId(null);
@@ -200,9 +229,20 @@ export default function DashboardNotes() {
      * Why: Allows users to manage their storage and remove unwanted content.
      */
     const handleDeleteNote = async (id: string) => {
+        if (!id) {
+            appToast.error({
+                title: 'Invalid note',
+                description:
+                    'This note has an invalid identifier. Refresh and try again.',
+            });
+            return;
+        }
+
         try {
             await api.deleteNote(id);
-            setNotes(notes.filter((n) => n.id !== id));
+            setNotes((prev) =>
+                prev.filter((n) => getNoteId(n) !== id),
+            );
             setDeleteConfirm(null);
             appToast.success({
                 title: 'Note deleted',
@@ -359,12 +399,15 @@ export default function DashboardNotes() {
             {notes.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {notes.map((note) => (
+                        (() => {
+                            const noteId = getNoteId(note);
+                            return (
                         <Card
-                            key={note.id}
+                            key={noteId}
                             className="note-card glass shadow-lg hover-lift border-foreground/5 flex flex-col group h-[400px]"
                         >
-                            <CardContent className="p-6 flex flex-col h-full">
-                                {editingId === note.id ? (
+                            <CardContent className="p-6 flex flex-col h-full relative">
+                                {editingId === noteId ? (
                                     <div className="space-y-4 flex-1 flex flex-col">
                                         <Input
                                             value={note.title}
@@ -372,7 +415,7 @@ export default function DashboardNotes() {
                                             onChange={(e) =>
                                                 setNotes((prev) =>
                                                     prev.map((n) =>
-                                                        n.id === note.id
+                                                        getNoteId(n) === noteId
                                                             ? {
                                                                   ...n,
                                                                   title: e
@@ -390,7 +433,7 @@ export default function DashboardNotes() {
                                                 onChange={(val) =>
                                                     setNotes((prev) =>
                                                         prev.map((n) =>
-                                                            n.id === note.id
+                                                            getNoteId(n) === noteId
                                                                 ? {
                                                                       ...n,
                                                                       content:
@@ -419,11 +462,13 @@ export default function DashboardNotes() {
                                                 disabled={savingId === note.id}
                                                 onClick={() => {
                                                     const updated = notes.find(
-                                                        (n) => n.id === note.id,
+                                                        (n) =>
+                                                            getNoteId(n) ===
+                                                            noteId,
                                                     );
                                                     if (updated)
                                                         handleUpdateNote(
-                                                            note.id,
+                                                            noteId,
                                                             updated.title,
                                                             updated.content,
                                                         );
@@ -453,7 +498,7 @@ export default function DashboardNotes() {
                                                     {note.title}
                                                 </h3>
                                             </div>
-                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
@@ -467,9 +512,9 @@ export default function DashboardNotes() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 rounded-lg"
+                                                    className="h-8 w-8 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                                                     onClick={() =>
-                                                        setEditingId(note.id)
+                                                        setEditingId(noteId)
                                                     }
                                                 >
                                                     <Edit2 size={14} />
@@ -477,10 +522,10 @@ export default function DashboardNotes() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 rounded-lg text-destructive/60 hover:text-destructive hover:bg-destructive/10"
+                                                    className="h-8 w-8 rounded-lg text-destructive/60 hover:text-destructive hover:bg-destructive/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                                                     onClick={() =>
                                                         setDeleteConfirm(
-                                                            note.id,
+                                                            noteId,
                                                         )
                                                     }
                                                 >
@@ -505,7 +550,7 @@ export default function DashboardNotes() {
                                             </span>
                                         </div>
 
-                                        {deleteConfirm === note.id && (
+                                        {deleteConfirm === noteId && (
                                             <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 space-y-4 z-20">
                                                 <p className="text-xs font-bold uppercase tracking-wider text-center">
                                                     Permanently remove this
@@ -529,7 +574,7 @@ export default function DashboardNotes() {
                                                         className="flex-1 rounded-2xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
                                                         onClick={() =>
                                                             handleDeleteNote(
-                                                                note.id,
+                                                                noteId,
                                                             )
                                                         }
                                                     >
@@ -542,6 +587,8 @@ export default function DashboardNotes() {
                                 )}
                             </CardContent>
                         </Card>
+                            );
+                        })()
                     ))}
                 </div>
             ) : (

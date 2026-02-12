@@ -147,6 +147,11 @@ const Dashboard = () => {
                                 userStats.data.streakData?.streakFreezes || 0
                             }
                             onFeed={handleFeedPet}
+                            className={
+                                isAIAssistantRoute
+                                    ? 'bottom-24 left-3 right-auto sm:bottom-8 sm:right-8 sm:left-auto'
+                                    : undefined
+                            }
                         />
                     )}
                 </div>

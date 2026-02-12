@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import type { MouseEvent } from 'react';
 import StarterKit from '@tiptap/starter-kit';
@@ -36,16 +37,32 @@ const RichTextEditor = ({
             Underline,
             Link.configure({
                 openOnClick: false,
+                autolink: true,
+                linkOnPaste: true,
             }),
             Placeholder.configure({
                 placeholder: placeholder || 'Start typing...',
             }),
         ],
         content,
+        editorProps: {
+            attributes: {
+                class:
+                    'ProseMirror prose prose-sm dark:prose-invert max-w-none p-4 min-h-[150px] focus:outline-none',
+            },
+        },
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
     });
+
+    useEffect(() => {
+        if (!editor) return;
+        const current = editor.getHTML();
+        if (content !== current) {
+            editor.commands.setContent(content || '', false);
+        }
+    }, [content, editor]);
 
     if (!editor) {
         return null;
@@ -57,43 +74,15 @@ const RichTextEditor = ({
     };
 
     const toggleInlineStyle = (style: 'bold' | 'italic' | 'underline') => {
-        const hasSelection = !editor.state.selection.empty;
-
         if (style === 'bold') {
-            if (hasSelection) {
-                editor.chain().focus().toggleBold().run();
-                return;
-            }
-            if (editor.isActive('bold')) {
-                editor.chain().focus().unsetBold().run();
-            } else {
-                editor.chain().focus().setBold().run();
-            }
+            editor.chain().focus().toggleBold().run();
             return;
         }
-
         if (style === 'italic') {
-            if (hasSelection) {
-                editor.chain().focus().toggleItalic().run();
-                return;
-            }
-            if (editor.isActive('italic')) {
-                editor.chain().focus().unsetItalic().run();
-            } else {
-                editor.chain().focus().setItalic().run();
-            }
+            editor.chain().focus().toggleItalic().run();
             return;
         }
-
-        if (hasSelection) {
-            editor.chain().focus().toggleUnderline().run();
-            return;
-        }
-        if (editor.isActive('underline')) {
-            editor.chain().focus().unsetUnderline().run();
-        } else {
-            editor.chain().focus().setUnderline().run();
-        }
+        editor.chain().focus().toggleUnderline().run();
     };
 
     /*
@@ -101,12 +90,24 @@ const RichTextEditor = ({
      * Why: Enables inline hyperlink management for note-taking without complex UI modals.
      */
     const toggleLink = () => {
-        const url = window.prompt('URL');
-        if (url) {
-            editor.chain().focus().setLink({ href: url }).run();
-        } else {
+        const existingUrl = editor.getAttributes('link').href as
+            | string
+            | undefined;
+        const url = window.prompt('Enter URL', existingUrl || '');
+        if (url === null) return;
+
+        const normalizedUrl = url.trim();
+        if (!normalizedUrl) {
             editor.chain().focus().unsetLink().run();
+            return;
         }
+
+        editor
+            .chain()
+            .focus()
+            .extendMarkRange('link')
+            .setLink({ href: normalizedUrl })
+            .run();
     };
 
     return (
@@ -246,10 +247,7 @@ const RichTextEditor = ({
             </div>
 
             {/* Editor Content */}
-            <EditorContent
-                editor={editor}
-                className="prose prose-sm dark:prose-invert max-w-none p-4 min-h-[150px] focus:outline-none"
-            />
+            <EditorContent editor={editor} />
 
             <style>{`
         .ProseMirror p.is-editor-empty:first-child::before {
@@ -264,6 +262,30 @@ const RichTextEditor = ({
         }
         .ProseMirror {
           min-height: 150px;
+        }
+        .ProseMirror ul {
+          list-style: disc;
+          margin-left: 1.2rem;
+          padding-left: 0.4rem;
+        }
+        .ProseMirror ol {
+          list-style: decimal;
+          margin-left: 1.2rem;
+          padding-left: 0.4rem;
+        }
+        .ProseMirror a {
+          color: hsl(var(--primary));
+          text-decoration: underline;
+          text-underline-offset: 2px;
+        }
+        .ProseMirror strong {
+          font-weight: 700;
+        }
+        .ProseMirror em {
+          font-style: italic;
+        }
+        .ProseMirror u {
+          text-decoration: underline;
         }
       `}</style>
         </div>
