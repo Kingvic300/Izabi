@@ -33,6 +33,15 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
     Table,
     TableBody,
     TableCell,
@@ -73,6 +82,17 @@ import { Badge } from '@/components/ui/badge';
 import { useAppToast } from '@/hooks/useAppToast';
 import { Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
+type AdminUser = {
+    id: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    streak?: number;
+    isVerified?: boolean;
+    createdAt?: string;
+    lastStudyDate?: string;
+};
 
 // Initial empty state
 const INITIAL_STATS = {
@@ -125,6 +145,11 @@ export default function AdminDashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [showActiveOnly, setShowActiveOnly] = useState(false);
+    const [userToTerminate, setUserToTerminate] = useState<AdminUser | null>(
+        null,
+    );
+    const [isTerminateDialogOpen, setIsTerminateDialogOpen] = useState(false);
+    const [isTerminatingAccess, setIsTerminatingAccess] = useState(false);
 
     // User Details Sheet State
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -229,26 +254,34 @@ export default function AdminDashboard() {
         }
     }, [isLoading]);
 
-    const handleDeleteUser = async (id: string, e: React.MouseEvent) => {
+    const handleDeleteUser = (user: AdminUser, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (
-            window.confirm(
-                'Are you sure you want to terminate this user access?',
-            )
-        ) {
-            try {
-                await api.deleteUser(id);
-                setUsers(users.filter((u) => u.id !== id));
-                appToast.success({
-                    title: 'Success',
-                    description: 'User access terminated successfully',
-                });
-            } catch (error) {
-                appToast.error({
-                    title: 'Failed',
-                    description: 'Could not delete user',
-                });
-            }
+        setUserToTerminate(user);
+        setIsTerminateDialogOpen(true);
+    };
+
+    const handleConfirmTerminateUser = async () => {
+        if (!userToTerminate || isTerminatingAccess) return;
+
+        try {
+            setIsTerminatingAccess(true);
+            await api.deleteUser(userToTerminate.id);
+            setUsers((prevUsers) =>
+                prevUsers.filter((user) => user.id !== userToTerminate.id),
+            );
+            appToast.success({
+                title: 'Success',
+                description: 'User access terminated successfully',
+            });
+            setIsTerminateDialogOpen(false);
+            setUserToTerminate(null);
+        } catch (error) {
+            appToast.error({
+                title: 'Failed',
+                description: 'Could not delete user',
+            });
+        } finally {
+            setIsTerminatingAccess(false);
         }
     };
 
@@ -340,6 +373,12 @@ export default function AdminDashboard() {
 
         return matchesSearch;
     });
+
+    const userDisplayName = userToTerminate
+        ? `${userToTerminate.firstName || ''} ${userToTerminate.lastName || ''}`.trim() ||
+          userToTerminate.email ||
+          'this user'
+        : 'this user';
 
     return (
         <div
@@ -893,8 +932,8 @@ export default function AdminDashboard() {
                                                                 className="rounded-2xl px-4 py-3 font-bold text-red-500 hover:text-red-400 hover:bg-red-500/10 cursor-pointer"
                                                                 onClick={(e) =>
                                                                     handleDeleteUser(
-                                                                        user.id,
-                                                                        e as any,
+                                                                        user,
+                                                                        e,
                                                                     )
                                                                 }
                                                             >
@@ -1206,6 +1245,84 @@ export default function AdminDashboard() {
                     )}
                 </SheetContent>
             </Sheet>
+
+            <AlertDialog
+                open={isTerminateDialogOpen}
+                onOpenChange={(open) => {
+                    if (isTerminatingAccess) return;
+                    setIsTerminateDialogOpen(open);
+                    if (!open) {
+                        setUserToTerminate(null);
+                    }
+                }}
+            >
+                <AlertDialogContent className="glass border-red-500/20 rounded-3xl p-0 overflow-hidden max-w-[92vw] sm:max-w-md">
+                    <div className="border-b border-red-500/20 bg-red-500/5 px-5 py-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+                                <ShieldAlert size={18} />
+                            </div>
+                            <div>
+                                <p className="text-[11px] uppercase tracking-[0.16em] font-bold text-red-300/70">
+                                    Security Action
+                                </p>
+                                <h3 className="font-bold text-base text-red-100">
+                                    Terminate User Access
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <AlertDialogHeader className="px-5 pt-5 pb-0 text-left space-y-2">
+                        <AlertDialogTitle className="text-xl font-extrabold tracking-tight">
+                            Confirm account termination
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm leading-relaxed text-foreground/70">
+                            You are about to revoke platform access for{' '}
+                            <span className="font-bold text-foreground">
+                                {userDisplayName}
+                            </span>
+                            . This user will lose access immediately and must be
+                            re-authorized to sign in again.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    {userToTerminate?.email && (
+                        <div className="mx-5 mt-4 rounded-2xl border border-foreground/10 bg-card/30 px-4 py-3">
+                            <p className="text-[11px] uppercase tracking-[0.12em] font-bold opacity-50 mb-1">
+                                Account Email
+                            </p>
+                            <p className="font-medium break-all">
+                                {userToTerminate.email}
+                            </p>
+                        </div>
+                    )}
+
+                    <AlertDialogFooter className="px-5 pb-5 pt-5 gap-2">
+                        <AlertDialogCancel
+                            disabled={isTerminatingAccess}
+                            className="rounded-xl border-foreground/10"
+                        >
+                            Cancel
+                        </AlertDialogCancel>
+                        <Button
+                            type="button"
+                            onClick={handleConfirmTerminateUser}
+                            disabled={isTerminatingAccess}
+                            className="rounded-xl bg-red-600 hover:bg-red-600/90 text-white font-bold min-w-40"
+                        >
+                            {isTerminatingAccess ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Terminating...
+                                </>
+                            ) : (
+                                'Terminate Access'
+                            )}
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

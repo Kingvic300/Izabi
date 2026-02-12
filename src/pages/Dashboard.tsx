@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import StreakPet from '@/components/StreakPet';
@@ -12,6 +12,7 @@ import JobStatusToast from '@/components/JobStatusToast';
 import { AnimatePresence } from 'framer-motion';
 
 const Dashboard = () => {
+    const location = useLocation();
     const { activeJobs, removeJob } = useStudy();
     const [userStats, setUserStats] = useState<any>(null);
     const userId = localStorage.getItem('userId');
@@ -20,6 +21,7 @@ const Dashboard = () => {
         (j) => j.status === 'PENDING' || j.status === 'PROCESSING',
     );
     const hasActiveJobs = activeProcessingJobs.length > 0;
+    const isAIAssistantRoute = location.pathname === '/dashboard/ai-assistant';
 
     const fetchStats = async () => {
         if (!userId) return;
@@ -101,7 +103,14 @@ const Dashboard = () => {
                         </header>
 
                         {/* Main Content Area */}
-                        <main className="flex-1 p-0 md:p-12 overflow-y-auto">
+                        <main
+                            className={cn(
+                                'flex-1',
+                                isAIAssistantRoute
+                                    ? 'overflow-hidden p-0'
+                                    : 'overflow-y-auto p-0 md:p-12',
+                            )}
+                        >
                             <div className="w-full h-full">
                                 <Outlet />
                             </div>

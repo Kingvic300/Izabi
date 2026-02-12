@@ -3,6 +3,7 @@
 import type React from 'react';
 
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Card,
     CardContent,
@@ -25,7 +26,6 @@ import {
     Paperclip,
     FileText,
 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
 import { api } from '@/lib/apiClient';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -39,6 +39,7 @@ import {
 } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { useAppToast } from '@/hooks/useAppToast';
 
 interface Message {
     id: string;
@@ -53,7 +54,8 @@ interface ActiveDocument {
 }
 
 const DashboardAIAssistant = () => {
-    const { toast } = useToast();
+    const navigate = useNavigate();
+    const appToast = useAppToast();
     const containerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const pdfInputRef = useRef<HTMLInputElement>(null);
@@ -232,11 +234,50 @@ const DashboardAIAssistant = () => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        if (file.type !== 'application/pdf') {
-            toast({
+        const getReadableErrorMessage = (error: any): string => {
+            const message = error?.response?.data?.message;
+            if (Array.isArray(message)) {
+                return message.join(', ');
+            }
+            if (message && typeof message === 'object') {
+                const nested = (message as any).message || (message as any).error;
+                if (typeof nested === 'string' && nested.trim()) {
+                    return nested;
+                }
+            }
+            const fallbackMessage = error?.response?.data?.error;
+            if (
+                typeof fallbackMessage === 'string' &&
+                fallbackMessage.trim()
+            ) {
+                return fallbackMessage;
+            }
+            if (typeof message === 'string' && message.trim()) {
+                return message;
+            }
+            if (typeof error?.message === 'string' && error.message.trim()) {
+                return error.message;
+            }
+            return 'Failed to upload and process PDF.';
+        };
+
+        const isPdf =
+            file.type.toLowerCase().includes('pdf') ||
+            file.name.toLowerCase().endsWith('.pdf');
+        if (!isPdf) {
+            appToast.error({
                 title: 'Invalid File',
                 description: 'Please upload a PDF document.',
-                variant: 'destructive',
+            });
+            event.target.value = '';
+            return;
+        }
+
+        const MAX_PDF_BYTES = 100 * 1024 * 1024;
+        if (file.size > MAX_PDF_BYTES) {
+            appToast.error({
+                title: 'File Too Large',
+                description: 'PDF size must be 100MB or less.',
             });
             event.target.value = '';
             return;
@@ -259,7 +300,7 @@ const DashboardAIAssistant = () => {
                 };
                 setMessages((prev) => [...prev, systemMessage]);
 
-                toast({
+                appToast.success({
                     title: 'PDF Ready',
                     description:
                         'Your PDF has been indexed and is now available in chat.',
@@ -267,12 +308,9 @@ const DashboardAIAssistant = () => {
             }
         } catch (error: any) {
             console.error('PDF upload failed:', error);
-            toast({
+            appToast.error({
                 title: 'Upload Failed',
-                description:
-                    error?.response?.data?.message ||
-                    'Failed to upload and process PDF.',
-                variant: 'destructive',
+                description: getReadableErrorMessage(error),
             });
         } finally {
             setIsUploadingPdf(false);
@@ -292,7 +330,7 @@ const DashboardAIAssistant = () => {
             if (res.success) {
                 setHistoryGroups({});
                 startNewChat();
-                toast({
+                appToast.success({
                     title: 'History Cleared',
                     description:
                         'Your conversation history has been permanently deleted.',
@@ -300,13 +338,26 @@ const DashboardAIAssistant = () => {
             }
         } catch (error) {
             console.error('Failed to clear history:', error);
+            appToast.error({
+                title: 'Could Not Clear History',
+                description:
+                    'Please try again. If this keeps happening, check your connection.',
+            });
         }
+    };
+
+    const redirectToDashboardUpload = (feature: string) => {
+        appToast.info({
+            title: `${feature} Requires PDF`,
+            description: 'Please go to dashboard and upload a PDF first.',
+        });
+        navigate('/dashboard');
     };
 
     return (
         <div
             ref={containerRef}
-            className="space-y-4 md:space-y-8 w-full px-3 md:px-6 lg:px-6 pt-4 md:pt-10 pb-4 md:pb-20 flex flex-col h-[calc(100dvh-64px)] overflow-hidden"
+            className="space-y-4 md:space-y-8 w-full px-3 md:px-6 xl:px-8 pt-4 md:pt-6 pb-0 flex flex-col h-full min-h-0 overflow-hidden"
         >
             <div className="chat-header flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -531,178 +582,188 @@ const DashboardAIAssistant = () => {
                 </div>
             </div>
 
-            <Card className="chat-card flex-1 flex flex-col overflow-hidden glass-card border-foreground/10 shadow-xl md:shadow-2xl relative">
+            <Card className="chat-card flex-1 min-h-0 flex flex-col overflow-hidden glass-card border-foreground/10 rounded-2xl shadow-xl md:shadow-2xl relative">
                 {/* Background decorative element */}
 
-                <CardContent className="flex-1 flex flex-col overflow-hidden p-0">
+                <CardContent className="flex-1 min-h-0 flex flex-col overflow-hidden p-0">
                     {/* Messages Container */}
-                    <div className="flex-1 overflow-y-auto space-y-4 md:space-y-6 p-4 md:p-6 scrollbar-thin scrollbar-thumb-primary/10">
-                        {messages.map((message) => (
-                            <div
-                                key={message.id}
-                                className={`flex items-start gap-4 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
-                            >
+                    <div className="flex-1 min-h-0 overflow-y-auto space-y-4 md:space-y-6 p-4 md:p-6 scrollbar-thin scrollbar-thumb-primary/10">
+                        <div className="mx-auto w-full max-w-[1500px] space-y-4 md:space-y-6">
+                            {messages.map((message) => (
                                 <div
-                                    className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 border 
+                                    key={message.id}
+                                    className={`flex items-start gap-4 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                                >
+                                    <div
+                                        className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 border 
                                     ${
                                         message.role === 'user'
                                             ? 'bg-primary/20 border-primary/30 text-primary'
                                             : 'bg-accent/20 border-accent/30 text-accent'
                                     }`}
-                                >
-                                    {message.role === 'user' ? (
-                                        <User className="h-4 w-4 md:h-5 md:w-5" />
-                                    ) : (
-                                        <Brain className="h-4 w-4 md:h-5 md:w-5" />
-                                    )}
-                                </div>
-                                <div
-                                    className={`max-w-[92%] sm:max-w-[85%] lg:max-w-[70%] px-4 md:px-5 py-3 md:py-4 rounded-2xl shadow-sm leading-relaxed
+                                    >
+                                        {message.role === 'user' ? (
+                                            <User className="h-4 w-4 md:h-5 md:w-5" />
+                                        ) : (
+                                            <Brain className="h-4 w-4 md:h-5 md:w-5" />
+                                        )}
+                                    </div>
+                                    <div
+                                        className={`max-w-[92%] sm:max-w-[85%] lg:max-w-[72%] xl:max-w-[65%] px-4 md:px-5 py-3 md:py-4 rounded-2xl shadow-sm leading-relaxed
                                         ${
                                             message.role === 'user'
                                                 ? 'bg-primary text-primary-foreground rounded-tr-none'
                                                 : 'bg-muted/50 backdrop-blur-sm border border-foreground/5 rounded-tl-none'
                                         }`}
-                                >
-                                    <div className="text-sm md:text-base prose prose-sm dark:prose-invert max-w-none break-words foregroundspace-pre-wrap">
-                                        {message.content === '' ? (
-                                            <div className="flex gap-1 py-1">
-                                                <div className="w-1.5 h-1.5 bg-accent animate-bounce" />
-                                                <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.2s]" />
-                                                <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.4s]" />
-                                            </div>
-                                        ) : (
-                                            message.content
-                                        )}
-                                    </div>
-                                    <div
-                                        className={`text-[10px] mt-2 opacity-40 uppercase tracking-widest font-bold 
-                                        ${message.role === 'user' ? 'text-right' : 'text-left'}`}
                                     >
-                                        {message.timestamp.toLocaleTimeString(
-                                            [],
-                                            {
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            },
-                                        )}
+                                        <div className="text-sm md:text-base prose prose-sm dark:prose-invert max-w-none break-words foregroundspace-pre-wrap">
+                                            {message.content === '' ? (
+                                                <div className="flex gap-1 py-1">
+                                                    <div className="w-1.5 h-1.5 bg-accent animate-bounce" />
+                                                    <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.2s]" />
+                                                    <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.4s]" />
+                                                </div>
+                                            ) : (
+                                                message.content
+                                            )}
+                                        </div>
+                                        <div
+                                            className={`text-[10px] mt-2 opacity-40 uppercase tracking-widest font-bold 
+                                        ${message.role === 'user' ? 'text-right' : 'text-left'}`}
+                                        >
+                                            {message.timestamp.toLocaleTimeString(
+                                                [],
+                                                {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                },
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                        {isLoading &&
-                            messages[messages.length - 1].content !== '' && (
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-accent/20 border border-accent/30 text-accent">
-                                        <Brain className="h-5 w-5" />
+                            ))}
+                            {isLoading &&
+                                messages[messages.length - 1].content !== '' && (
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-accent/20 border border-accent/30 text-accent">
+                                            <Brain className="h-5 w-5" />
+                                        </div>
+                                        <div className="bg-muted/50 backdrop-blur-sm border border-foreground/5 px-5 py-4 rounded-2xl rounded-tl-none">
+                                            <Loader className="h-4 w-4 animate-spin text-accent" />
+                                        </div>
                                     </div>
-                                    <div className="bg-muted/50 backdrop-blur-sm border border-foreground/5 px-5 py-4 rounded-2xl rounded-tl-none">
-                                        <Loader className="h-4 w-4 animate-spin text-accent" />
-                                    </div>
-                                </div>
-                            )}
-                        <div ref={messagesEndRef} />
+                                )}
+                            <div ref={messagesEndRef} />
+                        </div>
                     </div>
 
                     {/* Input Area */}
-                    <div className="p-3 md:p-6 pt-0 space-y-3 md:space-y-4">
-                        {activeDocument && (
-                            <div className="flex items-center justify-between gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
-                                <div className="flex items-center gap-2 text-xs text-primary font-medium min-w-0">
-                                    <FileText className="h-4 w-4" />
-                                    <span className="truncate max-w-[170px] sm:max-w-[220px] md:max-w-[420px]">
-                                        {activeDocument.fileName}
-                                    </span>
+                    <div className="shrink-0 p-3 md:p-6 pt-0">
+                        <div className="mx-auto w-full max-w-[1500px] space-y-3 md:space-y-4">
+                            {activeDocument && (
+                                <div className="flex items-center justify-between gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
+                                    <div className="flex items-center gap-2 text-xs text-primary font-medium min-w-0">
+                                        <FileText className="h-4 w-4" />
+                                        <span className="truncate max-w-[170px] sm:max-w-[220px] md:max-w-[420px]">
+                                            {activeDocument.fileName}
+                                        </span>
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setActiveDocument(null)}
+                                        className="h-7 px-2 text-[11px]"
+                                    >
+                                        Remove
+                                    </Button>
                                 </div>
+                            )}
+
+                            {/* Smart Suggestions */}
+                            {!inputValue && !isLoading && (
+                                <div className="flex gap-2 overflow-x-auto pb-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                    {[
+                                        {
+                                            label: 'Generate Flashcards',
+                                            icon: <Zap size={12} />,
+                                            feature: 'Flashcards',
+                                        },
+                                        {
+                                            label: 'Study Guide',
+                                            icon: <BookOpen size={12} />,
+                                            feature: 'Study Guide',
+                                        },
+                                        {
+                                            label: 'Practice Quiz',
+                                            icon: <Target size={12} />,
+                                            feature: 'Practice Quiz',
+                                        },
+                                    ].map((s, idx) => (
+                                        <Button
+                                            key={idx}
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                redirectToDashboardUpload(
+                                                    s.feature,
+                                                )
+                                            }
+                                            className="h-8 shrink-0 rounded-full bg-primary/5 border-primary/20 text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-wider gap-2 transition-all hover:scale-105"
+                                        >
+                                            {s.icon} {s.label}
+                                        </Button>
+                                    ))}
+                                </div>
+                            )}
+
+                            <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-card/5 backdrop-blur-xl">
+                                <Input
+                                    placeholder={
+                                        activeDocument
+                                            ? 'Ask questions about your uploaded PDF...'
+                                            : 'Ask Izabi to generate something or explain a topic...'
+                                    }
+                                    value={inputValue}
+                                    onChange={(e) =>
+                                        setInputValue(e.target.value)
+                                    }
+                                    onKeyPress={handleKeyPress}
+                                    disabled={isLoading || isUploadingPdf}
+                                    className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent py-4 md:py-6 text-base md:text-lg"
+                                />
                                 <Button
+                                    type="button"
                                     variant="ghost"
-                                    size="sm"
-                                    onClick={() => setActiveDocument(null)}
-                                    className="h-7 px-2 text-[11px]"
+                                    size="icon"
+                                    onClick={() => pdfInputRef.current?.click()}
+                                    disabled={isUploadingPdf || isLoading}
+                                    className="h-8 w-8 md:h-9 md:w-9 rounded-lg"
                                 >
-                                    Remove
+                                    {isUploadingPdf ? (
+                                        <Loader className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Paperclip className="h-4 w-4" />
+                                    )}
+                                </Button>
+                                <Button
+                                    onClick={handleSendMessage}
+                                    disabled={
+                                        isLoading ||
+                                        isUploadingPdf ||
+                                        !inputValue.trim()
+                                    }
+                                    size="icon"
+                                    className="h-9 w-9 md:h-10 md:w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary/90 shadow-glow shadow-primary/20 relative overflow-hidden group/btn"
+                                >
+                                    <Send className="h-4 w-4 md:h-5 md:w-5 relative z-10" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
                                 </Button>
                             </div>
-                        )}
-
-                        {/* Smart Suggestions */}
-                        {!inputValue && !isLoading && (
-                            <div className="flex gap-2 overflow-x-auto pb-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                                {[
-                                    {
-                                        label: 'Generate Flashcards',
-                                        icon: <Zap size={12} />,
-                                        prompt: 'Generate flashcards for: ',
-                                    },
-                                    {
-                                        label: 'Study Guide',
-                                        icon: <BookOpen size={12} />,
-                                        prompt: 'Create a detailed study guide for: ',
-                                    },
-                                    {
-                                        label: 'Practice Quiz',
-                                        icon: <Target size={12} />,
-                                        prompt: 'Give me a practice quiz on: ',
-                                    },
-                                ].map((s, idx) => (
-                                    <Button
-                                        key={idx}
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setInputValue(s.prompt)}
-                                        className="h-8 shrink-0 rounded-full bg-primary/5 border-primary/20 text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-wider gap-2 transition-all hover:scale-105"
-                                    >
-                                        {s.icon} {s.label}
-                                    </Button>
-                                ))}
-                            </div>
-                        )}
-
-                        <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-card/5 backdrop-blur-xl">
-                            <Input
-                                placeholder={
-                                    activeDocument
-                                        ? 'Ask questions about your uploaded PDF...'
-                                        : 'Ask Izabi to generate something or explain a topic...'
-                                }
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                disabled={isLoading || isUploadingPdf}
-                                className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent py-4 md:py-6 text-base md:text-lg"
-                            />
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => pdfInputRef.current?.click()}
-                                disabled={isUploadingPdf || isLoading}
-                                className="h-8 w-8 md:h-9 md:w-9 rounded-lg"
-                            >
-                                {isUploadingPdf ? (
-                                    <Loader className="h-4 w-4 animate-spin" />
-                                ) : (
-                                    <Paperclip className="h-4 w-4" />
-                                )}
-                            </Button>
-                            <Button
-                                onClick={handleSendMessage}
-                                disabled={
-                                    isLoading ||
-                                    isUploadingPdf ||
-                                    !inputValue.trim()
-                                }
-                                size="icon"
-                                className="h-9 w-9 md:h-10 md:w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary/90 shadow-glow shadow-primary/20 relative overflow-hidden group/btn"
-                            >
-                                <Send className="h-4 w-4 md:h-5 md:w-5 relative z-10" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
-                            </Button>
+                            <p className="text-[9px] md:text-[10px] text-center mt-2 md:mt-3 text-muted-foreground/60 uppercase tracking-[0.15em] font-medium">
+                                Izabi AI may provide inaccurate info. Verify
+                                important facts.
+                            </p>
                         </div>
-                        <p className="text-[9px] md:text-[10px] text-center mt-2 md:mt-3 text-muted-foreground/60 uppercase tracking-[0.15em] font-medium">
-                            Izabi AI may provide inaccurate info. Verify
-                            important facts.
-                        </p>
                     </div>
                 </CardContent>
             </Card>
