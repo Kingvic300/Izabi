@@ -24,7 +24,7 @@ const studyTricks = [
         title: 'Active Recall',
         description:
             'Test yourself frequently instead of re-reading. Close your notes and try to explain the concept from memory.',
-        color: 'from-blue-500/20 to-blue-600/10',
+        color: 'bg-blue-500/10',
         iconColor: 'text-blue-500',
     },
     {
@@ -33,7 +33,7 @@ const studyTricks = [
         title: 'Pomodoro Technique',
         description:
             'Study for 25 minutes, then take a 5-minute break. After 4 sessions, take a longer 15-30 minute break.',
-        color: 'from-red-500/20 to-red-600/10',
+        color: 'bg-red-500/10',
         iconColor: 'text-red-500',
     },
     {
@@ -42,7 +42,7 @@ const studyTricks = [
         title: 'Spaced Repetition',
         description:
             'Review material at increasing intervals: 1 day, 3 days, 1 week, 2 weeks, 1 month. This fights the forgetting curve.',
-        color: 'from-green-500/20 to-green-600/10',
+        color: 'bg-green-500/10',
         iconColor: 'text-green-500',
     },
     {
@@ -51,7 +51,7 @@ const studyTricks = [
         title: 'Feynman Technique',
         description:
             'Explain the concept in simple terms as if teaching a child. Identify gaps in your understanding and review them.',
-        color: 'from-yellow-500/20 to-yellow-600/10',
+        color: 'bg-yellow-500/10',
         iconColor: 'text-yellow-500',
     },
     {
@@ -60,7 +60,7 @@ const studyTricks = [
         title: 'Interleaving',
         description:
             'Mix different subjects or topics in one study session instead of focusing on just one. This improves retention.',
-        color: 'from-purple-500/20 to-purple-600/10',
+        color: 'bg-purple-500/10',
         iconColor: 'text-purple-500',
     },
     {
@@ -69,7 +69,7 @@ const studyTricks = [
         title: 'SQ3R Method',
         description:
             'Survey, Question, Read, Recite, Review. A systematic approach to reading and understanding textbooks.',
-        color: 'from-indigo-500/20 to-indigo-600/10',
+        color: 'bg-indigo-500/10',
         iconColor: 'text-indigo-500',
     },
     {
@@ -78,7 +78,7 @@ const studyTricks = [
         title: 'Mind Palace',
         description:
             'Associate information with specific locations in a familiar place. Walk through mentally to recall information.',
-        color: 'from-orange-500/20 to-orange-600/10',
+        color: 'bg-orange-500/10',
         iconColor: 'text-orange-500',
     },
     {
@@ -87,7 +87,7 @@ const studyTricks = [
         title: 'Elaborative Interrogation',
         description:
             'Ask yourself "why" and "how" questions about the material. Connect new information to what you already know.',
-        color: 'from-pink-500/20 to-pink-600/10',
+        color: 'bg-pink-500/10',
         iconColor: 'text-pink-500',
     },
 ];
@@ -143,7 +143,7 @@ const StudyTricksModal: React.FC<StudyTricksModalProps> = ({
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className={`p-6 rounded-2xl bg-gradient-to-br ${trick.color} border border-foreground/10 hover:border-foreground/20 transition-all group`}
+                                    className={`p-6 rounded-2xl ${trick.color} border border-foreground/10 hover:border-foreground/20 transition-all group`}
                                 >
                                     <div className="flex items-start gap-4">
                                         <div

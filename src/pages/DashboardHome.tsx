@@ -25,7 +25,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BASE_URL } from '@/constants';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     FileText,
@@ -38,17 +37,13 @@ import {
     XCircle,
     BarChart3,
     Clock,
-    LayoutGrid,
-    Terminal,
     Layers,
     RotateCcw,
-    Activity,
     Cpu,
     Download,
     Loader2,
     Flame,
     Trophy,
-    TrendingUp,
     Upload,
     Volume2,
     Pause,
@@ -60,7 +55,6 @@ import {
 } from '@/components/ui/collapsible';
 import PDFUploadSection from '@/components/pdf/PDFUploadSection';
 import type { PDFSelection, StudyQuestionResponse } from '@/types/pdf';
-import { ErrorList } from '@/components/ui/error-display';
 import { useApiError } from '@/hooks/useApiError';
 import {
     Select,
@@ -70,15 +64,14 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import stringSimilarity from 'string-similarity';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { cn } from '@/lib/utils';
+import { LOCAL_PRACTICE_QUESTION_BANK } from '@/constants/practiceQuestions';
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import StreakPet from '@/components/StreakPet';
 import BrainDrop from '@/components/BrainDrop';
 import IntentCards from '@/components/IntentCards';
 import ContextCard from '@/components/ContextCard';
@@ -86,9 +79,77 @@ import QuickTestModal from '@/components/QuickTestModal';
 import StudyTricksModal from '@/components/StudyTricksModal';
 import PracticeQuizModal from '@/components/PracticeQuizModal';
 import { useStudy } from '@/contexts/StudyContext';
+import { AIMarkdown } from '@/components/ui/ai-markdown';
 
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+const DEFAULT_PRACTICE_QUESTION_COUNT = 2;
+
+const shuffleArray = <T,>(items: T[]): T[] => {
+    const shuffled = [...items];
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+};
+
+const normalizePracticeQuestion = (
+    question: Partial<StudyQuestionResponse>,
+): StudyQuestionResponse | null => {
+    const questionText =
+        typeof question?.question === 'string' ? question.question.trim() : '';
+    const answer = typeof question?.answer === 'string' ? question.answer : '';
+    const options = Array.isArray(question?.options)
+        ? question.options
+              .map((option) =>
+                  typeof option === 'string' ? option.trim() : '',
+              )
+              .filter(Boolean)
+        : [];
+
+    if (!questionText || !answer) return null;
+
+    const optionsWithAnswer = options.includes(answer)
+        ? options
+        : [...options, answer];
+
+    if (optionsWithAnswer.length < 2) return null;
+
+    return {
+        question: questionText,
+        options: optionsWithAnswer,
+        answer,
+        difficulty: question?.difficulty || 'easy',
+        questionType: question?.questionType || 'multiple_choice',
+        explanation: question?.explanation,
+    };
+};
+
+const buildPracticeQuestionSet = (
+    apiQuestions: StudyQuestionResponse[],
+    count: number,
+) => {
+    const normalized = [...apiQuestions, ...LOCAL_PRACTICE_QUESTION_BANK]
+        .map(normalizePracticeQuestion)
+        .filter((question): question is StudyQuestionResponse =>
+            Boolean(question),
+        );
+
+    const unique = Array.from(
+        new Map(
+            normalized.map((question) => [
+                question.question.toLowerCase(),
+                question,
+            ]),
+        ).values(),
+    );
+
+    return shuffleArray(unique)
+        .slice(0, count)
+        .map((question) => ({
+            ...question,
+            options: shuffleArray(question.options),
+        }));
+};
 
 const SummaryViewer = ({ content, t }: { content: string; t: any }) => {
     const { language } = useLanguage();
@@ -170,17 +231,15 @@ const SummaryViewer = ({ content, t }: { content: string; t: any }) => {
 
             <div
                 className={cn(
-                    'prose prose-sm md:prose-base dark:prose-invert max-w-none leading-relaxed text-muted-foreground/90 font-medium selection:bg-primary/30 transition-all duration-700 ease-in-out',
+                    'selection:bg-primary/30 transition-all duration-700 ease-in-out',
                     !isExpanded &&
                         isLong &&
                         'max-h-[400px] overflow-hidden relative',
                 )}
             >
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {content}
-                </ReactMarkdown>
+                <AIMarkdown content={content} className="text-sm md:text-base" />
                 {!isExpanded && isLong && (
-                    <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 right-0 h-40 bg-background/90 pointer-events-none" />
                 )}
             </div>
             {isLong && (
@@ -280,6 +339,19 @@ const DashboardHome = () => {
         }, 100);
     };
 
+    const handleReadyToLearn = () => {
+        const uploadInput = document.getElementById(
+            'file-upload-redesign',
+        ) as HTMLInputElement | null;
+
+        if (uploadInput) {
+            uploadInput.click();
+            return;
+        }
+
+        handleUploadDocument();
+    };
+
     const handleFeedPet = async () => {
         try {
             const res = await api.feedPet();
@@ -337,21 +409,48 @@ const DashboardHome = () => {
     };
 
     const handlePracticeSkills = async () => {
+        const questionCount = DEFAULT_PRACTICE_QUESTION_COUNT;
+
         try {
-            const res = await api.getPracticeQuestions(5);
-            if (res.success) {
-                setPracticeQuestions(res.data);
+            const res = await api.getPracticeQuestions(questionCount);
+            const apiQuestions = Array.isArray(res?.data) ? res.data : [];
+            const questions = buildPracticeQuestionSet(
+                apiQuestions,
+                questionCount,
+            );
+
+            if (questions.length === 0) {
+                throw new Error('No practice questions available.');
+            }
+
+            setPracticeQuestions(questions);
+            setShowPracticeQuiz(true);
+            updateSession({
+                questions,
+                summary: '',
+                flashcards: [],
+            });
+            setShowQuestions(true);
+        } catch (err) {
+            const fallbackQuestions = buildPracticeQuestionSet(
+                [],
+                questionCount,
+            );
+
+            if (fallbackQuestions.length > 0) {
+                setPracticeQuestions(fallbackQuestions);
                 setShowPracticeQuiz(true);
                 updateSession({
-                    questions: res.data,
+                    questions: fallbackQuestions,
                     summary: '',
                     flashcards: [],
                 });
                 setShowQuestions(true);
+                return;
             }
-        } catch (err) {
+
             addError({
-                message: 'Failed to load practice questions',
+                message: 'Failed to load practice questions.',
                 type: 'validation',
             });
         }
@@ -419,17 +518,8 @@ const DashboardHome = () => {
                     ) {
                         setBrainDropQuestion(res.data);
                     } else {
-                        console.warn(
-                            'Brain Drop: Invalid question structure',
-                            res.data,
-                        );
+                        setBrainDropQuestion(null);
                     }
-                } else {
-                    // User has no notes yet - this is expected for new users
-                    console.log(
-                        'Brain Drop:',
-                        res.message || 'No content available yet',
-                    );
                 }
 
                 // Check if user has set exam type
@@ -543,14 +633,26 @@ const DashboardHome = () => {
         }
     };
 
-    const pollJobStatus = async (jobId: string, endpoint: string) => {
+    const pollJobStatus = (jobId: string, endpoint: string) => {
+        let attempts = 0;
+        const maxAttempts = 120;
         const interval = setInterval(async () => {
+            attempts += 1;
+
+            if (attempts > maxAttempts) {
+                setIsProcessing(false);
+                clearInterval(interval);
+                addError({
+                    message:
+                        'Processing is taking longer than expected. Please try again.',
+                    type: 'api',
+                });
+                return;
+            }
+
             try {
                 const response = await api.getJobStatus(jobId);
-                // The backend returns { success: true, data: { status, result, ... } }
                 const job = response.data;
-
-                console.log('[SmartStudy] Job Status Update:', job?.status);
 
                 if (job?.status === 'COMPLETED') {
                     setIsProcessing(false);
@@ -586,12 +688,22 @@ const DashboardHome = () => {
                     setIsProcessing(false);
                     clearInterval(interval);
                     addError({
-                        message: job?.error || 'Neural Protocol failure.',
+                        message:
+                            job?.error ||
+                            'We could not generate your study material. Please try again.',
                         type: 'api',
                     });
                 }
-            } catch (error) {
-                console.error('[Dashboard] Polling Error:', error);
+            } catch {
+                if (attempts >= maxAttempts) {
+                    setIsProcessing(false);
+                    clearInterval(interval);
+                    addError({
+                        message:
+                            'Connection issue while checking progress. Please try again.',
+                        type: 'api',
+                    });
+                }
             }
         }, 1500);
     };
@@ -618,8 +730,7 @@ const DashboardHome = () => {
     ) => {
         if (!pdfFile || !pdfSelection) {
             addError({
-                message:
-                    'Upload required: Please initialize a document node first.',
+                message: 'Please upload a document first.',
                 type: 'validation',
             });
             return;
@@ -650,39 +761,36 @@ const DashboardHome = () => {
                 pdfFile.size > 10 * 1024 * 1024 &&
                 pdfFile.type === 'application/pdf'
             ) {
-                console.log(
-                    '[SmartStudy] Large document detected (10MB+). Initializing Local Neural Extraction...',
-                );
+                try {
+                    const localText = await extractTextFromPDF(pdfFile);
 
-                const localText = await extractTextFromPDF(pdfFile);
-                console.log(
-                    `[SmartStudy] Local extraction finished (${localText.length} chars). bypassing cloud synchronizer...`,
-                );
+                    if (localText.trim().length < 30) {
+                        throw new Error(
+                            'Local extraction produced insufficient text.',
+                        );
+                    }
 
-                const ingestRes = await api.ingestText({
-                    text: localText,
-                    fileName: pdfFile.name,
-                    type,
-                    options,
-                });
+                    const ingestRes = await api.ingestText({
+                        text: localText,
+                        fileName: pdfFile.name,
+                        type,
+                        options,
+                    });
 
-                console.log(
-                    '[SmartStudy] Job Started (Local Sync). ID:',
-                    ingestRes.jobId,
-                );
-                addJob(ingestRes.jobId, pdfFile.name, type);
-                pollJobStatus(ingestRes.jobId, endpoint);
-                return;
+                    addJob(ingestRes.jobId, pdfFile.name, type);
+                    pollJobStatus(ingestRes.jobId, endpoint);
+                    return;
+                } catch (localExtractionError) {
+                    console.warn(
+                        '[SmartStudy] Local extraction fallback failed, using direct ingestion.',
+                        localExtractionError,
+                    );
+                }
             }
 
             // STANDARD UPLOAD: Direct to Backend
-            console.log(
-                '[SmartStudy] Securely syncing document to neural core...',
-            );
-
             const ingestRes = await api.ingestDirect(pdfFile, type, options);
 
-            console.log('[SmartStudy] Job Started. ID:', ingestRes.jobId);
             addJob(ingestRes.jobId, pdfFile.name, type);
 
             // Background Polling
@@ -693,8 +801,8 @@ const DashboardHome = () => {
             const errorMsg =
                 err.response?.data?.message ||
                 err.message ||
-                'Failed to initiate document mapping.';
-            addError({ message: `Flow Error: ${errorMsg}`, type: 'api' });
+                'Failed to start processing the document.';
+            addError({ message: errorMsg, type: 'api' });
 
             setIsProcessing(false);
             updateSession({ summary: '', questions: [], flashcards: [] });
@@ -808,19 +916,19 @@ const DashboardHome = () => {
         <ErrorBoundary>
             <div
                 ref={containerRef}
-                className="space-y-6 md:space-y-12 w-full pb-20 px-4 md:px-8 lg:px-12 pt-6 md:pt-12"
+                className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-10"
             >
                 {/* Error handling through useApiError toasts */}
 
                 {/* Welcome Section - GSAP Target */}
                 <div id="dashboard-welcome" className="welcome-text space-y-2">
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/40 leading-tight">
+                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/40 leading-tight">
                         {t('dashboard.greeting') || 'Welcome back,'}{' '}
                         {userStats?.data?.firstName || 'Scholar'}
                     </h1>
-                    <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl leading-relaxed">
+                    <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium max-w-2xl leading-relaxed">
                         {t('dashboard.intro') ||
-                            'Your neural workspace is synchronized and ready for deep learning.'}
+                            'Your study workspace is ready. Upload a document to begin.'}
                     </p>
                 </div>
 
@@ -829,9 +937,9 @@ const DashboardHome = () => {
                     <motion.div
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-gradient-to-r from-blue-500/10 via-blue-400/5 to-transparent border border-blue-500/20"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20"
                     >
-                        <div className="flex items-center gap-6">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
                             <div className="flex items-center gap-2">
                                 <Flame
                                     size={20}
@@ -852,15 +960,6 @@ const DashboardHome = () => {
                                     {userStats.data.totalPoints || 0} XP
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <TrendingUp
-                                    size={20}
-                                    className="text-blue-600"
-                                />
-                                <span className="text-sm font-bold text-foreground/60 dark:text-foreground/70">
-                                    Top 12% today
-                                </span>
-                            </div>
                         </div>
                     </motion.div>
                 )}
@@ -872,13 +971,12 @@ const DashboardHome = () => {
                             <BrainDrop
                                 question={brainDropQuestion}
                                 onAnswer={handleBrainDropAnswer}
-                                totalAnswered={847}
                             />
                         ) : (
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-blue-600/10 via-blue-400/5 to-transparent border border-blue-500/20 p-8 md:p-14 text-center group"
+                                className="relative overflow-hidden rounded-[24px] sm:rounded-[40px] bg-blue-600/10 border border-blue-500/20 p-5 sm:p-8 md:p-14 text-center group"
                             >
                                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
                                     <Brain
@@ -888,36 +986,31 @@ const DashboardHome = () => {
                                 </div>
                                 <div className="relative z-10 max-w-2xl mx-auto space-y-8">
                                     <div className="flex justify-center">
-                                        <div className="w-20 h-20 rounded-[28px] bg-blue-500/20 flex items-center justify-center text-blue-500 shadow-xl shadow-blue-500/10">
+                                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[20px] sm:rounded-[28px] bg-blue-500/20 flex items-center justify-center text-blue-500 shadow-xl shadow-blue-500/10">
                                             <Sparkles size={40} />
                                         </div>
                                     </div>
                                     <div className="space-y-4">
-                                        <h3 className="text-3xl md:text-5xl font-black text-foreground tracking-tighter italic">
+                                        <h3 className="text-2xl sm:text-3xl md:text-5xl font-black text-foreground tracking-tighter italic">
                                             Personalize your{' '}
                                             <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
                                                 Brain Drop
                                             </span>
                                         </h3>
-                                        <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed opacity-80">
-                                            Upload class notes or a textbook
-                                            PDF. We'll generate daily
-                                            personalized challenges to sync with
-                                            your learning goals.
+                                        <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium leading-relaxed opacity-80">
+                                            Click Upload Document to add your
+                                            class notes or textbook PDF. We'll
+                                            generate daily personalized
+                                            challenges to match your learning
+                                            goals.
                                         </p>
                                     </div>
                                     <button
-                                        onClick={() =>
-                                            updateSession({
-                                                pdfSelection: null,
-                                                pdfFile: null,
-                                                fileName: '',
-                                            })
-                                        }
-                                        className="inline-flex items-center gap-3 px-10 py-5 rounded-[20px] bg-blue-600 text-white font-black uppercase tracking-widest text-sm hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95"
+                                        onClick={handleReadyToLearn}
+                                        className="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-[16px] sm:rounded-[20px] bg-blue-600 text-white font-black uppercase tracking-[0.15em] sm:tracking-widest text-[10px] sm:text-xs md:text-sm hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95"
                                     >
                                         <Upload size={20} />
-                                        Upload Your First Note
+                                        Click Upload Document
                                     </button>
                                 </div>
                             </motion.div>
@@ -949,9 +1042,9 @@ const DashboardHome = () => {
 
                 <div className="workspace-area">
                     {pdfSelection ? (
-                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 stagger-card">
+                        <div className="grid grid-cols-1 2xl:grid-cols-12 gap-8 stagger-card">
                             {/* Document Info & Quick Stats */}
-                            <div className="xl:col-span-4 space-y-6">
+                            <div className="2xl:col-span-4 space-y-6">
                                 <Card className="glass border-primary/20 rounded-[32px] overflow-hidden shadow-2xl relative">
                                     <div className="absolute top-0 right-0 p-6 opacity-5">
                                         <FileText size={100} />
@@ -962,7 +1055,7 @@ const DashboardHome = () => {
                                                 <FileText size={16} />
                                             </div>
                                             <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">
-                                                Current Topic
+                                                Current Document
                                             </span>
                                         </div>
                                         <CardTitle className="text-2xl font-bold truncate leading-tight">
@@ -970,7 +1063,7 @@ const DashboardHome = () => {
                                         </CardTitle>
                                         <CardDescription className="flex items-center gap-2 font-bold text-primary">
                                             <Sparkles size={14} />
-                                            Ready for deep dive
+                                            Ready to study
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="px-8 pb-8 space-y-6">
@@ -1036,7 +1129,7 @@ const DashboardHome = () => {
                             </div>
 
                             {/* Main Hub Controls */}
-                            <div className="xl:col-span-8 flex flex-col gap-6">
+                            <div className="2xl:col-span-8 flex flex-col gap-6">
                                 <Card className="glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden relative border border-foreground/5">
                                     <div
                                         id="study-modes-grid"
@@ -1132,8 +1225,8 @@ const DashboardHome = () => {
                                         ))}
                                     </div>
 
-                                    <div className="p-6 bg-card/[0.02] border-t border-foreground/5 flex flex-col md:flex-row items-center justify-between gap-4">
-                                        <div className="flex items-center gap-4">
+                                    <div className="p-4 sm:p-6 bg-card/[0.02] border-t border-foreground/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
                                             <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 px-4">
                                                 Session Settings
                                             </div>
@@ -1189,25 +1282,25 @@ const DashboardHome = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 stagger-card">
-                            <div className="xl:col-span-8">
+                        <div className="grid grid-cols-1 2xl:grid-cols-12 gap-8 stagger-card">
+                            <div className="2xl:col-span-8">
                                 <Card
                                     id="upload-section"
-                                    className="h-full glass shadow-2xl rounded-[48px] overflow-hidden group relative border-0"
+                                    className="h-full glass shadow-2xl rounded-[28px] md:rounded-[48px] overflow-hidden group relative border-0"
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
-                                    <CardHeader className="p-10 md:p-14 text-center md:text-left text-foreground">
-                                        <CardTitle className="text-4xl md:text-5xl font-bold font-mono tracking-tighter mb-6 relative uppercase">
+                                    <div className="absolute inset-0 bg-primary/5 opacity-50 pointer-events-none" />
+                                    <CardHeader className="p-6 sm:p-10 md:p-14 text-center md:text-left text-foreground">
+                                        <CardTitle className="text-3xl sm:text-4xl md:text-5xl font-bold font-mono tracking-tighter mb-4 sm:mb-6 relative uppercase">
                                             {t('dashboard.upload_title') ||
                                                 'Document Upload'}
                                             <span className="absolute -top-1 -right-8 w-2 h-2 bg-primary rounded-full animate-ping" />
                                         </CardTitle>
-                                        <CardDescription className="text-lg font-medium opacity-60 max-w-xl mx-auto md:mx-0 leading-relaxed font-mono">
+                                        <CardDescription className="text-base sm:text-lg font-medium opacity-60 max-w-xl mx-auto md:mx-0 leading-relaxed font-mono">
                                             {t('dashboard.upload_desc') ||
                                                 'Upload notes or textbooks to start studying.'}
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="px-6 md:px-14 pb-14">
+                                    <CardContent className="px-4 sm:px-6 md:px-8 lg:px-10 pb-8 sm:pb-14">
                                         <PDFUploadSection
                                             onSelectionComplete={
                                                 handleSelectionComplete
@@ -1217,18 +1310,18 @@ const DashboardHome = () => {
                                     </CardContent>
                                 </Card>
                             </div>
-                            <div className="xl:col-span-4 space-y-6">
-                                <Card className="glass shadow-2xl p-10 md:p-14 rounded-[48px] flex flex-col items-center text-center space-y-8 h-full min-h-[400px] border-0">
-                                    <div className="w-24 h-24 rounded-[32px] bg-card/5 flex items-center justify-center border border-foreground/5 shadow-2xl rotate-3 group-hover:rotate-0 transition-all mt-4">
+                            <div className="2xl:col-span-4 space-y-6">
+                                <Card className="glass shadow-2xl p-6 sm:p-10 md:p-14 rounded-[28px] md:rounded-[48px] flex flex-col items-center text-center space-y-6 sm:space-y-8 h-full min-h-[320px] sm:min-h-[400px] border-0">
+                                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[24px] sm:rounded-[32px] bg-card/5 flex items-center justify-center border border-foreground/5 shadow-2xl rotate-3 group-hover:rotate-0 transition-all mt-2 sm:mt-4">
                                         <Cpu
                                             size={48}
                                             className="text-primary animate-float"
                                         />
                                     </div>
                                     <div className="space-y-4 pt-4">
-                                        <h3 className="text-3xl font-bold tracking-tight font-sans uppercase">
+                                        <h3 className="text-2xl sm:text-3xl font-bold tracking-tight font-sans uppercase">
                                             {t('dashboard.init_node') ||
-                                                "Let's Get Started"}
+                                                'Study Setup'}
                                         </h3>
                                         <p className="text-base font-medium text-muted-foreground leading-relaxed max-w-[280px] mx-auto">
                                             {t('dashboard.init_desc') ||
@@ -1236,12 +1329,15 @@ const DashboardHome = () => {
                                         </p>
                                     </div>
                                     <div className="flex-1 flex items-end pb-4">
-                                        <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-card/5 border border-foreground/5">
-                                            <div className="w-2 h-2 rounded-full bg-green-500/50 animate-pulse" />
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-                                                Ready to learn
-                                            </span>
-                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={handleReadyToLearn}
+                                            className="h-10 rounded-full border-foreground/10 bg-card/5 px-4 text-[10px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] opacity-70 hover:opacity-100"
+                                        >
+                                            <Upload size={12} />
+                                            <span>Upload document</span>
+                                        </Button>
                                     </div>
                                 </Card>
                             </div>
@@ -1254,8 +1350,8 @@ const DashboardHome = () => {
                         flashcards.length > 0) && (
                         <div className="space-y-8 pt-12 stagger-card px-4 md:px-0">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-4xl font-bold flex items-center gap-4 tracking-tighter">
-                                    <div className="w-2 h-10 bg-gradient-hero rounded-3xl" />
+                                <h2 className="text-2xl sm:text-4xl font-bold flex items-center gap-3 sm:gap-4 tracking-tighter">
+                                    <div className="w-2 h-10 bg-primary rounded-3xl" />
                                     <span>{t('dashboard.results_title')}</span>
                                 </h2>
                             </div>
@@ -1710,7 +1806,7 @@ const DashboardHome = () => {
                                                         ) : (
                                                             <div
                                                                 id="mastery-verdict"
-                                                                className="p-4 md:p-10 rounded-2xl md:rounded-3xl bg-gradient-hero relative overflow-hidden group shadow-glow"
+                                                                className="p-4 md:p-10 rounded-2xl md:rounded-3xl bg-primary relative overflow-hidden group shadow-glow"
                                                             >
                                                                 <div className="absolute inset-0 bg-background/10 transition-colors" />
                                                                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">

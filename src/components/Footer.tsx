@@ -1,121 +1,107 @@
 'use client';
 
-import { Mail, Linkedin, Twitter, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
-
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export const Footer = () => {
     const { t } = useLanguage();
-    const currentYear = new Date().getFullYear();
 
     const footerLinks = {
-        [t('nav.features')]: [
+        Platform: [
             { label: t('nav.features'), href: '/features' },
-            { label: t('nav.pricing'), href: '/pricing' },
             { label: t('nav.how_it_works'), href: '/how-it-works' },
-            { label: 'Achievements', href: '/dashboard/progress' },
-        ],
-        Resources: [
-            { label: 'Study Tips', href: '/blog' },
-            { label: 'Documentation', href: '/docs' },
-            { label: 'Community', href: '/community' },
+            { label: t('nav.pricing'), href: '/pricing' },
+            { label: 'Testimonials', href: '/testimonials' },
         ],
         Company: [
             { label: t('nav.about'), href: '/about' },
             { label: 'Contact', href: '/contact' },
-            { label: 'Partnerships', href: '/partners' },
+            { label: 'FAQ', href: '/faq' },
         ],
-        Legal: [
-            { label: 'Privacy', href: '/privacy' },
-            { label: 'Terms', href: '/terms' },
-            { label: 'Cookies', href: '/cookies' },
+        Account: [
+            { label: t('nav.client_portal'), href: '/login' },
+            { label: t('nav.get_started'), href: '/signup' },
         ],
     };
 
     return (
-        <footer className="relative bg-background pt-24 pb-12 overflow-hidden border-t border-foreground/10">
-            <div className="w-full px-6 lg:px-12 relative">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12 mb-20">
-                    {/* Brand */}
-                    <div className="col-span-2">
-                        <Link to="/" className="flex items-center mb-6 group">
-                            <Logo showText size={48} />
-                        </Link>
-                        <p className="text-muted-foreground text-sm max-w-sm leading-relaxed mb-6 font-medium">
-                            The world's most advanced AI-powered learning
-                            environment designed specifically for the next
-                            generation of scholars.
-                        </p>
-                        <div className="flex gap-4">
-                            {[
-                                { icon: Twitter, href: '#' },
-                                { icon: Linkedin, href: '#' },
-                                { icon: Mail, href: '#' },
-                            ].map((social, i) => (
-                                <a
-                                    key={i}
-                                    href={social.href}
-                                    className="w-10 h-10 rounded-xl bg-card/5 border border-foreground/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary/50 transition-all text-muted-foreground hover:text-primary-foreground"
+        <footer className="relative bg-background border-t border-foreground/10">
+            <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 pt-10 sm:pt-14 pb-2 sm:pb-4">
+                <div className="rounded-3xl border border-foreground/10 bg-card/5 p-6 sm:p-8 lg:p-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+                        <div className="lg:col-span-5 space-y-5">
+                            <Link to="/" className="inline-flex items-center">
+                                <Logo showText size={46} />
+                            </Link>
+                            <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed max-w-md">
+                                Turn class notes and textbooks into clear
+                                summaries, quizzes, flashcards, and guided
+                                revision you can use immediately.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                                <Link
+                                    to="/signup"
+                                    className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors"
                                 >
-                                    <social.icon size={18} />
-                                </a>
-                            ))}
+                                    {t('nav.get_started')}
+                                </Link>
+                                <Link
+                                    to="/login"
+                                    className="inline-flex min-h-11 items-center justify-center rounded-xl border border-foreground/10 px-5 text-sm font-bold text-foreground hover:bg-card/10 transition-colors"
+                                >
+                                    {t('nav.client_portal')}
+                                </Link>
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+                            {Object.entries(footerLinks).map(
+                                ([category, links]) => (
+                                    <div key={category} className="space-y-4">
+                                        <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-foreground/50">
+                                            {category}
+                                        </h3>
+                                        <ul className="space-y-1.5">
+                                            {links.map((link) => (
+                                                <li key={link.label}>
+                                                    <Link
+                                                        to={link.href}
+                                                        className="inline-flex min-h-11 items-center text-sm font-semibold text-muted-foreground hover:text-primary transition-colors"
+                                                    >
+                                                        {link.label}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ),
+                            )}
                         </div>
                     </div>
 
-                    {/* Links */}
-                    {Object.entries(footerLinks).map(([category, links]) => (
-                        <div key={category} className="space-y-6">
-                            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-foreground opacity-40">
-                                {category}
-                            </h3>
-                            <ul className="space-y-4">
-                                {links.map((link) => (
-                                    <li key={link.label}>
-                                        <Link
-                                            to={link.href}
-                                            className="text-sm font-bold text-muted-foreground hover:text-primary transition-all flex items-center group"
-                                        >
-                                            <span className="w-0 overflow-hidden group-hover:w-3 transition-all duration-300">
-                                                •
-                                            </span>
-                                            <span className="group-hover:translate-x-1 transition-transform">
-                                                {link.label}
-                                            </span>
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Bottom */}
-                <div className="pt-8 border-t border-foreground/10 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground opacity-60">
-                        <span>
-                            {t('footer.copyright')}. Built for excellence.
-                        </span>
-                    </div>
-
-                    <div className="flex items-center gap-6">
-                        <Link
-                            to="/privacy"
-                            className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            Privacy
-                        </Link>
-                        <Link
-                            to="/terms"
-                            className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            Terms
-                        </Link>
-                        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary">
-                            <Sparkles size={10} className="animate-pulse" />
-                            <span>v2.0 Scholar</span>
+                    <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-foreground/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+                            {t('footer.copyright')}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                            <Link
+                                to="/contact"
+                                className="inline-flex min-h-11 items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                Contact
+                            </Link>
+                            <Link
+                                to="/faq"
+                                className="inline-flex min-h-11 items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                FAQ
+                            </Link>
+                            <div className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3 text-[10px] font-bold uppercase tracking-widest text-primary">
+                                <Sparkles size={11} />
+                                <span>v2.0</span>
+                            </div>
                         </div>
                     </div>
                 </div>

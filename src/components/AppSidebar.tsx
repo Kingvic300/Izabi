@@ -12,7 +12,6 @@ import {
     TrendingUp,
     Settings,
     GraduationCap,
-    Heart,
     ShieldCheck,
     ChevronUp,
     Trophy,
@@ -21,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import apiClient, { api } from '@/lib/apiClient';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     Sidebar,
     SidebarContent,
@@ -88,12 +87,6 @@ const navigationItems = [
         url: '/dashboard/leaderboard',
         icon: Trophy,
         description: 'See top scholars',
-    },
-    {
-        title: 'Support Us',
-        url: '/dashboard/support',
-        icon: Heart,
-        description: 'Contribute AI resources',
     },
 ];
 
@@ -240,17 +233,17 @@ export function AppSidebar() {
                                                 ${active ? 'bg-primary/10 text-primary shadow-[inset_0_0_20px_hsla(var(--primary)/0.1)]' : 'hover:bg-card/5'}
                                             `}
                                         >
-                                            <a
-                                                href={item.url}
+                                            <Link
+                                                to={item.url}
                                                 id={`nav-item-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
                                                 onClick={(e) => {
-                                                    e.preventDefault();
                                                     if (
                                                         (item as any).status ===
                                                         'unavailable'
-                                                    )
+                                                    ) {
+                                                        e.preventDefault();
                                                         return;
-                                                    navigate(item.url);
+                                                    }
                                                 }}
                                                 className="flex items-center gap-4"
                                             >
@@ -273,7 +266,7 @@ export function AppSidebar() {
                                                         )}
                                                     </div>
                                                 )}
-                                            </a>
+                                            </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 );
@@ -300,12 +293,8 @@ export function AppSidebar() {
                                                 ${active ? 'bg-card/10 text-foreground shadow-xl' : 'hover:bg-card/5'}
                                             `}
                                         >
-                                            <a
-                                                href={item.url}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    navigate(item.url);
-                                                }}
+                                            <Link
+                                                to={item.url}
                                                 className="flex items-center gap-4"
                                             >
                                                 <item.icon className="h-5 w-5 opacity-60 group-hover:opacity-100" />
@@ -314,7 +303,7 @@ export function AppSidebar() {
                                                         {item.title}
                                                     </span>
                                                 )}
-                                            </a>
+                                            </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 );

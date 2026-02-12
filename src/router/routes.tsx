@@ -51,7 +51,7 @@ const Testimonials = lazy(() => import('@/pages/Testimonials'), 'Testimonials');
 const Pricing = lazy(() => import('@/pages/Pricing'), 'Pricing');
 const FAQ = lazy(() => import('@/pages/FAQ'), 'FAQ');
 const About = lazy(() => import('@/pages/About'), 'About');
-const SupportUs = lazy(() => import('@/pages/SupportUs'), 'SupportUs');
+const Contact = lazy(() => import('@/pages/Contact'), 'Contact');
 const AdminDashboard = lazy(
     () => import('@/pages/AdminDashboard'),
     'AdminDashboard',
@@ -144,6 +144,10 @@ const routes = () => {
                     />
                     <Route path="/faq" element={withErrorBoundary(FAQ)} />
                     <Route path="/about" element={withErrorBoundary(About)} />
+                    <Route
+                        path="/contact"
+                        element={withErrorBoundary(Contact)}
+                    />
                     <Route path="/otp" element={withErrorBoundary(OTP)} />
                     <Route path="/login" element={withErrorBoundary(Login)} />
                     <Route path="/signup" element={withErrorBoundary(Signup)} />
@@ -190,10 +194,6 @@ const routes = () => {
                         <Route
                             path="exams"
                             element={withErrorBoundary(DashboardExams)}
-                        />
-                        <Route
-                            path="support"
-                            element={withErrorBoundary(SupportUs)}
                         />
                         <Route
                             path="admin"

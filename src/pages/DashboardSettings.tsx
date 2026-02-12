@@ -22,35 +22,32 @@ import {
     Check,
     Smartphone,
     DownloadCloud,
-    ChevronRight,
     Mail,
 } from 'lucide-react';
 import { useAppToast } from '@/hooks/useAppToast';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { useTheme } from '@/components/theme-provider';
 import { Switch } from '@/components/ui/switch';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Badge } from '@/components/ui/badge';
-import { useTour } from '@/contexts/TourContext';
-import { Map } from 'lucide-react';
+import { api } from '@/lib/apiClient';
+
+type SettingsState = {
+    emailNotifications: boolean;
+    studyReminders: boolean;
+    theme: 'light' | 'dark' | 'system';
+    publicProfile: boolean;
+};
 
 const DashboardSettings = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const appToast = useAppToast();
     const { theme, setTheme: setGlobalTheme } = useTheme();
-    const { startTour } = useTour();
 
-    const [settings, setSettings] = useState({
+    const [settings, setSettings] = useState<SettingsState>({
         emailNotifications: true,
         studyReminders: true,
-        theme: theme,
+        theme: theme as SettingsState['theme'],
         publicProfile: false,
     });
     const [isSaving, setIsSaving] = useState(false);
@@ -90,7 +87,7 @@ const DashboardSettings = () => {
                 setSettings((prev) => ({
                     ...prev,
                     ...parsed,
-                    theme: theme as any,
+                    theme: theme as SettingsState['theme'],
                 }));
             } catch (error) {
                 console.error('Error loading settings:', error);
@@ -102,10 +99,18 @@ const DashboardSettings = () => {
      * How: Toggles a boolean setting, updates state and localStorage, and shows a feedback toast.
      * Why: Provides immediate feedback and persistence for user preference changes.
      */
-    const handleToggle = (key: keyof typeof settings) => {
-        const newValue =
-            typeof settings[key] === 'boolean' ? !settings[key] : settings[key];
-        const updatedSettings = { ...settings, [key]: newValue };
+    const handleToggle = (
+        key: keyof SettingsState,
+        nextValue?: boolean | string,
+    ) => {
+        const currentValue = settings[key];
+        const resolvedValue =
+            typeof nextValue !== 'undefined'
+                ? nextValue
+                : typeof currentValue === 'boolean'
+                  ? !currentValue
+                  : currentValue;
+        const updatedSettings = { ...settings, [key]: resolvedValue };
         setSettings(updatedSettings);
         localStorage.setItem('userSettings', JSON.stringify(updatedSettings));
 
@@ -116,12 +121,28 @@ const DashboardSettings = () => {
         };
 
         const settingName = settingNames[key] || key;
-        const status = newValue ? 'enabled' : 'disabled';
+        const status = resolvedValue ? 'enabled' : 'disabled';
 
         appToast.success({
             title: `${settingName} ${status}`,
             description: `Your preference has been saved successfully.`,
         });
+
+        if (key === 'studyReminders' && resolvedValue) {
+            if (typeof window !== 'undefined' && 'Notification' in window) {
+                if (Notification.permission === 'default') {
+                    Notification.requestPermission().then((permission) => {
+                        if (permission === 'granted') {
+                            appToast.info({
+                                title: 'Reminders Enabled',
+                                description:
+                                    'Browser reminders are now allowed on this device.',
+                            });
+                        }
+                    });
+                }
+            }
+        }
     };
 
     /*
@@ -129,7 +150,7 @@ const DashboardSettings = () => {
      * Why: Allows users to override the system theme with their preferred visual mode.
      */
     const handleThemeChange = (value: string) => {
-        const themeValue = value === 'auto' ? 'system' : (value as any);
+        const themeValue = (value === 'auto' ? 'system' : value) as SettingsState['theme'];
         setGlobalTheme(themeValue);
 
         setSettings((prev) => ({
@@ -146,22 +167,70 @@ const DashboardSettings = () => {
     const handleDownloadData = async () => {
         setIsSaving(true);
         appToast.info({
-            title: 'Preparing Archive',
-            description: 'Encrypting and packaging your data...',
+            title: 'Preparing Data Export',
+            description: 'Collecting your profile, notes, and study history...',
         });
 
         try {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            const [profileResult, notesResult, historyResult, quizResult] =
+                await Promise.allSettled([
+                    api.getUserProfile(),
+                    api.getNotes(),
+                    api.getStudyHistory(),
+                    api.getQuizResults(),
+                ]);
+
+            const exportPayload = {
+                generatedAt: new Date().toISOString(),
+                profile:
+                    profileResult.status === 'fulfilled'
+                        ? profileResult.value?.data ?? profileResult.value
+                        : null,
+                notes:
+                    notesResult.status === 'fulfilled'
+                        ? notesResult.value?.data ?? notesResult.value
+                        : [],
+                studyHistory:
+                    historyResult.status === 'fulfilled'
+                        ? historyResult.value?.data ?? historyResult.value
+                        : [],
+                quizResults:
+                    quizResult.status === 'fulfilled'
+                        ? quizResult.value?.data ?? quizResult.value
+                        : [],
+            };
+
+            const allFailed =
+                profileResult.status === 'rejected' &&
+                notesResult.status === 'rejected' &&
+                historyResult.status === 'rejected' &&
+                quizResult.status === 'rejected';
+
+            if (allFailed) {
+                throw new Error(
+                    'Could not fetch your account data. Please try again.',
+                );
+            }
+
+            const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
+                type: 'application/json',
+            });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+            link.href = url;
+            link.download = `izabi-data-export-${stamp}.json`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
 
             appToast.success({
                 title: 'Download Ready',
-                description: 'Your data archive has been securely generated.',
+                description: 'Your data export was downloaded successfully.',
             });
         } catch (error) {
-            appToast.error({
-                title: 'Export Failed',
-                description: 'Could not generate data archive.',
-            });
+            appToast.apiError(error, 'Export Failed');
         } finally {
             setIsSaving(false);
         }
@@ -170,13 +239,13 @@ const DashboardSettings = () => {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12"
+            className="space-y-6 md:space-y-12 w-full min-w-0 pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
             <div className="settings-header">
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-2">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-2">
                     System <span className="text-gradient">Preferences</span>
                 </h1>
-                <p className="text-muted-foreground font-medium text-lg">
+                <p className="text-muted-foreground font-medium text-base sm:text-lg">
                     Customize your neural interface and alerts
                 </p>
             </div>
@@ -237,7 +306,9 @@ const DashboardSettings = () => {
                         title="Email Notifications"
                         description="Receive weekly summaries and major updates"
                         isChecked={settings.emailNotifications}
-                        onToggle={() => handleToggle('emailNotifications')}
+                        onToggle={(checked?: boolean) =>
+                            handleToggle('emailNotifications', checked)
+                        }
                         icon={<Mail size={20} />}
                     />
                     <div className="h-[1px] w-full bg-foreground/5 mx-8" />
@@ -245,7 +316,9 @@ const DashboardSettings = () => {
                         title="Study Reminders"
                         description="Nudges to maintain your learning streak"
                         isChecked={settings.studyReminders}
-                        onToggle={() => handleToggle('studyReminders')}
+                        onToggle={(checked?: boolean) =>
+                            handleToggle('studyReminders', checked)
+                        }
                         icon={<Smartphone size={20} />}
                     />
                 </CardContent>
@@ -253,7 +326,7 @@ const DashboardSettings = () => {
 
             {/* Privacy Section */}
             <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
-                <CardHeader className="px-8 py-6 border-b border-foreground/5">
+                <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
                     <CardTitle className="flex items-center gap-3 text-xl font-bold">
                         <Shield className="text-primary" />
                         Data & Privacy
@@ -267,14 +340,16 @@ const DashboardSettings = () => {
                         title="Public Scholar Profile"
                         description="Allow other students to view your achievements"
                         isChecked={settings.publicProfile}
-                        onToggle={() => handleToggle('publicProfile')}
+                        onToggle={(checked?: boolean) =>
+                            handleToggle('publicProfile', checked)
+                        }
                         icon={<Radio size={20} />}
                         badge="Beta"
                     />
 
-                    <div className="p-8 bg-foreground/[0.02]">
-                        <div className="rounded-xl border border-foreground/5 p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-background/20">
-                            <div className="flex items-center gap-4">
+                    <div className="p-4 sm:p-8 bg-foreground/[0.02]">
+                        <div className="rounded-xl border border-foreground/5 p-4 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 bg-background/20">
+                            <div className="flex items-center gap-3 sm:gap-4">
                                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                                     <DownloadCloud size={24} />
                                 </div>
@@ -290,7 +365,7 @@ const DashboardSettings = () => {
                             <Button
                                 onClick={handleDownloadData}
                                 disabled={isSaving}
-                                className="h-12 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground border border-foreground/10 font-bold px-6 min-w-[180px]"
+                                className="h-11 sm:h-12 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground border border-foreground/10 font-bold px-4 sm:px-6 w-full md:w-auto md:min-w-[180px]"
                             >
                                 {isSaving ? (
                                     <span className="flex items-center gap-2">
@@ -304,42 +379,6 @@ const DashboardSettings = () => {
                                 )}
                             </Button>
                         </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* System Tour */}
-            <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
-                <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
-                    <CardTitle className="flex items-center gap-3 text-xl font-bold">
-                        <Map className="text-primary" />
-                        System Tour
-                    </CardTitle>
-                    <CardDescription>
-                        Revisit the platform walkthrough
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="p-8">
-                    <div className="rounded-xl border border-foreground/5 p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-background/20">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                                <Map size={24} />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-lg">
-                                    Restart Tour
-                                </h3>
-                                <p className="text-sm opacity-60">
-                                    Reset the onboarding experience
-                                </p>
-                            </div>
-                        </div>
-                        <Button
-                            onClick={startTour}
-                            className="h-12 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground border border-foreground/10 font-bold px-6 min-w-[180px]"
-                        >
-                            Start Tour
-                        </Button>
                     </div>
                 </CardContent>
             </Card>
@@ -425,7 +464,8 @@ function SettingRow({
             </div>
             <Switch
                 checked={isChecked}
-                onCheckedChange={onToggle}
+                onClick={(e) => e.stopPropagation()}
+                onCheckedChange={(checked) => onToggle(checked)}
                 className="scale-125 data-[state=checked]:bg-primary"
             />
         </div>

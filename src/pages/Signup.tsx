@@ -127,13 +127,17 @@ const Signup = () => {
 
         setIsLoading(true);
         try {
+            const normalizedEmail = formData.email.toLowerCase();
             await axios.post(`${BASE_URL}/api/user/send-verification-otp`, {
-                email: formData.email.toLowerCase(),
+                email: normalizedEmail,
                 password: formData.password,
                 role: 'USER',
                 firstName: formData.firstName,
                 lastName: formData.lastName,
             });
+
+            // Preserve email in case the OTP page is refreshed.
+            localStorage.setItem('pendingOtpEmail', normalizedEmail);
 
             appToast.success({
                 title: 'Verification Code Sent',
@@ -143,8 +147,7 @@ const Signup = () => {
 
             navigate('/otp', {
                 state: {
-                    email: formData.email.toLowerCase(),
-                    password: formData.password,
+                    email: normalizedEmail,
                     mode: 'verification',
                 },
             });
@@ -198,17 +201,19 @@ const Signup = () => {
             );
 
             appToast.success({
-                title: 'Google Sync Successful',
-                description:
-                    'Your neural profile is synchronized! Redirecting...',
+                title: 'Google Sign-Up Successful',
+                description: 'Your account is ready. Redirecting...',
+            });
+            appToast.success({
+                title: 'Google Sign-Up Successful',
+                description: 'Your account is ready. Redirecting...',
             });
 
             setTimeout(() => navigate('/dashboard'), 1000);
         } catch (err: any) {
-            console.error(err);
             const status = err.response?.status;
             let description =
-                'Something went wrong during Google synchronization.';
+                'Something went wrong during Google sign-up.';
 
             if (status === 404) {
                 description =
@@ -220,7 +225,7 @@ const Signup = () => {
             }
 
             appToast.error({
-                title: 'Google Sync Failed',
+                title: 'Google Sign-Up Failed',
                 description,
             });
         } finally {
@@ -256,10 +261,7 @@ const Signup = () => {
                     />
                     <div>
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
-                            {t('auth.signup').split(' ')[0]}{' '}
-                            <span className="text-gradient">
-                                {t('auth.signup').split(' ')[1]}
-                            </span>
+                            {t('auth.signup')}
                         </h1>
                         <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">
                             Create your account to start your learning journey.
@@ -272,7 +274,7 @@ const Signup = () => {
                                     className="text-primary fill-primary animate-pulse"
                                 />
                                 <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-primary">
-                                    Selected Node:{' '}
+                                    Selected Plan:{' '}
                                     {selectedPlan.replace(/-/g, ' ')}
                                 </span>
                             </div>
@@ -288,10 +290,14 @@ const Signup = () => {
                         >
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                    <Label
+                                        htmlFor="signup-first-name"
+                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
+                                    >
                                         First Name
                                     </Label>
                                     <Input
+                                        id="signup-first-name"
                                         name="firstName"
                                         type="text"
                                         placeholder="John"
@@ -302,10 +308,14 @@ const Signup = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                    <Label
+                                        htmlFor="signup-last-name"
+                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
+                                    >
                                         Last Name
                                     </Label>
                                     <Input
+                                        id="signup-last-name"
                                         name="lastName"
                                         type="text"
                                         placeholder="Doe"
@@ -318,7 +328,10 @@ const Signup = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                <Label
+                                    htmlFor="signup-email"
+                                    className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
+                                >
                                     {t('auth.email')}
                                 </Label>
                                 <div className="relative">
@@ -327,6 +340,7 @@ const Signup = () => {
                                         size={18}
                                     />
                                     <Input
+                                        id="signup-email"
                                         name="email"
                                         type="email"
                                         placeholder="scholar@example.com"
@@ -344,7 +358,10 @@ const Signup = () => {
 
                             <div className="grid grid-cols-1 gap-4 sm:gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                    <Label
+                                        htmlFor="signup-password"
+                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
+                                    >
                                         {t('auth.password')}
                                     </Label>
                                     <div className="relative">
@@ -353,6 +370,7 @@ const Signup = () => {
                                             size={18}
                                         />
                                         <Input
+                                            id="signup-password"
                                             name="password"
                                             type={
                                                 showPassword
@@ -368,6 +386,11 @@ const Signup = () => {
                                             type="button"
                                             onClick={() =>
                                                 setShowPassword(!showPassword)
+                                            }
+                                            aria-label={
+                                                showPassword
+                                                    ? 'Hide password'
+                                                    : 'Show password'
                                             }
                                             className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
                                         >
@@ -385,7 +408,10 @@ const Signup = () => {
                                     )}
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                    <Label
+                                        htmlFor="signup-confirm-password"
+                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
+                                    >
                                         Confirm
                                     </Label>
                                     <div className="relative">
@@ -394,6 +420,7 @@ const Signup = () => {
                                             size={18}
                                         />
                                         <Input
+                                            id="signup-confirm-password"
                                             name="confirmPassword"
                                             type={
                                                 showConfirmPassword
@@ -411,6 +438,11 @@ const Signup = () => {
                                                 setShowConfirmPassword(
                                                     !showConfirmPassword,
                                                 )
+                                            }
+                                            aria-label={
+                                                showConfirmPassword
+                                                    ? 'Hide confirm password'
+                                                    : 'Show confirm password'
                                             }
                                             className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
                                         >
@@ -450,7 +482,7 @@ const Signup = () => {
                                 </div>
                                 <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
                                     <span className="bg-background px-4 text-muted-foreground/40">
-                                        Or sync via neural node
+                                        Or continue with Google
                                     </span>
                                 </div>
                             </div>
@@ -460,9 +492,9 @@ const Signup = () => {
                                     onSuccess={handleGoogleSuccess}
                                     onError={() => {
                                         appToast.error({
-                                            title: 'Google Sync Error',
+                                            title: 'Google Sign-Up Error',
                                             description:
-                                                'Neural synchronization failed. Please try again or use standard credentials.',
+                                                'Google sign-up failed. Please try again or use the signup form.',
                                         });
                                     }}
                                     useOneTap

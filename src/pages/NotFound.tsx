@@ -36,9 +36,9 @@ const NotFound = () => {
     return (
         <div
             ref={containerRef}
-            className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-6"
+            className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6"
         >
-            <Link to="/" className="absolute top-8 left-8 group fade-in">
+            <Link to="/" className="absolute top-5 left-4 sm:top-8 sm:left-8 group fade-in">
                 <div className="flex items-center gap-2 text-sm font-bold opacity-60 group-hover:opacity-100 transition-all">
                     <ArrowLeft
                         size={16}
@@ -50,19 +50,19 @@ const NotFound = () => {
 
             <div className="text-center space-y-8 relative z-10">
                 <div className="fade-in">
-                    <div className="w-24 h-24 bg-card/5 rounded-2xl flex items-center justify-center mx-auto mb-8 border border-foreground/10 shadow-2xl relative overflow-hidden group">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-card/5 rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8 border border-foreground/10 shadow-2xl relative overflow-hidden group">
                         <AlertTriangle className="h-12 w-12 text-primary animate-pulse" />
                     </div>
-                    <h1 className="text-9xl font-bold tracking-tighter text-foreground opacity-20 leading-none">
+                    <h1 className="text-7xl sm:text-9xl font-bold tracking-tighter text-foreground opacity-20 leading-none">
                         404
                     </h1>
                 </div>
 
                 <div className="space-y-4 fade-in">
-                    <h2 className="text-4xl font-bold text-foreground">
+                    <h2 className="text-2xl sm:text-4xl font-bold text-foreground">
                         Neural <span className="text-gradient">Void</span>
                     </h2>
-                    <p className="text-lg text-muted-foreground font-medium max-w-md mx-auto">
+                    <p className="text-base sm:text-lg text-muted-foreground font-medium max-w-md mx-auto">
                         The resource you requested resides in an unmapped sector
                         of the learning network.
                     </p>
@@ -70,7 +70,7 @@ const NotFound = () => {
 
                 <div className="fade-in">
                     <Link to="/">
-                        <Button className="h-16 px-10 rounded-xl bg-card text-black font-bold text-lg shadow-glow hover:bg-card/5 active:scale-95 transition-all flex items-center gap-3 mx-auto">
+                        <Button className="h-14 sm:h-16 px-6 sm:px-10 rounded-xl bg-card text-black font-bold text-base sm:text-lg shadow-glow hover:bg-card/5 active:scale-95 transition-all flex items-center gap-3 mx-auto">
                             <Sparkles size={20} />
                             <span>Return to Station</span>
                         </Button>

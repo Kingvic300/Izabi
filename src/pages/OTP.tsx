@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,13 +30,17 @@ interface ErrorResponse {
     };
 }
 
+const OTP_LENGTH = 6;
+const RESEND_COOLDOWN_SECONDS = 30;
+
 const OTP = () => {
     const getDefaultAvatar = (mail: string) =>
         `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(mail || 'scholar@izabi.ai')}`;
     const cardRef = useRef<HTMLDivElement>(null);
-    const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
+    const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
     const [loading, setLoading] = useState(false);
     const [resending, setResending] = useState(false);
+    const [resendCountdown, setResendCountdown] = useState(0);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
     const navigate = useNavigate();
     const location = useLocation();
@@ -52,16 +56,62 @@ const OTP = () => {
 
     // Determine mode from route query or state: "verification" | "reset"
     const mode = location.state?.mode || 'verification';
-    const email = (location.state?.email || '').toLowerCase();
-    const password = location.state?.password || '';
+    const persistedEmail = localStorage.getItem('pendingOtpEmail') || '';
+    const email = (location.state?.email || persistedEmail).toLowerCase();
+
+    useEffect(() => {
+        if (email) {
+            localStorage.setItem('pendingOtpEmail', email);
+        }
+    }, [email]);
+
+    useEffect(() => {
+        if (resendCountdown <= 0) return;
+
+        const timer = window.setInterval(() => {
+            setResendCountdown((prev) => Math.max(prev - 1, 0));
+        }, 1000);
+
+        return () => window.clearInterval(timer);
+    }, [resendCountdown]);
+
+    const focusInput = (index: number) => {
+        inputRefs.current[index]?.focus();
+    };
+
+    const updateOtpDigits = (
+        digits: string[],
+        startIndex: number,
+        clearCurrent = false,
+    ) => {
+        setOtp((prev) => {
+            const next = [...prev];
+            if (clearCurrent) {
+                next[startIndex] = '';
+            }
+            digits.forEach((digit, offset) => {
+                const targetIndex = startIndex + offset;
+                if (targetIndex < OTP_LENGTH) {
+                    next[targetIndex] = digit;
+                }
+            });
+            return next;
+        });
+    };
 
     const handleChange = (value: string, index: number) => {
-        if (/^[0-9]?$/.test(value)) {
-            const newOtp = [...otp];
-            newOtp[index] = value;
-            setOtp(newOtp);
-            if (value && index < 5) inputRefs.current[index + 1]?.focus();
+        const digits = value.replace(/\D/g, '');
+
+        if (!digits) {
+            updateOtpDigits([], index, true);
+            return;
         }
+
+        const chars = digits.slice(0, OTP_LENGTH - index).split('');
+        updateOtpDigits(chars, index);
+
+        const nextFocusIndex = Math.min(index + chars.length, OTP_LENGTH - 1);
+        focusInput(nextFocusIndex);
     };
 
     const handleKeyDown = (
@@ -69,29 +119,32 @@ const OTP = () => {
         index: number,
     ) => {
         if (e.key === 'Backspace' && !otp[index] && index > 0) {
-            inputRefs.current[index - 1]?.focus();
+            focusInput(index - 1);
+            return;
+        }
+
+        if (e.key === 'ArrowLeft' && index > 0) {
+            e.preventDefault();
+            focusInput(index - 1);
+            return;
+        }
+
+        if (e.key === 'ArrowRight' && index < OTP_LENGTH - 1) {
+            e.preventDefault();
+            focusInput(index + 1);
         }
     };
 
-    const handlePaste = (e: React.ClipboardEvent) => {
+    const handlePaste = (e: React.ClipboardEvent, index: number) => {
         e.preventDefault();
-        const pastedData = e.clipboardData
-            .getData('text')
-            .slice(0, 6)
-            .split('');
-        const newOtp = [...otp];
+        const pastedData = e.clipboardData.getData('text');
+        const digits = pastedData.replace(/\D/g, '');
+        if (!digits) return;
 
-        pastedData.forEach((char, index) => {
-            if (/^[0-9]$/.test(char)) {
-                newOtp[index] = char;
-            }
-        });
-
-        setOtp(newOtp);
-
-        // Focus the last filled input or the next empty one
-        const nextIndex = Math.min(pastedData.length, 5);
-        inputRefs.current[nextIndex]?.focus();
+        const chars = digits.slice(0, OTP_LENGTH - index).split('');
+        updateOtpDigits(chars, index);
+        const nextIndex = Math.min(index + chars.length, OTP_LENGTH - 1);
+        focusInput(nextIndex);
     };
 
     /*
@@ -102,7 +155,15 @@ const OTP = () => {
         e.preventDefault();
         const otpCode = otp.join('');
 
-        if (otpCode.length < 6) {
+        if (!email) {
+            toast.error('Missing Email', {
+                description:
+                    'Your verification session expired. Please go back to signup and request a new code.',
+            });
+            return;
+        }
+
+        if (otpCode.length < OTP_LENGTH) {
             toast.error('Incomplete Code', {
                 description:
                     'Please enter the full 6-digit verification code sent to your email.',
@@ -114,7 +175,7 @@ const OTP = () => {
 
         try {
             const response = await axios.post(`${BASE_URL}/api/user/register`, {
-                email: location.state?.email?.toLowerCase(),
+                email,
                 otp: otpCode,
                 role: 'USER',
             });
@@ -138,6 +199,7 @@ const OTP = () => {
                 description:
                     'Welcome to Izabi! Routing you to your dashboard...',
             });
+            localStorage.removeItem('pendingOtpEmail');
 
             setTimeout(() => {
                 navigate('/dashboard');
@@ -160,19 +222,36 @@ const OTP = () => {
      * Why: Allows users to receive a fresh code if the previous one expired or was not received.
      */
     const handleResendOtp = async () => {
+        if (!email) {
+            toast.error('Missing Email', {
+                description:
+                    'Please return to signup and request a new verification code.',
+            });
+            return;
+        }
+
+        if (resendCountdown > 0) {
+            return;
+        }
+
         setResending(true);
         try {
             if (mode === 'verification') {
-                await axios.post(`${BASE_URL}/api/user/send-verification-otp`, {
-                    email,
-                    password,
-                    role: 'USER',
-                });
+                await axios.post(
+                    `${BASE_URL}/api/user/send-verification-otp`,
+                    {
+                        email,
+                        role: 'USER',
+                    },
+                );
             } else if (mode === 'reset') {
                 await axios.post(`${BASE_URL}/api/user/send-reset-otp`, {
                     email,
                 });
             }
+            setOtp(Array(OTP_LENGTH).fill(''));
+            focusInput(0);
+            setResendCountdown(RESEND_COOLDOWN_SECONDS);
             toast.success('Code Resent', {
                 description:
                     'A new verification code has been sent to your email.',
@@ -251,8 +330,13 @@ const OTP = () => {
                                         ref={(el) =>
                                             (inputRefs.current[index] = el)
                                         }
+                                        aria-label={`OTP digit ${index + 1}`}
                                         type="text"
                                         inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        autoComplete={
+                                            index === 0 ? 'one-time-code' : 'off'
+                                        }
                                         maxLength={1}
                                         value={digit}
                                         onChange={(e) =>
@@ -261,7 +345,9 @@ const OTP = () => {
                                         onKeyDown={(e) =>
                                             handleKeyDown(e, index)
                                         }
-                                        onPaste={handlePaste}
+                                        onPaste={(e) => handlePaste(e, index)}
+                                        onFocus={(e) => e.currentTarget.select()}
+                                        autoFocus={index === 0}
                                         className="w-9 h-11 sm:w-12 sm:h-14 md:w-14 md:h-16 rounded-lg sm:rounded-xl text-center text-lg sm:text-xl md:text-2xl font-bold bg-card/5 border-foreground/10 focus:border-primary focus:ring-2 sm:focus:ring-4 focus:ring-primary/20 transition-all text-foreground p-0"
                                     />
                                 ))}
@@ -287,12 +373,14 @@ const OTP = () => {
                             <button
                                 type="button"
                                 onClick={handleResendOtp}
-                                disabled={resending}
+                                disabled={resending || resendCountdown > 0}
                                 className="text-xs uppercase font-bold tracking-widest text-primary hover:opacity-80 transition-opacity disabled:opacity-40"
                             >
                                 {resending
                                     ? 'Sending code...'
-                                    : 'Resend Verification Code'}
+                                    : resendCountdown > 0
+                                      ? `Resend in ${resendCountdown}s`
+                                      : 'Resend Verification Code'}
                             </button>
                             <p className="text-xs font-bold text-muted-foreground">
                                 Wrong email?{' '}

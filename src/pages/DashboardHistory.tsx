@@ -30,10 +30,13 @@ import {
     Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
+import { AIMarkdown } from '@/components/ui/ai-markdown';
 
 type HistoryType = 'all' | 'generation' | 'quiz' | 'note' | 'chat';
 
 const DashboardHistory = () => {
+    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeType, setActiveType] = useState<HistoryType>('all');
     const [loading, setLoading] = useState(true);
@@ -175,11 +178,11 @@ const DashboardHistory = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto space-y-8 pb-32">
+        <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8 pb-24 sm:pb-32 px-4 sm:px-6 md:px-0">
             {/* Header section */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
                 <div>
-                    <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
                         Learning History
                     </h1>
                     <p className="text-muted-foreground mt-2 font-medium">
@@ -195,7 +198,7 @@ const DashboardHistory = () => {
                             key={type}
                             onClick={() => setActiveType(type)}
                             className={cn(
-                                'px-6 py-2 rounded-xl text-sm font-bold capitalize transition-all whitespace-nowrap',
+                                'px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-bold capitalize transition-all whitespace-nowrap',
                                 activeType === type
                                     ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
                                     : 'text-muted-foreground hover:bg-foreground/5',
@@ -296,9 +299,9 @@ const DashboardHistory = () => {
                                 onClick={() => setSelectedItem(item)}
                                 className="group glass border-foreground/5 hover:border-primary/20 transition-all cursor-pointer overflow-hidden relative"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/0 to-primary/0 group-hover:via-primary/[0.02] transition-all" />
+                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-all" />
 
-                                <CardContent className="p-5 flex items-center gap-6">
+                                <CardContent className="p-4 sm:p-5 flex items-center gap-4 sm:gap-6">
                                     <div className="w-14 h-14 rounded-2xl bg-foreground/5 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
                                         {getIcon(item.hType)}
                                     </div>
@@ -348,7 +351,7 @@ const DashboardHistory = () => {
                                     </div>
 
                                     {item.score !== undefined && (
-                                        <div className="px-6 py-2 rounded-2xl bg-primary/5 border border-primary/10 text-center">
+                                        <div className="px-3 sm:px-6 py-2 rounded-2xl bg-primary/5 border border-primary/10 text-center">
                                             <div className="text-xl font-black text-primary">
                                                 {Math.round(item.score)}%
                                             </div>
@@ -398,14 +401,14 @@ const DashboardHistory = () => {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-card glass border border-foreground/10 w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-[40px] shadow-2xl relative z-10 flex flex-col"
+                            className="bg-card glass border border-foreground/10 w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-[24px] sm:rounded-[40px] shadow-2xl relative z-10 flex flex-col"
                         >
-                            <div className="p-8 border-b border-foreground/5 flex justify-between items-center bg-gradient-to-r from-primary/5 to-transparent">
-                                <div>
+                            <div className="p-4 sm:p-8 border-b border-foreground/5 flex justify-between items-start sm:items-center gap-3 sm:gap-4 bg-primary/5">
+                                <div className="min-w-0">
                                     <Badge className="mb-2 bg-primary text-primary-foreground font-black uppercase tracking-tighter">
                                         {selectedItem.hType}
                                     </Badge>
-                                    <h2 className="text-2xl font-black uppercase tracking-tight">
+                                    <h2 className="text-lg sm:text-2xl font-black uppercase tracking-tight break-words pr-2">
                                         {selectedItem.fileName ||
                                             selectedItem.title ||
                                             selectedItem.subject ||
@@ -422,19 +425,22 @@ const DashboardHistory = () => {
                                 </Button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                            <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
                                 <div className="space-y-8">
                                     {/* Content based on type */}
                                     {selectedItem.hType === 'generation' && (
                                         <div className="space-y-6">
-                                            <div className="bg-primary/5 p-6 rounded-[32px] border border-primary/10">
+                                            <div className="bg-primary/5 p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-primary/10">
                                                 <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
                                                     <Brain size={14} /> AI
                                                     Summary
                                                 </h4>
-                                                <p className="text-lg leading-relaxed font-medium opacity-80">
-                                                    {selectedItem.summary}
-                                                </p>
+                                                <AIMarkdown
+                                                    content={
+                                                        selectedItem.summary
+                                                    }
+                                                    className="text-base sm:text-lg"
+                                                />
                                             </div>
 
                                             {selectedItem.keyPoints?.length >
@@ -443,7 +449,7 @@ const DashboardHistory = () => {
                                                     <h4 className="text-xs font-black uppercase tracking-widest opacity-40">
                                                         Key Insights
                                                     </h4>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                                                         {selectedItem.keyPoints.map(
                                                             (
                                                                 p: string,
@@ -473,7 +479,7 @@ const DashboardHistory = () => {
 
                                     {selectedItem.hType === 'note' && (
                                         <div className="prose prose-invert max-w-none">
-                                            <div className="p-8 bg-card/50 border border-foreground/5 rounded-[32px]">
+                                            <div className="p-4 sm:p-8 bg-card/50 border border-foreground/5 rounded-[24px] sm:rounded-[32px]">
                                                 <p className="whitespace-pre-wrap text-lg leading-relaxed font-medium">
                                                     {selectedItem.content}
                                                 </p>
@@ -483,8 +489,8 @@ const DashboardHistory = () => {
 
                                     {selectedItem.hType === 'quiz' && (
                                         <div className="space-y-6 text-center py-10">
-                                            <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center mx-auto border border-primary/20 shadow-glow mb-4">
-                                                <span className="text-4xl font-black text-primary">
+                                            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-primary/10 flex items-center justify-center mx-auto border border-primary/20 shadow-glow mb-4">
+                                                <span className="text-3xl sm:text-4xl font-black text-primary">
                                                     {Math.round(
                                                         selectedItem.score,
                                                     )}
@@ -507,14 +513,14 @@ const DashboardHistory = () => {
                                                     questions right.
                                                 </p>
                                             </div>
-                                            <div className="flex justify-center gap-4">
-                                                <div className="px-6 py-3 bg-green-500/10 rounded-2xl border border-green-500/20 text-green-500 font-bold">
+                                            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+                                                <div className="px-4 sm:px-6 py-3 bg-green-500/10 rounded-2xl border border-green-500/20 text-green-500 font-bold text-sm sm:text-base">
                                                     {
                                                         selectedItem.correctAnswers
                                                     }{' '}
                                                     Correct
                                                 </div>
-                                                <div className="px-6 py-3 bg-red-500/10 rounded-2xl border border-red-500/20 text-red-500 font-bold">
+                                                <div className="px-4 sm:px-6 py-3 bg-red-500/10 rounded-2xl border border-red-500/20 text-red-500 font-bold text-sm sm:text-base">
                                                     {selectedItem.totalQuestions -
                                                         selectedItem.correctAnswers}{' '}
                                                     Wrong
@@ -533,28 +539,37 @@ const DashboardHistory = () => {
                                                     "{selectedItem.message}"
                                                 </p>
                                             </div>
-                                            <div className="p-6 bg-primary/5 border border-primary/10 rounded-[32px]">
+                                            <div className="p-4 sm:p-6 bg-primary/5 border border-primary/10 rounded-[24px] sm:rounded-[32px]">
                                                 <p className="text-primary text-sm font-bold uppercase mb-2">
                                                     Izabi AI replied:
                                                 </p>
-                                                <p className="text-lg leading-relaxed">
-                                                    {selectedItem.response}
-                                                </p>
+                                                <AIMarkdown
+                                                    content={
+                                                        selectedItem.response
+                                                    }
+                                                    className="text-base sm:text-lg"
+                                                />
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="p-6 border-t border-foreground/5 flex justify-end gap-3 bg-card/50">
+                            <div className="p-4 sm:p-6 border-t border-foreground/5 flex flex-col-reverse sm:flex-row justify-end gap-3 bg-card/50">
                                 <Button
                                     variant="ghost"
                                     onClick={() => setSelectedItem(null)}
-                                    className="rounded-xl font-bold"
+                                    className="rounded-xl font-bold w-full sm:w-auto"
                                 >
                                     Close View
                                 </Button>
-                                <Button className="rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                                <Button
+                                    className="rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 w-full sm:w-auto"
+                                    onClick={() => {
+                                        setSelectedItem(null);
+                                        navigate('/dashboard/exams');
+                                    }}
+                                >
                                     Continue Learning
                                 </Button>
                             </div>

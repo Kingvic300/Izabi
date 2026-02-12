@@ -207,7 +207,7 @@ const DashboardProgress = () => {
     if (isLoading) {
         return (
             <div className="space-y-6">
-                <h1 className="text-5xl font-extrabold tracking-tighter italic bg-gradient-to-r from-blue-500 to-emerald-500 bg-clip-text text-transparent">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter italic bg-gradient-to-r from-blue-500 to-emerald-500 bg-clip-text text-transparent">
                     Learning Progress
                 </h1>
                 <p className="text-muted-foreground">
@@ -226,17 +226,17 @@ const DashboardProgress = () => {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12"
+            className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
             <div className="prog-header flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-5xl font-extrabold tracking-tighter mb-2 italic">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter mb-2 italic">
                         Your{' '}
                         <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent">
                             Performance
                         </span>
                     </h1>
-                    <p className="text-muted-foreground text-lg">
+                    <p className="text-muted-foreground text-base sm:text-lg">
                         Real-time analytics of your academic growth.
                     </p>
                 </div>
@@ -250,9 +250,9 @@ const DashboardProgress = () => {
 
             {/* Usage & Subscription Banner */}
             {usage && (
-                <div className="p-1 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/5 to-transparent border border-primary/10">
-                    <div className="glass-card rounded-[22px] p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div className="flex items-center gap-6 text-center md:text-left">
+                <div className="p-1 rounded-3xl bg-primary/10 border border-primary/10">
+                    <div className="glass-card rounded-[22px] p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+                        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center md:text-left">
                             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 animate-pulse">
                                 <Zap className="text-primary" size={32} />
                             </div>
@@ -270,7 +270,7 @@ const DashboardProgress = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-8">
+                        <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
                             <div className="text-center">
                                 <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1">
                                     Uploads
@@ -278,7 +278,7 @@ const DashboardProgress = () => {
                                 <div className="text-2xl font-black">
                                     {usage.dailyDocs} / {usage.limits.dailyDocs}
                                 </div>
-                                <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden">
+                                <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden mx-auto">
                                     <div
                                         className="h-full bg-primary transition-all duration-1000"
                                         style={{
@@ -295,7 +295,7 @@ const DashboardProgress = () => {
                                     {usage.dailyMessages} /{' '}
                                     {usage.limits.dailyMessages}
                                 </div>
-                                <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden">
+                                <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden mx-auto">
                                     <div
                                         className="h-full bg-primary transition-all duration-1000"
                                         style={{
@@ -416,9 +416,9 @@ const DashboardProgress = () => {
                     ].map((track, i) => (
                         <div
                             key={i}
-                            className="glass p-6 rounded-3xl border-foreground/5 bg-card/[0.02] flex items-center justify-between group hover:bg-card/[0.04] transition-all"
+                            className="glass p-4 sm:p-6 rounded-3xl border-foreground/5 bg-card/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:bg-card/[0.04] transition-all"
                         >
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                                 <div
                                     className={cn(
                                         'p-4 rounded-2xl bg-card/5',
@@ -427,8 +427,8 @@ const DashboardProgress = () => {
                                 >
                                     <track.icon size={24} />
                                 </div>
-                                <div>
-                                    <p className="font-bold text-lg leading-tight">
+                                <div className="min-w-0">
+                                    <p className="font-bold text-base sm:text-lg leading-tight">
                                         {track.label}
                                     </p>
                                     <p className="text-[10px] font-medium opacity-40 uppercase tracking-widest">
@@ -436,10 +436,10 @@ const DashboardProgress = () => {
                                     </p>
                                 </div>
                             </div>
-                            <div className="text-right">
+                            <div className="text-left sm:text-right w-full sm:w-auto">
                                 <div
                                     className={cn(
-                                        'text-2xl font-black',
+                                        'text-xl sm:text-2xl font-black',
                                         track.color,
                                     )}
                                 >
@@ -633,10 +633,10 @@ const DashboardProgress = () => {
                         ].map((ach, i) => (
                             <div
                                 key={i}
-                                className={`flex items-center gap-6 p-8 transition-colors group ${ach.isUnlocked ? 'hover:bg-card/[0.02]' : 'opacity-30 grayscale'}`}
+                                className={`flex items-center gap-4 sm:gap-6 p-4 sm:p-8 transition-colors group ${ach.isUnlocked ? 'hover:bg-card/[0.02]' : 'opacity-30 grayscale'}`}
                             >
                                 <span
-                                    className={`text-5xl ${ach.isUnlocked ? 'group-hover:scale-125' : ''} transition-transform duration-500`}
+                                    className={`text-4xl sm:text-5xl ${ach.isUnlocked ? 'group-hover:scale-125' : ''} transition-transform duration-500`}
                                 >
                                     {ach.icon}
                                 </span>

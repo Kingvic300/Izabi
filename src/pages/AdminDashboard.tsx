@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Users,
     ShieldCheck,
     Database,
     Key,
-    Trash2,
     Activity,
     TrendingUp,
     MoreVertical,
@@ -143,6 +142,8 @@ export default function AdminDashboard() {
     const [activityChartData, setActivityChartData] = useState<any[]>([]);
     const [recentActivities, setRecentActivities] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isSyncingRegistry, setIsSyncingRegistry] = useState(false);
+    const [isExportingReport, setIsExportingReport] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [showActiveOnly, setShowActiveOnly] = useState(false);
     const [userToTerminate, setUserToTerminate] = useState<AdminUser | null>(
@@ -157,8 +158,12 @@ export default function AdminDashboard() {
     const [userDetails, setUserDetails] = useState<any>(null);
     const [isDetailsLoading, setIsDetailsLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchAdminData = async () => {
+    const fetchAdminData = useCallback(
+        async (setPageLoading = false): Promise<boolean> => {
+            if (setPageLoading) {
+                setIsLoading(true);
+            }
+
             try {
                 const [statsResponse, usersResponse, keysResponse] =
                     await Promise.allSettled([
@@ -167,7 +172,16 @@ export default function AdminDashboard() {
                         api.getContributedKeys(),
                     ]);
 
-                // Handle stats data
+                const hasAnySuccess = [
+                    statsResponse,
+                    usersResponse,
+                    keysResponse,
+                ].some((result) => result.status === 'fulfilled');
+
+                if (!hasAnySuccess) {
+                    throw new Error('Failed to refresh admin data from server');
+                }
+
                 if (
                     statsResponse.status === 'fulfilled' &&
                     statsResponse.value?.data
@@ -198,7 +212,6 @@ export default function AdminDashboard() {
                     }
                 }
 
-                // Handle users data
                 let userList: any[] = [];
                 if (
                     usersResponse.status === 'fulfilled' &&
@@ -223,7 +236,6 @@ export default function AdminDashboard() {
                     }
                 }
 
-                // Handle keys data
                 const keysData =
                     keysResponse.status === 'fulfilled'
                         ? keysResponse.value.data
@@ -232,15 +244,23 @@ export default function AdminDashboard() {
                     setKeys(Array.isArray(keysData) ? keysData : []);
                 }
 
-                setIsLoading(false);
+                return true;
             } catch (error) {
                 console.error('Failed to fetch admin data', error);
-                setIsLoading(false);
+                appToast.apiError(error, 'Could not refresh admin data');
+                return false;
+            } finally {
+                if (setPageLoading) {
+                    setIsLoading(false);
+                }
             }
-        };
+        },
+        [appToast],
+    );
 
-        fetchAdminData();
-    }, []);
+    useEffect(() => {
+        void fetchAdminData(true);
+    }, [fetchAdminData]);
 
     useGSAP(() => {
         if (!isLoading) {
@@ -258,6 +278,83 @@ export default function AdminDashboard() {
         e.stopPropagation();
         setUserToTerminate(user);
         setIsTerminateDialogOpen(true);
+    };
+
+    const handleSyncRegistry = async () => {
+        if (isSyncingRegistry) return;
+        setIsSyncingRegistry(true);
+        appToast.info({
+            title: 'Sync in progress',
+            description: 'Refreshing user, stats, and key data...',
+        });
+
+        const ok = await fetchAdminData(false);
+        if (ok) {
+            appToast.success({
+                title: 'Registry Synced',
+                description: 'System data has been refreshed.',
+            });
+        }
+        setIsSyncingRegistry(false);
+    };
+
+    const handleExportReport = async () => {
+        if (isExportingReport) return;
+        setIsExportingReport(true);
+        try {
+            const report = {
+                generatedAt: new Date().toISOString(),
+                stats,
+                users,
+                contributedKeys: keys,
+                activity: recentActivities,
+                charts: {
+                    users: chartData,
+                    activity: activityChartData,
+                },
+            };
+
+            const blob = new Blob([JSON.stringify(report, null, 2)], {
+                type: 'application/json',
+            });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+            link.href = url;
+            link.download = `izabi-system-report-${stamp}.json`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+
+            appToast.success({
+                title: 'System Report Downloaded',
+                description: 'The latest admin report is now on your device.',
+            });
+        } catch (error) {
+            appToast.apiError(error, 'System Report Failed');
+        } finally {
+            setIsExportingReport(false);
+        }
+    };
+
+    const handleFilterAction = () => {
+        const hasFilters = searchQuery.trim().length > 0 || showActiveOnly;
+        if (hasFilters) {
+            setSearchQuery('');
+            setShowActiveOnly(false);
+            appToast.info({
+                title: 'Filters Cleared',
+                description: 'Showing all users again.',
+            });
+            return;
+        }
+
+        setShowActiveOnly(true);
+        appToast.info({
+            title: 'Filter Applied',
+            description: 'Now showing active users only.',
+        });
     };
 
     const handleConfirmTerminateUser = async () => {
@@ -383,7 +480,7 @@ export default function AdminDashboard() {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-10 w-full pb-6 md:pb-20 px-3 md:px-6 lg:px-12 pt-4 md:pt-8 max-w-[1700px] mx-auto"
+            className="space-y-6 md:space-y-10 w-full pb-6 md:pb-20 px-4 sm:px-6 md:px-6 lg:px-8 xl:px-10 pt-4 md:pt-8 max-w-[1700px] mx-auto"
         >
             {/* Header Section */}
             <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 pb-3 border-b border-foreground/5">
@@ -404,12 +501,30 @@ export default function AdminDashboard() {
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
                     <Button
                         variant="outline"
+                        onClick={handleSyncRegistry}
+                        disabled={isSyncingRegistry}
                         className="glass h-11 md:h-12 rounded-2xl border-foreground/10 hover:bg-card/5 transition-all w-full lg:w-auto"
                     >
-                        <RefreshCw className="mr-2 h-4 w-4" /> Sync Registry
+                        {isSyncingRegistry ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                        )}{' '}
+                        Sync Registry
                     </Button>
-                    <Button className="h-11 md:h-12 rounded-2xl bg-primary shadow-glow hover:bg-primary-glow font-bold px-6 md:px-8 w-full lg:w-auto">
-                        System Export
+                    <Button
+                        onClick={handleExportReport}
+                        disabled={isExportingReport}
+                        className="h-11 md:h-12 rounded-2xl bg-primary shadow-glow hover:bg-primary/90 font-bold px-6 md:px-8 w-full lg:w-auto"
+                    >
+                        {isExportingReport ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Exporting...
+                            </>
+                        ) : (
+                            'System Report'
+                        )}
                     </Button>
                 </div>
             </header>
@@ -488,7 +603,7 @@ export default function AdminDashboard() {
                             </div>
                         </CardContent>
                         <div
-                            className={`absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent`}
+                            className={`absolute bottom-0 left-0 h-1 w-full bg-primary/20`}
                         />
                     </Card>
                 ))}
@@ -718,7 +833,10 @@ export default function AdminDashboard() {
                                         }
                                     />
                                 </div>
-                                <Button className="h-11 w-full sm:w-11 md:h-14 md:w-14 rounded-2xl bg-card/5 border border-foreground/10 p-0 text-foreground hover:bg-card/10 shrink-0">
+                                <Button
+                                    onClick={handleFilterAction}
+                                    className="h-11 w-full sm:w-11 md:h-14 md:w-14 rounded-2xl bg-card/5 border border-foreground/10 p-0 text-foreground hover:bg-card/10 shrink-0"
+                                >
                                     <Filter size={20} />
                                 </Button>
                             </div>
@@ -736,7 +854,7 @@ export default function AdminDashboard() {
                                             }
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center font-bold text-primary uppercase shrink-0">
+                                                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary uppercase shrink-0">
                                                     {user.email?.[0] || 'U'}
                                                 </div>
                                                 <div className="min-w-0">
@@ -827,7 +945,7 @@ export default function AdminDashboard() {
                                             >
                                                 <TableCell className="py-6">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center font-bold text-lg text-primary uppercase shrink-0">
+                                                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center font-bold text-lg text-primary uppercase shrink-0">
                                                             {user.email?.[0] ||
                                                                 'U'}
                                                         </div>
@@ -1027,12 +1145,12 @@ export default function AdminDashboard() {
                                                             ).toLocaleDateString()}
                                                         </p>
                                                     </div>
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="h-10 w-10 md:h-12 md:w-12 rounded-2xl text-red-500/60 hover:text-red-500 hover:bg-red-500/10 shrink-0"
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="border-foreground/10 bg-card/5 text-xs font-bold uppercase tracking-wide"
                                                     >
-                                                        <Trash2 size={20} />
-                                                    </Button>
+                                                        Read only
+                                                    </Badge>
                                                 </div>
                                             </div>
                                         ))
@@ -1059,10 +1177,17 @@ export default function AdminDashboard() {
                     side="right"
                     className="w-full sm:max-w-xl p-0 glass border-l border-foreground/10 gap-0 overflow-hidden flex flex-col"
                 >
+                    <SheetHeader className="sr-only">
+                        <SheetTitle>User details</SheetTitle>
+                        <SheetDescription>
+                            Admin view of the selected user profile, activity,
+                            and history.
+                        </SheetDescription>
+                    </SheetHeader>
                     {userDetails ? (
                         <>
                             <div className="p-4 md:p-8 border-b border-foreground/5 relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-50" />
+                                <div className="absolute inset-0 bg-primary/20 opacity-50" />
                                 <div className="relative z-10 flex items-center gap-4 md:gap-6">
                                     <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-card/5 border border-foreground/10 shadow-lg flex items-center justify-center text-2xl md:text-3xl font-bold text-foreground/60">
                                         {userDetails.user.email?.[0]?.toUpperCase() ||

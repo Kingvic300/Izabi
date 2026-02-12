@@ -350,7 +350,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                         {results && (
                             <div className="space-y-6">
                                 {/* Score Card */}
-                                <div className="p-8 rounded-3xl bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/30 text-center">
+                                <div className="p-8 rounded-3xl bg-primary/10 border border-primary/30 text-center">
                                     <Trophy
                                         size={64}
                                         className="mx-auto mb-4 text-primary"

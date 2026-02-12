@@ -21,7 +21,7 @@ const ContextCard: React.FC<ContextCardProps> = ({ onSelect, onDismiss }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/10 p-6 md:p-8 shadow-lg"
+            className="relative overflow-hidden rounded-3xl bg-primary/5 border border-primary/10 p-6 md:p-8 shadow-lg"
         >
             {/* Dismiss button */}
             <button

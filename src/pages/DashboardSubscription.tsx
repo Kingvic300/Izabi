@@ -149,7 +149,7 @@ const DashboardSubscription = () => {
     ];
 
     return (
-        <div className="min-h-screen w-full px-4 md:px-12 py-10 pb-32">
+        <div className="min-h-screen w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-10 pb-24 sm:pb-32">
             <ErrorBoundary>
                 <div className="space-y-6 md:space-y-12">
                     {/* Header */}
@@ -326,7 +326,7 @@ const DashboardSubscription = () => {
                                         className={cn(
                                             'glass relative overflow-hidden transition-all h-full flex flex-col rounded-[32px] border-foreground/5',
                                             plan.id === 'pro' &&
-                                                'md:scale-105 z-10 border-primary/40 shadow-[0_0_40px_rgba(59,130,246,0.15)] bg-gradient-to-b from-primary/5 to-transparent',
+                                                'md:scale-105 z-10 border-primary/40 shadow-[0_0_40px_rgba(59,130,246,0.15)] bg-primary/5',
                                             isCurrent &&
                                                 'ring-2 ring-primary ring-offset-4 ring-offset-background',
                                         )}
@@ -340,7 +340,7 @@ const DashboardSubscription = () => {
                                         <CardHeader className="p-6 md:p-8 pb-4">
                                             <div className="flex items-center gap-3 mb-6">
                                                 <div
-                                                    className={`p-3 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-inner`}
+                                                    className={`p-3 rounded-2xl bg-primary/20 shadow-inner`}
                                                 >
                                                     <Icon
                                                         className={plan.color}

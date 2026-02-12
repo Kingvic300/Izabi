@@ -78,19 +78,19 @@ const Testimonials = () => {
             <Header />
 
             {/* Hero */}
-            <section className="relative pt-44 pb-20">
-                <div className="w-full px-6 lg:px-12 relative z-10 text-center">
+            <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-16 sm:pb-20">
+                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 relative z-10 text-center">
                     <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                         <Sparkles size={14} className="text-secondary" />
                         <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
                             Voices of the Consortium
                         </span>
                     </div>
-                    <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
+                    <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         Validated by{' '}
                         <span className="text-gradient">10,000+ Scholars</span>
                     </h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
+                    <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
                         The objective impact of the Izabi Neural Protocol on
                         academic trajectories.
                     </p>
@@ -98,20 +98,20 @@ const Testimonials = () => {
             </section>
 
             {/* Testimonials Grid */}
-            <section className="py-20 relative z-10">
-                <div className="w-full px-6 lg:px-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <section className="py-16 sm:py-20 relative z-10">
+                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
                         {testimonials.map((t, i) => (
                             <Card
                                 key={i}
-                                className="testimonial-card glass p-10 border-foreground/5 hover-lift relative group overflow-hidden"
+                                className="testimonial-card glass p-6 sm:p-10 border-foreground/5 hover-lift relative group overflow-hidden"
                             >
                                 <Quote
                                     className="absolute top-6 right-8 text-primary/10"
                                     size={60}
                                 />
                                 <div className="flex items-center gap-4 mb-8">
-                                    <Avatar className="w-14 h-14 border-2 border-primary/20 bg-gradient-hero">
+                                    <Avatar className="w-14 h-14 border-2 border-primary/20 bg-primary/20">
                                         <AvatarFallback className="font-bold text-foreground">
                                             {t.initials}
                                         </AvatarFallback>
@@ -140,7 +140,7 @@ const Testimonials = () => {
                                     "{t.text}"
                                 </p>
 
-                                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute bottom-0 left-0 w-full h-1 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </Card>
                         ))}
                     </div>
@@ -148,9 +148,9 @@ const Testimonials = () => {
             </section>
 
             {/* Impact Metrics */}
-            <section className="py-32 relative z-10 border-y border-foreground/5 bg-card/[0.01]">
-                <div className="w-full px-6 lg:px-12">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+            <section className="py-20 sm:py-32 relative z-10 border-y border-foreground/5 bg-card/[0.01]">
+                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-12">
                         {[
                             {
                                 val: '10K+',
@@ -175,7 +175,7 @@ const Testimonials = () => {
                         ].map((stat, i) => (
                             <div key={i} className="text-center space-y-2">
                                 <div
-                                    className={`text-5xl font-bold ${stat.color} tracking-tighter`}
+                                    className={`text-3xl sm:text-5xl font-bold ${stat.color} tracking-tighter`}
                                 >
                                     {stat.val}
                                 </div>

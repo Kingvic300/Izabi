@@ -40,6 +40,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useAppToast } from '@/hooks/useAppToast';
+import { AIMarkdown } from '@/components/ui/ai-markdown';
 
 interface Message {
     id: string;
@@ -439,7 +440,7 @@ const DashboardAIAssistant = () => {
                         </SheetTrigger>
                         <SheetContent
                             side="right"
-                            className="w-[300px] sm:w-[400px] bg-card border-foreground/10 p-0 flex flex-col"
+                            className="w-[92vw] max-w-[380px] sm:max-w-[420px] bg-card border-foreground/10 p-0 flex flex-col"
                         >
                             <SheetHeader className="p-6 pb-4">
                                 <SheetTitle className="text-2xl font-bold flex items-center gap-3">
@@ -616,15 +617,22 @@ const DashboardAIAssistant = () => {
                                                 : 'bg-muted/50 backdrop-blur-sm border border-foreground/5 rounded-tl-none'
                                         }`}
                                     >
-                                        <div className="text-sm md:text-base prose prose-sm dark:prose-invert max-w-none break-words foregroundspace-pre-wrap">
+                                        <div className="text-sm md:text-base max-w-none break-words">
                                             {message.content === '' ? (
                                                 <div className="flex gap-1 py-1">
                                                     <div className="w-1.5 h-1.5 bg-accent animate-bounce" />
                                                     <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.2s]" />
                                                     <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.4s]" />
                                                 </div>
+                                            ) : message.role === 'assistant' ? (
+                                                <AIMarkdown
+                                                    content={message.content}
+                                                    className="text-sm md:text-base"
+                                                />
                                             ) : (
-                                                message.content
+                                                <p className="whitespace-pre-wrap leading-relaxed">
+                                                    {message.content}
+                                                </p>
                                             )}
                                         </div>
                                         <div
@@ -756,7 +764,7 @@ const DashboardAIAssistant = () => {
                                     className="h-9 w-9 md:h-10 md:w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary/90 shadow-glow shadow-primary/20 relative overflow-hidden group/btn"
                                 >
                                     <Send className="h-4 w-4 md:h-5 md:w-5 relative z-10" />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
+                                    <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:animate-shimmer" />
                                 </Button>
                             </div>
                             <p className="text-[9px] md:text-[10px] text-center mt-2 md:mt-3 text-muted-foreground/60 uppercase tracking-[0.15em] font-medium">

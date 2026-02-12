@@ -117,7 +117,7 @@ const StreakPet: React.FC<PetProps> = ({
                     ref={petRef}
                     onClick={toggleOpen}
                     className={cn(
-                        'w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-hero border-2 shadow-[0_0_30px_rgba(59,130,246,0.5)] flex items-center justify-center cursor-pointer relative z-20 overflow-hidden transition-all duration-300',
+                        'w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary border-2 shadow-[0_0_30px_rgba(59,130,246,0.5)] flex items-center justify-center cursor-pointer relative z-20 overflow-hidden transition-all duration-300',
                         isOpen
                             ? 'border-primary scale-110'
                             : 'border-primary/50',
@@ -171,7 +171,7 @@ const StreakPet: React.FC<PetProps> = ({
 
                         <div className="h-1.5 w-full bg-card/10 rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-gradient-to-r from-primary to-purple-500"
+                                className="h-full bg-primary"
                                 style={{ width: `${(streak % 5) * 20 || 20}%` }}
                             />
                         </div>

@@ -20,12 +20,20 @@ import {
     AlertCircle,
     Sparkles,
     Clock,
+    Eye,
 } from 'lucide-react';
 import { useAppToast } from '@/hooks/useAppToast';
 import { formValidation } from '@/lib/formValidation';
 import { api } from '@/lib/apiClient';
 import { PageLoader } from '@/components/PageLoader';
 import RichTextEditor from '@/components/RichTextEditor';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from '@/components/ui/dialog';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -45,7 +53,9 @@ export default function DashboardNotes() {
     const [isLoading, setIsLoading] = useState(true);
     const [isAddingNote, setIsAddingNote] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [savingId, setSavingId] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+    const [readingNote, setReadingNote] = useState<Note | null>(null);
 
     const [newNote, setNewNote] = useState({
         title: '',
@@ -135,8 +145,9 @@ export default function DashboardNotes() {
                 title: 'Note saved',
                 description: 'Your new study note is ready!',
             });
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error creating note:', err);
+            appToast.apiError(err, 'Could not save note');
         }
     };
 
@@ -160,15 +171,27 @@ export default function DashboardNotes() {
         }
 
         try {
+            setSavingId(id);
             const updated = await api.updateNote(id, { title, content });
-            setNotes(notes.map((note) => (note.id === id ? updated : note)));
+            const normalizedUpdated = {
+                ...updated,
+                id: updated?.id || updated?._id || id,
+            };
+            setNotes((prev) =>
+                prev.map((note) =>
+                    note.id === id ? { ...note, ...normalizedUpdated } : note,
+                ),
+            );
             setEditingId(null);
             appToast.success({
                 title: 'Note updated',
                 description: 'Your changes have been saved.',
             });
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error updating note:', err);
+            appToast.apiError(err, 'Could not update note');
+        } finally {
+            setSavingId(null);
         }
     };
 
@@ -185,15 +208,16 @@ export default function DashboardNotes() {
                 title: 'Note deleted',
                 description: 'Your note was removed.',
             });
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error deleting note:', err);
+            appToast.apiError(err, 'Could not delete note');
         }
     };
 
     if (isLoading) {
         return (
             <div className="space-y-6">
-                <h1 className="text-4xl font-extrabold tracking-tight text-gradient">
+                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gradient">
                     My Notes
                 </h1>
                 <p className="text-muted-foreground">
@@ -211,21 +235,21 @@ export default function DashboardNotes() {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-12 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12"
+            className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
             <header className="notes-header flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-5xl font-extrabold tracking-tighter mb-2 text-gradient">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter mb-2 text-gradient">
                         My Notes
                     </h1>
-                    <p className="text-muted-foreground text-lg">
+                    <p className="text-muted-foreground text-base sm:text-lg">
                         Manage and organize all your study notes in one place.
                     </p>
                 </div>
                 {!isAddingNote && (
                     <Button
                         onClick={() => setIsAddingNote(true)}
-                        className="h-12 px-6 rounded-2xl shadow-glow"
+                        className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl shadow-glow w-full sm:w-auto"
                     >
                         <Plus className="h-5 w-5 mr-2" /> Create New Note
                     </Button>
@@ -307,11 +331,11 @@ export default function DashboardNotes() {
                                 </p>
                             )}
                         </div>
-                        <div className="flex justify-end gap-3 pt-4">
+                        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
                             <Button
                                 variant="ghost"
                                 onClick={() => setIsAddingNote(false)}
-                                className="rounded-2xl h-12 px-6"
+                                className="rounded-2xl h-11 sm:h-12 px-4 sm:px-6 w-full sm:w-auto"
                             >
                                 Cancel
                             </Button>
@@ -321,7 +345,7 @@ export default function DashboardNotes() {
                                     !newNote.title.trim() ||
                                     !newNote.content.trim()
                                 }
-                                className="rounded-2xl h-12 px-8 shadow-glow"
+                                className="rounded-2xl h-11 sm:h-12 px-4 sm:px-8 shadow-glow w-full sm:w-auto"
                             >
                                 <Save className="h-4 w-4 mr-2" />
                                 Save Note
@@ -392,6 +416,7 @@ export default function DashboardNotes() {
                                             <Button
                                                 size="sm"
                                                 className="rounded-lg px-4"
+                                                disabled={savingId === note.id}
                                                 onClick={() => {
                                                     const updated = notes.find(
                                                         (n) => n.id === note.id,
@@ -408,7 +433,9 @@ export default function DashboardNotes() {
                                                     size={14}
                                                     className="mr-2"
                                                 />{' '}
-                                                Save
+                                                {savingId === note.id
+                                                    ? 'Saving...'
+                                                    : 'Save'}
                                             </Button>
                                         </div>
                                     </div>
@@ -427,6 +454,16 @@ export default function DashboardNotes() {
                                                 </h3>
                                             </div>
                                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 rounded-lg"
+                                                    onClick={() =>
+                                                        setReadingNote(note)
+                                                    }
+                                                >
+                                                    <Eye size={14} />
+                                                </Button>
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
@@ -520,19 +557,58 @@ export default function DashboardNotes() {
                             Your Slate is Clean
                         </h3>
                         <p className="text-muted-foreground">
-                            Start documenting your brilliance. Create your first
-                            note.
+                            Your notes will appear here. Create your first note.
                         </p>
                     </div>
                     <Button
                         onClick={() => setIsAddingNote(true)}
                         size="lg"
-                        className="rounded-2xl h-14 px-10 shadow-glow font-bold text-lg"
+                        className="rounded-2xl h-12 sm:h-14 px-6 sm:px-10 shadow-glow font-bold text-base sm:text-lg w-full sm:w-auto"
                     >
-                        <Plus size={20} className="mr-2" /> Get Started
+                        <Plus size={20} className="mr-2" /> Create First Note
                     </Button>
                 </div>
             )}
+
+            <Dialog
+                open={Boolean(readingNote)}
+                onOpenChange={(open) => {
+                    if (!open) setReadingNote(null);
+                }}
+            >
+                <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-3xl sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 overflow-hidden">
+                    {readingNote && (
+                        <>
+                            <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
+                                <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight leading-tight break-words">
+                                    {readingNote.title}
+                                </DialogTitle>
+                                <DialogDescription className="text-xs sm:text-sm flex items-center gap-2">
+                                    <span className="text-primary font-semibold">
+                                        {readingNote.subject || 'General'}
+                                    </span>
+                                    <span>•</span>
+                                    <span>
+                                        Updated{' '}
+                                        {new Date(
+                                            readingNote.updatedAt,
+                                        ).toLocaleDateString()}
+                                    </span>
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="p-5 sm:p-6 overflow-y-auto max-h-[65vh]">
+                                <div
+                                    className="prose prose-sm sm:prose-base dark:prose-invert max-w-none leading-relaxed text-foreground/90 break-words"
+                                    dangerouslySetInnerHTML={{
+                                        __html: readingNote.content,
+                                    }}
+                                />
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

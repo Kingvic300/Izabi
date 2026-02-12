@@ -49,13 +49,13 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
     const getErrorBg = () => {
         switch (error.type) {
             case 'validation':
-                return 'from-yellow-500/10 to-transparent';
+                return 'bg-yellow-500/10';
             case 'network':
-                return 'from-primary/10 to-transparent';
+                return 'bg-primary/10';
             case 'backend':
-                return 'from-rose-500/10 to-transparent';
+                return 'bg-rose-500/10';
             default:
-                return 'from-primary/10 to-transparent';
+                return 'bg-primary/10';
         }
     };
 
@@ -79,10 +79,10 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
                 getGlowColor(),
             )}
         >
-            {/* Background Gradient */}
+            {/* Background Accent */}
             <div
                 className={cn(
-                    'absolute inset-0 bg-gradient-to-br opacity-50',
+                    'absolute inset-0 opacity-50',
                     getErrorBg(),
                 )}
             />

@@ -1,4 +1,5 @@
 import { useEditor, EditorContent } from '@tiptap/react';
+import type { MouseEvent } from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
@@ -50,6 +51,51 @@ const RichTextEditor = ({
         return null;
     }
 
+    const keepEditorFocus = (event: MouseEvent<HTMLButtonElement>) => {
+        // Prevent toolbar buttons from stealing selection/caret from the editor.
+        event.preventDefault();
+    };
+
+    const toggleInlineStyle = (style: 'bold' | 'italic' | 'underline') => {
+        const hasSelection = !editor.state.selection.empty;
+
+        if (style === 'bold') {
+            if (hasSelection) {
+                editor.chain().focus().toggleBold().run();
+                return;
+            }
+            if (editor.isActive('bold')) {
+                editor.chain().focus().unsetBold().run();
+            } else {
+                editor.chain().focus().setBold().run();
+            }
+            return;
+        }
+
+        if (style === 'italic') {
+            if (hasSelection) {
+                editor.chain().focus().toggleItalic().run();
+                return;
+            }
+            if (editor.isActive('italic')) {
+                editor.chain().focus().unsetItalic().run();
+            } else {
+                editor.chain().focus().setItalic().run();
+            }
+            return;
+        }
+
+        if (hasSelection) {
+            editor.chain().focus().toggleUnderline().run();
+            return;
+        }
+        if (editor.isActive('underline')) {
+            editor.chain().focus().unsetUnderline().run();
+        } else {
+            editor.chain().focus().setUnderline().run();
+        }
+    };
+
     /*
      * How: Prompts the user for a URL and attaches/removes it from the selected text.
      * Why: Enables inline hyperlink management for note-taking without complex UI modals.
@@ -70,7 +116,8 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    onMouseDown={keepEditorFocus}
+                    onClick={() => toggleInlineStyle('bold')}
                     className={editor.isActive('bold') ? 'bg-muted' : ''}
                     type="button"
                 >
@@ -79,7 +126,8 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    onMouseDown={keepEditorFocus}
+                    onClick={() => toggleInlineStyle('italic')}
                     className={editor.isActive('italic') ? 'bg-muted' : ''}
                     type="button"
                 >
@@ -88,9 +136,8 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() =>
-                        editor.chain().focus().toggleUnderline().run()
-                    }
+                    onMouseDown={keepEditorFocus}
+                    onClick={() => toggleInlineStyle('underline')}
                     className={editor.isActive('underline') ? 'bg-muted' : ''}
                     type="button"
                 >
@@ -100,6 +147,7 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
+                    onMouseDown={keepEditorFocus}
                     onClick={() =>
                         editor.chain().focus().toggleHeading({ level: 1 }).run()
                     }
@@ -115,6 +163,7 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
+                    onMouseDown={keepEditorFocus}
                     onClick={() =>
                         editor.chain().focus().toggleHeading({ level: 2 }).run()
                     }
@@ -131,6 +180,7 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
+                    onMouseDown={keepEditorFocus}
                     onClick={() =>
                         editor.chain().focus().toggleBulletList().run()
                     }
@@ -142,6 +192,7 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
+                    onMouseDown={keepEditorFocus}
                     onClick={() =>
                         editor.chain().focus().toggleOrderedList().run()
                     }
@@ -153,6 +204,7 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
+                    onMouseDown={keepEditorFocus}
                     onClick={() =>
                         editor.chain().focus().toggleBlockquote().run()
                     }
@@ -165,6 +217,7 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
+                    onMouseDown={keepEditorFocus}
                     onClick={toggleLink}
                     className={editor.isActive('link') ? 'bg-muted' : ''}
                     type="button"
@@ -175,6 +228,7 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
+                    onMouseDown={keepEditorFocus}
                     onClick={() => editor.chain().focus().undo().run()}
                     type="button"
                 >
@@ -183,6 +237,7 @@ const RichTextEditor = ({
                 <Button
                     variant="ghost"
                     size="sm"
+                    onMouseDown={keepEditorFocus}
                     onClick={() => editor.chain().focus().redo().run()}
                     type="button"
                 >

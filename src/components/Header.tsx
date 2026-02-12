@@ -36,7 +36,7 @@ export const Header = () => {
                     : 'py-6 bg-transparent',
             )}
         >
-            <div className="w-full px-6 lg:px-12">
+            <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
                 <div className="flex justify-between items-center h-12">
                     {/* Logo */}
                     <Link
@@ -103,7 +103,7 @@ export const Header = () => {
 
                 {/* Mobile Menu Overlay */}
                 {isOpen && (
-                    <div className="lg:hidden absolute top-full left-0 right-0 mt-4 mx-6 p-6 space-y-4 rounded-2xl bg-background/90 backdrop-blur-3xl border border-foreground/10 shadow-2xl shimmer">
+                    <div className="lg:hidden absolute top-full left-0 right-0 mt-4 mx-4 sm:mx-6 p-4 sm:p-6 space-y-4 rounded-2xl bg-background/90 backdrop-blur-3xl border border-foreground/10 shadow-2xl shimmer">
                         <div className="grid grid-cols-1 gap-2">
                             {navLinks.map((link) => (
                                 <Link

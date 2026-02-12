@@ -15,7 +15,6 @@ import {
     Lock,
     Smartphone,
     ArrowRight,
-    Sparkles,
     Trophy,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -167,42 +166,68 @@ const Features = () => {
             <Header />
 
             {/* Hero */}
-            <section className="relative pt-44 pb-20">
-                <div className="w-full px-6 lg:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                        <Trophy size={14} className="text-yellow-500" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
-                            Features built for excellence
-                        </span>
+            <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-12 sm:pb-16">
+                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 relative z-10">
+                    <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
+                        <div className="xl:col-span-8 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
+                            <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                                <Trophy size={14} className="text-primary" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
+                                    Features built for excellence
+                                </span>
+                            </div>
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 leading-[0.95] tracking-tighter">
+                                Propel Your{' '}
+                                <span className="text-primary">
+                                    Academic Trajectory
+                                </span>
+                            </h1>
+                            <p className="text-base sm:text-xl text-muted-foreground font-medium leading-relaxed max-w-none">
+                                A comprehensive ecosystem designed to catalyze
+                                how you process, retain, and master
+                                information.
+                            </p>
+                        </div>
+
+                        <div className="xl:col-span-4 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-primary/5 p-6 sm:p-8">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50 mb-4">
+                                Core Modules
+                            </p>
+                            <ul className="space-y-3">
+                                {features.slice(0, 5).map((feature, i) => (
+                                    <li
+                                        key={feature.title}
+                                        className="min-h-11 rounded-xl border border-foreground/10 bg-background/40 px-4 flex items-center gap-3"
+                                    >
+                                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-primary text-xs font-black">
+                                            {i + 1}
+                                        </span>
+                                        <span className="text-sm font-semibold text-foreground/80">
+                                            {feature.title}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
-                    <h1 className="text-6xl sm:text-7xl font-bold mb-8 leading-none tracking-tighter">
-                        Propel Your{' '}
-                        <span className="text-gradient">
-                            Academic Trajectory
-                        </span>
-                    </h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
-                        A comprehensive ecosystem designed to catalyze how you
-                        process, retain, and master information.
-                    </p>
                 </div>
             </section>
 
             {/* Features Grid */}
-            <section className="py-20 relative z-10">
-                <div className="w-full px-6 lg:px-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <section className="py-16 sm:py-20 relative z-10">
+                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 sm:gap-6 lg:gap-7">
                         {features.map((feature, i) => (
                             <Card
                                 key={i}
-                                className="feature-card glass shadow-2xl border-foreground/5 p-10 hover-lift group overflow-hidden"
+                                className="feature-card border border-foreground/10 bg-card/5 p-6 sm:p-8 hover-lift group overflow-hidden rounded-[24px] sm:rounded-[30px]"
                             >
                                 <div
-                                    className={`w-16 h-16 rounded-xl ${feature.bg} ${feature.color} flex items-center justify-center mb-8 shadow-xl group-hover:scale-110 transition-transform duration-500`}
+                                    className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl ${feature.bg} ${feature.color} flex items-center justify-center mb-6 sm:mb-8 shadow-xl group-hover:scale-110 transition-transform duration-500`}
                                 >
                                     {feature.icon}
                                 </div>
-                                <h3 className="text-2xl font-bold mb-4">
+                                <h3 className="text-xl sm:text-2xl font-bold mb-4">
                                     {feature.title}
                                 </h3>
                                 <p className="text-muted-foreground font-medium mb-8 leading-relaxed">
@@ -227,17 +252,17 @@ const Features = () => {
             </section>
 
             {/* CTA */}
-            <section className="py-32 bg-card/[0.01] border-y border-foreground/10 relative z-10 overflow-hidden">
-                <div className="w-full px-6 lg:px-12 text-center relative z-10">
-                    <h2 className="text-5xl font-bold mb-10 leading-none">
-                        Ready to deploy these modules?
+            <section className="py-20 sm:py-32 bg-card/[0.01] border-y border-foreground/10 relative z-10 overflow-hidden">
+                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 text-center relative z-10">
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 sm:mb-10 leading-none">
+                        Study tools ready for your next session
                     </h2>
                     <Link to="/signup">
                         <Button
                             size="lg"
-                            className="h-20 px-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xl shadow-glow group"
+                            className="h-14 sm:h-16 md:h-20 px-8 sm:px-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg md:text-xl shadow-glow group"
                         >
-                            <span>Initialize Enlistment</span>
+                            <span>Create Account</span>
                             <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                         </Button>
                     </Link>

@@ -41,14 +41,6 @@
         --input: 220 10% 12%;
         --ring: 217 91% 60%;
 
-        /* Professional Blues - Solidified */
-        --gradient-primary: linear-gradient(
-            135deg,
-            hsl(var(--primary)),
-            hsl(var(--accent))
-        );
-        --gradient-hero: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-
         /* Shadows */
         --shadow-glow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
         --shadow-float: 0 30px 60px -12px rgba(0, 0, 0, 0.7);
@@ -102,6 +94,18 @@
         @apply border-border selection:bg-primary/30;
     }
 
+    html,
+    body,
+    #root {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    #root {
+        min-height: 100dvh;
+    }
+
     body {
         @apply bg-background text-foreground;
         font-family: var(--font-mono);
@@ -111,6 +115,31 @@
             'liga' 1,
             'kern' 1;
         overflow-x: hidden;
+    }
+
+    main,
+    section,
+    article,
+    header,
+    footer,
+    aside,
+    div {
+        min-width: 0;
+    }
+
+    img,
+    video,
+    canvas,
+    iframe {
+        max-width: 100%;
+        height: auto;
+    }
+
+    p,
+    li,
+    td,
+    th {
+        overflow-wrap: anywhere;
     }
 
     h1,
@@ -151,8 +180,114 @@
         @apply glass shadow-float rounded-xl;
     }
 
+    .ai-readable {
+        color: hsl(var(--foreground) / 0.9);
+        line-height: 1.8;
+        font-size: 0.95rem;
+    }
+
+    .ai-readable > * + * {
+        margin-top: 0.8rem;
+    }
+
+    .ai-readable p {
+        margin: 0;
+    }
+
+    .ai-readable h1,
+    .ai-readable h2,
+    .ai-readable h3,
+    .ai-readable h4 {
+        color: hsl(var(--foreground));
+        font-weight: 700;
+        line-height: 1.35;
+        margin-top: 1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .ai-readable ul,
+    .ai-readable ol {
+        padding-left: 1.2rem;
+    }
+
+    .ai-readable ul {
+        list-style: disc;
+    }
+
+    .ai-readable ol {
+        list-style: decimal;
+    }
+
+    .ai-readable li {
+        margin-top: 0.25rem;
+    }
+
+    .ai-readable strong {
+        color: hsl(var(--foreground));
+        font-weight: 700;
+    }
+
+    .ai-readable a {
+        color: hsl(var(--primary));
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .ai-readable blockquote {
+        margin: 0.8rem 0;
+        border-left: 3px solid hsl(var(--primary) / 0.5);
+        padding-left: 0.8rem;
+        color: hsl(var(--muted-foreground));
+    }
+
+    .ai-readable code {
+        font-size: 0.85em;
+        padding: 0.12rem 0.35rem;
+        border-radius: 0.35rem;
+        background: hsl(var(--primary) / 0.12);
+        color: hsl(var(--foreground));
+    }
+
+    .ai-readable pre {
+        margin: 0.8rem 0;
+        padding: 0.9rem;
+        border-radius: 0.75rem;
+        border: 1px solid hsl(var(--border));
+        background: hsl(var(--card));
+        overflow-x: auto;
+    }
+
+    .ai-readable pre code {
+        background: transparent;
+        padding: 0;
+    }
+
+    .ai-readable table {
+        width: 100%;
+        margin: 0.8rem 0;
+        border-collapse: collapse;
+        display: block;
+        overflow-x: auto;
+    }
+
+    .ai-readable th,
+    .ai-readable td {
+        border: 1px solid hsl(var(--border));
+        padding: 0.45rem 0.55rem;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .ai-readable th {
+        color: hsl(var(--foreground));
+        background: hsl(var(--card));
+        font-weight: 700;
+    }
+
     .text-gradient {
         color: hsl(var(--primary));
+        background-image: none !important;
+        -webkit-text-fill-color: currentColor !important;
         @apply font-bold;
     }
 
@@ -210,6 +345,14 @@
     animation: pulse-glow 4s ease-in-out infinite;
 }
 @layer utilities {
+    .text-transparent.bg-clip-text {
+        color: hsl(var(--primary)) !important;
+        background-image: none !important;
+        -webkit-text-fill-color: hsl(var(--primary)) !important;
+        background-clip: border-box !important;
+        -webkit-background-clip: border-box !important;
+    }
+
     .custom-scrollbar::-webkit-scrollbar {
         width: 4px;
     }
@@ -222,5 +365,21 @@
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: hsl(var(--foreground) / 0.2);
+    }
+}
+
+@media (max-width: 767px) {
+    button,
+    [role='button'],
+    [data-radix-collection-item] {
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+    }
+
+    input,
+    select,
+    textarea {
+        min-height: 44px;
     }
 }

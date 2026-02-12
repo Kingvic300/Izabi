@@ -40,7 +40,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
             icon: Brain,
             label: 'Practice Skills',
             description: 'Build critical thinking',
-            color: 'from-primary/40 to-primary/30 border-primary/50',
+            color: 'bg-primary/20 border-primary/50',
             onClick: onPracticeSkills,
         },
         {
@@ -49,7 +49,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
             label: 'Quick Test',
             description: 'Timed challenge',
             badge: '5 min',
-            color: 'from-accent/40 to-accent/30 border-accent/50',
+            color: 'bg-accent/20 border-accent/50',
             onClick: onQuickTest,
         },
         {
@@ -57,7 +57,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
             icon: Lightbulb,
             label: 'Study Tricks',
             description: 'Learn smarter',
-            color: 'from-primary/35 to-accent/25 border-primary/40',
+            color: 'bg-primary/15 border-primary/40',
             onClick: onLearnTricks,
         },
         {
@@ -65,7 +65,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
             icon: Upload,
             label: 'Help w/ Notes',
             description: 'Upload document',
-            color: 'from-accent/35 to-primary/25 border-accent/40',
+            color: 'bg-accent/15 border-accent/40',
             onClick: onUploadDocument,
         },
     ];
@@ -94,7 +94,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
                             onClick={card.onClick}
                             className={cn(
                                 'group relative overflow-hidden rounded-3xl p-6 text-left transition-all duration-300',
-                                'border-2 bg-gradient-to-br hover:scale-[1.02] active:scale-[0.98]',
+                                'border-2 hover:scale-[1.02] active:scale-[0.98]',
                                 'shadow-lg hover:shadow-2xl backdrop-blur-sm',
                                 card.color,
                             )}
@@ -121,8 +121,8 @@ const IntentCards: React.FC<IntentCardsProps> = ({
                                 </p>
                             </div>
 
-                            {/* Hover gradient */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                            {/* Hover accent */}
+                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                         </motion.button>
                     );
                 })}

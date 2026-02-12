@@ -1,38 +1,21 @@
 import { useState, useCallback } from 'react';
 import { ErrorType } from '@/types/pdf';
 import { toast } from 'sonner';
+import { getReadableError } from '@/lib/readableErrors';
 
 export const useApiError = () => {
     const [errors, setErrors] = useState<ErrorType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const getErrorMessage = (error: any): string => {
-        if (error.response?.status) {
-            switch (error.response.status) {
-                case 400:
-                    return 'Invalid request data. Please check your input.';
-                case 404:
-                    return 'Resource not found. Please try again.';
-                case 413:
-                    return 'File too large. Please upload a smaller PDF.';
-                case 500:
-                    return 'Server error. Please try again later.';
-                default:
-                    return (
-                        error.response?.data?.message ||
-                        'An unexpected error occurred.'
-                    );
-            }
-        }
-
-        if (error.code === 'NETWORK_ERROR' || !navigator.onLine) {
-            return 'Connection lost. Please check your internet connection.';
-        }
-
-        return error.message || 'An unexpected error occurred.';
-    };
-
     const categorizeError = (error: any): ErrorType['type'] => {
+        if (
+            error?.type === 'validation' ||
+            error?.type === 'backend' ||
+            error?.type === 'network'
+        ) {
+            return error.type;
+        }
+
         if (error.response?.status >= 400 && error.response?.status < 500)
             return 'validation';
         if (error.response?.status >= 500) return 'backend';
@@ -42,14 +25,15 @@ export const useApiError = () => {
     };
 
     const addError = useCallback((error: any) => {
-        const message = getErrorMessage(error);
+        const readable = getReadableError(error);
+        const message = error?.message || readable.description;
         const type = categorizeError(error);
 
         const errorObj: ErrorType = {
             id: Date.now().toString(),
             type,
             message,
-            details: error.stack || JSON.stringify(error, null, 2),
+            details: error?.stack || '',
             timestamp: Date.now(),
         };
 
@@ -57,16 +41,19 @@ export const useApiError = () => {
 
         // TRIGGER TOAST AUTOMATICALLY
         if (type === 'network') {
-            toast.error('Connection Lost', {
-                description: message,
+            toast.error(readable.title, {
+                description: readable.description,
+                duration: 6500,
             });
         } else if (type === 'validation') {
-            toast.warning('Check your input', {
-                description: message,
+            toast.warning(readable.title || 'Please check your details', {
+                description: readable.description,
+                duration: 6000,
             });
         } else {
-            toast.error('System Error', {
-                description: message,
+            toast.error(readable.title || 'Action failed', {
+                description: readable.description,
+                duration: 6500,
             });
         }
     }, []);

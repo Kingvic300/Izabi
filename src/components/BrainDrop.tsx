@@ -44,7 +44,7 @@ const BrainDrop: React.FC<BrainDropProps> = ({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 shadow-2xl"
+            className="relative overflow-hidden rounded-[32px] bg-primary/10 border border-primary/20 shadow-2xl"
         >
             {/* Background decoration */}
             <div className="absolute top-0 right-0 p-8 opacity-5 dark:opacity-10">

@@ -2,6 +2,7 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import { BASE_URL } from '@/constants';
 import { toast } from 'sonner';
+import { getReadableError } from '@/lib/readableErrors';
 
 // Simple in-memory cache for GET requests
 const apiCache = new Map<string, { data: any; timestamp: number }>();
@@ -84,26 +85,27 @@ apiClient.interceptors.response.use(
             });
         }
 
-        const errorMessage =
-            error.response?.data?.message ||
-            error.message ||
-            'An unexpected error occurred';
         const statusCode = error.response?.status;
+        const readable = getReadableError(error);
+        const shouldShowGlobalToast =
+            !error.config?.skipGlobalErrorToast &&
+            (!statusCode || statusCode === 401 || statusCode >= 500);
 
         // Handle specific status codes
         if (statusCode === 401) {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userId');
-            window.location.href = '/login';
-            toast.error('Session Expired');
-        } else if (statusCode >= 500) {
-            toast.error(
-                'Server synchronization error. Retrying background nodes...',
-            );
-        } else if (!navigator.onLine) {
-            toast.error('Offline Mode', {
-                description:
-                    'Check your data connection. Some features may be restricted.',
+            if (window.location.pathname !== '/login') {
+                toast.error('Session expired', {
+                    description: 'Please log in again to continue.',
+                    duration: 7000,
+                });
+                window.location.href = '/login';
+            }
+        } else if (shouldShowGlobalToast) {
+            toast.error(readable.title, {
+                description: readable.description,
+                duration: 6500,
             });
         }
 

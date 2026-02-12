@@ -3,6 +3,7 @@
 import { toast } from 'sonner';
 import { AlertCircle, CheckCircle2, Info, XCircle } from 'lucide-react';
 import React from 'react';
+import { getReadableError } from '@/lib/readableErrors';
 
 export type ToastVariant =
     | 'default'
@@ -13,7 +14,7 @@ export type ToastVariant =
 
 interface ToastOptions {
     title?: string;
-    description: string;
+    description?: string;
     duration?: number;
 }
 
@@ -23,7 +24,7 @@ export const useAppToast = () => {
         success: (options: ToastOptions) => {
             toast.success(options.title || 'Success!', {
                 description: options.description,
-                duration: options.duration,
+                duration: options.duration ?? 5000,
                 icon: React.createElement(CheckCircle2, {
                     className: 'h-5 w-5 text-green-500',
                 }),
@@ -33,8 +34,10 @@ export const useAppToast = () => {
         // Error messages - specific and actionable
         error: (options: ToastOptions) => {
             toast.error(options.title || 'Something went wrong', {
-                description: options.description,
-                duration: options.duration,
+                description:
+                    options.description ||
+                    'Please try again. If the issue persists, contact support.',
+                duration: options.duration ?? 6500,
                 icon: React.createElement(XCircle, {
                     className: 'h-5 w-5 text-red-500',
                 }),
@@ -45,7 +48,7 @@ export const useAppToast = () => {
         warning: (options: ToastOptions) => {
             toast.warning(options.title || 'Warning', {
                 description: options.description,
-                duration: options.duration,
+                duration: options.duration ?? 6000,
                 icon: React.createElement(AlertCircle, {
                     className: 'h-5 w-5 text-yellow-500',
                 }),
@@ -56,9 +59,19 @@ export const useAppToast = () => {
         info: (options: ToastOptions) => {
             toast.info(options.title || 'Info', {
                 description: options.description,
-                duration: options.duration,
+                duration: options.duration ?? 5000,
                 icon: React.createElement(Info, {
                     className: 'h-5 w-5 text-blue-500',
+                }),
+            });
+        },
+        apiError: (error: unknown, fallbackTitle?: string) => {
+            const readable = getReadableError(error);
+            toast.error(fallbackTitle || readable.title, {
+                description: readable.description,
+                duration: 6500,
+                icon: React.createElement(XCircle, {
+                    className: 'h-5 w-5 text-red-500',
                 }),
             });
         },
@@ -122,9 +135,10 @@ export const useAppToast = () => {
         },
 
         networkError: () => {
-            toast.error('Connection lost', {
-                description:
-                    'Please check your internet connection and try again.',
+            const readable = getReadableError({ message: 'Network Error' });
+            toast.error(readable.title, {
+                description: readable.description,
+                duration: 6500,
                 icon: React.createElement(XCircle, {
                     className: 'h-5 w-5 text-red-500',
                 }),

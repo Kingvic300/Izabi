@@ -190,23 +190,23 @@ const DashboardProfile = () => {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-8 w-full pb-20 px-0 md:px-8 lg:px-12 pt-6 md:pt-12"
+            className="space-y-6 md:space-y-8 w-full min-w-0 pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
             <div className="profile-header flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-2">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-2">
                         My <span className="text-gradient">Profile</span>
                     </h1>
-                    <p className="text-muted-foreground font-medium text-lg">
+                    <p className="text-muted-foreground font-medium text-base sm:text-lg">
                         Manage your digital scholar identity
                     </p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full md:w-auto">
                     <Button
                         variant="outline"
                         onClick={() => setIsEditing(!isEditing)}
                         className={`
-                            h-12 rounded-2xl border-foreground/10 px-6 font-bold transition-all
+                            h-11 sm:h-12 rounded-2xl border-foreground/10 px-4 sm:px-6 font-bold transition-all w-full sm:w-auto
                             ${isEditing ? 'bg-card/10 text-foreground' : 'glass hover:bg-card/5'}
                         `}
                     >
@@ -217,7 +217,7 @@ const DashboardProfile = () => {
                         <Button
                             onClick={handleSaveProfile}
                             disabled={loading}
-                            className="h-12 rounded-2xl bg-primary shadow-glow hover:bg-primary-glow font-bold px-8 shadow-glow"
+                            className="h-11 sm:h-12 rounded-2xl bg-primary shadow-glow hover:bg-primary-glow font-bold px-4 sm:px-8 shadow-glow w-full sm:w-auto"
                         >
                             {loading ? (
                                 <Loader2 className="animate-spin" />
@@ -234,7 +234,7 @@ const DashboardProfile = () => {
                 {/* Left Column: Avatar & Basic Info */}
                 <div className="md:col-span-4 space-y-6">
                     <Card className="profile-card glass border-foreground/5 rounded-2xl overflow-hidden shadow-2xl h-full">
-                        <div className="h-32 bg-gradient-to-br from-primary/20 via-purple-500/10 to-background/0 relative">
+                        <div className="h-32 bg-primary/10 relative">
                             <div className="absolute top-4 right-4">
                                 <Badge
                                     variant="outline"
@@ -244,7 +244,7 @@ const DashboardProfile = () => {
                                 </Badge>
                             </div>
                         </div>
-                        <div className="px-8 pb-8 -mt-16 flex flex-col items-center text-center">
+                        <div className="px-5 sm:px-8 pb-8 -mt-16 flex flex-col items-center text-center">
                             <div className="relative mb-6 group">
                                 <Avatar className="w-32 h-32 border-4 border-background relative z-10 shadow-xl">
                                     <AvatarImage
@@ -401,7 +401,7 @@ const DashboardProfile = () => {
                     </Card>
 
                     <Card className="profile-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
-                        <CardHeader className="px-8 py-6 border-b border-foreground/5">
+                        <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
                             <CardTitle className="flex items-center gap-3 text-xl font-bold">
                                 <Lock className="text-primary" />
                                 Security Settings
@@ -410,9 +410,9 @@ const DashboardProfile = () => {
                                 Manage your password and access credentials
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-2xl bg-card/[0.02] border border-foreground/5 hover:bg-card/[0.04] transition-colors">
-                                <div className="flex items-center gap-4">
+                        <CardContent className="p-4 sm:p-8">
+                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl bg-card/[0.02] border border-foreground/5 hover:bg-card/[0.04] transition-colors">
+                                <div className="flex items-center gap-3 sm:gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                                         <KeyRound size={24} />
                                     </div>

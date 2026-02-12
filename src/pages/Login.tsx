@@ -188,7 +188,6 @@ const Login = () => {
 
             setTimeout(() => navigate('/dashboard'), 1000);
         } catch (err: any) {
-            console.error(err);
             const status = err.response?.status;
             let description =
                 'Something went wrong during Google authentication.';
@@ -203,7 +202,7 @@ const Login = () => {
             }
 
             appToast.error({
-                title: 'Google Sync Failed',
+                title: 'Google Sign-In Failed',
                 description,
             });
         } finally {
@@ -238,10 +237,7 @@ const Login = () => {
                     />
                     <div>
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
-                            {t('auth.login').split(' ')[0]}{' '}
-                            <span className="text-gradient">
-                                {t('auth.login').split(' ')[1]}
-                            </span>
+                            {t('auth.login')}
                         </h1>
                         <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">
                             Welcome back! Please sign in to your account.
@@ -256,7 +252,10 @@ const Login = () => {
                             className="space-y-4 sm:space-y-6"
                         >
                             <div className="space-y-2">
-                                <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1">
+                                <Label
+                                    htmlFor="login-email"
+                                    className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
+                                >
                                     {t('auth.email')}
                                 </Label>
                                 <div className="relative">
@@ -265,6 +264,7 @@ const Login = () => {
                                         size={18}
                                     />
                                     <Input
+                                        id="login-email"
                                         type="email"
                                         placeholder="scholar@example.com"
                                         value={email}
@@ -285,16 +285,12 @@ const Login = () => {
 
                             <div className="space-y-2">
                                 <div className="flex justify-between px-1">
-                                    <Label className="text-[10px] uppercase font-bold tracking-widest opacity-40">
+                                    <Label
+                                        htmlFor="login-password"
+                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40"
+                                    >
                                         {t('auth.password')}
                                     </Label>
-                                    <Link
-                                        to="/forgot-password"
-                                        title="Feature coming soon"
-                                        className="text-[10px] uppercase font-bold tracking-widest text-primary hover:opacity-80 transition-opacity"
-                                    >
-                                        Request reset
-                                    </Link>
                                 </div>
                                 <div className="relative">
                                     <Lock
@@ -302,6 +298,7 @@ const Login = () => {
                                         size={18}
                                     />
                                     <Input
+                                        id="login-password"
                                         type={
                                             showPassword ? 'text' : 'password'
                                         }
@@ -318,6 +315,11 @@ const Login = () => {
                                         type="button"
                                         onClick={() =>
                                             setShowPassword(!showPassword)
+                                        }
+                                        aria-label={
+                                            showPassword
+                                                ? 'Hide password'
+                                                : 'Show password'
                                         }
                                         className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
                                     >
@@ -356,7 +358,7 @@ const Login = () => {
                                 </div>
                                 <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
                                     <span className="bg-background px-4 text-muted-foreground/40">
-                                        Or continue with neural sync
+                                        Or continue with Google
                                     </span>
                                 </div>
                             </div>
@@ -366,9 +368,9 @@ const Login = () => {
                                     onSuccess={handleGoogleSuccess}
                                     onError={() => {
                                         appToast.error({
-                                            title: 'Google Sync Error',
+                                            title: 'Google Sign-In Error',
                                             description:
-                                                'Neural synchronization failed. Please try again or use standard credentials.',
+                                                'Google sign-in failed. Please try again or use your email and password.',
                                         });
                                     }}
                                     useOneTap

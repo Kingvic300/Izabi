@@ -385,15 +385,15 @@ const DashboardExams = () => {
 
     const renderLobby = () => (
         <div className="w-full space-y-8 animate-in fade-in duration-700">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
                 <div>
-                    <h1 className="text-6xl font-extrabold tracking-tighter mb-2 italic">
+                    <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tighter mb-2 italic">
                         Exam{' '}
                         <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
                             Center
                         </span>
                     </h1>
-                    <p className="text-muted-foreground text-xl font-medium">
+                    <p className="text-muted-foreground text-base sm:text-lg lg:text-xl font-medium">
                         Select your category and start a professional
                         simulation.
                     </p>
@@ -430,14 +430,14 @@ const DashboardExams = () => {
                     </motion.div>
                 )}
 
-                <div className="flex bg-card/20 p-1.5 rounded-3xl backdrop-blur-xl border border-foreground/5 shadow-inner overflow-x-auto scrollbar-hide max-w-full">
+                <div className="flex bg-card/20 p-1.5 rounded-3xl backdrop-blur-xl border border-foreground/5 shadow-inner overflow-x-auto scrollbar-hide max-w-full w-full md:w-auto">
                     {(['JAMB', 'WAEC', 'JUPEB', 'UNIVERSITY'] as const).map(
                         (tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={cn(
-                                    'px-8 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-[0.2em]',
+                                    'px-5 sm:px-8 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-[0.15em] sm:tracking-[0.2em] whitespace-nowrap',
                                     activeTab === tab
                                         ? 'bg-primary text-primary-foreground shadow-2xl flex items-center gap-2'
                                         : 'hover:bg-foreground/5 text-muted-foreground',
@@ -453,12 +453,12 @@ const DashboardExams = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto">
                 {/* Simulation Card */}
                 <Card className="glass-card stagger-card border-primary/20 shadow-2xl relative overflow-hidden group rounded-[40px]">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <CardHeader className="relative z-10 p-8">
-                        <CardTitle className="flex items-center gap-4 text-3xl font-black italic tracking-tighter">
+                    <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <CardHeader className="relative z-10 p-5 sm:p-8">
+                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-black italic tracking-tighter">
                             <div className="p-3 rounded-2xl bg-primary/20 text-primary shadow-inner">
                                 <Zap className="fill-primary" size={24} />
                             </div>
@@ -468,7 +468,7 @@ const DashboardExams = () => {
                             Timed, standard exam conditions for final prep.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6 relative z-20 p-8 pt-0">
+                    <CardContent className="space-y-6 relative z-20 p-5 sm:p-8 pt-0">
                         <div className="space-y-4">
                             {activeTab === 'UNIVERSITY' ? (
                                 <>
@@ -523,7 +523,7 @@ const DashboardExams = () => {
                         <Button
                             onClick={startSimulation}
                             disabled={isSimulating}
-                            className="w-full h-16 text-lg font-black uppercase tracking-[0.2em] bg-primary hover:bg-primary/90 text-primary-foreground mt-4 relative z-30 shadow-2xl shadow-primary/20 active:scale-95 transition-all rounded-[20px]"
+                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-primary hover:bg-primary/90 text-primary-foreground mt-4 relative z-30 shadow-2xl shadow-primary/20 active:scale-95 transition-all rounded-[20px]"
                         >
                             {isSimulating ? (
                                 <Loader2 className="animate-spin" />
@@ -536,9 +536,9 @@ const DashboardExams = () => {
 
                 {/* Note Practice Card */}
                 <Card className="glass-card stagger-card border-blue-600/20 shadow-2xl relative overflow-hidden group rounded-[40px]">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <CardHeader className="relative z-10 p-8">
-                        <CardTitle className="flex items-center gap-4 text-3xl font-black italic tracking-tighter">
+                    <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <CardHeader className="relative z-10 p-5 sm:p-8">
+                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-black italic tracking-tighter">
                             <div className="p-3 rounded-2xl bg-blue-600/20 text-blue-600 shadow-inner">
                                 <FileText size={24} />
                             </div>
@@ -549,7 +549,7 @@ const DashboardExams = () => {
                             Upload PDF notes to practice on your own material.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6 relative z-20 p-8 pt-0">
+                    <CardContent className="space-y-6 relative z-20 p-5 sm:p-8 pt-0">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
                                 Upload PDF
@@ -570,7 +570,7 @@ const DashboardExams = () => {
                                         <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center mx-auto mb-2 text-blue-600">
                                             <FileText size={20} />
                                         </div>
-                                        <p className="text-xs font-bold text-blue-600 truncate max-w-[200px]">
+                                        <p className="text-xs font-bold text-blue-600 truncate max-w-[170px] sm:max-w-[200px]">
                                             {selectedFile.name}
                                         </p>
                                         <p className="text-[10px] uppercase font-black tracking-widest opacity-40 mt-1">
@@ -595,7 +595,7 @@ const DashboardExams = () => {
                         <Button
                             onClick={startNotePractice}
                             disabled={isNotePracticing || !selectedFile}
-                            className="w-full h-16 text-lg font-black uppercase tracking-[0.2em] bg-blue-700 hover:bg-blue-600 text-white mt-4 relative z-30 shadow-2xl shadow-blue-700/20 active:scale-95 transition-all rounded-[20px]"
+                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-blue-700 hover:bg-blue-600 text-white mt-4 relative z-30 shadow-2xl shadow-blue-700/20 active:scale-95 transition-all rounded-[20px]"
                         >
                             {isNotePracticing ? (
                                 <Loader2 className="animate-spin" />
@@ -607,12 +607,12 @@ const DashboardExams = () => {
                 </Card>
             </div>
 
-            <div className="stagger-card glass-card rounded-[40px] p-10 border border-foreground/5 relative overflow-hidden">
+            <div className="stagger-card glass-card rounded-[24px] sm:rounded-[40px] p-5 sm:p-10 border border-foreground/5 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none">
                     <Trophy size={200} />
                 </div>
-                <div className="flex items-center justify-between mb-10 relative z-10">
-                    <h3 className="text-3xl font-black flex items-center gap-4 tracking-tighter italic">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10 relative z-10">
+                    <h3 className="text-2xl sm:text-3xl font-black flex items-center gap-3 sm:gap-4 tracking-tighter italic">
                         <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
                             <Trophy size={28} />
                         </div>
@@ -662,7 +662,7 @@ const DashboardExams = () => {
                                             </span>
                                         </div>
                                         <div>
-                                            <p className="font-black text-lg uppercase tracking-tight truncate max-w-[200px] mb-1">
+                                            <p className="font-black text-base sm:text-lg uppercase tracking-tight truncate max-w-[170px] sm:max-w-[200px] mb-1">
                                                 {res.subject}
                                             </p>
                                             <div className="flex items-center gap-3">
@@ -709,11 +709,11 @@ const DashboardExams = () => {
     );
 
     const renderExam = () => (
-        <div className="w-full min-h-screen flex flex-col pb-20">
+        <div className="w-full min-h-screen flex flex-col pb-16 sm:pb-20">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8 sticky top-4 z-50 bg-background/80 backdrop-blur-md p-4 rounded-2xl border border-foreground/10 shadow-xl">
-                <div>
-                    <h2 className="text-xl font-bold truncate max-w-[200px] md:max-w-md">
+            <div className="flex items-center justify-between mb-6 sm:mb-8 sticky top-2 sm:top-4 z-50 bg-background/80 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-foreground/10 shadow-xl">
+                <div className="min-w-0">
+                    <h2 className="text-base sm:text-xl font-bold truncate max-w-[140px] sm:max-w-[200px] md:max-w-md">
                         {currentExam?.subject}
                     </h2>
                     <p className="text-xs font-bold uppercase opacity-60 tracking-widest">
@@ -722,7 +722,7 @@ const DashboardExams = () => {
                     </p>
                 </div>
                 <div
-                    className={`px-4 py-2 rounded-xl font-mono font-black text-2xl ${timeLeft < 60 ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-blue-500/10 text-blue-500'}`}
+                    className={`px-3 sm:px-4 py-2 rounded-xl font-mono font-black text-lg sm:text-2xl ${timeLeft < 60 ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-blue-500/10 text-blue-500'}`}
                 >
                     {formatTime(timeLeft)}
                 </div>
@@ -815,25 +815,25 @@ const DashboardExams = () => {
     );
 
     const renderResult = () => (
-        <div className="w-full text-center space-y-12 pt-10 px-4 md:px-20">
+            <div className="w-full text-center space-y-8 sm:space-y-12 pt-8 sm:pt-10 px-4 md:px-8 lg:px-10">
             <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="w-56 h-56 mx-auto rounded-full bg-gradient-to-tr from-blue-700 via-blue-500 to-blue-400 flex items-center justify-center shadow-[0_0_50px_rgba(37,99,235,0.4)] mb-8 border-4 border-white/10"
+                className="w-40 h-40 sm:w-56 sm:h-56 mx-auto rounded-full bg-blue-600 flex items-center justify-center shadow-[0_0_50px_rgba(37,99,235,0.4)] mb-6 sm:mb-8 border-4 border-white/10"
             >
-                <div className="text-7xl font-black text-white">
+                <div className="text-5xl sm:text-7xl font-black text-white">
                     {Math.round(score)}%
                 </div>
             </motion.div>
 
-            <h2 className="text-4xl font-bold tracking-tighter">
+            <h2 className="text-2xl sm:text-4xl font-bold tracking-tighter">
                 {score >= 70
                     ? 'Excellent Work! 🎉'
                     : score >= 50
                       ? 'Good Effort! 👍'
                       : 'Keep Practicing! 💪'}
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-base sm:text-xl text-muted-foreground">
                 You answered{' '}
                 {Math.round(
                     (score / 100) * (currentExam?.questions.length || 0),
@@ -842,22 +842,22 @@ const DashboardExams = () => {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <Card className="p-10 bg-blue-500/5 border-blue-500/20 rounded-[32px] shadow-inner group">
+                <Card className="p-6 sm:p-10 bg-blue-500/5 border-blue-500/20 rounded-[24px] sm:rounded-[32px] shadow-inner group">
                     <div className="font-black text-blue-500 text-sm uppercase tracking-widest mb-2 group-hover:translate-x-1 transition-transform">
                         Correct Responses
                     </div>
-                    <div className="text-5xl font-black">
+                    <div className="text-4xl sm:text-5xl font-black">
                         {Math.round(
                             (score / 100) *
                                 (currentExam?.questions.length || 0),
                         )}
                     </div>
                 </Card>
-                <Card className="p-10 bg-destructive/5 border-destructive/20 rounded-[32px] shadow-inner group">
+                <Card className="p-6 sm:p-10 bg-destructive/5 border-destructive/20 rounded-[24px] sm:rounded-[32px] shadow-inner group">
                     <div className="font-black text-destructive/60 text-sm uppercase tracking-widest mb-2 group-hover:translate-x-1 transition-transform">
                         Incorrect Responses
                     </div>
-                    <div className="text-5xl font-black">
+                    <div className="text-4xl sm:text-5xl font-black">
                         {(currentExam?.questions.length || 0) -
                             Math.round(
                                 (score / 100) *
@@ -869,7 +869,7 @@ const DashboardExams = () => {
 
             <Button
                 onClick={() => setView('lobby')}
-                className="h-16 px-12 rounded-[20px] font-black uppercase tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xl shadow-primary/20 transition-all active:scale-95"
+                className="h-14 sm:h-16 px-8 sm:px-12 rounded-[20px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xl shadow-primary/20 transition-all active:scale-95"
             >
                 Return to Lobby
             </Button>
@@ -892,7 +892,7 @@ const DashboardExams = () => {
                             <ArrowLeft size={16} />
                             Back to Lobby
                         </Button>
-                        <h1 className="text-5xl font-extrabold tracking-tighter mb-2 italic">
+                        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tighter mb-2 italic">
                             Exam{' '}
                             <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
                                 Review
@@ -904,10 +904,10 @@ const DashboardExams = () => {
                         </p>
                     </div>
 
-                    <div className="text-center">
+                    <div className="text-center shrink-0">
                         <div
                             className={cn(
-                                'w-32 h-32 rounded-[28px] flex items-center justify-center font-black text-4xl shadow-2xl mb-2',
+                                'w-24 h-24 sm:w-32 sm:h-32 rounded-[20px] sm:rounded-[28px] flex items-center justify-center font-black text-3xl sm:text-4xl shadow-2xl mb-2',
                                 selectedResult.score >= 70
                                     ? 'bg-blue-500/10 text-blue-500 border-2 border-blue-500/20'
                                     : selectedResult.score >= 45
@@ -1020,7 +1020,7 @@ const DashboardExams = () => {
     return (
         <div
             ref={containerRef}
-            className="min-h-screen w-full px-4 md:px-12 py-10 pb-32 bg-background"
+            className="min-h-screen w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-10 pb-24 sm:pb-32 bg-background"
         >
             <ErrorBoundary>
                 <AnimatePresence mode="wait">

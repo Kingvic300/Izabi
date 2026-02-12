@@ -66,16 +66,16 @@ const Dashboard = () => {
 
                     <AppSidebar />
 
-                    <div className="flex-1 flex flex-col relative z-10">
+                    <div className="flex-1 min-w-0 flex flex-col relative z-10">
                         {/* Modern Header */}
-                        <header className="h-20 border-b border-foreground/5 bg-background/50 backdrop-blur-xl px-6 md:px-12 flex items-center justify-between shrink-0">
-                            <div className="flex items-center space-x-6">
+                        <header className="h-16 sm:h-20 border-b border-foreground/5 bg-background/50 backdrop-blur-xl px-3 sm:px-6 md:px-8 xl:px-10 flex items-center justify-between shrink-0">
+                            <div className="flex items-center space-x-3 sm:space-x-6 min-w-0">
                                 <SidebarTrigger className="text-muted-foreground hover:text-primary transition-colors scale-125" />
                                 <Separator
                                     orientation="vertical"
-                                    className="h-8 bg-card/10"
+                                    className="h-8 bg-card/10 hidden sm:block"
                                 />
-                                <div className="flex flex-col">
+                                <div className="hidden sm:flex flex-col">
                                     <h1 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">
                                         System Node
                                     </h1>
@@ -85,7 +85,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 sm:gap-4">
                                 <div className="hidden md:flex flex-col items-end mr-2">
                                     <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
                                         Aura Sync Active
@@ -94,7 +94,7 @@ const Dashboard = () => {
                                         EST-992-BETA
                                     </span>
                                 </div>
-                                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary/20 to-transparent p-[1px] border border-foreground/10 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl bg-primary/20 p-[1px] border border-foreground/10 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
                                     <div className="w-full h-full rounded-[14px] bg-background flex items-center justify-center">
                                         <div className="w-3 h-3 rounded-full bg-primary/40 animate-pulse" />
                                     </div>
@@ -105,20 +105,20 @@ const Dashboard = () => {
                         {/* Main Content Area */}
                         <main
                             className={cn(
-                                'flex-1',
+                                'flex-1 min-w-0',
                                 isAIAssistantRoute
                                     ? 'overflow-hidden p-0'
-                                    : 'overflow-y-auto p-0 md:p-12',
+                                    : 'overflow-y-auto p-0 md:px-6 md:py-8 xl:px-8 xl:py-10',
                             )}
                         >
-                            <div className="w-full h-full">
+                            <div className="w-full h-full min-w-0">
                                 <Outlet />
                             </div>
                         </main>
                     </div>
 
                     {/* Background Jobs Progress Container - Moved to Top Right below header */}
-                    <div className="fixed top-24 right-6 z-[100] flex flex-col gap-4 pointer-events-none">
+                    <div className="fixed top-20 sm:top-24 left-3 right-3 sm:left-auto sm:right-6 z-[100] flex flex-col gap-3 sm:gap-4 pointer-events-none">
                         <AnimatePresence mode="popLayout">
                             {activeJobs.map((job) => (
                                 <div

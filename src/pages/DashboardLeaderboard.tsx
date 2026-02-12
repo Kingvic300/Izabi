@@ -123,7 +123,7 @@ export default function DashboardLeaderboard() {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-8 pb-20 w-full max-w-6xl mx-auto px-2 sm:px-4 md:px-0"
+            className="space-y-6 md:space-y-8 pb-20 w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-0"
         >
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 pb-6 border-b border-foreground/5">
                 <div className="space-y-2">
@@ -210,13 +210,13 @@ export default function DashboardLeaderboard() {
                     <TabsList className="bg-card/5 border border-foreground/10 p-1 rounded-full h-12 sm:h-14">
                         <TabsTrigger
                             value="xp"
-                            className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-1.5 sm:gap-2 foregroundspace-nowrap"
+                            className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
                         >
                             <Zap size={14} className="sm:w-4 sm:h-4" /> Total XP
                         </TabsTrigger>
                         <TabsTrigger
                             value="streak"
-                            className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-orange-500 data-[state=active]:text-foreground transition-all gap-1.5 sm:gap-2 foregroundspace-nowrap"
+                            className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-orange-500 data-[state=active]:text-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
                         >
                             <Flame size={14} className="sm:w-4 sm:h-4" /> Top
                             Streaks
@@ -448,7 +448,7 @@ const Podium = ({
                         </div>
                     </div>
                     <div className="text-center p-4 sm:p-6 bg-card/5 border border-foreground/10 rounded-2xl sm:rounded-3xl w-full backdrop-blur-md relative overflow-hidden group hover:border-gray-300/30 transition-all">
-                        <div className="absolute inset-0 bg-gradient-to-b from-gray-300/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gray-300/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                             <h3 className="font-bold text-sm sm:text-lg truncate text-foreground opacity-100 leading-tight">
                                 {(second.firstName || '') +
@@ -493,12 +493,12 @@ const Podium = ({
                             {(first.firstName || 'U')[0]}
                         </AvatarFallback>
                     </Avatar>
-                    <div className="absolute -bottom-3 sm:-bottom-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-300 to-yellow-500 text-yellow-950 font-black px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm shadow-xl border sm:border-2 border-yellow-200">
+                    <div className="absolute -bottom-3 sm:-bottom-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-950 font-black px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm shadow-xl border sm:border-2 border-yellow-200">
                         #1
                     </div>
                 </div>
-                <div className="text-center p-6 sm:p-8 bg-gradient-to-b from-yellow-400/10 to-transparent border border-yellow-400/30 rounded-[1.5rem] sm:rounded-[2rem] w-full backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(250,204,21,0.1)] group hover:scale-[1.02] transition-transform duration-300">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-400/10 via-transparent to-transparent opacity-50" />
+                <div className="text-center p-6 sm:p-8 bg-yellow-400/10 border border-yellow-400/30 rounded-[1.5rem] sm:rounded-[2rem] w-full backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(250,204,21,0.1)] group hover:scale-[1.02] transition-transform duration-300">
+                    <div className="absolute inset-0 bg-yellow-400/10 opacity-50" />
                     <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                         <h3 className="font-bold text-xl sm:text-2xl truncate text-foreground leading-tight opacity-100">
                             {(first.firstName || '') +
@@ -550,7 +550,7 @@ const Podium = ({
                         </div>
                     </div>
                     <div className="text-center p-4 sm:p-6 bg-card/5 border border-foreground/10 rounded-2xl sm:rounded-3xl w-full backdrop-blur-md relative overflow-hidden group hover:border-amber-600/30 transition-all">
-                        <div className="absolute inset-0 bg-gradient-to-b from-amber-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-amber-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                             <h3 className="font-bold text-sm sm:text-lg truncate text-foreground opacity-100 leading-tight">
                                 {(third.firstName || '') +
