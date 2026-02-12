@@ -32,6 +32,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { GoogleLogin } from '@react-oauth/google';
 
 const Signup = () => {
+    const getDefaultAvatar = (mail: string) =>
+        `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(mail || 'scholar@izabi.ai')}`;
     const { t } = useLanguage();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -190,6 +192,10 @@ const Signup = () => {
                 localStorage.setItem('userFirstName', user.firstName);
             if (user.lastName)
                 localStorage.setItem('userLastName', user.lastName);
+            localStorage.setItem(
+                'userProfilePicturePath',
+                user.profilePicturePath || getDefaultAvatar(user.email),
+            );
 
             appToast.success({
                 title: 'Google Sync Successful',

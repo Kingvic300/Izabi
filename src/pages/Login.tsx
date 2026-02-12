@@ -29,6 +29,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
+    const getDefaultAvatar = (mail: string) =>
+        `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(mail || 'scholar@izabi.ai')}`;
     const { t } = useLanguage();
     const cardRef = useRef<HTMLDivElement>(null);
     const [email, setEmail] = useState('');
@@ -110,12 +112,16 @@ const Login = () => {
 
             localStorage.setItem('userId', userId);
             localStorage.setItem('authToken', accessToken);
-            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userEmail', user.email || email);
             localStorage.setItem('userRole', role || 'USER');
             if (user.firstName)
                 localStorage.setItem('userFirstName', user.firstName);
             if (user.lastName)
                 localStorage.setItem('userLastName', user.lastName);
+            localStorage.setItem(
+                'userProfilePicturePath',
+                user.profilePicturePath || getDefaultAvatar(user.email || email),
+            );
 
             // Check if user is admin and redirect accordingly
             const isAdmin = role === 'ADMIN';
@@ -170,6 +176,10 @@ const Login = () => {
                 localStorage.setItem('userFirstName', user.firstName);
             if (user.lastName)
                 localStorage.setItem('userLastName', user.lastName);
+            localStorage.setItem(
+                'userProfilePicturePath',
+                user.profilePicturePath || getDefaultAvatar(user.email),
+            );
 
             appToast.success({
                 title: 'Google Login Successful',

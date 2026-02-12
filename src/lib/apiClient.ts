@@ -259,8 +259,11 @@ export const api = {
         return response.data;
     },
 
-    async getAIResponse(message: string) {
-        const response = await apiClient.post('/api/ai/chat', { message });
+    async getAIResponse(message: string, documentId?: string) {
+        const response = await apiClient.post('/api/ai/chat', {
+            message,
+            documentId,
+        });
         return response.data.response;
     },
 
@@ -273,9 +276,17 @@ export const api = {
         onChunk: (text: string) => void,
         onError: (err: any) => void,
         onComplete?: () => void,
+        documentId?: string,
     ) {
         const token = localStorage.getItem('authToken');
-        const url = `${BASE_URL}/api/ai/stream?message=${encodeURIComponent(message)}&token=${token}`;
+        const query = new URLSearchParams({
+            message,
+            token: token || '',
+        });
+        if (documentId) {
+            query.append('documentId', documentId);
+        }
+        const url = `${BASE_URL}/api/ai/stream?${query.toString()}`;
         const eventSource = new EventSource(url);
 
         eventSource.onmessage = (event) => {
@@ -339,6 +350,13 @@ export const api = {
 
     async clearChatHistory() {
         const response = await apiClient.post(`/api/ai/clear-history`);
+        return response.data;
+    },
+
+    async uploadPDFForChat(file: File) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await apiClient.post('/api/ai/upload-pdf', formData);
         return response.data;
     },
 

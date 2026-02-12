@@ -31,6 +31,8 @@ interface ErrorResponse {
 }
 
 const OTP = () => {
+    const getDefaultAvatar = (mail: string) =>
+        `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(mail || 'scholar@izabi.ai')}`;
     const cardRef = useRef<HTMLDivElement>(null);
     const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
     const [loading, setLoading] = useState(false);
@@ -127,6 +129,10 @@ const OTP = () => {
             localStorage.setItem('authToken', accessToken);
             localStorage.setItem('userEmail', userEmail);
             localStorage.setItem('userRole', role || 'USER');
+            localStorage.setItem(
+                'userProfilePicturePath',
+                user.profilePicturePath || getDefaultAvatar(userEmail),
+            );
 
             toast.success('Account Verified', {
                 description:

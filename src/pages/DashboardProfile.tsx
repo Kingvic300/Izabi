@@ -52,6 +52,8 @@ const DashboardProfile = () => {
         location: '',
         profilePicturePath: '',
     });
+    const defaultAvatar = (email: string) =>
+        `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(email || 'scholar@izabi.ai')}`;
 
     // Load profile on mount
     useEffect(() => {
@@ -72,6 +74,11 @@ const DashboardProfile = () => {
                     localStorage.setItem('userFirstName', userData.firstName);
                 if (userData.lastName)
                     localStorage.setItem('userLastName', userData.lastName);
+                localStorage.setItem(
+                    'userProfilePicturePath',
+                    userData.profilePicturePath ||
+                        defaultAvatar(userData.email || profileData.email),
+                );
                 window.dispatchEvent(new Event('storage'));
             } catch (err) {
                 console.error('Error loading profile:', err);
@@ -137,6 +144,11 @@ const DashboardProfile = () => {
                 localStorage.setItem('userFirstName', updatedProfile.firstName);
             if (updatedProfile.lastName)
                 localStorage.setItem('userLastName', updatedProfile.lastName);
+            localStorage.setItem(
+                'userProfilePicturePath',
+                updatedProfile.profilePicturePath ||
+                    defaultAvatar(updatedProfile.email || profileData.email),
+            );
             window.dispatchEvent(new Event('storage'));
 
             setIsEditing(false);
@@ -164,7 +176,12 @@ const DashboardProfile = () => {
                 profilePicturePath: e.target?.result as string,
             };
             setProfileData(updatedData);
-            localStorage.setItem('userProfile', JSON.stringify(updatedData));
+            localStorage.setItem(
+                'userProfilePicturePath',
+                updatedData.profilePicturePath ||
+                    defaultAvatar(updatedData.email),
+            );
+            window.dispatchEvent(new Event('storage'));
             // In a real app, you'd verify upload to backend here or in handleSaveProfile
         };
         reader.readAsDataURL(file);
@@ -233,7 +250,7 @@ const DashboardProfile = () => {
                                     <AvatarImage
                                         src={
                                             profileData.profilePicturePath ||
-                                            '/placeholder.svg'
+                                            defaultAvatar(profileData.email)
                                         }
                                         className="object-cover"
                                     />

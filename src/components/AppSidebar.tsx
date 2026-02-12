@@ -131,12 +131,17 @@ export function AppSidebar() {
     const appToast = useAppToast();
     const currentPath = location.pathname;
     const collapsed = state === 'collapsed';
+    const getDefaultAvatar = (email: string) =>
+        `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(email || 'scholar@izabi.ai')}`;
     const [userInfo, setUserInfo] = useState({
         name: localStorage.getItem('userFirstName')
             ? `${localStorage.getItem('userFirstName')} ${localStorage.getItem('userLastName') || ''}`.trim()
             : 'Scholar',
         email: localStorage.getItem('userEmail') || 'scholar@izabi.ai',
         role: localStorage.getItem('userRole'),
+        avatar:
+            localStorage.getItem('userProfilePicturePath') ||
+            getDefaultAvatar(localStorage.getItem('userEmail') || ''),
         initial: (
             localStorage.getItem('userFirstName')?.[0] ||
             localStorage.getItem('userEmail')?.[0] ||
@@ -157,6 +162,9 @@ export function AppSidebar() {
                     : 'Scholar',
                 email: email,
                 role: localStorage.getItem('userRole'),
+                avatar:
+                    localStorage.getItem('userProfilePicturePath') ||
+                    getDefaultAvatar(email),
                 initial: (firstName?.[0] || email?.[0] || 'S').toUpperCase(),
             });
         };
@@ -184,6 +192,7 @@ export function AppSidebar() {
             localStorage.removeItem('userFirstName');
             localStorage.removeItem('userLastName');
             localStorage.removeItem('userRole');
+            localStorage.removeItem('userProfilePicturePath');
 
             appToast.success({
                 title: 'Logged out',
@@ -350,7 +359,7 @@ export function AppSidebar() {
                         >
                             <Avatar className="h-9 w-9 rounded-lg border border-foreground/10 shadow-sm">
                                 <AvatarImage
-                                    src={`https://api.dicebear.com/7.x/notionists/svg?seed=${userInfo.email}`}
+                                    src={userInfo.avatar}
                                     alt={userInfo.email}
                                 />
                                 <AvatarFallback className="rounded-lg font-bold bg-primary/20 text-primary">

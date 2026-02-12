@@ -344,10 +344,10 @@ export default function AdminDashboard() {
     return (
         <div
             ref={containerRef}
-            className="space-y-10 w-full pb-20 px-4 md:px-6 lg:px-12 pt-8 max-w-[1700px] mx-auto"
+            className="space-y-6 md:space-y-10 w-full pb-6 md:pb-20 px-3 md:px-6 lg:px-12 pt-4 md:pt-8 max-w-[1700px] mx-auto"
         >
             {/* Header Section */}
-            <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-2 border-b border-foreground/5">
+            <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 pb-3 border-b border-foreground/5">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2 mb-2">
                         <Badge
@@ -357,19 +357,19 @@ export default function AdminDashboard() {
                             Admin Command Center
                         </Badge>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter leading-none">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tighter leading-none">
                         System{' '}
                         <span className="text-gradient">Intelligence</span>
                     </h1>
                 </div>
-                <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
                     <Button
                         variant="outline"
-                        className="glass h-12 rounded-2xl border-foreground/10 hover:bg-card/5 transition-all w-full lg:w-auto"
+                        className="glass h-11 md:h-12 rounded-2xl border-foreground/10 hover:bg-card/5 transition-all w-full lg:w-auto"
                     >
                         <RefreshCw className="mr-2 h-4 w-4" /> Sync Registry
                     </Button>
-                    <Button className="h-12 rounded-2xl bg-primary shadow-glow hover:bg-primary-glow font-bold px-8 w-full lg:w-auto">
+                    <Button className="h-11 md:h-12 rounded-2xl bg-primary shadow-glow hover:bg-primary-glow font-bold px-6 md:px-8 w-full lg:w-auto">
                         System Export
                     </Button>
                 </div>
@@ -428,7 +428,7 @@ export default function AdminDashboard() {
                             />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold tracking-tighter mb-1">
+                            <div className="text-2xl md:text-3xl font-bold tracking-tighter mb-1">
                                 {stat.value.toLocaleString()}
                             </div>
                             <div className="flex items-center gap-2">
@@ -484,10 +484,10 @@ export default function AdminDashboard() {
                     className="space-y-8 animate-in fade-in slide-in-from-bottom-5"
                 >
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <Card className="lg:col-span-8 glass border-foreground/5 p-4 md:p-8 rounded-2xl shadow-2xl">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+                        <Card className="lg:col-span-8 glass border-foreground/5 p-3 sm:p-4 md:p-8 rounded-2xl shadow-2xl">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-10 gap-4">
                                 <div>
-                                    <h3 className="text-2xl font-bold tracking-tight">
+                                    <h3 className="text-xl md:text-2xl font-bold tracking-tight">
                                         System Utilization
                                     </h3>
                                     <p className="text-muted-foreground font-medium">
@@ -500,7 +500,7 @@ export default function AdminDashboard() {
                                     </Badge>
                                 </div>
                             </div>
-                            <div className="h-[300px] md:h-[400px] w-full">
+                            <div className="h-[260px] sm:h-[300px] md:h-[400px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={chartData}>
                                         <defs>
@@ -564,7 +564,7 @@ export default function AdminDashboard() {
                         </Card>
 
                         <div className="lg:col-span-4 space-y-6">
-                            <Card className="glass border-foreground/5 p-6 md:p-8 rounded-2xl shadow-2xl h-full flex flex-col">
+                            <Card className="glass border-foreground/5 p-4 md:p-8 rounded-2xl shadow-2xl h-full flex flex-col">
                                 <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                                     <TrendingUp
                                         className="text-primary"
@@ -578,7 +578,7 @@ export default function AdminDashboard() {
                                             recentActivities.map((item, i) => (
                                                 <div
                                                     key={i}
-                                                    className="flex justify-between items-start group cursor-pointer hover:bg-card/5 p-2 rounded-lg transition-all"
+                                                    className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 group cursor-pointer hover:bg-card/5 p-2 rounded-lg transition-all"
                                                     onClick={() =>
                                                         item.user &&
                                                         handleViewUser(
@@ -609,7 +609,7 @@ export default function AdminDashboard() {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <span className="text-[10px] font-bold opacity-30 italic foregroundspace-nowrap ml-2">
+                                                    <span className="text-[10px] font-bold opacity-30 italic whitespace-nowrap ml-2 sm:ml-0">
                                                         {formatTimeAgo(
                                                             item.date,
                                                         )}
@@ -639,9 +639,9 @@ export default function AdminDashboard() {
                     className="animate-in fade-in slide-in-from-bottom-5"
                 >
                     <Card className="glass border-foreground/5 rounded-2xl overflow-hidden shadow-2xl">
-                        <div className="p-4 md:p-8 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="p-3 sm:p-4 md:p-8 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                             <div>
-                                <h3 className="text-3xl font-bold">
+                                <h3 className="text-2xl md:text-3xl font-bold">
                                     Account Registry
                                 </h3>
                                 <p className="text-muted-foreground font-medium">
@@ -649,7 +649,7 @@ export default function AdminDashboard() {
                                     platform
                                 </p>
                             </div>
-                            <div className="flex items-center gap-4 w-full md:w-auto">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
                                 <div className="flex items-center space-x-2">
                                     <Badge
                                         variant={
@@ -665,28 +665,98 @@ export default function AdminDashboard() {
                                         Active Only
                                     </Badge>
                                 </div>
-                                <div className="relative w-full md:w-72">
+                                <div className="relative w-full sm:w-72">
                                     <Search
                                         className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
                                         size={20}
                                     />
                                     <Input
                                         placeholder="Search by ID or email..."
-                                        className="pl-12 rounded-2xl glass border-foreground/10 h-14 font-medium w-full"
+                                        className="pl-12 rounded-2xl glass border-foreground/10 h-11 md:h-14 font-medium w-full"
                                         value={searchQuery}
                                         onChange={(e) =>
                                             setSearchQuery(e.target.value)
                                         }
                                     />
                                 </div>
-                                <Button className="h-14 w-14 rounded-2xl bg-card/5 border border-foreground/10 p-0 text-foreground hover:bg-card/10 shrink-0">
+                                <Button className="h-11 w-full sm:w-11 md:h-14 md:w-14 rounded-2xl bg-card/5 border border-foreground/10 p-0 text-foreground hover:bg-card/10 shrink-0">
                                     <Filter size={20} />
                                 </Button>
                             </div>
                         </div>
 
-                        <div className="p-4 md:p-8 pt-4 overflow-x-auto">
-                            <Table>
+                        <div className="p-3 sm:p-4 md:p-8 pt-4">
+                            <div className="md:hidden space-y-3">
+                                {filteredUsers.length > 0 ? (
+                                    filteredUsers.map((user) => (
+                                        <div
+                                            key={user.id}
+                                            className="rounded-2xl border border-foreground/10 bg-card/5 p-3 space-y-3"
+                                            onClick={() =>
+                                                handleViewUser(user.id)
+                                            }
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center font-bold text-primary uppercase shrink-0">
+                                                    {user.email?.[0] || 'U'}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="font-bold leading-tight tracking-tight truncate">
+                                                        {user.firstName}{' '}
+                                                        {user.lastName}
+                                                    </p>
+                                                    <p className="text-xs opacity-50 truncate">
+                                                        {user.email}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {user.isVerified ? (
+                                                    <Badge className="bg-green-500/10 text-green-500 border-none px-2 py-1 font-bold">
+                                                        Verified
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge className="bg-yellow-500/10 text-yellow-500 border-none px-2 py-1 font-bold">
+                                                        Pending
+                                                    </Badge>
+                                                )}
+                                                <Badge className="bg-primary/10 text-primary border-none px-2 py-1 font-bold">
+                                                    {user.streak || 0} Streak
+                                                </Badge>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <p className="text-[11px] opacity-50">
+                                                    Joined{' '}
+                                                    {new Date(
+                                                        user.createdAt ||
+                                                            Date.now(),
+                                                    ).toLocaleDateString(
+                                                        'en-GB',
+                                                    )}
+                                                </p>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="rounded-xl"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleViewUser(user.id);
+                                                    }}
+                                                >
+                                                    View
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="py-10 text-center opacity-30 font-bold italic uppercase tracking-widest">
+                                        No Active Records Found
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="hidden md:block overflow-x-auto">
+                                <Table>
                                 <TableHeader>
                                     <TableRow className="border-foreground/5 hover:bg-transparent uppercase tracking-widest text-[10px] font-bold opacity-40">
                                         <TableHead>
@@ -846,7 +916,8 @@ export default function AdminDashboard() {
                                         </TableRow>
                                     )}
                                 </TableBody>
-                            </Table>
+                                </Table>
+                            </div>
                         </div>
                     </Card>
                 </TabsContent>
@@ -857,35 +928,35 @@ export default function AdminDashboard() {
                 >
                     <div className="grid grid-cols-1 gap-6">
                         <Card className="glass border-foreground/5 rounded-2xl overflow-hidden shadow-2xl">
-                            <CardHeader className="p-10 pb-6 border-b border-foreground/5 flex flex-row items-center justify-between">
+                            <CardHeader className="p-4 md:p-10 pb-4 md:pb-6 border-b border-foreground/5 flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-3xl font-bold">
+                                    <CardTitle className="text-2xl md:text-3xl font-bold">
                                         AI Inventory
                                     </CardTitle>
-                                    <CardDescription className="text-lg">
+                                    <CardDescription className="text-sm md:text-lg">
                                         Monitoring donated Groq API resources
                                         for student compute
                                     </CardDescription>
                                 </div>
-                                <div className="p-4 bg-primary/10 rounded-2xl text-primary border border-primary/20">
-                                    <Key size={32} />
+                                <div className="p-3 md:p-4 bg-primary/10 rounded-2xl text-primary border border-primary/20">
+                                    <Key size={24} className="md:w-8 md:h-8" />
                                 </div>
                             </CardHeader>
-                            <CardContent className="p-10 pt-6">
+                            <CardContent className="p-3 sm:p-4 md:p-10 pt-4 md:pt-6">
                                 <div className="space-y-6">
                                     {keys.length > 0 ? (
                                         keys.map((key, i) => (
                                             <div
                                                 key={i}
-                                                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 rounded-2xl bg-card/5 border border-foreground/5 hover:bg-card/10 transition-all group gap-4"
+                                                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 md:p-6 rounded-2xl bg-card/5 border border-foreground/5 hover:bg-card/10 transition-all group gap-4"
                                             >
-                                                <div className="flex gap-6 items-center">
-                                                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                                <div className="flex gap-4 md:gap-6 items-center">
+                                                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                                                         <Database size={24} />
                                                     </div>
                                                     <div className="break-all">
                                                         <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
-                                                            <p className="font-bold text-lg">
+                                                            <p className="font-bold text-base md:text-lg">
                                                                 Key ending in
                                                                 ...
                                                                 {key.apiKey?.slice(
@@ -919,7 +990,7 @@ export default function AdminDashboard() {
                                                     </div>
                                                     <Button
                                                         variant="ghost"
-                                                        className="h-12 w-12 rounded-2xl text-red-500/60 hover:text-red-500 hover:bg-red-500/10 shrink-0"
+                                                        className="h-10 w-10 md:h-12 md:w-12 rounded-2xl text-red-500/60 hover:text-red-500 hover:bg-red-500/10 shrink-0"
                                                     >
                                                         <Trash2 size={20} />
                                                     </Button>
@@ -951,15 +1022,15 @@ export default function AdminDashboard() {
                 >
                     {userDetails ? (
                         <>
-                            <div className="p-6 md:p-8 border-b border-foreground/5 relative overflow-hidden">
+                            <div className="p-4 md:p-8 border-b border-foreground/5 relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-50" />
-                                <div className="relative z-10 flex items-center gap-6">
-                                    <div className="w-20 h-20 rounded-3xl bg-card/5 border border-foreground/10 shadow-lg flex items-center justify-center text-3xl font-bold text-foreground/60">
+                                <div className="relative z-10 flex items-center gap-4 md:gap-6">
+                                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-card/5 border border-foreground/10 shadow-lg flex items-center justify-center text-2xl md:text-3xl font-bold text-foreground/60">
                                         {userDetails.user.email?.[0]?.toUpperCase() ||
                                             'U'}
                                     </div>
                                     <div>
-                                        <h2 className="text-3xl font-bold tracking-tight">
+                                        <h2 className="text-xl md:text-3xl font-bold tracking-tight">
                                             {userDetails.user.firstName}{' '}
                                             {userDetails.user.lastName}
                                         </h2>
@@ -979,7 +1050,7 @@ export default function AdminDashboard() {
                             </div>
 
                             <ScrollArea className="flex-1">
-                                <div className="p-6 md:p-8 space-y-8">
+                                <div className="p-4 md:p-8 space-y-6 md:space-y-8">
                                     {/* Missing Actions Section */}
                                     {userDetails.missingActions &&
                                         userDetails.missingActions.length >

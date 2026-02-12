@@ -6,9 +6,6 @@ import { useState, useRef, useEffect } from 'react';
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,11 +18,12 @@ import {
     History,
     Sparkles,
     Plus,
-    Search,
     Calendar,
     XCircle,
     BookOpen,
     Target,
+    Paperclip,
+    FileText,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { api } from '@/lib/apiClient';
@@ -49,10 +47,16 @@ interface Message {
     timestamp: Date;
 }
 
+interface ActiveDocument {
+    documentId: string;
+    fileName: string;
+}
+
 const DashboardAIAssistant = () => {
     const { toast } = useToast();
     const containerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const pdfInputRef = useRef<HTMLInputElement>(null);
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
@@ -64,6 +68,10 @@ const DashboardAIAssistant = () => {
     ]);
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+    const [activeDocument, setActiveDocument] = useState<ActiveDocument | null>(
+        null,
+    );
     const [historyGroups, setHistoryGroups] = useState<{
         [key: string]: Message[];
     }>({});
@@ -146,7 +154,7 @@ const DashboardAIAssistant = () => {
      * Why: Provides a responsive, real-time typing experience typical of modern LLM interfaces.
      */
     const handleSendMessage = async () => {
-        if (!inputValue.trim()) return;
+        if (!inputValue.trim() || isUploadingPdf) return;
 
         // Add user message
         const userMessage: Message = {
@@ -191,6 +199,7 @@ const DashboardAIAssistant = () => {
                 () => {
                     setIsLoading(false);
                 },
+                activeDocument?.documentId,
             );
         } catch (error) {
             console.error('Error starting AI stream:', error);
@@ -215,6 +224,60 @@ const DashboardAIAssistant = () => {
                 timestamp: new Date(),
             },
         ]);
+    };
+
+    const handlePdfUpload = async (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        if (file.type !== 'application/pdf') {
+            toast({
+                title: 'Invalid File',
+                description: 'Please upload a PDF document.',
+                variant: 'destructive',
+            });
+            event.target.value = '';
+            return;
+        }
+
+        setIsUploadingPdf(true);
+        try {
+            const res = await api.uploadPDFForChat(file);
+            if (res?.success && res?.data?.documentId) {
+                setActiveDocument({
+                    documentId: res.data.documentId,
+                    fileName: res.data.fileName || file.name,
+                });
+
+                const systemMessage: Message = {
+                    id: `pdf-${Date.now()}`,
+                    role: 'assistant',
+                    content: `PDF "${res.data.fileName || file.name}" uploaded successfully. Ask me anything from this document.`,
+                    timestamp: new Date(),
+                };
+                setMessages((prev) => [...prev, systemMessage]);
+
+                toast({
+                    title: 'PDF Ready',
+                    description:
+                        'Your PDF has been indexed and is now available in chat.',
+                });
+            }
+        } catch (error: any) {
+            console.error('PDF upload failed:', error);
+            toast({
+                title: 'Upload Failed',
+                description:
+                    error?.response?.data?.message ||
+                    'Failed to upload and process PDF.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsUploadingPdf(false);
+            event.target.value = '';
+        }
     };
 
     const handleClearHistory = async () => {
@@ -243,28 +306,72 @@ const DashboardAIAssistant = () => {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-8 w-full pb-20 px-0 md:px-6 lg:px-6 pt-6 md:pt-12 flex flex-col h-[calc(100vh-64px)] overflow-hidden"
+            className="space-y-4 md:space-y-8 w-full px-3 md:px-6 lg:px-6 pt-4 md:pt-10 pb-4 md:pb-20 flex flex-col h-[calc(100dvh-64px)] overflow-hidden"
         >
-            <div className="chat-header flex items-center justify-between">
+            <div className="chat-header flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-4xl font-bold mb-1 flex items-center gap-3">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 flex items-center gap-2 sm:gap-3">
                         <span className="text-gradient">Izabi AI</span>
-                        <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+                        <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary animate-pulse" />
                     </h1>
-                    <p className="text-muted-foreground font-medium">
+                    <p className="text-sm sm:text-base text-muted-foreground font-medium">
                         Your personal co-pilot for smarter learning.
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={startNewChat}
+                        className="sm:hidden h-9 w-9"
+                        aria-label="Start new chat"
+                    >
+                        <Plus className="h-4 w-4" />
+                    </Button>
                     <Button
                         variant="outline"
                         size="sm"
                         onClick={startNewChat}
-                        className="hidden md:flex items-center gap-2 glass border-primary/20 hover:bg-primary/10 text-primary font-bold transition-all"
+                        className="hidden sm:flex items-center gap-2 glass border-primary/20 hover:bg-primary/10 text-primary font-bold transition-all"
                     >
                         <Plus className="h-4 w-4" />
                         New Chat
                     </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => pdfInputRef.current?.click()}
+                        disabled={isUploadingPdf || isLoading}
+                        className="sm:hidden h-9 w-9"
+                        aria-label="Upload PDF"
+                    >
+                        {isUploadingPdf ? (
+                            <Loader className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Paperclip className="h-4 w-4" />
+                        )}
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => pdfInputRef.current?.click()}
+                        disabled={isUploadingPdf || isLoading}
+                        className="hidden sm:flex items-center gap-2 glass border-primary/20 hover:bg-primary/10 text-primary font-bold transition-all"
+                    >
+                        {isUploadingPdf ? (
+                            <Loader className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Paperclip className="h-4 w-4" />
+                        )}
+                        Upload PDF
+                    </Button>
+                    <input
+                        ref={pdfInputRef}
+                        type="file"
+                        accept="application/pdf"
+                        onChange={handlePdfUpload}
+                        className="hidden"
+                    />
 
                     <Sheet>
                         <SheetTrigger asChild>
@@ -424,19 +531,19 @@ const DashboardAIAssistant = () => {
                 </div>
             </div>
 
-            <Card className="chat-card flex-1 flex flex-col overflow-hidden glass-card border-foreground/10 shadow-2xl relative">
+            <Card className="chat-card flex-1 flex flex-col overflow-hidden glass-card border-foreground/10 shadow-xl md:shadow-2xl relative">
                 {/* Background decorative element */}
 
                 <CardContent className="flex-1 flex flex-col overflow-hidden p-0">
                     {/* Messages Container */}
-                    <div className="flex-1 overflow-y-auto space-y-6 p-6 scrollbar-thin scrollbar-thumb-primary/10">
+                    <div className="flex-1 overflow-y-auto space-y-4 md:space-y-6 p-4 md:p-6 scrollbar-thin scrollbar-thumb-primary/10">
                         {messages.map((message) => (
                             <div
                                 key={message.id}
                                 className={`flex items-start gap-4 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
                             >
                                 <div
-                                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border 
+                                    className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 border 
                                     ${
                                         message.role === 'user'
                                             ? 'bg-primary/20 border-primary/30 text-primary'
@@ -444,20 +551,20 @@ const DashboardAIAssistant = () => {
                                     }`}
                                 >
                                     {message.role === 'user' ? (
-                                        <User className="h-5 w-5" />
+                                        <User className="h-4 w-4 md:h-5 md:w-5" />
                                     ) : (
-                                        <Brain className="h-5 w-5" />
+                                        <Brain className="h-4 w-4 md:h-5 md:w-5" />
                                     )}
                                 </div>
                                 <div
-                                    className={`max-w-[85%] lg:max-w-[70%] px-5 py-4 rounded-2xl shadow-sm leading-relaxed
+                                    className={`max-w-[92%] sm:max-w-[85%] lg:max-w-[70%] px-4 md:px-5 py-3 md:py-4 rounded-2xl shadow-sm leading-relaxed
                                         ${
                                             message.role === 'user'
                                                 ? 'bg-primary text-primary-foreground rounded-tr-none'
                                                 : 'bg-muted/50 backdrop-blur-sm border border-foreground/5 rounded-tl-none'
                                         }`}
                                 >
-                                    <div className="text-sm md:text-base prose prose-sm dark:prose-invert max-w-none foregroundspace-pre-wrap">
+                                    <div className="text-sm md:text-base prose prose-sm dark:prose-invert max-w-none break-words foregroundspace-pre-wrap">
                                         {message.content === '' ? (
                                             <div className="flex gap-1 py-1">
                                                 <div className="w-1.5 h-1.5 bg-accent animate-bounce" />
@@ -498,10 +605,29 @@ const DashboardAIAssistant = () => {
                     </div>
 
                     {/* Input Area */}
-                    <div className="p-6 pt-0 space-y-4">
+                    <div className="p-3 md:p-6 pt-0 space-y-3 md:space-y-4">
+                        {activeDocument && (
+                            <div className="flex items-center justify-between gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
+                                <div className="flex items-center gap-2 text-xs text-primary font-medium min-w-0">
+                                    <FileText className="h-4 w-4" />
+                                    <span className="truncate max-w-[170px] sm:max-w-[220px] md:max-w-[420px]">
+                                        {activeDocument.fileName}
+                                    </span>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setActiveDocument(null)}
+                                    className="h-7 px-2 text-[11px]"
+                                >
+                                    Remove
+                                </Button>
+                            </div>
+                        )}
+
                         {/* Smart Suggestions */}
                         {!inputValue && !isLoading && (
-                            <div className="flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                            <div className="flex gap-2 overflow-x-auto pb-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
                                 {[
                                     {
                                         label: 'Generate Flashcards',
@@ -524,7 +650,7 @@ const DashboardAIAssistant = () => {
                                         variant="outline"
                                         size="sm"
                                         onClick={() => setInputValue(s.prompt)}
-                                        className="h-8 rounded-full bg-primary/5 border-primary/20 text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-wider gap-2 transition-all hover:scale-105"
+                                        className="h-8 shrink-0 rounded-full bg-primary/5 border-primary/20 text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-wider gap-2 transition-all hover:scale-105"
                                     >
                                         {s.icon} {s.label}
                                     </Button>
@@ -534,24 +660,46 @@ const DashboardAIAssistant = () => {
 
                         <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-card/5 backdrop-blur-xl">
                             <Input
-                                placeholder="Ask Izabi to generate something or explain a topic..."
+                                placeholder={
+                                    activeDocument
+                                        ? 'Ask questions about your uploaded PDF...'
+                                        : 'Ask Izabi to generate something or explain a topic...'
+                                }
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyPress={handleKeyPress}
-                                disabled={isLoading}
-                                className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent py-6 text-lg"
+                                disabled={isLoading || isUploadingPdf}
+                                className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent py-4 md:py-6 text-base md:text-lg"
                             />
                             <Button
-                                onClick={handleSendMessage}
-                                disabled={isLoading || !inputValue.trim()}
+                                type="button"
+                                variant="ghost"
                                 size="icon"
-                                className="h-10 w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary/90 shadow-glow shadow-primary/20 relative overflow-hidden group/btn"
+                                onClick={() => pdfInputRef.current?.click()}
+                                disabled={isUploadingPdf || isLoading}
+                                className="h-8 w-8 md:h-9 md:w-9 rounded-lg"
                             >
-                                <Send className="h-5 w-5 relative z-10" />
+                                {isUploadingPdf ? (
+                                    <Loader className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Paperclip className="h-4 w-4" />
+                                )}
+                            </Button>
+                            <Button
+                                onClick={handleSendMessage}
+                                disabled={
+                                    isLoading ||
+                                    isUploadingPdf ||
+                                    !inputValue.trim()
+                                }
+                                size="icon"
+                                className="h-9 w-9 md:h-10 md:w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary/90 shadow-glow shadow-primary/20 relative overflow-hidden group/btn"
+                            >
+                                <Send className="h-4 w-4 md:h-5 md:w-5 relative z-10" />
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
                             </Button>
                         </div>
-                        <p className="text-[10px] text-center mt-3 text-muted-foreground/60 uppercase tracking-widest font-medium">
+                        <p className="text-[9px] md:text-[10px] text-center mt-2 md:mt-3 text-muted-foreground/60 uppercase tracking-[0.15em] font-medium">
                             Izabi AI may provide inaccurate info. Verify
                             important facts.
                         </p>
