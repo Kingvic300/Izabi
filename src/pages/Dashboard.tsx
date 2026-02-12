@@ -149,7 +149,7 @@ const Dashboard = () => {
                             onFeed={handleFeedPet}
                             className={
                                 isAIAssistantRoute
-                                    ? 'bottom-24 left-3 right-auto sm:bottom-8 sm:right-8 sm:left-auto'
+                                    ? 'top-1/2 right-2 sm:right-4 left-auto bottom-auto -translate-y-1/2'
                                     : undefined
                             }
                         />

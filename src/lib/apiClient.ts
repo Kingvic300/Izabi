@@ -176,7 +176,19 @@ export const api = {
     },
 
     async submitQuizResult(result: any) {
-        const response = await apiClient.post('/api/quiz/results', result);
+        const normalizedPayload = {
+            ...result,
+            quizTitle:
+                (typeof result?.quizTitle === 'string' &&
+                    result.quizTitle.trim()) ||
+                (typeof result?.subject === 'string' &&
+                    result.subject.trim()) ||
+                'Practice Quiz',
+        };
+        const response = await apiClient.post(
+            '/api/quiz/results',
+            normalizedPayload,
+        );
         return response.data;
     },
 
