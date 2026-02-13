@@ -28,6 +28,11 @@ export const useApiError = () => {
         const readable = getReadableError(error);
         const message = error?.message || readable.description;
         const type = categorizeError(error);
+        const statusCode = error?.response?.status;
+        const skipGlobalToast = Boolean(error?.config?.skipGlobalErrorToast);
+        const willGlobalToast =
+            !skipGlobalToast &&
+            (!statusCode || statusCode === 401 || statusCode >= 500);
 
         const errorObj: ErrorType = {
             id: Date.now().toString(),
@@ -39,22 +44,24 @@ export const useApiError = () => {
 
         setErrors((prev) => [...prev, errorObj]);
 
-        // TRIGGER TOAST AUTOMATICALLY
-        if (type === 'network') {
-            toast.error(readable.title, {
-                description: readable.description,
-                duration: 6500,
-            });
-        } else if (type === 'validation') {
-            toast.warning(readable.title || 'Please check your details', {
-                description: readable.description,
-                duration: 6000,
-            });
-        } else {
-            toast.error(readable.title || 'Action failed', {
-                description: readable.description,
-                duration: 6500,
-            });
+        // TRIGGER TOAST AUTOMATICALLY (avoid duplicates when global handler will also toast)
+        if (!willGlobalToast) {
+            if (type === 'network') {
+                toast.error(readable.title, {
+                    description: readable.description,
+                    duration: 6500,
+                });
+            } else if (type === 'validation') {
+                toast.warning(readable.title || 'Please check your details', {
+                    description: readable.description,
+                    duration: 6000,
+                });
+            } else {
+                toast.error(readable.title || 'Action failed', {
+                    description: readable.description,
+                    duration: 6500,
+                });
+            }
         }
     }, []);
 

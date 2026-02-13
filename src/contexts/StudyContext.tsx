@@ -6,7 +6,6 @@ import React, {
     useCallback,
 } from 'react';
 import { api } from '@/lib/apiClient';
-import { toast } from 'sonner';
 
 interface StudyJob {
     id: string;
@@ -134,14 +133,8 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
                             }
                         }
 
-                        toast.success(`Analysis Complete: ${job.fileName}`, {
-                            description: 'Your study material is ready.',
-                        });
                     } else if (jobInfo?.status === 'FAILED') {
                         updateJobStatus(job.id, { status: 'FAILED' });
-                        toast.error(`Analysis Failed: ${job.fileName}`, {
-                            description: jobInfo.error || 'Unknown error',
-                        });
                     } else {
                         // Use backend progress if available, else estimate
                         const currentProgress =
