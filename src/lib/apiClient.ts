@@ -91,18 +91,8 @@ apiClient.interceptors.response.use(
             !error.config?.skipGlobalErrorToast &&
             (!statusCode || statusCode === 401 || statusCode >= 500);
 
-        // Handle specific status codes
-        if (statusCode === 401) {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userId');
-            if (window.location.pathname !== '/login') {
-                toast.error('Session expired', {
-                    description: 'Please log in again to continue.',
-                    duration: 7000,
-                });
-                window.location.href = '/login';
-            }
-        } else if (shouldShowGlobalToast) {
+        // Show a single toast for global errors (including 401) without forcing logout
+        if (shouldShowGlobalToast) {
             toast.error(readable.title, {
                 description: readable.description,
                 duration: 6500,
@@ -441,9 +431,7 @@ export const api = {
         await apiClient.delete(`/api/admin/users/${userId}`);
     },
 
-    async logout() {
-        await apiClient.post('/api/user/logout');
-    },
+    // logout removed: app keeps users signed in
 
     // --- BACKGROUND PROCESSING ---
     async ingestDirect(file: File, type: string, options?: any) {

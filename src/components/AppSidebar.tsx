@@ -173,36 +173,12 @@ export function AppSidebar() {
 
     const isActive = (path: string) => currentPath === path;
 
-    /*
-     * How: Clears stored auth tokens and user data via apiClient (backend) and localStorage, then redirects to home.
-     * Why: Ensures the session is completely terminated on both server and client.
-     */
+    // Logout removed per product decision: keep users signed in persistently
     const handleLogout = async () => {
-        try {
-            await api.logout();
-            // Clear local storage
-            localStorage.removeItem('userId');
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userFirstName');
-            localStorage.removeItem('userLastName');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userProfilePicturePath');
-
-            appToast.success({
-                title: 'Logged out',
-                description: 'You have been successfully logged out.',
-            });
-
-            navigate('/');
-        } catch (error) {
-            appToast.error({
-                title: 'Logout failed',
-                description:
-                    'There was an error logging out. Please try again.',
-            });
-            console.error('Error logging out:', error);
-        }
+        appToast.info({
+            title: 'Logout disabled',
+            description: 'You stay signed in so you can pick up where you left off.',
+        });
     };
 
     return (
