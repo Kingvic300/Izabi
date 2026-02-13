@@ -33,6 +33,12 @@ const StreakPet: React.FC<PetProps> = ({
     const [isOpen, setIsOpen] = React.useState(false);
     const positionKey = 'streak_pet_position_v1';
     const baseOffset = 32; // matches bottom-8/right-8
+    const [dragBounds, setDragBounds] = React.useState<{
+        left: number;
+        right: number;
+        top: number;
+        bottom: number;
+    } | null>(null);
     const [position, setPosition] = React.useState(() => {
         if (typeof window === 'undefined') return { x: 0, y: 0 };
         try {
@@ -72,6 +78,16 @@ const StreakPet: React.FC<PetProps> = ({
         };
     };
 
+    const computeDragBounds = () => {
+        const bounds = getBounds();
+        return {
+            left: bounds.minX,
+            right: bounds.maxX,
+            top: bounds.minY,
+            bottom: bounds.maxY,
+        };
+    };
+
     const persistPosition = (pos: { x: number; y: number }) => {
         try {
             localStorage.setItem(positionKey, JSON.stringify(pos));
@@ -104,6 +120,7 @@ const StreakPet: React.FC<PetProps> = ({
     };
 
     useEffect(() => {
+        setDragBounds(computeDragBounds());
         if (petRef.current) {
             gsap.to(petRef.current, {
                 y: -10,
@@ -132,6 +149,7 @@ const StreakPet: React.FC<PetProps> = ({
 
     useEffect(() => {
         const handleResize = () => {
+            setDragBounds(computeDragBounds());
             setPosition((prev) => {
                 const next = clampPosition(prev);
                 persistPosition(next);
@@ -183,7 +201,10 @@ const StreakPet: React.FC<PetProps> = ({
         <div
             id="streak-pet-container"
             ref={containerRef}
-            className={cn('fixed bottom-8 right-8 z-[200] group', className)}
+            className={cn(
+                'fixed bottom-8 right-8 z-[300] group pointer-events-auto',
+                className,
+            )}
         >
             <motion.div
                 initial={{ scale: 0, opacity: 0 }}
@@ -192,6 +213,7 @@ const StreakPet: React.FC<PetProps> = ({
                 drag
                 dragMomentum={false}
                 dragElastic={0.15}
+                dragConstraints={dragBounds ?? undefined}
                 onDragEnd={(_, info) => {
                     setPosition((prev) => {
                         const next = clampPosition({
@@ -202,8 +224,8 @@ const StreakPet: React.FC<PetProps> = ({
                         return next;
                     });
                 }}
-                style={{ x: position.x, y: position.y }}
-                className="relative"
+                style={{ x: position.x, y: position.y, touchAction: 'none' }}
+                className="relative select-none cursor-grab active:cursor-grabbing"
             >
                 {/* Main Pet Orb */}
                 <div

@@ -20,6 +20,7 @@ import {
     BrainCircuit,
     UserCircle,
     CheckCircle2,
+    Send,
     XCircle,
     Calendar,
     Award,
@@ -151,6 +152,9 @@ export default function AdminDashboard() {
     );
     const [isTerminateDialogOpen, setIsTerminateDialogOpen] = useState(false);
     const [isTerminatingAccess, setIsTerminatingAccess] = useState(false);
+    const [isAnnouncementDialogOpen, setIsAnnouncementDialogOpen] =
+        useState(false);
+    const [isSendingAnnouncement, setIsSendingAnnouncement] = useState(false);
 
     // User Details Sheet State
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -338,6 +342,32 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleSendAnnouncement = async () => {
+        if (isSendingAnnouncement) return;
+        setIsSendingAnnouncement(true);
+        try {
+            const result = await api.sendLiveAnnouncement();
+            if (result?.success) {
+                appToast.success({
+                    title: 'Announcement Sent',
+                    description: `Sent to ${result.sent || 0} of ${result.total || 0} users.`,
+                });
+            } else {
+                appToast.error({
+                    title: 'Announcement Failed',
+                    description:
+                        result?.message ||
+                        'Could not send the live announcement.',
+                });
+            }
+        } catch (error) {
+            appToast.apiError(error, 'Announcement Failed');
+        } finally {
+            setIsSendingAnnouncement(false);
+            setIsAnnouncementDialogOpen(false);
+        }
+    };
+
     const handleFilterAction = () => {
         const hasFilters = searchQuery.trim().length > 0 || showActiveOnly;
         if (hasFilters) {
@@ -392,10 +422,20 @@ export default function AdminDashboard() {
                 setUserDetails(response.data);
             }
         } catch (error) {
+            const status = (error as any)?.response?.status;
+            if (status === 404) {
+                appToast.info({
+                    title: 'User not found',
+                    description:
+                        'This user may have been removed. Refreshing the registry.',
+                });
+                void fetchAdminData(false);
+            } else {
             appToast.error({
                 title: 'Error',
                 description: 'Failed to load user details',
             });
+            }
         } finally {
             setIsDetailsLoading(false);
         }
@@ -476,6 +516,28 @@ export default function AdminDashboard() {
           userToTerminate.email ||
           'this user'
         : 'this user';
+    const selectedUserName = userDetails
+        ? `${userDetails.user?.firstName || ''} ${userDetails.user?.lastName || ''}`.trim() ||
+          userDetails.user?.email ||
+          'User'
+        : 'User';
+    const selectedUserInitial =
+        userDetails?.user?.firstName?.[0] ||
+        userDetails?.user?.lastName?.[0] ||
+        userDetails?.user?.email?.[0] ||
+        'U';
+    const selectedUserEmail = userDetails?.user?.email || 'No email on file';
+    const joinedLabel = userDetails?.user?.createdAt
+        ? new Date(userDetails.user.createdAt).toLocaleDateString()
+        : '—';
+    const lastActivityLabel = userDetails?.history?.[0]?.date
+        ? new Date(userDetails.history[0].date).toLocaleString([], {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+          })
+        : 'No activity yet';
+    const studyStats = userDetails?.user?.studyStats || {};
+    const petProfile = userDetails?.user?.pet;
 
     return (
         <div
@@ -499,6 +561,19 @@ export default function AdminDashboard() {
                     </h1>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+                    <Button
+                        variant="outline"
+                        onClick={() => setIsAnnouncementDialogOpen(true)}
+                        disabled={isSendingAnnouncement}
+                        className="glass h-11 md:h-12 rounded-2xl border-foreground/10 hover:bg-card/5 transition-all w-full lg:w-auto"
+                    >
+                        {isSendingAnnouncement ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <Send className="mr-2 h-4 w-4" />
+                        )}
+                        Send Launch Email
+                    </Button>
                     <Button
                         variant="outline"
                         onClick={handleSyncRegistry}
@@ -1186,28 +1261,108 @@ export default function AdminDashboard() {
                     </SheetHeader>
                     {userDetails ? (
                         <>
-                            <div className="p-4 md:p-8 border-b border-foreground/5 relative overflow-hidden">
-                                <div className="absolute inset-0 bg-primary/20 opacity-50" />
-                                <div className="relative z-10 flex items-center gap-4 md:gap-6">
-                                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-card/5 border border-foreground/10 shadow-lg flex items-center justify-center text-2xl md:text-3xl font-bold text-foreground/60">
-                                        {userDetails.user.email?.[0]?.toUpperCase() ||
-                                            'U'}
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl md:text-3xl font-bold tracking-tight">
-                                            {userDetails.user.firstName}{' '}
-                                            {userDetails.user.lastName}
-                                        </h2>
-                                        <div className="flex flex-wrap items-center gap-3 mt-2">
+                            <div className="relative overflow-hidden border-b border-foreground/5">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_55%)] opacity-70 pointer-events-none" />
+                                <div className="absolute -top-24 -right-16 h-56 w-56 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
+                                <div className="relative z-10 p-4 md:p-8 space-y-6">
+                                    <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                                        <div className="flex items-center gap-4 md:gap-6">
+                                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-card/10 border border-foreground/10 shadow-xl flex items-center justify-center text-2xl md:text-3xl font-bold text-foreground/70">
+                                                {selectedUserInitial.toUpperCase()}
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-foreground/50 font-semibold">
+                                                    User Profile
+                                                </p>
+                                                <h2 className="text-xl md:text-3xl font-bold tracking-tight">
+                                                    {selectedUserName}
+                                                </h2>
+                                                <div className="flex flex-wrap items-center gap-2 mt-2">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="border-foreground/10 bg-card/5 text-[11px] font-medium"
+                                                    >
+                                                        {selectedUserEmail}
+                                                    </Badge>
+                                                    <Badge className="bg-primary text-primary-foreground hover:bg-primary/80 border-none text-[11px] font-bold">
+                                                        {userDetails.user
+                                                            .points || 0}{' '}
+                                                        XP
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap items-center gap-2">
                                             <Badge
                                                 variant="outline"
-                                                className="border-foreground/10 bg-card/5 text-xs font-medium"
+                                                className="border-foreground/10 bg-card/5 text-[10px] uppercase tracking-widest font-bold"
                                             >
-                                                {userDetails.user.email}
+                                                ID:{' '}
+                                                <span className="font-mono">
+                                                    {userDetails.user.id
+                                                        ?.slice(0, 8)
+                                                        ?.toUpperCase() || '—'}
+                                                </span>
                                             </Badge>
-                                            <Badge className="bg-primary text-primary-foreground hover:bg-primary/80 border-none">
-                                                {userDetails.user.points} XP
+                                            <Badge
+                                                variant="outline"
+                                                className="border-foreground/10 bg-card/5 text-[10px] uppercase tracking-widest font-bold"
+                                            >
+                                                Login Streak:{' '}
+                                                {userDetails.user.streaks
+                                                    ?.login || 0}
+                                                d
                                             </Badge>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        <div className="p-3 md:p-4 rounded-2xl bg-card/10 border border-foreground/10">
+                                            <div className="flex items-center gap-2 mb-2 opacity-60">
+                                                <Calendar size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">
+                                                    Joined
+                                                </span>
+                                            </div>
+                                            <p className="font-mono font-bold text-sm">
+                                                {joinedLabel}
+                                            </p>
+                                        </div>
+                                        <div className="p-3 md:p-4 rounded-2xl bg-card/10 border border-foreground/10">
+                                            <div className="flex items-center gap-2 mb-2 opacity-60">
+                                                <Activity size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">
+                                                    Last Activity
+                                                </span>
+                                            </div>
+                                            <p className="font-mono font-bold text-sm">
+                                                {lastActivityLabel}
+                                            </p>
+                                        </div>
+                                        <div className="p-3 md:p-4 rounded-2xl bg-card/10 border border-foreground/10">
+                                            <div className="flex items-center gap-2 mb-2 opacity-60">
+                                                <Award size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">
+                                                    Global Streak
+                                                </span>
+                                            </div>
+                                            <p className="font-mono font-bold text-sm">
+                                                {userDetails.user.streaks
+                                                    ?.global || 0}{' '}
+                                                days
+                                            </p>
+                                        </div>
+                                        <div className="p-3 md:p-4 rounded-2xl bg-card/10 border border-foreground/10">
+                                            <div className="flex items-center gap-2 mb-2 opacity-60">
+                                                <ShieldCheck size={14} />
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">
+                                                    Longest Streak
+                                                </span>
+                                            </div>
+                                            <p className="font-mono font-bold text-sm">
+                                                {userDetails.user.streaks
+                                                    ?.longest || 0}{' '}
+                                                days
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -1215,147 +1370,263 @@ export default function AdminDashboard() {
 
                             <ScrollArea className="flex-1">
                                 <div className="p-4 md:p-8 space-y-6 md:space-y-8">
-                                    {/* Missing Actions Section */}
-                                    {userDetails.missingActions &&
-                                        userDetails.missingActions.length >
-                                            0 && (
-                                            <div className="space-y-4">
-                                                <h3 className="text-sm font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
-                                                    <XCircle
-                                                        size={14}
-                                                        className="text-destructive"
-                                                    />{' '}
-                                                    Needs Attention
+                                    <div className="grid lg:grid-cols-[1fr_1.2fr] gap-6">
+                                        <div className="space-y-6">
+                                            <div className="rounded-3xl border border-foreground/10 bg-card/5 p-5 md:p-6">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/50 flex items-center gap-2">
+                                                        <XCircle
+                                                            size={14}
+                                                            className="text-destructive"
+                                                        />
+                                                        Signals
+                                                    </h3>
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="border-foreground/10 bg-card/10 text-[10px] uppercase tracking-widest"
+                                                    >
+                                                        {userDetails
+                                                            .missingActions
+                                                            ?.length || 0}{' '}
+                                                        Flags
+                                                    </Badge>
+                                                </div>
+                                                {userDetails.missingActions &&
+                                                userDetails.missingActions
+                                                    .length > 0 ? (
+                                                    <div className="grid grid-cols-1 gap-3">
+                                                        {userDetails.missingActions.map(
+                                                            (
+                                                                action: string,
+                                                                i: number,
+                                                            ) => (
+                                                                <div
+                                                                    key={i}
+                                                                    className="flex items-center gap-3 p-4 rounded-2xl bg-destructive/5 border border-destructive/10"
+                                                                >
+                                                                    <div className="w-2 h-2 rounded-full bg-destructive/60" />
+                                                                    <span className="text-sm font-medium text-destructive/80">
+                                                                        {action}
+                                                                    </span>
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
+                                                        <CheckCircle2
+                                                            size={16}
+                                                            className="text-emerald-400"
+                                                        />
+                                                        <p className="text-sm font-medium text-emerald-200/80">
+                                                            All clear. No
+                                                            outstanding actions
+                                                            detected.
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="rounded-3xl border border-foreground/10 bg-card/5 p-5 md:p-6">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/50">
+                                                        Study Mix
+                                                    </h3>
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="border-foreground/10 bg-card/10 text-[10px] uppercase tracking-widest"
+                                                    >
+                                                        Totals
+                                                    </Badge>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
+                                                        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                            <FileText
+                                                                size={12}
+                                                            />
+                                                            Summaries
+                                                        </div>
+                                                        <p className="text-2xl font-bold">
+                                                            {studyStats
+                                                                .summaries ||
+                                                                0}
+                                                        </p>
+                                                    </div>
+                                                    <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
+                                                        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                            <BrainCircuit
+                                                                size={12}
+                                                            />
+                                                            Quizzes
+                                                        </div>
+                                                        <p className="text-2xl font-bold">
+                                                            {studyStats
+                                                                .quizzes || 0}
+                                                        </p>
+                                                    </div>
+                                                    <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
+                                                        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                            <TrendingUp
+                                                                size={12}
+                                                            />
+                                                            Guides
+                                                        </div>
+                                                        <p className="text-2xl font-bold">
+                                                            {studyStats
+                                                                .guides || 0}
+                                                        </p>
+                                                    </div>
+                                                    <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
+                                                        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                            <Key size={12} />
+                                                            Flashcards
+                                                        </div>
+                                                        <p className="text-2xl font-bold">
+                                                            {studyStats
+                                                                .flashcards ||
+                                                                0}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="rounded-3xl border border-foreground/10 bg-card/5 p-5 md:p-6">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/50">
+                                                        Companion
+                                                    </h3>
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="border-foreground/10 bg-card/10 text-[10px] uppercase tracking-widest"
+                                                    >
+                                                        {petProfile?.level
+                                                            ? `Level ${petProfile.level}`
+                                                            : 'Unbonded'}
+                                                    </Badge>
+                                                </div>
+                                                {petProfile ? (
+                                                    <div className="flex items-center gap-4 rounded-2xl border border-foreground/10 bg-card/10 px-4 py-3">
+                                                        <div className="h-10 w-10 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center text-primary">
+                                                            <ShieldCheck
+                                                                size={16}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-bold">
+                                                                {petProfile.name ||
+                                                                    'Izabi Pet'}
+                                                            </p>
+                                                            <p className="text-xs uppercase tracking-widest text-foreground/50">
+                                                                {petProfile.type ||
+                                                                    'companion'}{' '}
+                                                                ·{' '}
+                                                                {petProfile.mood ||
+                                                                    'neutral'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-sm opacity-50">
+                                                        No companion data is
+                                                        linked to this account
+                                                        yet.
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="rounded-3xl border border-foreground/10 bg-card/5 p-5 md:p-6">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-foreground/50 flex items-center gap-2">
+                                                    <Clock size={14} />
+                                                    Intelligence Timeline
                                                 </h3>
-                                                <div className="grid grid-cols-1 gap-3">
-                                                    {userDetails.missingActions.map(
+                                                <Badge
+                                                    variant="outline"
+                                                    className="border-foreground/10 bg-card/10 text-[10px] uppercase tracking-widest"
+                                                >
+                                                    {userDetails.history
+                                                        ?.length || 0}{' '}
+                                                    Events
+                                                </Badge>
+                                            </div>
+                                            <div className="relative pl-4 space-y-6 border-l border-foreground/10 ml-2">
+                                                {userDetails.history &&
+                                                userDetails.history.length >
+                                                    0 ? (
+                                                    userDetails.history.map(
                                                         (
-                                                            action: string,
+                                                            event: any,
                                                             i: number,
                                                         ) => (
                                                             <div
                                                                 key={i}
-                                                                className="flex items-center gap-3 p-4 rounded-2xl bg-destructive/5 border border-destructive/10"
+                                                                className="relative pl-6"
                                                             >
-                                                                <div className="w-2 h-2 rounded-full bg-destructive/50" />
-                                                                <span className="text-sm font-medium text-destructive/80">
-                                                                    {action}
-                                                                </span>
-                                                            </div>
-                                                        ),
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                    {/* Stats Grid */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5">
-                                            <div className="flex items-center gap-2 mb-2 opacity-50">
-                                                <Calendar size={14} />
-                                                <span className="text-xs font-bold uppercase tracking-wider">
-                                                    Joined
-                                                </span>
-                                            </div>
-                                            <p className="font-mono font-bold">
-                                                {new Date(
-                                                    userDetails.user.createdAt,
-                                                ).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5">
-                                            <div className="flex items-center gap-2 mb-2 opacity-50">
-                                                <Award size={14} />
-                                                <span className="text-xs font-bold uppercase tracking-wider">
-                                                    Streak
-                                                </span>
-                                            </div>
-                                            <p className="font-mono font-bold">
-                                                {userDetails.user.streaks
-                                                    ?.global || 0}{' '}
-                                                Days
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* History Timeline */}
-                                    <div className="space-y-4">
-                                        <h3 className="text-sm font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
-                                            <Clock size={14} /> Intelligence
-                                            Timeline
-                                        </h3>
-                                        <div className="relative pl-4 space-y-8 border-l border-foreground/10 ml-2">
-                                            {userDetails.history &&
-                                            userDetails.history.length > 0 ? (
-                                                userDetails.history.map(
-                                                    (event: any, i: number) => (
-                                                        <div
-                                                            key={i}
-                                                            className="relative pl-6"
-                                                        >
-                                                            <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-background" />
-                                                            <div className="space-y-1">
-                                                                <p className="text-xs font-bold opacity-40 uppercase tracking-widest mb-1">
-                                                                    {new Date(
-                                                                        event.date,
-                                                                    ).toLocaleString(
-                                                                        [],
-                                                                        {
-                                                                            dateStyle:
-                                                                                'medium',
-                                                                            timeStyle:
-                                                                                'short',
-                                                                        },
-                                                                    )}
-                                                                </p>
-                                                                <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 hover:bg-card/10 transition-colors">
-                                                                    <div className="flex items-center gap-3 mb-2">
-                                                                        {getActivityIcon(
-                                                                            event.type,
+                                                                <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-background" />
+                                                                <div className="space-y-2">
+                                                                    <p className="text-[10px] font-bold opacity-40 uppercase tracking-[0.3em]">
+                                                                        {new Date(
+                                                                            event.date,
+                                                                        ).toLocaleString(
+                                                                            [],
+                                                                            {
+                                                                                dateStyle:
+                                                                                    'medium',
+                                                                                timeStyle:
+                                                                                    'short',
+                                                                            },
                                                                         )}
-                                                                        <span className="font-bold text-sm">
-                                                                            {getActivityText(
-                                                                                event.details
-                                                                                    ? {
-                                                                                          ...event.details,
-                                                                                          type: event.type,
-                                                                                      }
-                                                                                    : {
-                                                                                          type: event.type,
-                                                                                      },
+                                                                    </p>
+                                                                    <div className="rounded-2xl bg-card/10 border border-foreground/10 p-4 hover:bg-card/20 transition-colors">
+                                                                        <div className="flex items-center gap-3 mb-2">
+                                                                            {getActivityIcon(
+                                                                                event.type,
                                                                             )}
-                                                                        </span>
+                                                                            <span className="font-bold text-sm">
+                                                                                {getActivityText(
+                                                                                    event.details
+                                                                                        ? {
+                                                                                              ...event.details,
+                                                                                              type: event.type,
+                                                                                          }
+                                                                                        : {
+                                                                                              type: event.type,
+                                                                                          },
+                                                                                )}
+                                                                            </span>
+                                                                        </div>
+                                                                        {event.details &&
+                                                                            event
+                                                                                .details
+                                                                                .score !==
+                                                                                undefined && (
+                                                                                <Badge
+                                                                                    variant="secondary"
+                                                                                    className="bg-card/10"
+                                                                                >
+                                                                                    Score:{' '}
+                                                                                    {
+                                                                                        event
+                                                                                            .details
+                                                                                            .score
+                                                                                    }
+                                                                                    %
+                                                                                </Badge>
+                                                                            )}
                                                                     </div>
-                                                                    {event.details &&
-                                                                        event
-                                                                            .details
-                                                                            .score !==
-                                                                            undefined && (
-                                                                            <Badge
-                                                                                variant="secondary"
-                                                                                className="bg-card/10 mt-1"
-                                                                            >
-                                                                                Score:{' '}
-                                                                                {
-                                                                                    event
-                                                                                        .details
-                                                                                        .score
-                                                                                }
-
-                                                                                %
-                                                                            </Badge>
-                                                                        )}
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    ),
-                                                )
-                                            ) : (
-                                                <div className="pl-6 text-sm opacity-40 italic">
-                                                    No recorded history
-                                                    available.
-                                                </div>
-                                            )}
+                                                        ),
+                                                    )
+                                                ) : (
+                                                    <div className="pl-6 text-sm opacity-40 italic">
+                                                        No recorded history
+                                                        available.
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1370,6 +1641,66 @@ export default function AdminDashboard() {
                     )}
                 </SheetContent>
             </Sheet>
+
+            <AlertDialog
+                open={isAnnouncementDialogOpen}
+                onOpenChange={(open) => {
+                    if (isSendingAnnouncement) return;
+                    setIsAnnouncementDialogOpen(open);
+                }}
+            >
+                <AlertDialogContent className="glass border-primary/20 rounded-3xl p-0 overflow-hidden max-w-[92vw] sm:max-w-md">
+                    <div className="border-b border-primary/20 bg-primary/5 px-5 py-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                                <Send size={18} />
+                            </div>
+                            <div>
+                                <p className="text-[11px] uppercase tracking-[0.16em] font-bold text-primary/70">
+                                    Broadcast Email
+                                </p>
+                                <h3 className="font-bold text-base text-foreground">
+                                    Send Launch Announcement
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <AlertDialogHeader className="px-5 pt-5 pb-0 text-left space-y-2">
+                        <AlertDialogTitle className="text-xl font-extrabold tracking-tight">
+                            Send announcement to all users?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm leading-relaxed text-foreground/70">
+                            This will email every non-admin user with the live
+                            announcement and launch link.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <AlertDialogFooter className="px-5 pb-5 pt-5 gap-2">
+                        <AlertDialogCancel
+                            disabled={isSendingAnnouncement}
+                            className="rounded-xl border-foreground/10"
+                        >
+                            Cancel
+                        </AlertDialogCancel>
+                        <Button
+                            type="button"
+                            onClick={handleSendAnnouncement}
+                            disabled={isSendingAnnouncement}
+                            className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold min-w-40"
+                        >
+                            {isSendingAnnouncement ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Sending...
+                                </>
+                            ) : (
+                                'Send Now'
+                            )}
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             <AlertDialog
                 open={isTerminateDialogOpen}

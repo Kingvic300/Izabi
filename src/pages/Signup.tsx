@@ -191,6 +191,9 @@ const Signup = () => {
 
             localStorage.setItem('userId', userId);
             localStorage.setItem('authToken', accessToken);
+            if (tokens.refreshToken) {
+                localStorage.setItem('refreshToken', tokens.refreshToken);
+            }
             localStorage.setItem('userEmail', user.email);
             localStorage.setItem('userRole', role);
             if (user.firstName)

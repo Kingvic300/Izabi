@@ -15,6 +15,7 @@ import {
     Mail,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { getToastDedupe } from '@/lib/toastDedupe';
 import axios from 'axios';
 import { BASE_URL } from '@/constants';
 import gsap from 'gsap';
@@ -38,6 +39,16 @@ const OTP = () => {
         role?.trim().toUpperCase() || 'USER';
     const getDefaultAvatar = (mail: string) =>
         `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(mail || 'scholar@izabi.ai')}`;
+    const showErrorToast = (title: string, description: string) => {
+        const { id, suppressed } = getToastDedupe(
+            'error',
+            title,
+            description,
+            5000,
+        );
+        if (suppressed) return;
+        toast.error(title, { id, description });
+    };
     const cardRef = useRef<HTMLDivElement>(null);
     const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
     const [loading, setLoading] = useState(false);
@@ -158,18 +169,18 @@ const OTP = () => {
         const otpCode = otp.join('');
 
         if (!email) {
-            toast.error('Missing Email', {
-                description:
-                    'Your verification session expired. Please go back to signup and request a new code.',
-            });
+            showErrorToast(
+                'Missing Email',
+                'Your verification session expired. Please go back to signup and request a new code.',
+            );
             return;
         }
 
         if (otpCode.length < OTP_LENGTH) {
-            toast.error('Incomplete Code', {
-                description:
-                    'Please enter the full 6-digit verification code sent to your email.',
-            });
+            showErrorToast(
+                'Incomplete Code',
+                'Please enter the full 6-digit verification code sent to your email.',
+            );
             return;
         }
 
@@ -190,6 +201,9 @@ const OTP = () => {
 
             localStorage.setItem('userId', userId);
             localStorage.setItem('authToken', accessToken);
+            if (tokens.refreshToken) {
+                localStorage.setItem('refreshToken', tokens.refreshToken);
+            }
             localStorage.setItem('userEmail', userEmail);
             localStorage.setItem('userRole', role);
             localStorage.setItem(
@@ -211,9 +225,7 @@ const OTP = () => {
             const errorMessage =
                 error.response?.data?.message ||
                 'The code you entered is invalid or has expired.';
-            toast.error('Verification Failed', {
-                description: errorMessage,
-            });
+            showErrorToast('Verification Failed', errorMessage);
         } finally {
             setLoading(false);
         }
@@ -225,10 +237,10 @@ const OTP = () => {
      */
     const handleResendOtp = async () => {
         if (!email) {
-            toast.error('Missing Email', {
-                description:
-                    'Please return to signup and request a new verification code.',
-            });
+            showErrorToast(
+                'Missing Email',
+                'Please return to signup and request a new verification code.',
+            );
             return;
         }
 
@@ -260,11 +272,11 @@ const OTP = () => {
             });
         } catch (err: unknown) {
             const error = err as ErrorResponse;
-            toast.error('Error', {
-                description:
-                    error.response?.data?.message ||
+            showErrorToast(
+                'Error',
+                error.response?.data?.message ||
                     'Failed to resend verification code. Please try again.',
-            });
+            );
         } finally {
             setResending(false);
         }

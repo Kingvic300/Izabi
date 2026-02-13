@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { ErrorType } from '@/types/pdf';
 import { toast } from 'sonner';
 import { getReadableError } from '@/lib/readableErrors';
+import { getToastDedupe } from '@/lib/toastDedupe';
 
 export const useApiError = () => {
     const [errors, setErrors] = useState<ErrorType[]>([]);
@@ -47,20 +48,49 @@ export const useApiError = () => {
         // TRIGGER TOAST AUTOMATICALLY (avoid duplicates when global handler will also toast)
         if (!willGlobalToast) {
             if (type === 'network') {
-                toast.error(readable.title, {
-                    description: readable.description,
-                    duration: 5000,
-                });
+                const { id, suppressed } = getToastDedupe(
+                    'error',
+                    readable.title,
+                    readable.description,
+                    5000,
+                );
+                if (!suppressed) {
+                    toast.error(readable.title, {
+                        id,
+                        description: readable.description,
+                        duration: 5000,
+                    });
+                }
             } else if (type === 'validation') {
-                toast.warning(readable.title || 'Please check your details', {
-                    description: readable.description,
-                    duration: 5000,
-                });
+                const title = readable.title || 'Please check your details';
+                const { id, suppressed } = getToastDedupe(
+                    'warning',
+                    title,
+                    readable.description,
+                    5000,
+                );
+                if (!suppressed) {
+                    toast.warning(title, {
+                        id,
+                        description: readable.description,
+                        duration: 5000,
+                    });
+                }
             } else {
-                toast.error(readable.title || 'Action failed', {
-                    description: readable.description,
-                    duration: 5000,
-                });
+                const title = readable.title || 'Action failed';
+                const { id, suppressed } = getToastDedupe(
+                    'error',
+                    title,
+                    readable.description,
+                    5000,
+                );
+                if (!suppressed) {
+                    toast.error(title, {
+                        id,
+                        description: readable.description,
+                        duration: 5000,
+                    });
+                }
             }
         }
     }, []);

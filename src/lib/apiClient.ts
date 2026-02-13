@@ -3,6 +3,7 @@ import axiosRetry from 'axios-retry';
 import { BASE_URL } from '@/constants';
 import { toast } from 'sonner';
 import { getReadableError } from '@/lib/readableErrors';
+import { getToastDedupe } from '@/lib/toastDedupe';
 
 // Simple in-memory cache for GET requests
 const apiCache = new Map<string, { data: any; timestamp: number }>();
@@ -21,6 +22,71 @@ const apiClient = axios.create({
     withCredentials: true,
     timeout: 120000, // Increased timeout for heavy AI generation or processing
 });
+
+const refreshClient = axios.create({
+    baseURL: BASE_URL,
+    withCredentials: true,
+    timeout: 120000,
+});
+
+let isRefreshingToken = false;
+let refreshQueue: Array<{
+    resolve: (token: string) => void;
+    reject: (error: any) => void;
+}> = [];
+
+const clearAuthSession = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userFirstName');
+    localStorage.removeItem('userLastName');
+    localStorage.removeItem('userProfilePicturePath');
+};
+
+const redirectToLogin = () => {
+    if (typeof window === 'undefined') return;
+    const isAlreadyOnLogin =
+        window.location.pathname === '/login' ||
+        window.location.pathname.startsWith('/login/');
+    if (!isAlreadyOnLogin) {
+        window.location.replace('/login');
+    }
+};
+
+const resolveRefreshQueue = (token: string) => {
+    refreshQueue.forEach((item) => item.resolve(token));
+    refreshQueue = [];
+};
+
+const rejectRefreshQueue = (error: any) => {
+    refreshQueue.forEach((item) => item.reject(error));
+    refreshQueue = [];
+};
+
+const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) {
+        throw new Error('Missing refresh token');
+    }
+
+    const response = await refreshClient.post(
+        '/api/auth/refresh',
+        null,
+        {
+            headers: {
+                Authorization: `Bearer ${refreshToken}`,
+            },
+        },
+    );
+
+    return response.data as {
+        accessToken: string;
+        refreshToken?: string;
+    };
+};
 
 // --- LOW NETWORK OPTIMIZATIONS ---
 
@@ -47,9 +113,16 @@ apiClient.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${token}`;
     }
 
+    const skipCache =
+        (config.headers as any)?.['x-skip-cache'] ||
+        (config as any).skipCache;
+
     // Only cache GET requests
-    if (config.method?.toLowerCase() === 'get') {
-        const cacheKey = config.url + JSON.stringify(config.params || {});
+    if (!skipCache && config.method?.toLowerCase() === 'get') {
+        const cacheKey =
+            (config.baseURL || '') +
+            (config.url || '') +
+            JSON.stringify(config.params || {});
         const cached = apiCache.get(cacheKey);
 
         if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -68,9 +141,17 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
     (response) => {
         // Cache successful GET responses
-        if (response.config.method?.toLowerCase() === 'get' && response.data) {
+        const skipCache =
+            (response.config.headers as any)?.['x-skip-cache'] ||
+            (response.config as any).skipCache;
+        if (
+            !skipCache &&
+            response.config.method?.toLowerCase() === 'get' &&
+            response.data
+        ) {
             const cacheKey =
-                response.config.url +
+                (response.config.baseURL || '') +
+                (response.config.url || '') +
                 JSON.stringify(response.config.params || {});
             apiCache.set(cacheKey, {
                 data: response.data,
@@ -79,7 +160,7 @@ apiClient.interceptors.response.use(
         }
         return response;
     },
-    (error) => {
+    async (error) => {
         // Handle Cache Hit shortcut
         if (error.config?._isCacheHit) {
             return Promise.resolve({
@@ -90,6 +171,59 @@ apiClient.interceptors.response.use(
         }
 
         const statusCode = error.response?.status;
+        const originalRequest = error.config || {};
+
+        if (
+            statusCode === 401 &&
+            !originalRequest._retry &&
+            !originalRequest.skipAuthRefresh
+        ) {
+            if (!localStorage.getItem('refreshToken')) {
+                return Promise.reject(error);
+            }
+
+            if (isRefreshingToken) {
+                return new Promise((resolve, reject) => {
+                    refreshQueue.push({
+                        resolve: (token: string) => {
+                            originalRequest.headers =
+                                originalRequest.headers || {};
+                            originalRequest.headers.Authorization = `Bearer ${token}`;
+                            resolve(apiClient(originalRequest));
+                        },
+                        reject,
+                    });
+                });
+            }
+
+            originalRequest._retry = true;
+            isRefreshingToken = true;
+
+            try {
+                const tokens = await refreshAccessToken();
+                const newAccessToken = tokens.accessToken;
+                localStorage.setItem('authToken', newAccessToken);
+                if (tokens.refreshToken) {
+                    localStorage.setItem('refreshToken', tokens.refreshToken);
+                }
+
+                resolveRefreshQueue(newAccessToken);
+                originalRequest.headers = originalRequest.headers || {};
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                return apiClient(originalRequest);
+            } catch (refreshError: any) {
+                rejectRefreshQueue(refreshError);
+                const refreshStatus = refreshError?.response?.status;
+                if (refreshStatus === 401 || refreshStatus === 403) {
+                    clearAuthSession();
+                    redirectToLogin();
+                }
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshingToken = false;
+            }
+        }
+
         const readable = getReadableError(error);
         const shouldShowGlobalToast =
             !error.config?.skipGlobalErrorToast &&
@@ -97,10 +231,19 @@ apiClient.interceptors.response.use(
 
         // Show a single toast for global errors (including 401) without forcing logout
         if (shouldShowGlobalToast) {
-            toast.error(readable.title, {
-                description: readable.description,
-                duration: 5000,
-            });
+            const { id, suppressed } = getToastDedupe(
+                'error',
+                readable.title,
+                readable.description,
+                5000,
+            );
+            if (!suppressed) {
+                toast.error(readable.title, {
+                    id,
+                    description: readable.description,
+                    duration: 5000,
+                });
+            }
         }
 
         return Promise.reject(error);
@@ -343,12 +486,33 @@ export const api = {
                         (diff % (1000 * 60 * 60)) / (1000 * 60),
                     );
 
-                    toast.error('Daily Limit Reached', {
-                        description: `${errorMsg} Resets in ${hours}h ${minutes}m.`,
-                        duration: 5000,
-                    });
+                    const description = `${errorMsg} Resets in ${hours}h ${minutes}m.`;
+                    const { id, suppressed } = getToastDedupe(
+                        'error',
+                        'Daily Limit Reached',
+                        description,
+                        5000,
+                    );
+                    if (!suppressed) {
+                        toast.error('Daily Limit Reached', {
+                            id,
+                            description,
+                            duration: 5000,
+                        });
+                    }
                 } else {
-                    toast.error('AI Error', { description: errorMsg });
+                    const { id, suppressed } = getToastDedupe(
+                        'error',
+                        'AI Error',
+                        errorMsg,
+                        5000,
+                    );
+                    if (!suppressed) {
+                        toast.error('AI Error', {
+                            id,
+                            description: errorMsg,
+                        });
+                    }
                 }
                 eventSource.close();
                 if (onComplete) onComplete();
@@ -434,9 +598,18 @@ export const api = {
         return response.data;
     },
 
+    async sendLiveAnnouncement(payload?: { dryRun?: boolean; limit?: number }) {
+        const response = await apiClient.post(
+            '/api/admin/announce-live',
+            payload || {},
+        );
+        return response.data;
+    },
+
     async getUserHistory(userId: string) {
         const response = await apiClient.get(
             `/api/admin/users/${userId}/history`,
+            { skipCache: true } as any,
         );
         return response.data;
     },

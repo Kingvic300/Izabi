@@ -42,6 +42,15 @@ const Home = () => {
                 ease: 'power2.out',
             });
 
+            gsap.from('.hero-step', {
+                opacity: 0,
+                x: 18,
+                stagger: 0.08,
+                duration: 0.6,
+                ease: 'power2.out',
+                delay: 0.2,
+            });
+
             gsap.from('.feature-card', {
                 scrollTrigger: {
                     trigger: '#features',
@@ -87,6 +96,40 @@ const Home = () => {
                 y: 24,
                 stagger: 0.08,
                 duration: 0.7,
+                ease: 'power2.out',
+            });
+
+            gsap.from('.about-card', {
+                scrollTrigger: {
+                    trigger: '#about',
+                    start: 'top 82%',
+                },
+                opacity: 0,
+                y: 24,
+                duration: 0.7,
+                ease: 'power2.out',
+            });
+
+            gsap.from('.about-stat', {
+                scrollTrigger: {
+                    trigger: '#about',
+                    start: 'top 78%',
+                },
+                opacity: 0,
+                y: 18,
+                stagger: 0.08,
+                duration: 0.6,
+                ease: 'power2.out',
+            });
+
+            gsap.from('.cta-panel', {
+                scrollTrigger: {
+                    trigger: '.cta-panel',
+                    start: 'top 85%',
+                },
+                opacity: 0,
+                y: 24,
+                duration: 0.8,
                 ease: 'power2.out',
             });
         },
@@ -291,7 +334,7 @@ const Home = () => {
                                     ].map((item, index) => (
                                         <li
                                             key={item}
-                                            className="min-h-11 rounded-xl border border-foreground/10 bg-background/40 px-4 flex items-center gap-3"
+                                            className="hero-step min-h-11 rounded-xl border border-foreground/10 bg-background/40 px-4 flex items-center gap-3"
                                         >
                                             <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-primary text-xs font-black shrink-0">
                                                 {index + 1}
@@ -511,7 +554,7 @@ const Home = () => {
                 <section id="about" className="py-14 sm:py-16 lg:py-20">
                     <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
                         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8 items-stretch">
-                            <div className="xl:col-span-7 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12">
+                            <div className="about-card xl:col-span-7 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12">
                                 <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight text-foreground">
                                     Our Mission:{' '}
                                     <span className="text-primary">
@@ -541,7 +584,7 @@ const Home = () => {
                                 ].map((stat) => (
                                     <div
                                         key={stat.label}
-                                        className="border border-foreground/10 bg-background/60 rounded-2xl p-4 sm:p-6 flex flex-col justify-center text-center"
+                                        className="about-stat border border-foreground/10 bg-background/60 rounded-2xl p-4 sm:p-6 flex flex-col justify-center text-center"
                                     >
                                         <div className="text-xl sm:text-2xl font-black text-primary">
                                             {stat.val}
@@ -558,7 +601,7 @@ const Home = () => {
 
                 <section className="py-14 sm:py-16 lg:py-20">
                     <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                        <div className="text-center bg-primary/5 py-10 sm:py-14 rounded-[24px] sm:rounded-[36px] border border-foreground/10 px-4 sm:px-8">
+                        <div className="cta-panel text-center bg-primary/5 py-10 sm:py-14 rounded-[24px] sm:rounded-[36px] border border-foreground/10 px-4 sm:px-8">
                             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground">
                                 {t('cta.upgrade')}
                             </h2>

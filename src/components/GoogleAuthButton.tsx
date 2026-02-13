@@ -22,8 +22,39 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
     useOneTap = false,
     className,
 }) => {
+    const containerRef = React.useRef<HTMLDivElement | null>(null);
+    const [buttonWidth, setButtonWidth] = React.useState<string | undefined>(
+        undefined,
+    );
+
+    React.useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        const updateWidth = () => {
+            const rect = el.getBoundingClientRect();
+            if (rect.width > 0) {
+                setButtonWidth(`${Math.round(rect.width)}px`);
+            }
+        };
+
+        updateWidth();
+
+        if (typeof ResizeObserver === 'undefined') {
+            window.addEventListener('resize', updateWidth);
+            return () => window.removeEventListener('resize', updateWidth);
+        }
+
+        const observer = new ResizeObserver(updateWidth);
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
     return (
-        <div className={cn('relative group w-full', className)}>
+        <div
+            ref={containerRef}
+            className={cn('relative group w-full', className)}
+        >
             <div className="pointer-events-none w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-card/50 border border-foreground/10 shadow-2xl flex items-center justify-center gap-3 px-4 transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-glow group-hover:bg-card/70">
                 <span className="h-8 w-8 rounded-full bg-white text-black flex items-center justify-center shadow-lg">
                     <svg
@@ -53,7 +84,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
                     {label}
                 </span>
             </div>
-            <div className="absolute inset-0 opacity-0 [&_div]:w-full [&_div]:h-full [&_iframe]:w-full [&_iframe]:h-full">
+            <div className="absolute inset-0 z-10 opacity-0 [&_div]:w-full [&_div]:h-full [&_iframe]:w-full [&_iframe]:h-full">
                 <GoogleLogin
                     onSuccess={onSuccess}
                     onError={onError}
@@ -61,7 +92,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
                     theme="outline"
                     size="large"
                     shape="pill"
-                    width="100%"
+                    width={buttonWidth}
                 />
             </div>
         </div>

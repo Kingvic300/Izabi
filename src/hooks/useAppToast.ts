@@ -5,6 +5,7 @@ import { AlertCircle, CheckCircle2, Info, XCircle } from 'lucide-react';
 import React from 'react';
 import { useMemo } from 'react';
 import { getReadableError } from '@/lib/readableErrors';
+import { getToastDedupe } from '@/lib/toastDedupe';
 
 export type ToastVariant =
     | 'default'
@@ -35,11 +36,22 @@ export const useAppToast = () => {
 
             // Error messages - specific and actionable
             error: (options: ToastOptions) => {
-                toast.error(options.title || 'Something went wrong', {
-                    description:
-                        options.description ||
-                        'Please try again. If the issue persists, contact support.',
-                    duration: options.duration ?? 5000,
+                const title = options.title || 'Something went wrong';
+                const description =
+                    options.description ||
+                    'Please try again. If the issue persists, contact support.';
+                const duration = options.duration ?? 5000;
+                const { id, suppressed } = getToastDedupe(
+                    'error',
+                    title,
+                    description,
+                    duration,
+                );
+                if (suppressed) return;
+                toast.error(title, {
+                    id,
+                    description,
+                    duration,
                     icon: React.createElement(XCircle, {
                         className: 'h-5 w-5 text-red-500',
                     }),
@@ -48,9 +60,20 @@ export const useAppToast = () => {
 
             // Warning messages - explain the risk
             warning: (options: ToastOptions) => {
-                toast.warning(options.title || 'Warning', {
-                    description: options.description,
-                    duration: options.duration ?? 5000,
+                const title = options.title || 'Warning';
+                const description = options.description;
+                const duration = options.duration ?? 5000;
+                const { id, suppressed } = getToastDedupe(
+                    'warning',
+                    title,
+                    description,
+                    duration,
+                );
+                if (suppressed) return;
+                toast.warning(title, {
+                    id,
+                    description,
+                    duration,
                     icon: React.createElement(AlertCircle, {
                         className: 'h-5 w-5 text-yellow-500',
                     }),
@@ -69,8 +92,18 @@ export const useAppToast = () => {
             },
             apiError: (error: unknown, fallbackTitle?: string) => {
                 const readable = getReadableError(error);
-                toast.error(fallbackTitle || readable.title, {
-                    description: readable.description,
+                const title = fallbackTitle || readable.title;
+                const description = readable.description;
+                const { id, suppressed } = getToastDedupe(
+                    'error',
+                    title,
+                    description,
+                    5000,
+                );
+                if (suppressed) return;
+                toast.error(title, {
+                    id,
+                    description,
                     duration: 5000,
                     icon: React.createElement(XCircle, {
                         className: 'h-5 w-5 text-red-500',
@@ -116,10 +149,20 @@ export const useAppToast = () => {
             },
 
             loginFailed: (reason: string) => {
-                toast.error('Login failed', {
-                    description:
-                        reason ||
-                        'Please check your email and password and try again.',
+                const title = 'Login failed';
+                const description =
+                    reason ||
+                    'Please check your email and password and try again.';
+                const { id, suppressed } = getToastDedupe(
+                    'error',
+                    title,
+                    description,
+                    5000,
+                );
+                if (suppressed) return;
+                toast.error(title, {
+                    id,
+                    description,
                     icon: React.createElement(XCircle, {
                         className: 'h-5 w-5 text-red-500',
                     }),
@@ -127,9 +170,19 @@ export const useAppToast = () => {
             },
 
             signupFailed: (reason: string) => {
-                toast.error('Signup failed', {
-                    description:
-                        reason || 'Please check your information and try again.',
+                const title = 'Signup failed';
+                const description =
+                    reason || 'Please check your information and try again.';
+                const { id, suppressed } = getToastDedupe(
+                    'error',
+                    title,
+                    description,
+                    5000,
+                );
+                if (suppressed) return;
+                toast.error(title, {
+                    id,
+                    description,
                     icon: React.createElement(XCircle, {
                         className: 'h-5 w-5 text-red-500',
                     }),
@@ -138,7 +191,15 @@ export const useAppToast = () => {
 
             networkError: () => {
                 const readable = getReadableError({ message: 'Network Error' });
+                const { id, suppressed } = getToastDedupe(
+                    'error',
+                    readable.title,
+                    readable.description,
+                    5000,
+                );
+                if (suppressed) return;
                 toast.error(readable.title, {
+                    id,
                     description: readable.description,
                     duration: 5000,
                     icon: React.createElement(XCircle, {
@@ -148,8 +209,18 @@ export const useAppToast = () => {
             },
 
             validationError: (fieldName: string, reason: string) => {
-                toast.error(`Invalid ${fieldName}`, {
-                    description: reason,
+                const title = `Invalid ${fieldName}`;
+                const description = reason;
+                const { id, suppressed } = getToastDedupe(
+                    'error',
+                    title,
+                    description,
+                    5000,
+                );
+                if (suppressed) return;
+                toast.error(title, {
+                    id,
+                    description,
                     icon: React.createElement(XCircle, {
                         className: 'h-5 w-5 text-red-500',
                     }),

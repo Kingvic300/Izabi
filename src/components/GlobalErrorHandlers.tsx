@@ -1,12 +1,22 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { getReadableError } from '@/lib/readableErrors';
+import { getToastDedupe } from '@/lib/toastDedupe';
 
 export const GlobalErrorHandlers = () => {
     useEffect(() => {
         const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
             const readable = getReadableError(event.reason);
-            toast.error(readable.title || 'Action failed', {
+            const title = readable.title || 'Action failed';
+            const { id, suppressed } = getToastDedupe(
+                'error',
+                title,
+                readable.description,
+                5000,
+            );
+            if (suppressed) return;
+            toast.error(title, {
+                id,
                 description: readable.description,
                 duration: 5000,
             });
@@ -14,7 +24,16 @@ export const GlobalErrorHandlers = () => {
 
         const handleError = (event: ErrorEvent) => {
             const readable = getReadableError(event.error || event.message);
-            toast.error('Something went wrong', {
+            const title = 'Something went wrong';
+            const { id, suppressed } = getToastDedupe(
+                'error',
+                title,
+                readable.description,
+                5000,
+            );
+            if (suppressed) return;
+            toast.error(title, {
+                id,
                 description: readable.description,
                 duration: 5000,
             });
