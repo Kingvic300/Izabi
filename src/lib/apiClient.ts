@@ -287,6 +287,16 @@ export const api = {
         return response.data.response;
     },
 
+    async summarizeText(text: string) {
+        const response = await apiClient.post('/api/ai/summarize', { text });
+        return response.data;
+    },
+
+    async getAiJobStatus(jobId: string) {
+        const response = await apiClient.get(`/api/ai/jobs/${jobId}`);
+        return response.data;
+    },
+
     /*
      * How: Establishes an EventSource connection for streaming AI responses.
      * Why: To provide a real-time, typewriter-style chat experience for long AI generations.
