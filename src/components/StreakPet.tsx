@@ -26,10 +26,59 @@ const StreakPet: React.FC<PetProps> = ({
     streakFreezes = 0,
     className,
 }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
     const petRef = useRef<HTMLDivElement>(null);
     const infoRef = useRef<HTMLDivElement>(null);
     const [isFeeding, setIsFeeding] = React.useState(false);
     const [isOpen, setIsOpen] = React.useState(false);
+    const positionKey = 'streak_pet_position_v1';
+    const baseOffset = 32; // matches bottom-8/right-8
+    const [position, setPosition] = React.useState(() => {
+        if (typeof window === 'undefined') return { x: 0, y: 0 };
+        try {
+            const saved = localStorage.getItem(positionKey);
+            if (saved) return JSON.parse(saved);
+        } catch {
+            // ignore storage errors
+        }
+        return { x: 0, y: 0 };
+    });
+
+    const clamp = (value: number, min: number, max: number) =>
+        Math.min(Math.max(value, min), max);
+
+    const getBounds = () => {
+        if (typeof window === 'undefined') {
+            return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+        }
+        const rect = petRef.current?.getBoundingClientRect();
+        const width = rect?.width || 80;
+        const height = rect?.height || 80;
+        const defaultLeft = window.innerWidth - baseOffset - width;
+        const defaultTop = window.innerHeight - baseOffset - height;
+        return {
+            minX: -defaultLeft,
+            maxX: baseOffset,
+            minY: -defaultTop,
+            maxY: baseOffset,
+        };
+    };
+
+    const clampPosition = (pos: { x: number; y: number }) => {
+        const bounds = getBounds();
+        return {
+            x: clamp(pos.x, bounds.minX, bounds.maxX),
+            y: clamp(pos.y, bounds.minY, bounds.maxY),
+        };
+    };
+
+    const persistPosition = (pos: { x: number; y: number }) => {
+        try {
+            localStorage.setItem(positionKey, JSON.stringify(pos));
+        } catch {
+            // ignore storage errors
+        }
+    };
 
     const toggleOpen = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -64,6 +113,33 @@ const StreakPet: React.FC<PetProps> = ({
                 ease: 'power1.inOut',
             });
         }
+    }, []);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handlePointerDown = (event: PointerEvent) => {
+            const target = event.target as Node | null;
+            if (containerRef.current && target) {
+                if (!containerRef.current.contains(target)) {
+                    setIsOpen(false);
+                }
+            }
+        };
+        document.addEventListener('pointerdown', handlePointerDown);
+        return () =>
+            document.removeEventListener('pointerdown', handlePointerDown);
+    }, [isOpen]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setPosition((prev) => {
+                const next = clampPosition(prev);
+                persistPosition(next);
+                return next;
+            });
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     /*
@@ -106,12 +182,27 @@ const StreakPet: React.FC<PetProps> = ({
     return (
         <div
             id="streak-pet-container"
+            ref={containerRef}
             className={cn('fixed bottom-8 right-8 z-[200] group', className)}
         >
             <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 whileHover={{ scale: 1.05 }}
+                drag
+                dragMomentum={false}
+                dragElastic={0.15}
+                onDragEnd={(_, info) => {
+                    setPosition((prev) => {
+                        const next = clampPosition({
+                            x: prev.x + info.offset.x,
+                            y: prev.y + info.offset.y,
+                        });
+                        persistPosition(next);
+                        return next;
+                    });
+                }}
+                style={{ x: position.x, y: position.y }}
                 className="relative"
             >
                 {/* Main Pet Orb */}

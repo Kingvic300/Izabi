@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,14 @@ const JobStatusToast: React.FC<JobStatusToastProps> = ({ job, onClose }) => {
     const isFailed = job.status === 'FAILED';
     const isProcessing =
         job.status === 'PROCESSING' || job.status === 'PENDING';
+
+    useEffect(() => {
+        if (!isCompleted && !isFailed) return;
+        const timeout = window.setTimeout(() => {
+            onClose(job.id);
+        }, 5000);
+        return () => window.clearTimeout(timeout);
+    }, [isCompleted, isFailed, job.id, onClose]);
 
     // Format title based on type
     const getTitle = () => {

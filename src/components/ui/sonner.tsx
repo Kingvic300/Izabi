@@ -16,7 +16,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
             visibleToasts={5}
             className="toaster group"
             toastOptions={{
-                duration: 6000,
+                duration: 5000,
                 classNames: {
                     toast: 'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-foreground/10 group-[.toaster]:shadow-2xl group-[.toaster]:rounded-xl group-[.toaster]:font-bold',
                     description:

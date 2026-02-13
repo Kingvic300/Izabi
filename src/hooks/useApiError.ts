@@ -49,17 +49,17 @@ export const useApiError = () => {
             if (type === 'network') {
                 toast.error(readable.title, {
                     description: readable.description,
-                    duration: 6500,
+                    duration: 5000,
                 });
             } else if (type === 'validation') {
                 toast.warning(readable.title || 'Please check your details', {
                     description: readable.description,
-                    duration: 6000,
+                    duration: 5000,
                 });
             } else {
                 toast.error(readable.title || 'Action failed', {
                     description: readable.description,
-                    duration: 6500,
+                    duration: 5000,
                 });
             }
         }

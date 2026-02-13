@@ -39,7 +39,7 @@ export const useAppToast = () => {
                     description:
                         options.description ||
                         'Please try again. If the issue persists, contact support.',
-                    duration: options.duration ?? 6500,
+                    duration: options.duration ?? 5000,
                     icon: React.createElement(XCircle, {
                         className: 'h-5 w-5 text-red-500',
                     }),
@@ -50,7 +50,7 @@ export const useAppToast = () => {
             warning: (options: ToastOptions) => {
                 toast.warning(options.title || 'Warning', {
                     description: options.description,
-                    duration: options.duration ?? 6000,
+                    duration: options.duration ?? 5000,
                     icon: React.createElement(AlertCircle, {
                         className: 'h-5 w-5 text-yellow-500',
                     }),
@@ -71,7 +71,7 @@ export const useAppToast = () => {
                 const readable = getReadableError(error);
                 toast.error(fallbackTitle || readable.title, {
                     description: readable.description,
-                    duration: 6500,
+                    duration: 5000,
                     icon: React.createElement(XCircle, {
                         className: 'h-5 w-5 text-red-500',
                     }),
@@ -140,7 +140,7 @@ export const useAppToast = () => {
                 const readable = getReadableError({ message: 'Network Error' });
                 toast.error(readable.title, {
                     description: readable.description,
-                    duration: 6500,
+                    duration: 5000,
                     icon: React.createElement(XCircle, {
                         className: 'h-5 w-5 text-red-500',
                     }),

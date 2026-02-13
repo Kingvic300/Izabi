@@ -8,7 +8,7 @@ export const GlobalErrorHandlers = () => {
             const readable = getReadableError(event.reason);
             toast.error(readable.title || 'Action failed', {
                 description: readable.description,
-                duration: 6500,
+                duration: 5000,
             });
         };
 
@@ -16,7 +16,7 @@ export const GlobalErrorHandlers = () => {
             const readable = getReadableError(event.error || event.message);
             toast.error('Something went wrong', {
                 description: readable.description,
-                duration: 6500,
+                duration: 5000,
             });
         };
 

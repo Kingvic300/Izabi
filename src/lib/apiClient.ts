@@ -8,6 +8,10 @@ import { getReadableError } from '@/lib/readableErrors';
 const apiCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+export const clearApiCache = () => {
+    apiCache.clear();
+};
+
 /*
  * How: Creates an Axios instance with base URL, credential handling, and custom timeout.
  * Why: To standardize HTTP requests across the application and handle slow network conditions.
@@ -95,7 +99,7 @@ apiClient.interceptors.response.use(
         if (shouldShowGlobalToast) {
             toast.error(readable.title, {
                 description: readable.description,
-                duration: 6500,
+                duration: 5000,
             });
         }
 
@@ -341,7 +345,7 @@ export const api = {
 
                     toast.error('Daily Limit Reached', {
                         description: `${errorMsg} Resets in ${hours}h ${minutes}m.`,
-                        duration: Infinity,
+                        duration: 5000,
                     });
                 } else {
                     toast.error('AI Error', { description: errorMsg });
@@ -441,7 +445,13 @@ export const api = {
         await apiClient.delete(`/api/admin/users/${userId}`);
     },
 
-    // logout removed: app keeps users signed in
+    async logout() {
+        await apiClient.post(
+            '/api/auth/logout',
+            null,
+            { skipGlobalErrorToast: true } as any,
+        );
+    },
 
     // --- BACKGROUND PROCESSING ---
     async ingestDirect(file: File, type: string, options?: any) {

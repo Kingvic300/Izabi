@@ -19,7 +19,7 @@ import {
     Crown,
 } from 'lucide-react';
 import { Logo } from '@/components/Logo';
-import apiClient, { api } from '@/lib/apiClient';
+import { api, clearApiCache } from '@/lib/apiClient';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     Sidebar,
@@ -42,7 +42,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { BASE_URL } from '@/constants';
 import { useAppToast } from '@/hooks/useAppToast';
 
 const navigationItems = [
@@ -173,12 +172,20 @@ export function AppSidebar() {
 
     const isActive = (path: string) => currentPath === path;
 
-    // Logout removed per product decision: keep users signed in persistently
     const handleLogout = async () => {
-        appToast.info({
-            title: 'Logout disabled',
-            description: 'You stay signed in so you can pick up where you left off.',
-        });
+        try {
+            await api.logout();
+        } catch (error) {
+            appToast.error({
+                title: 'Logout issue',
+                description:
+                    'We could not reach the server, but you have been signed out on this device.',
+            });
+        } finally {
+            clearApiCache();
+            localStorage.clear();
+            navigate('/login', { replace: true });
+        }
     };
 
     return (

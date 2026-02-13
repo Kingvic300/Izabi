@@ -26,7 +26,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { GoogleLogin } from '@react-oauth/google';
+import GoogleAuthButton from '@/components/GoogleAuthButton';
 
 const Login = () => {
     const normalizeRole = (role?: string) =>
@@ -370,7 +370,7 @@ const Login = () => {
                             </div>
 
                             <div className="flex justify-center w-full">
-                                <GoogleLogin
+                                <GoogleAuthButton
                                     onSuccess={handleGoogleSuccess}
                                     onError={() => {
                                         appToast.error({
@@ -380,9 +380,7 @@ const Login = () => {
                                         });
                                     }}
                                     useOneTap
-                                    theme="filled_black"
-                                    shape="circle"
-                                    width="100%"
+                                    label="Sign in with Google"
                                 />
                             </div>
                         </form>

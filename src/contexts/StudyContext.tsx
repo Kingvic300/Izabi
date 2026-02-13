@@ -21,6 +21,10 @@ interface StudySession {
     pdfFile?: File | null;
     pdfSelection?: any | null;
     numberOfQuestions: number;
+    quizDifficulty: 'easy' | 'balanced' | 'hard';
+    quizStyle: 'mixed' | 'mcq' | 'short';
+    shuffleQuestions: boolean;
+    showExplanations: boolean;
     summary: string;
     questions: any[];
     flashcards: any[];
@@ -48,6 +52,10 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
         pdfFile: null,
         pdfSelection: null,
         numberOfQuestions: 5,
+        quizDifficulty: 'balanced',
+        quizStyle: 'mixed',
+        shuffleQuestions: true,
+        showExplanations: true,
         summary: '',
         questions: [],
         flashcards: [],
@@ -72,6 +80,10 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
             pdfFile: null,
             pdfSelection: null,
             numberOfQuestions: 5,
+            quizDifficulty: 'balanced',
+            quizStyle: 'mixed',
+            shuffleQuestions: true,
+            showExplanations: true,
             summary: '',
             questions: [],
             flashcards: [],
@@ -114,12 +126,13 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
 
                         // Automatically update session if it matches the current active document
                         if (session.lastJobId === job.id) {
-                            if (
-                                job.type === 'summary' ||
-                                job.type === 'study-guide'
-                            ) {
+                            if (job.type === 'summary') {
                                 updateSession({
                                     summary: jobInfo.result?.summary || '',
+                                });
+                            } else if (job.type === 'study-guide') {
+                                updateSession({
+                                    studyGuide: jobInfo.result?.summary || '',
                                 });
                             } else if (job.type === 'quiz') {
                                 updateSession({
