@@ -23,6 +23,7 @@ import {
     Smartphone,
     DownloadCloud,
     Mail,
+    Globe,
 } from 'lucide-react';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTheme } from '@/components/theme-provider';
@@ -31,6 +32,14 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/lib/apiClient';
+import { useLanguage, type Language } from '@/contexts/LanguageContext';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 type SettingsState = {
     emailNotifications: boolean;
@@ -39,10 +48,19 @@ type SettingsState = {
     publicProfile: boolean;
 };
 
+const languageOptions = [
+    { value: 'en', label: 'English' },
+    { value: 'pidgin', label: 'Pidgin' },
+    { value: 'igbo', label: 'Igbo' },
+    { value: 'yoruba', label: 'Yoruba' },
+    { value: 'hausa', label: 'Hausa' },
+] as const;
+
 const DashboardSettings = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const appToast = useAppToast();
     const { theme, setTheme: setGlobalTheme } = useTheme();
+    const { language, setLanguage } = useLanguage();
 
     const [settings, setSettings] = useState<SettingsState>({
         emailNotifications: true,
@@ -51,6 +69,7 @@ const DashboardSettings = () => {
         publicProfile: false,
     });
     const [isSaving, setIsSaving] = useState(false);
+    const [isLanguageSaving, setIsLanguageSaving] = useState(false);
 
     useGSAP(
         () => {
@@ -94,6 +113,30 @@ const DashboardSettings = () => {
             }
         }
     }, [theme]);
+
+    useEffect(() => {
+        const hydrateLanguageFromProfile = async () => {
+            try {
+                const profile = await api.getUserProfile();
+                const preferred = String(
+                    profile?.data?.preferredLanguage || '',
+                )
+                    .trim()
+                    .toLowerCase();
+                if (
+                    preferred &&
+                    languageOptions.some((opt) => opt.value === preferred) &&
+                    preferred !== language
+                ) {
+                    setLanguage(preferred as Language);
+                }
+            } catch (error) {
+                console.error('Error loading preferred language:', error);
+            }
+        };
+
+        hydrateLanguageFromProfile();
+    }, [setLanguage]);
 
     /*
      * How: Toggles a boolean setting, updates state and localStorage, and shows a feedback toast.
@@ -162,6 +205,26 @@ const DashboardSettings = () => {
             title: 'Theme updated',
             description: `Your theme has been changed to ${value} mode.`,
         });
+    };
+
+    const handleLanguageChange = async (value: string) => {
+        if (value === language) return;
+        const previous = language;
+        setLanguage(value as Language);
+        setIsLanguageSaving(true);
+        try {
+            await api.updateUserProfile({ preferredLanguage: value });
+            appToast.success({
+                title: 'Language updated',
+                description:
+                    'Izabi will generate and speak content in your selected language.',
+            });
+        } catch (error) {
+            setLanguage(previous);
+            appToast.apiError(error, 'Language Update Failed');
+        } finally {
+            setIsLanguageSaving(false);
+        }
     };
 
     const handleDownloadData = async () => {
@@ -286,6 +349,60 @@ const DashboardSettings = () => {
                             icon={<Monitor size={24} />}
                             title="System Sync"
                         />
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Language Section */}
+            <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
+                <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
+                    <CardTitle className="flex items-center gap-3 text-xl font-bold">
+                        <Globe className="text-primary" />
+                        Study Language
+                    </CardTitle>
+                    <CardDescription>
+                        Choose the language used for AI outputs and audio
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6 md:p-8">
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <Label className="text-sm font-semibold uppercase tracking-wide">
+                                Preferred Language
+                            </Label>
+                            {isLanguageSaving && (
+                                <Badge
+                                    variant="outline"
+                                    className="border-primary/50 text-primary bg-primary/10"
+                                >
+                                    Saving...
+                                </Badge>
+                            )}
+                        </div>
+                        <Select
+                            value={language}
+                            onValueChange={handleLanguageChange}
+                            disabled={isLanguageSaving}
+                        >
+                            <SelectTrigger className="h-12 rounded-2xl border-foreground/10 bg-foreground/5">
+                                <SelectValue placeholder="Select language" />
+                            </SelectTrigger>
+                            <SelectContent className="glass border-foreground/10">
+                                {languageOptions.map((option) => (
+                                    <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                        className="cursor-pointer"
+                                    >
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                            This applies to summaries, quizzes, study guides,
+                            flashcards, and voice output.
+                        </p>
                     </div>
                 </CardContent>
             </Card>
