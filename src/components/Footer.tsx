@@ -4,6 +4,7 @@ import { Sparkles } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { PRICING_ENABLED } from '@/config/featureFlags';
 
 export const Footer = () => {
     const { t } = useLanguage();
@@ -12,7 +13,9 @@ export const Footer = () => {
         Platform: [
             { label: t('nav.features'), href: '/features' },
             { label: t('nav.how_it_works'), href: '/how-it-works' },
-            { label: t('nav.pricing'), href: '/pricing' },
+            ...(PRICING_ENABLED
+                ? [{ label: t('nav.pricing'), href: '/pricing' }]
+                : []),
             { label: 'Testimonials', href: '/testimonials' },
         ],
         Company: [

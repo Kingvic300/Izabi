@@ -7,6 +7,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
+import { PRICING_ENABLED } from '@/config/featureFlags';
 
 export const Header = () => {
     const { t } = useLanguage();
@@ -25,7 +26,7 @@ export const Header = () => {
         { name: t('nav.how_it_works'), href: '/how-it-works' },
         { name: t('nav.pricing'), href: '/pricing' },
         { name: t('nav.about'), href: '/about' },
-    ];
+    ].filter((link) => PRICING_ENABLED || link.href !== '/pricing');
 
     return (
         <nav

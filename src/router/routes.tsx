@@ -5,6 +5,7 @@ import { PageLoader } from '@/components/PageLoader';
 import { lazyRetry as lazy } from '@/lib/lazyLoad';
 import { TourProvider } from '@/contexts/TourContext';
 import { TourOverlay } from '@/components/common/TourGuide';
+import { PRICING_ENABLED, SUBSCRIPTIONS_ENABLED } from '@/config/featureFlags';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('@/pages/Home'), 'Home');
@@ -141,7 +142,13 @@ const routes = () => {
                     />
                     <Route
                         path="/pricing"
-                        element={withErrorBoundary(Pricing)}
+                        element={
+                            PRICING_ENABLED ? (
+                                withErrorBoundary(Pricing)
+                            ) : (
+                                <Navigate to="/" replace />
+                            )
+                        }
                     />
                     <Route path="/faq" element={withErrorBoundary(FAQ)} />
                     <Route path="/about" element={withErrorBoundary(About)} />
@@ -214,7 +221,13 @@ const routes = () => {
                         />
                         <Route
                             path="subscription"
-                            element={withErrorBoundary(DashboardSubscription)}
+                            element={
+                                SUBSCRIPTIONS_ENABLED ? (
+                                    withErrorBoundary(DashboardSubscription)
+                                ) : (
+                                    <Navigate to="/dashboard" replace />
+                                )
+                            }
                         />
                     </Route>
 

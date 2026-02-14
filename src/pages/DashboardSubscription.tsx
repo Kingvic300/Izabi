@@ -103,7 +103,7 @@ const DashboardSubscription = () => {
                 '5 Documents per day',
                 '20 AI Messages per day',
                 'Basic Summaries & Quizzes',
-                'English Interface',
+                'Multi-Language Support',
             ],
             cta: 'Current Plan',
             plan: null,

@@ -25,6 +25,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { PRICING_ENABLED } from '@/config/featureFlags';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -223,10 +224,10 @@ const Home = () => {
             price: '₦0',
             desc: 'Start your learning journey',
             features: [
-                '5 documents per day',
-                '20 AI messages per day',
-                'Basic summaries and quizzes',
-                'English interface',
+                '5 Documents per day',
+                '20 AI Messages per day',
+                'Basic Summaries & Quizzes',
+                'Multi-Language Support',
             ],
             featured: false,
         },
@@ -235,12 +236,13 @@ const Home = () => {
             price: '₦1,999',
             desc: 'For serious learners',
             features: [
-                '15 documents per day',
-                '30 AI messages per day',
-                'Advanced summaries',
-                'Unlimited quizzes and flashcards',
-                'Multi-language support',
-                'Audio summaries',
+                '15 Documents per day',
+                '30 AI Messages per day',
+                'Advanced Summaries',
+                'Unlimited Quizzes & Flashcards',
+                'Multi-Language Support',
+                'Audio Summaries (TTS)',
+                'Priority Support',
             ],
             featured: true,
         },
@@ -249,12 +251,13 @@ const Home = () => {
             price: '₦2,999',
             desc: 'Maximum productivity',
             features: [
+                '30 Documents per day',
+                '45 AI Messages per day',
                 'Everything in Pro',
-                '30 documents per day',
-                '45 AI messages per day',
-                'JAMB and WAEC simulations',
-                'Performance analytics',
-                'Custom study plans',
+                'JAMB/WAEC Simulations',
+                'Performance Analytics',
+                'Cloud Storage (5GB)',
+                'Custom Study Plans',
             ],
             featured: false,
         },
@@ -473,83 +476,91 @@ const Home = () => {
                     </div>
                 </section>
 
-                <section id="pricing" className="py-14 sm:py-16 lg:py-20 border-y border-foreground/10 bg-card/[0.02]">
-                    <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                        <div className="text-center mb-8 sm:mb-10">
-                            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground">
-                                {t('pricing.title')}{' '}
-                                <span className="text-primary">
-                                    {t('pricing.title_gradient')}
-                                </span>
-                            </h2>
-                            <p className="mt-3 text-sm sm:text-base text-muted-foreground font-medium">
-                                {t('pricing.subtitle')}
-                            </p>
-                        </div>
+                {PRICING_ENABLED && (
+                    <section
+                        id="pricing"
+                        className="py-14 sm:py-16 lg:py-20 border-y border-foreground/10 bg-card/[0.02]"
+                    >
+                        <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
+                            <div className="text-center mb-8 sm:mb-10">
+                                <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground">
+                                    {t('pricing.title')}{' '}
+                                    <span className="text-primary">
+                                        {t('pricing.title_gradient')}
+                                    </span>
+                                </h2>
+                                <p className="mt-3 text-sm sm:text-base text-muted-foreground font-medium">
+                                    {t('pricing.subtitle')}
+                                </p>
+                            </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
-                            {plans.map((plan) => (
-                                <Card
-                                    key={plan.name}
-                                    className={`pricing-card rounded-2xl p-5 sm:p-6 border bg-background/70 flex flex-col ${
-                                        plan.featured
-                                            ? 'border-primary ring-1 ring-primary/50'
-                                            : 'border-foreground/10'
-                                    }`}
-                                >
-                                    {plan.featured && (
-                                        <div className="inline-flex h-8 items-center rounded-lg bg-primary px-3 text-xs font-bold text-primary-foreground uppercase tracking-widest mb-4">
-                                            Most Popular
-                                        </div>
-                                    )}
-
-                                    <h3 className="text-xl sm:text-2xl font-bold text-foreground">
-                                        {plan.name}
-                                    </h3>
-                                    <p className="text-xs uppercase tracking-widest opacity-60 mt-1">
-                                        {plan.desc}
-                                    </p>
-                                    <div className="mt-4 mb-5">
-                                        <span className="text-3xl sm:text-4xl font-black text-foreground">
-                                            {plan.price}
-                                        </span>
-                                        <span className="text-xs opacity-60"> /month</span>
-                                    </div>
-
-                                    <ul className="space-y-2.5 flex-1 mb-6">
-                                        {plan.features.map((item) => (
-                                            <li
-                                                key={item}
-                                                className="min-h-11 flex items-center gap-2 text-sm text-foreground/85"
-                                            >
-                                                <CheckCircle
-                                                    size={15}
-                                                    className="text-primary shrink-0"
-                                                />
-                                                <span>{item}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    <Link
-                                        to={`/signup?plan=${plan.name.toLowerCase().replace(/\s+/g, '-')}`}
-                                        className="w-full"
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+                                {plans.map((plan) => (
+                                    <Card
+                                        key={plan.name}
+                                        className={`pricing-card rounded-2xl p-5 sm:p-6 border bg-background/70 flex flex-col ${
+                                            plan.featured
+                                                ? 'border-primary ring-1 ring-primary/50'
+                                                : 'border-foreground/10'
+                                        }`}
                                     >
-                                        <Button
-                                            className={`w-full min-h-11 rounded-xl font-bold text-sm ${
-                                                plan.featured
-                                                    ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
-                                                    : 'bg-card hover:bg-card/80 border border-foreground/10 text-foreground'
-                                            }`}
+                                        {plan.featured && (
+                                            <div className="inline-flex h-8 items-center rounded-lg bg-primary px-3 text-xs font-bold text-primary-foreground uppercase tracking-widest mb-4">
+                                                Most Popular
+                                            </div>
+                                        )}
+
+                                        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
+                                            {plan.name}
+                                        </h3>
+                                        <p className="text-xs uppercase tracking-widest opacity-60 mt-1">
+                                            {plan.desc}
+                                        </p>
+                                        <div className="mt-4 mb-5">
+                                            <span className="text-3xl sm:text-4xl font-black text-foreground">
+                                                {plan.price}
+                                            </span>
+                                            <span className="text-xs opacity-60">
+                                                {' '}
+                                                /month
+                                            </span>
+                                        </div>
+
+                                        <ul className="space-y-2.5 flex-1 mb-6">
+                                            {plan.features.map((item) => (
+                                                <li
+                                                    key={item}
+                                                    className="min-h-11 flex items-center gap-2 text-sm text-foreground/85"
+                                                >
+                                                    <CheckCircle
+                                                        size={15}
+                                                        className="text-primary shrink-0"
+                                                    />
+                                                    <span>{item}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+
+                                        <Link
+                                            to={`/signup?plan=${plan.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                            className="w-full"
                                         >
-                                            Choose Plan
-                                        </Button>
-                                    </Link>
-                                </Card>
-                            ))}
+                                            <Button
+                                                className={`w-full min-h-11 rounded-xl font-bold text-sm ${
+                                                    plan.featured
+                                                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+                                                        : 'bg-card hover:bg-card/80 border border-foreground/10 text-foreground'
+                                                }`}
+                                            >
+                                                Choose Plan
+                                            </Button>
+                                        </Link>
+                                    </Card>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                )}
 
                 <section id="about" className="py-14 sm:py-16 lg:py-20">
                     <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">

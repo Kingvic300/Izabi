@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import type { MouseEvent } from 'react';
 import StarterKit from '@tiptap/starter-kit';
@@ -17,8 +17,25 @@ import {
     Link as LinkIcon,
     Undo,
     Redo,
+    Globe,
 } from 'lucide-react';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from './ui/dialog';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from './ui/tooltip';
 
 interface RichTextEditorProps {
     content: string;
@@ -31,6 +48,12 @@ const RichTextEditor = ({
     onChange,
     placeholder,
 }: RichTextEditorProps) => {
+    const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+    const [linkDraft, setLinkDraft] = useState('');
+    const [linkSelection, setLinkSelection] = useState<{
+        from: number;
+        to: number;
+    } | null>(null);
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -93,161 +116,355 @@ const RichTextEditor = ({
         const existingUrl = editor.getAttributes('link').href as
             | string
             | undefined;
-        const url = window.prompt('Enter URL', existingUrl || '');
-        if (url === null) return;
+        const { from, to } = editor.state.selection;
+        setLinkSelection({ from, to });
+        setLinkDraft(existingUrl || '');
+        setIsLinkDialogOpen(true);
+    };
 
-        const normalizedUrl = url.trim();
+    const applyLink = () => {
+        const normalizedUrl = linkDraft.trim();
+        const chain = editor.chain().focus();
+        if (linkSelection) {
+            chain.setTextSelection(linkSelection);
+        }
+
         if (!normalizedUrl) {
-            editor.chain().focus().unsetLink().run();
+            chain.unsetLink().run();
+            setIsLinkDialogOpen(false);
             return;
         }
 
-        editor
-            .chain()
-            .focus()
-            .extendMarkRange('link')
-            .setLink({ href: normalizedUrl })
-            .run();
+        chain.extendMarkRange('link').setLink({ href: normalizedUrl }).run();
+        setIsLinkDialogOpen(false);
     };
 
     return (
         <div className="w-full border rounded-lg overflow-hidden bg-background focus-within:ring-2 focus-within:ring-primary/20 transition-all">
             {/* Toolbar */}
-            <div className="flex flex-wrap gap-1 p-2 border-b bg-muted/30">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() => toggleInlineStyle('bold')}
-                    className={editor.isActive('bold') ? 'bg-muted' : ''}
-                    type="button"
-                >
-                    <Bold className="h-4 w-4" />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() => toggleInlineStyle('italic')}
-                    className={editor.isActive('italic') ? 'bg-muted' : ''}
-                    type="button"
-                >
-                    <Italic className="h-4 w-4" />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() => toggleInlineStyle('underline')}
-                    className={editor.isActive('underline') ? 'bg-muted' : ''}
-                    type="button"
-                >
-                    <UnderlineIcon className="h-4 w-4" />
-                </Button>
-                <div className="w-px h-6 bg-border mx-1 my-auto" />
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() =>
-                        editor.chain().focus().toggleHeading({ level: 1 }).run()
-                    }
-                    className={
-                        editor.isActive('heading', { level: 1 })
-                            ? 'bg-muted'
-                            : ''
-                    }
-                    type="button"
-                >
-                    <Heading1 className="h-4 w-4" />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() =>
-                        editor.chain().focus().toggleHeading({ level: 2 }).run()
-                    }
-                    className={
-                        editor.isActive('heading', { level: 2 })
-                            ? 'bg-muted'
-                            : ''
-                    }
-                    type="button"
-                >
-                    <Heading2 className="h-4 w-4" />
-                </Button>
-                <div className="w-px h-6 bg-border mx-1 my-auto" />
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() =>
-                        editor.chain().focus().toggleBulletList().run()
-                    }
-                    className={editor.isActive('bulletList') ? 'bg-muted' : ''}
-                    type="button"
-                >
-                    <List className="h-4 w-4" />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() =>
-                        editor.chain().focus().toggleOrderedList().run()
-                    }
-                    className={editor.isActive('orderedList') ? 'bg-muted' : ''}
-                    type="button"
-                >
-                    <ListOrdered className="h-4 w-4" />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() =>
-                        editor.chain().focus().toggleBlockquote().run()
-                    }
-                    className={editor.isActive('blockquote') ? 'bg-muted' : ''}
-                    type="button"
-                >
-                    <Quote className="h-4 w-4" />
-                </Button>
-                <div className="w-px h-6 bg-border mx-1 my-auto" />
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={toggleLink}
-                    className={editor.isActive('link') ? 'bg-muted' : ''}
-                    type="button"
-                >
-                    <LinkIcon className="h-4 w-4" />
-                </Button>
-                <div className="flex-1" />
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() => editor.chain().focus().undo().run()}
-                    type="button"
-                >
-                    <Undo className="h-4 w-4" />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onMouseDown={keepEditorFocus}
-                    onClick={() => editor.chain().focus().redo().run()}
-                    type="button"
-                >
-                    <Redo className="h-4 w-4" />
-                </Button>
-            </div>
+            <TooltipProvider delayDuration={120}>
+                <div className="flex flex-wrap gap-1 p-2 border-b bg-muted/30">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() => toggleInlineStyle('bold')}
+                                className={
+                                    editor.isActive('bold') ? 'bg-muted' : ''
+                                }
+                                type="button"
+                                aria-label="Bold"
+                            >
+                                <Bold className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Bold</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() => toggleInlineStyle('italic')}
+                                className={
+                                    editor.isActive('italic') ? 'bg-muted' : ''
+                                }
+                                type="button"
+                                aria-label="Italic"
+                            >
+                                <Italic className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Italic</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() => toggleInlineStyle('underline')}
+                                className={
+                                    editor.isActive('underline')
+                                        ? 'bg-muted'
+                                        : ''
+                                }
+                                type="button"
+                                aria-label="Underline"
+                            >
+                                <UnderlineIcon className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Underline</TooltipContent>
+                    </Tooltip>
+                    <div className="w-px h-6 bg-border mx-1 my-auto" />
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() =>
+                                    editor
+                                        .chain()
+                                        .focus()
+                                        .toggleHeading({ level: 1 })
+                                        .run()
+                                }
+                                className={
+                                    editor.isActive('heading', { level: 1 })
+                                        ? 'bg-muted'
+                                        : ''
+                                }
+                                type="button"
+                                aria-label="Heading 1"
+                            >
+                                <Heading1 className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Heading 1</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() =>
+                                    editor
+                                        .chain()
+                                        .focus()
+                                        .toggleHeading({ level: 2 })
+                                        .run()
+                                }
+                                className={
+                                    editor.isActive('heading', { level: 2 })
+                                        ? 'bg-muted'
+                                        : ''
+                                }
+                                type="button"
+                                aria-label="Heading 2"
+                            >
+                                <Heading2 className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Heading 2</TooltipContent>
+                    </Tooltip>
+                    <div className="w-px h-6 bg-border mx-1 my-auto" />
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() =>
+                                    editor
+                                        .chain()
+                                        .focus()
+                                        .toggleBulletList()
+                                        .run()
+                                }
+                                className={
+                                    editor.isActive('bulletList')
+                                        ? 'bg-muted'
+                                        : ''
+                                }
+                                type="button"
+                                aria-label="Bullet List"
+                            >
+                                <List className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Bullet List</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() =>
+                                    editor
+                                        .chain()
+                                        .focus()
+                                        .toggleOrderedList()
+                                        .run()
+                                }
+                                className={
+                                    editor.isActive('orderedList')
+                                        ? 'bg-muted'
+                                        : ''
+                                }
+                                type="button"
+                                aria-label="Numbered List"
+                            >
+                                <ListOrdered className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Numbered List</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() =>
+                                    editor
+                                        .chain()
+                                        .focus()
+                                        .toggleBlockquote()
+                                        .run()
+                                }
+                                className={
+                                    editor.isActive('blockquote')
+                                        ? 'bg-muted'
+                                        : ''
+                                }
+                                type="button"
+                                aria-label="Quote"
+                            >
+                                <Quote className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Quote</TooltipContent>
+                    </Tooltip>
+                    <div className="w-px h-6 bg-border mx-1 my-auto" />
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={toggleLink}
+                                className={
+                                    editor.isActive('link') ? 'bg-muted' : ''
+                                }
+                                type="button"
+                                aria-label="Insert Link"
+                            >
+                                <LinkIcon className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Insert Link</TooltipContent>
+                    </Tooltip>
+                    <div className="flex-1" />
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() =>
+                                    editor.chain().focus().undo().run()
+                                }
+                                type="button"
+                                aria-label="Undo"
+                            >
+                                <Undo className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Undo</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onMouseDown={keepEditorFocus}
+                                onClick={() =>
+                                    editor.chain().focus().redo().run()
+                                }
+                                type="button"
+                                aria-label="Redo"
+                            >
+                                <Redo className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Redo</TooltipContent>
+                    </Tooltip>
+                </div>
+            </TooltipProvider>
 
             {/* Editor Content */}
             <EditorContent editor={editor} />
+
+            <Dialog
+                open={isLinkDialogOpen}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setIsLinkDialogOpen(false);
+                    }
+                }}
+            >
+                <DialogContent className="glass border-foreground/10 max-w-[92vw] sm:max-w-md rounded-3xl p-0 overflow-hidden">
+                    <div className="border-b border-foreground/10 bg-card/40 px-5 py-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                                <Globe size={18} />
+                            </div>
+                            <div>
+                                <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-primary/70">
+                                    Link Manager
+                                </p>
+                                <DialogTitle className="text-lg font-bold">
+                                    Attach a URL
+                                </DialogTitle>
+                            </div>
+                        </div>
+                        <DialogDescription className="mt-2 text-sm text-foreground/70">
+                            Add or update the hyperlink for the selected text.
+                        </DialogDescription>
+                    </div>
+
+                    <form
+                        className="px-5 py-5 space-y-4"
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            applyLink();
+                        }}
+                    >
+                        <div className="space-y-2">
+                            <Label
+                                htmlFor="rte-link-input"
+                                className="text-xs uppercase tracking-[0.3em] text-foreground/50"
+                            >
+                                URL
+                            </Label>
+                            <Input
+                                id="rte-link-input"
+                                value={linkDraft}
+                                onChange={(event) =>
+                                    setLinkDraft(event.target.value)
+                                }
+                                autoFocus
+                                placeholder="https://example.com"
+                                className="rounded-2xl border-foreground/10 bg-card/5 h-12 font-medium"
+                            />
+                        </div>
+
+                        <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsLinkDialogOpen(false)}
+                                className="rounded-xl border-foreground/10"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="rounded-xl bg-primary text-primary-foreground font-bold"
+                            >
+                                Save Link
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
 
             <style>{`
         .ProseMirror p.is-editor-empty:first-child::before {

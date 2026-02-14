@@ -26,6 +26,7 @@ import { useEffect, useState, useRef } from 'react';
 import { PageLoader } from '@/components/PageLoader';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { USAGE_LIMITS_ENABLED } from '@/config/featureFlags';
 import {
     LineChart,
     Line,
@@ -258,14 +259,18 @@ const DashboardProgress = () => {
                             </div>
                             <div>
                                 <h2 className="text-xl font-black uppercase tracking-tight">
-                                    {subscription?.status === 'premium'
-                                        ? 'PREMIUM ACCESS ACTIVE'
-                                        : 'FREE TIER LIMITS'}
+                                    {USAGE_LIMITS_ENABLED
+                                        ? subscription?.status === 'premium'
+                                            ? 'PREMIUM ACCESS ACTIVE'
+                                            : 'FREE TIER LIMITS'
+                                        : 'UNLIMITED ACCESS ACTIVE'}
                                 </h2>
                                 <p className="text-sm opacity-60 font-medium">
-                                    {subscription?.status === 'premium'
-                                        ? `Unlimited usage until ${new Date(subscription.expiry).toLocaleDateString()}`
-                                        : 'Upgrade to remove daily processing restrictions.'}
+                                    {USAGE_LIMITS_ENABLED
+                                        ? subscription?.status === 'premium'
+                                            ? `Unlimited usage until ${new Date(subscription.expiry).toLocaleDateString()}`
+                                            : 'Upgrade to remove daily processing restrictions.'
+                                        : 'Usage limits are disabled while we onboard new scholars.'}
                                 </p>
                             </div>
                         </div>
@@ -276,33 +281,40 @@ const DashboardProgress = () => {
                                     Uploads
                                 </p>
                                 <div className="text-2xl font-black">
-                                    {usage.dailyDocs} / {usage.limits.dailyDocs}
+                                    {USAGE_LIMITS_ENABLED && usage.limits
+                                        ? `${usage.dailyDocs} / ${usage.limits.dailyDocs}`
+                                        : `${usage.dailyDocs} / Unlimited`}
                                 </div>
-                                <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden mx-auto">
-                                    <div
-                                        className="h-full bg-primary transition-all duration-1000"
-                                        style={{
-                                            width: `${(usage.dailyDocs / usage.limits.dailyDocs) * 100}%`,
-                                        }}
-                                    />
-                                </div>
+                                {USAGE_LIMITS_ENABLED && usage.limits && (
+                                    <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden mx-auto">
+                                        <div
+                                            className="h-full bg-primary transition-all duration-1000"
+                                            style={{
+                                                width: `${(usage.dailyDocs / usage.limits.dailyDocs) * 100}%`,
+                                            }}
+                                        />
+                                    </div>
+                                )}
                             </div>
                             <div className="text-center">
                                 <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1">
                                     AI Chats
                                 </p>
                                 <div className="text-2xl font-black">
-                                    {usage.dailyMessages} /{' '}
-                                    {usage.limits.dailyMessages}
+                                    {USAGE_LIMITS_ENABLED && usage.limits
+                                        ? `${usage.dailyMessages} / ${usage.limits.dailyMessages}`
+                                        : `${usage.dailyMessages} / Unlimited`}
                                 </div>
-                                <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden mx-auto">
-                                    <div
-                                        className="h-full bg-primary transition-all duration-1000"
-                                        style={{
-                                            width: `${(usage.dailyMessages / usage.limits.dailyMessages) * 100}%`,
-                                        }}
-                                    />
-                                </div>
+                                {USAGE_LIMITS_ENABLED && usage.limits && (
+                                    <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden mx-auto">
+                                        <div
+                                            className="h-full bg-primary transition-all duration-1000"
+                                            style={{
+                                                width: `${(usage.dailyMessages / usage.limits.dailyMessages) * 100}%`,
+                                            }}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

@@ -43,6 +43,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAppToast } from '@/hooks/useAppToast';
+import { SUBSCRIPTIONS_ENABLED } from '@/config/featureFlags';
 
 const navigationItems = [
     {
@@ -96,12 +97,16 @@ const settingsItems = [
         icon: User,
         description: 'Manage your account',
     },
-    {
-        title: 'Subscription',
-        url: '/dashboard/subscription',
-        icon: Crown,
-        description: 'Manage your plan',
-    },
+    ...(SUBSCRIPTIONS_ENABLED
+        ? [
+              {
+                  title: 'Subscription',
+                  url: '/dashboard/subscription',
+                  icon: Crown,
+                  description: 'Manage your plan',
+              },
+          ]
+        : []),
     {
         title: 'Settings',
         url: '/dashboard/settings',
