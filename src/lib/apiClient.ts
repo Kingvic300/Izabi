@@ -496,10 +496,15 @@ export const api = {
         return response.data;
     },
 
-    async getAIResponse(message: string, documentId?: string) {
+    async getAIResponse(
+        message: string,
+        documentId?: string,
+        sessionId?: string,
+    ) {
         const response = await apiClient.post('/api/ai/chat', {
             message,
             documentId,
+            sessionId,
         });
         return response.data.response;
     },
@@ -524,6 +529,7 @@ export const api = {
         onError: (err: any) => void,
         onComplete?: () => void,
         documentId?: string,
+        sessionId?: string,
     ) {
         const token = localStorage.getItem('authToken');
         const query = new URLSearchParams({
@@ -532,6 +538,9 @@ export const api = {
         });
         if (documentId) {
             query.append('documentId', documentId);
+        }
+        if (sessionId) {
+            query.append('sessionId', sessionId);
         }
         const url = `${BASE_URL}/api/ai/stream?${query.toString()}`;
         const eventSource = new EventSource(url);
@@ -611,13 +620,29 @@ export const api = {
         return eventSource;
     },
 
-    async getChatHistory() {
-        const response = await apiClient.get(`/api/ai/history`);
+    async getChatHistory(sessionId?: string) {
+        const query = new URLSearchParams();
+        if (sessionId) query.set('sessionId', sessionId);
+        const response = await apiClient.get(
+            `/api/ai/history?${query.toString()}`,
+        );
         return response.data;
     },
 
-    async clearChatHistory() {
-        const response = await apiClient.post(`/api/ai/clear-history`);
+    async clearChatHistory(sessionId?: string) {
+        const response = await apiClient.post(`/api/ai/clear-history`, {
+            sessionId,
+        });
+        return response.data;
+    },
+
+    async getChatSessions() {
+        const response = await apiClient.get(`/api/ai/sessions`);
+        return response.data;
+    },
+
+    async createChatSession() {
+        const response = await apiClient.post(`/api/ai/sessions`);
         return response.data;
     },
 

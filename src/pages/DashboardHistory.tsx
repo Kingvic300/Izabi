@@ -52,7 +52,7 @@ const DashboardHistory = () => {
                         api.getStudyHistory(),
                         api.getQuizResults(),
                         api.getNotes(),
-                        api.getChatHistory(),
+                        api.getChatSessions(),
                     ]);
 
                 // Normalize: Check if response is raw array or wrapped in { data: ... }
@@ -98,11 +98,12 @@ const DashboardHistory = () => {
                     ...chats.map((c: any) => ({
                         ...c,
                         hType: 'chat',
-                        hDate: c.createdAt || new Date(),
-                        title: c.message
-                            ? c.message.length > 30
-                                ? c.message.substring(0, 30) + '...'
-                                : c.message
+                        hDate: c.updatedAt || c.createdAt || new Date(),
+                        message: c.lastMessage?.content || '',
+                        title: c.title
+                            ? c.title.length > 30
+                                ? c.title.substring(0, 30) + '...'
+                                : c.title
                             : 'AI Conversation',
                     })),
                 ].sort(

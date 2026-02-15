@@ -25,6 +25,9 @@ import {
     Target,
     Paperclip,
     FileText,
+    Copy,
+    Share2,
+    Check,
 } from 'lucide-react';
 import { api } from '@/lib/apiClient';
 import gsap from 'gsap';
@@ -54,12 +57,26 @@ interface ActiveDocument {
     fileName: string;
 }
 
+interface ChatSession {
+    sessionId: string;
+    title?: string;
+    promptCount?: number;
+    createdAt?: string;
+    updatedAt?: string;
+    lastMessage?: {
+        role: 'user' | 'assistant';
+        content: string;
+        timestamp: string;
+    } | null;
+}
+
 const DashboardAIAssistant = () => {
     const navigate = useNavigate();
     const appToast = useAppToast();
     const containerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const pdfInputRef = useRef<HTMLInputElement>(null);
+    const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
@@ -75,12 +92,113 @@ const DashboardAIAssistant = () => {
     const [activeDocument, setActiveDocument] = useState<ActiveDocument | null>(
         null,
     );
-    const [historyGroups, setHistoryGroups] = useState<{
-        [key: string]: Message[];
-    }>({});
+    const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+    const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const copyText = async (text: string) => {
+        const resolved = String(text || '');
+        if (!resolved.trim()) return;
+
+        if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(resolved);
+            return;
+        }
+
+        const textarea = document.createElement('textarea');
+        textarea.value = resolved;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    };
+
+    const handleCopyMessage = async (messageId: string, content: string) => {
+        try {
+            await copyText(content);
+            setCopiedMessageId(messageId);
+            window.setTimeout(() => {
+                setCopiedMessageId((current) =>
+                    current === messageId ? null : current,
+                );
+            }, 1500);
+        } catch (error) {
+            appToast.error({
+                title: 'Copy failed',
+                description: 'Unable to copy to clipboard on this device.',
+            });
+        }
+    };
+
+    const handleShareText = async (text: string, fallbackTitle: string) => {
+        const resolved = String(text || '').trim();
+        if (!resolved) return;
+
+        try {
+            if (typeof navigator !== 'undefined' && (navigator as any).share) {
+                await (navigator as any).share({
+                    title: fallbackTitle,
+                    text: resolved,
+                    url: window.location.href,
+                });
+                return;
+            }
+
+            await copyText(resolved);
+            appToast.success({
+                title: 'Copied to clipboard',
+                description: 'Sharing is not supported in this browser.',
+            });
+        } catch (error: any) {
+            const isAbort =
+                error?.name === 'AbortError' ||
+                String(error?.message || '').toLowerCase().includes('abort');
+            if (!isAbort) {
+                appToast.error({
+                    title: 'Share failed',
+                    description:
+                        'Unable to share from this device. Try copying instead.',
+                });
+            }
+        }
+    };
+
+    const buildTranscript = () => {
+        const transcriptMessages = messages.filter((m) =>
+            String(m?.content || '').trim(),
+        );
+
+        return transcriptMessages
+            .map((m) => {
+                const speaker = m.role === 'user' ? 'You' : 'Izabi';
+                return `**${speaker}:**\n${m.content}`;
+            })
+            .join('\n\n---\n\n');
+    };
+
+    const handleCopyTranscript = async () => {
+        try {
+            await copyText(buildTranscript());
+            appToast.success({
+                title: 'Chat copied',
+                description: 'Your chat transcript is now in the clipboard.',
+            });
+        } catch (error) {
+            appToast.error({
+                title: 'Copy failed',
+                description: 'Unable to copy your chat transcript.',
+            });
+        }
+    };
+
+    const handleShareTranscript = async () => {
+        await handleShareText(buildTranscript(), 'Izabi chat transcript');
     };
 
     // Modern Entrance Animation
@@ -103,49 +221,87 @@ const DashboardAIAssistant = () => {
         { scope: containerRef },
     );
 
-    useEffect(() => {
-        /*
-         * How: Retrieves past chat interactions for the current user from the backend.
-         * Why: Ensures context persistence so users can continue previous conversations.
-         */
-        const fetchHistory = async () => {
-            try {
-                const res = await api.getChatHistory();
-                if (res.success && res.data && res.data.messages) {
-                    const formattedMessages = res.data.messages.map(
-                        (m: any) => ({
-                            id: m._id || Math.random().toString(),
-                            role: m.role,
-                            content: m.content,
-                            timestamp: new Date(
-                                m.createdAt || m.timestamp || Date.now(),
-                            ),
-                        }),
-                    );
+    const buildWelcomeMessages = (): Message[] => [
+        {
+            id: '1',
+            role: 'assistant',
+            content:
+                "Hello! I'm Izabi, your AI learning assistant. I'm here to help you understand complex concepts, answer questions, and guide your learning journey. What would you like to learn about today?",
+            timestamp: new Date(),
+        },
+    ];
 
-                    // Group by date for history view
-                    const groups: { [key: string]: Message[] } = {};
-                    formattedMessages.forEach((m: Message) => {
-                        const dateStr = m.timestamp.toLocaleDateString();
-                        if (!groups[dateStr]) groups[dateStr] = [];
-                        groups[dateStr].push(m);
-                    });
-                    setHistoryGroups(groups);
+    const loadSessionHistory = async (sessionId: string) => {
+        try {
+            const res = await api.getChatHistory(sessionId);
+            if (res.success && res.data && res.data.messages) {
+                const formattedMessages = res.data.messages.map((m: any) => ({
+                    id: m._id || Math.random().toString(),
+                    role: m.role,
+                    content: m.content,
+                    timestamp: new Date(
+                        m.createdAt || m.timestamp || Date.now(),
+                    ),
+                }));
 
-                    // Show last 10 messages in active view
-                    setMessages((prev) => {
-                        const existingIds = new Set(prev.map((p) => p.id));
-                        const newOnes = formattedMessages.filter(
-                            (m: Message) => !existingIds.has(m.id),
-                        );
-                        return [...prev, ...newOnes].slice(-20);
-                    });
+                if (formattedMessages.length) {
+                    setMessages(formattedMessages);
+                } else {
+                    setMessages(buildWelcomeMessages());
                 }
-            } catch (error) {
-                console.error('Failed to fetch chat history:', error);
+                return;
             }
-        };
-        fetchHistory();
+            setMessages(buildWelcomeMessages());
+        } catch (error) {
+            console.error('Failed to fetch chat history:', error);
+            setMessages(buildWelcomeMessages());
+        }
+    };
+
+    const loadSessions = async (preferredSessionId?: string) => {
+        try {
+            const res = await api.getChatSessions();
+            if (res.success && Array.isArray(res.data)) {
+                if (res.data.length === 0) {
+                    const created = await api.createChatSession();
+                    const createdSession = created?.data;
+                    if (createdSession?.sessionId) {
+                        setChatSessions([createdSession]);
+                        setActiveSessionId(createdSession.sessionId);
+                        await loadSessionHistory(createdSession.sessionId);
+                        return;
+                    }
+                    setMessages(buildWelcomeMessages());
+                    return;
+                }
+
+                setChatSessions(res.data);
+                const nextSessionId =
+                    preferredSessionId &&
+                    res.data.some(
+                        (session: ChatSession) =>
+                            session.sessionId === preferredSessionId,
+                    )
+                        ? preferredSessionId
+                        : res.data[0].sessionId;
+                setActiveSessionId(nextSessionId);
+                await loadSessionHistory(nextSessionId);
+                return;
+            }
+            setMessages(buildWelcomeMessages());
+        } catch (error) {
+            console.error('Failed to load chat sessions:', error);
+            setMessages(buildWelcomeMessages());
+        }
+    };
+
+    const handleSelectSession = async (sessionId: string) => {
+        setActiveSessionId(sessionId);
+        await loadSessionHistory(sessionId);
+    };
+
+    useEffect(() => {
+        loadSessions();
     }, []);
 
     useEffect(() => {
@@ -158,6 +314,25 @@ const DashboardAIAssistant = () => {
      */
     const handleSendMessage = async () => {
         if (!inputValue.trim() || isUploadingPdf) return;
+
+        let sessionIdToUse = activeSessionId;
+        if (!sessionIdToUse) {
+            const created = await api.createChatSession();
+            const createdId = created?.data?.sessionId;
+            if (createdId) {
+                sessionIdToUse = createdId;
+                setActiveSessionId(createdId);
+                setChatSessions((prev) => [created.data, ...prev]);
+            }
+        }
+
+        if (!sessionIdToUse) {
+            appToast.error({
+                title: 'Chat unavailable',
+                description: 'Unable to start a new chat session.',
+            });
+            return;
+        }
 
         // Add user message
         const userMessage: Message = {
@@ -201,8 +376,10 @@ const DashboardAIAssistant = () => {
                 },
                 () => {
                     setIsLoading(false);
+                    loadSessions(sessionIdToUse || undefined);
                 },
                 activeDocument?.documentId,
+                sessionIdToUse,
             );
         } catch (error) {
             console.error('Error starting AI stream:', error);
@@ -217,16 +394,36 @@ const DashboardAIAssistant = () => {
         }
     };
 
-    const startNewChat = () => {
-        setMessages([
-            {
-                id: '1',
-                role: 'assistant',
-                content:
-                    "Hello! I'm Izabi, your AI learning assistant. New session started. What's on your mind?",
-                timestamp: new Date(),
-            },
-        ]);
+    const startNewChat = async () => {
+        try {
+            const created = await api.createChatSession();
+            const createdSession = created?.data;
+            if (createdSession?.sessionId) {
+                setActiveSessionId(createdSession.sessionId);
+                setChatSessions((prev) => [
+                    createdSession,
+                    ...prev.filter(
+                        (session) =>
+                            session.sessionId !== createdSession.sessionId,
+                    ),
+                ]);
+            }
+            setMessages([
+                {
+                    id: '1',
+                    role: 'assistant',
+                    content:
+                        "Hello! I'm Izabi, your AI learning assistant. New session started. What's on your mind?",
+                    timestamp: new Date(),
+                },
+            ]);
+        } catch (error) {
+            console.error('Failed to start new chat:', error);
+            appToast.error({
+                title: 'Could Not Start Chat',
+                description: 'Please try again.',
+            });
+        }
     };
 
     const handlePdfUpload = async (
@@ -329,8 +526,9 @@ const DashboardAIAssistant = () => {
         try {
             const res = await api.clearChatHistory();
             if (res.success) {
-                setHistoryGroups({});
-                startNewChat();
+                setChatSessions([]);
+                setActiveSessionId(null);
+                await startNewChat();
                 appToast.success({
                     title: 'History Cleared',
                     description:
@@ -379,6 +577,24 @@ const DashboardAIAssistant = () => {
                         aria-label="Start new chat"
                     >
                         <Plus className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleCopyTranscript}
+                        className="h-9 w-9"
+                        aria-label="Copy chat transcript"
+                    >
+                        <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleShareTranscript}
+                        className="h-9 w-9"
+                        aria-label="Share chat transcript"
+                    >
+                        <Share2 className="h-4 w-4" />
                     </Button>
                     <Button
                         variant="outline"
@@ -453,8 +669,8 @@ const DashboardAIAssistant = () => {
                             </SheetHeader>
                             <Separator className="bg-card/5" />
                             <ScrollArea className="flex-1 px-4 py-6">
-                                <div className="space-y-8">
-                                    {Object.keys(historyGroups).length === 0 ? (
+                                <div className="space-y-3">
+                                    {chatSessions.length === 0 ? (
                                         <div className="text-center py-20 opacity-40">
                                             <Calendar className="h-12 w-12 mx-auto mb-4 opacity-20" />
                                             <p className="text-sm font-bold uppercase tracking-widest">
@@ -462,109 +678,59 @@ const DashboardAIAssistant = () => {
                                             </p>
                                         </div>
                                     ) : (
-                                        Object.keys(historyGroups)
-                                            .sort(
-                                                (a, b) =>
-                                                    new Date(b).getTime() -
-                                                    new Date(a).getTime(),
-                                            )
-                                            .map((date) => (
-                                                <div
-                                                    key={date}
-                                                    className="space-y-4"
+                                        chatSessions.map((session) => {
+                                            const timestamp = new Date(
+                                                session.updatedAt ||
+                                                    session.createdAt ||
+                                                    Date.now(),
+                                            ).toLocaleString([], {
+                                                month: 'short',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            });
+                                            return (
+                                                <Button
+                                                    key={session.sessionId}
+                                                    variant="ghost"
+                                                    onClick={() =>
+                                                        handleSelectSession(
+                                                            session.sessionId,
+                                                        )
+                                                    }
+                                                    className={`w-full justify-start h-auto py-3 px-4 rounded-xl transition-all border ${
+                                                        session.sessionId ===
+                                                        activeSessionId
+                                                            ? 'bg-primary/10 border-primary/30'
+                                                            : 'hover:bg-primary/10 border-transparent'
+                                                    }`}
                                                 >
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-                                                            {date}
+                                                    <div className="flex flex-col items-start gap-1 overflow-hidden flex-1">
+                                                        <span className="text-xs font-bold text-foreground/80 line-clamp-1 text-left">
+                                                            {session.title ||
+                                                                'Chat session'}
                                                         </span>
-                                                        <Separator className="flex-1 bg-primary/20" />
+                                                        {session.lastMessage
+                                                            ?.content ? (
+                                                            <span className="text-[11px] opacity-60 line-clamp-1 text-left">
+                                                                {
+                                                                    session
+                                                                        .lastMessage
+                                                                        .content
+                                                                }
+                                                            </span>
+                                                        ) : null}
+                                                        <span className="text-[9px] opacity-40 font-bold uppercase tracking-widest">
+                                                            {timestamp}
+                                                        </span>
                                                     </div>
-                                                    <div className="space-y-3">
-                                                        {historyGroups[date]
-                                                            .filter(
-                                                                (m) =>
-                                                                    m.role ===
-                                                                        'user' &&
-                                                                    m.content
-                                                                        .length >
-                                                                        0,
-                                                            )
-                                                            .map((m) => (
-                                                                <Button
-                                                                    key={m.id}
-                                                                    variant="ghost"
-                                                                    onClick={() => {
-                                                                        // Find matching exchange
-                                                                        const idx =
-                                                                            historyGroups[
-                                                                                date
-                                                                            ].findIndex(
-                                                                                (
-                                                                                    msg,
-                                                                                ) =>
-                                                                                    msg.id ===
-                                                                                    m.id,
-                                                                            );
-                                                                        const exchange =
-                                                                            historyGroups[
-                                                                                date
-                                                                            ].slice(
-                                                                                idx,
-                                                                                idx +
-                                                                                    2,
-                                                                            );
-                                                                        setMessages(
-                                                                            (
-                                                                                prev,
-                                                                            ) => {
-                                                                                const existingIds =
-                                                                                    new Set(
-                                                                                        prev.map(
-                                                                                            (
-                                                                                                p,
-                                                                                            ) =>
-                                                                                                p.id,
-                                                                                        ),
-                                                                                    );
-                                                                                const toAdd =
-                                                                                    exchange.filter(
-                                                                                        (
-                                                                                            e,
-                                                                                        ) =>
-                                                                                            !existingIds.has(
-                                                                                                e.id,
-                                                                                            ),
-                                                                                    );
-                                                                                return [
-                                                                                    ...prev,
-                                                                                    ...toAdd,
-                                                                                ];
-                                                                            },
-                                                                        );
-                                                                    }}
-                                                                    className="w-full justify-start h-auto py-3 px-4 rounded-xl hover:bg-primary/10 group transition-all"
-                                                                >
-                                                                    <div className="flex flex-col items-start gap-1 overflow-hidden">
-                                                                        <span className="text-xs font-bold text-foreground/80 line-clamp-2 text-left group-hover:text-primary transition-colors">
-                                                                            {
-                                                                                m.content
-                                                                            }
-                                                                        </span>
-                                                                        <span className="text-[9px] opacity-40 font-bold uppercase tracking-widest">
-                                                                            {m.timestamp.toLocaleTimeString(
-                                                                                [],
-                                                                                {
-                                                                                    hour: '2-digit',
-                                                                                    minute: '2-digit',
-                                                                                },
-                                                                            )}
-                                                                        </span>
-                                                                    </div>
-                                                                </Button>
-                                                            ))}
-                                                    </div>
-                                                </div>
-                                            ))
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary/80">
+                                                        {(session.promptCount ??
+                                                            0) + '/100'}
+                                                    </span>
+                                                </Button>
+                                            );
+                                        })
                                     )}
                                 </div>
                             </ScrollArea>
@@ -610,13 +776,59 @@ const DashboardAIAssistant = () => {
                                         )}
                                     </div>
                                     <div
-                                        className={`max-w-[92%] sm:max-w-[85%] lg:max-w-[72%] xl:max-w-[65%] px-4 md:px-5 py-3 md:py-4 rounded-2xl shadow-sm leading-relaxed
+                                        className={`max-w-[92%] sm:max-w-[85%] lg:max-w-[72%] xl:max-w-[65%] px-4 md:px-5 py-3 md:py-4 rounded-2xl shadow-sm leading-relaxed relative group
                                         ${
                                             message.role === 'user'
                                                 ? 'bg-primary text-primary-foreground rounded-tr-none'
                                                 : 'bg-muted/50 backdrop-blur-sm border border-foreground/5 rounded-tl-none'
                                         }`}
                                     >
+                                        {message.content &&
+                                            String(message.content).trim() && (
+                                                <div
+                                                    className={`absolute top-2 ${
+                                                        message.role === 'user'
+                                                            ? 'left-2'
+                                                            : 'right-2'
+                                                    } opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center gap-1`}
+                                                >
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            handleCopyMessage(
+                                                                message.id,
+                                                                message.content,
+                                                            )
+                                                        }
+                                                        className="h-7 w-7 rounded-lg hover:bg-foreground/5"
+                                                        aria-label="Copy message"
+                                                    >
+                                                        {copiedMessageId ===
+                                                        message.id ? (
+                                                            <Check className="h-4 w-4" />
+                                                        ) : (
+                                                            <Copy className="h-4 w-4" />
+                                                        )}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            handleShareText(
+                                                                message.content,
+                                                                'Izabi message',
+                                                            )
+                                                        }
+                                                        className="h-7 w-7 rounded-lg hover:bg-foreground/5"
+                                                        aria-label="Share message"
+                                                    >
+                                                        <Share2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            )}
                                         <div className="text-sm md:text-base max-w-none break-words">
                                             {message.content === '' ? (
                                                 <div className="flex gap-1 py-1">
