@@ -3,18 +3,20 @@ import React from 'react';
 interface LogoProps {
     className?: string;
     size?: number;
-    showText?: boolean;
+    height?: number;
 }
 
 export const Logo: React.FC<LogoProps> = ({
     className = '',
-    size = 40,
-    showText = false,
+    size = 100,
+    height,
 }) => {
+    const logoHeight = height ?? size;
+
     return (
         <div className={`flex items-center gap-3 ${className}`}>
             <div
-                style={{ width: size, height: size }}
+                style={{ width: size, height: logoHeight }}
                 className="relative group"
             >
                 {/* Light Mode Logo */}
@@ -30,17 +32,6 @@ export const Logo: React.FC<LogoProps> = ({
                     className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-lg hidden dark:block"
                 />
             </div>
-
-            {showText && (
-                <div className="flex flex-col">
-                    <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent leading-none tracking-tighter">
-                        IZABI
-                    </span>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-                        AI Learning
-                    </span>
-                </div>
-            )}
         </div>
     );
 };

@@ -260,10 +260,7 @@ const Signup = () => {
             >
                 {/* Branding */}
                 <div className="text-center space-y-2 sm:space-y-3">
-                    <Logo
-                        size={48}
-                        className="justify-center mx-auto sm:w-16 sm:h-16"
-                    />
+                    <Logo size={180} className="justify-center mx-auto" />
                     <div>
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
                             {t('auth.signup')}

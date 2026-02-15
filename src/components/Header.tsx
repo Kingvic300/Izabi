@@ -38,13 +38,13 @@ export const Header = () => {
             )}
         >
             <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                <div className="flex justify-between items-center h-12">
+                <div className="flex justify-between items-center h-20">
                     {/* Logo */}
                     <Link
                         to="/"
                         className="flex items-center group relative z-10"
                     >
-                        <Logo showText size={40} />
+                        <Logo size={200} />
                     </Link>
 
                     {/* Desktop Links */}

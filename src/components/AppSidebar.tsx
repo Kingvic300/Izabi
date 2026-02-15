@@ -200,7 +200,11 @@ export function AppSidebar() {
         >
             {/* Header */}
             <SidebarHeader className="border-b border-border p-4">
-                <Logo showText={!collapsed} size={40} className="px-2" />
+                <Logo
+                    size={collapsed ? 44 : 160}
+                    height={collapsed ? 44 : 90}
+                    className={`px-2 ${collapsed ? 'justify-center' : ''}`}
+                />
             </SidebarHeader>
 
             {/* Navigation */}

@@ -36,7 +36,7 @@ export const Footer = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
                         <div className="lg:col-span-5 space-y-5">
                             <Link to="/" className="inline-flex items-center">
-                                <Logo showText size={46} />
+                                <Logo size={180} />
                             </Link>
                             <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed max-w-md">
                                 Turn class notes and textbooks into clear
