@@ -576,7 +576,7 @@ const DashboardAIAssistant = () => {
                         className="sm:hidden h-9 w-9"
                         aria-label="Start new chat"
                     >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-3 w-3" />
                     </Button>
                     <Button
                         variant="outline"
@@ -585,7 +585,7 @@ const DashboardAIAssistant = () => {
                         className="h-9 w-9"
                         aria-label="Copy chat transcript"
                     >
-                        <Copy className="h-4 w-4" />
+                        <Copy className="h-3 w-3" />
                     </Button>
                     <Button
                         variant="outline"
@@ -594,7 +594,7 @@ const DashboardAIAssistant = () => {
                         className="h-9 w-9"
                         aria-label="Share chat transcript"
                     >
-                        <Share2 className="h-4 w-4" />
+                        <Share2 className="h-3 w-3" />
                     </Button>
                     <Button
                         variant="outline"
@@ -602,7 +602,7 @@ const DashboardAIAssistant = () => {
                         onClick={startNewChat}
                         className="hidden sm:flex items-center gap-2 glass border-primary/20 hover:bg-primary/10 text-primary font-bold transition-all"
                     >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-3 w-3" />
                         New Chat
                     </Button>
                     <Button
@@ -616,7 +616,7 @@ const DashboardAIAssistant = () => {
                         {isUploadingPdf ? (
                             <Loader className="h-4 w-4 animate-spin" />
                         ) : (
-                            <Paperclip className="h-4 w-4" />
+                            <Paperclip className="h-3 w-3" />
                         )}
                     </Button>
                     <Button
@@ -629,7 +629,7 @@ const DashboardAIAssistant = () => {
                         {isUploadingPdf ? (
                             <Loader className="h-4 w-4 animate-spin" />
                         ) : (
-                            <Paperclip className="h-4 w-4" />
+                            <Paperclip className="h-3 w-3" />
                         )}
                         Upload PDF
                     </Button>
@@ -648,7 +648,7 @@ const DashboardAIAssistant = () => {
                                 size="sm"
                                 className="flex items-center gap-2 glass-card font-bold hover:bg-card/5"
                             >
-                                <History className="h-4 w-4" />
+                                <History className="h-3 w-3" />
                                 <span className="hidden sm:inline">
                                     History
                                 </span>
@@ -705,8 +705,8 @@ const DashboardAIAssistant = () => {
                                                             : 'hover:bg-primary/10 border-transparent'
                                                     }`}
                                                 >
-                                                    <div className="flex flex-col items-start gap-1 overflow-hidden flex-1">
-                                                        <span className="text-xs font-bold text-foreground/80 line-clamp-1 text-left">
+                                                    <div className="flex flex-col items-start gap-0.5 overflow-hidden flex-1">
+                                                        <span className="text-[10px] font-bold text-foreground/80 line-clamp-1 text-left">
                                                             {session.title ||
                                                                 'Chat session'}
                                                         </span>
@@ -776,62 +776,16 @@ const DashboardAIAssistant = () => {
                                         )}
                                     </div>
                                     <div
-                                        className={`max-w-[92%] sm:max-w-[85%] lg:max-w-[72%] xl:max-w-[65%] px-4 md:px-5 py-3 md:py-4 rounded-2xl shadow-sm leading-relaxed relative group
+                                        className={`max-w-[92%] sm:max-w-[85%] lg:max-w-[72%] xl:max-w-[65%] px-4 md:px-5 pt-3 md:pt-4 pb-1 rounded-2xl shadow-sm leading-relaxed relative group
                                         ${
                                             message.role === 'user'
                                                 ? 'bg-primary text-primary-foreground rounded-tr-none'
                                                 : 'bg-muted/50 backdrop-blur-sm border border-foreground/5 rounded-tl-none'
                                         }`}
                                     >
-                                        {message.content &&
-                                            String(message.content).trim() && (
-                                                <div
-                                                    className={`absolute top-2 ${
-                                                        message.role === 'user'
-                                                            ? 'left-2'
-                                                            : 'right-2'
-                                                    } opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center gap-1`}
-                                                >
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            handleCopyMessage(
-                                                                message.id,
-                                                                message.content,
-                                                            )
-                                                        }
-                                                        className="h-7 w-7 rounded-lg hover:bg-foreground/5"
-                                                        aria-label="Copy message"
-                                                    >
-                                                        {copiedMessageId ===
-                                                        message.id ? (
-                                                            <Check className="h-4 w-4" />
-                                                        ) : (
-                                                            <Copy className="h-4 w-4" />
-                                                        )}
-                                                    </Button>
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            handleShareText(
-                                                                message.content,
-                                                                'Izabi message',
-                                                            )
-                                                        }
-                                                        className="h-7 w-7 rounded-lg hover:bg-foreground/5"
-                                                        aria-label="Share message"
-                                                    >
-                                                        <Share2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            )}
                                         <div className="text-sm md:text-base max-w-none break-words">
                                             {message.content === '' ? (
-                                                <div className="flex gap-1 py-1">
+                                                <div className="flex gap-0.5 py-1">
                                                     <div className="w-1.5 h-1.5 bg-accent animate-bounce" />
                                                     <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.2s]" />
                                                     <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.4s]" />
@@ -849,7 +803,7 @@ const DashboardAIAssistant = () => {
                                         </div>
                                         <div
                                             className={`text-[10px] mt-2 opacity-40 uppercase tracking-widest font-bold 
-                                        ${message.role === 'user' ? 'text-right' : 'text-left'}`}
+                                            ${message.role === 'user' ? 'text-right' : 'text-left'}`}
                                         >
                                             {message.timestamp.toLocaleTimeString(
                                                 [],
@@ -858,6 +812,53 @@ const DashboardAIAssistant = () => {
                                                     minute: '2-digit',
                                                 },
                                             )}
+                                             {message.content &&
+                                                String(message.content).trim() && (
+                                                    <div
+                                                        className={`absolute  ${
+                                                            message.role === 'user'
+                                                                ? 'left-2 '
+                                                                : 'right-2'
+                                                        } bottom-0.02 flex items-center gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-[10px]`}
+                                                    >
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            
+                                                            onClick={() =>
+                                                                handleCopyMessage(
+                                                                    message.id,
+                                                                    message.content,
+                                                                )
+                                                            }
+                                                            className="h-6 w-6 rounded-md hover:bg-foreground/5"
+                                                            aria-label="Copy message"
+                                                        >
+                                                            {copiedMessageId ===
+                                                            message.id ? (
+                                                                <Check className="h-3 w-3" />
+                                                            ) : (
+                                                                <Copy className="h-3 w-3" />
+                                                            )}
+                                                        </Button>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            
+                                                            onClick={() =>
+                                                                handleShareText(
+                                                                    message.content,
+                                                                    'Izabi message',
+                                                                )
+                                                            }
+                                                            className="h-6 w-6 rounded-md hover:bg-foreground/5"
+                                                            aria-label="Share message"
+                                                        >
+                                                            <Share2 className="h-3 w-3" />
+                                                        </Button>
+                                                    </div>
+                                                )
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -882,8 +883,8 @@ const DashboardAIAssistant = () => {
                         <div className="mx-auto w-full max-w-[1500px] space-y-3 md:space-y-4">
                             {activeDocument && (
                                 <div className="flex items-center justify-between gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
-                                    <div className="flex items-center gap-2 text-xs text-primary font-medium min-w-0">
-                                        <FileText className="h-4 w-4" />
+                                    <div className="flex items-center gap-2 text-[10px] text-primary font-medium min-w-0">
+                                        <FileText className="h-3 w-3" />
                                         <span className="truncate max-w-[170px] sm:max-w-[220px] md:max-w-[420px]">
                                             {activeDocument.fileName}
                                         </span>
@@ -901,7 +902,7 @@ const DashboardAIAssistant = () => {
 
                             {/* Smart Suggestions */}
                             {!inputValue && !isLoading && (
-                                <div className="flex gap-2 overflow-x-auto pb-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                <div className="flex gap-2 overflow-x-auto pb-1 animate-in fade-in slide-in-from-bottom-1.5 duration-500">
                                     {[
                                         {
                                             label: 'Generate Flashcards',
@@ -962,7 +963,7 @@ const DashboardAIAssistant = () => {
                                     {isUploadingPdf ? (
                                         <Loader className="h-4 w-4 animate-spin" />
                                     ) : (
-                                        <Paperclip className="h-4 w-4" />
+                                        <Paperclip className="h-3 w-3" />
                                     )}
                                 </Button>
                                 <Button
