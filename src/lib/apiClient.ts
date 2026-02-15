@@ -267,8 +267,10 @@ export const api = {
      * How: CRUD operations for study notes.
      * Why: Users need to create, read, update, and delete their generated notes.
      */
-    async getNotes() {
-        const response = await apiClient.get(`/api/notes`);
+    async getNotes(groupId?: string) {
+        const response = await apiClient.get(`/api/notes`, {
+            params: groupId ? { groupId } : undefined,
+        });
         return response.data;
     },
 
@@ -304,6 +306,65 @@ export const api = {
             throw new Error('Invalid note identifier');
         }
         await apiClient.delete(`/api/notes/${normalizedId}`);
+    },
+
+    async getGroups() {
+        const response = await apiClient.get(`/api/groups`);
+        return response.data;
+    },
+
+    async createGroup(name: string) {
+        const response = await apiClient.post(`/api/groups`, { name });
+        return response.data;
+    },
+
+    async updateGroup(id: string, name: string) {
+        const normalizedId = String(id || '').trim();
+        if (
+            !normalizedId ||
+            normalizedId === 'undefined' ||
+            normalizedId === 'null'
+        ) {
+            throw new Error('Invalid group identifier');
+        }
+        const response = await apiClient.patch(`/api/groups/${normalizedId}`, {
+            name,
+        });
+        return response.data;
+    },
+
+    async deleteGroup(id: string) {
+        const normalizedId = String(id || '').trim();
+        if (
+            !normalizedId ||
+            normalizedId === 'undefined' ||
+            normalizedId === 'null'
+        ) {
+            throw new Error('Invalid group identifier');
+        }
+        await apiClient.delete(`/api/groups/${normalizedId}`);
+    },
+
+    async importNote(
+        file: File,
+        metadata?: { title?: string; subject?: string },
+        options?: { preview?: boolean },
+    ) {
+        const formData = new FormData();
+        formData.append('file', file);
+        if (metadata?.title) formData.append('title', metadata.title);
+        if (metadata?.subject) formData.append('subject', metadata.subject);
+
+        const previewParam = options?.preview ? '?preview=true' : '';
+        const response = await apiClient.post(
+            `/api/notes/import${previewParam}`,
+            formData,
+            {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                skipCache: true,
+            },
+        );
+        return response.data;
     },
 
     // Quiz Results API
@@ -422,6 +483,15 @@ export const api = {
         const userId = localStorage.getItem('userId');
         const response = await apiClient.get(
             `/api/study/leaderboard${userId ? `?userId=${userId}` : ''}`,
+        );
+        return response.data;
+    },
+
+    async getLeaderboardShare(type: 'xp' | 'streak' = 'xp') {
+        const query = new URLSearchParams();
+        if (type) query.set('type', type);
+        const response = await apiClient.get(
+            `/api/study/leaderboard/share?${query.toString()}`,
         );
         return response.data;
     },

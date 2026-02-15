@@ -13,16 +13,19 @@ import {
     MapPin,
     Zap,
     Target,
+    Share2,
+    Loader2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { api } from '@/lib/apiClient';
 import { cn } from '@/lib/utils';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { Loader2 } from 'lucide-react';
+import { useAppToast } from '@/hooks/useAppToast';
 
 const RankTrend = ({ change }: { change: number }) => {
     if (!change || change === 0) return null;
@@ -52,9 +55,11 @@ export default function DashboardLeaderboard() {
         };
     }>({ topStudents: [], topStreaks: [] });
     const [isLoading, setIsLoading] = useState(true);
+    const [isSharing, setIsSharing] = useState(false);
     const [activeTab, setActiveTab] = useState('xp');
     const containerRef = useRef(null);
     const currentUserId = localStorage.getItem('userId');
+    const toast = useAppToast();
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
@@ -86,6 +91,41 @@ export default function DashboardLeaderboard() {
             });
         }
     }, [isLoading, activeTab]);
+
+    const handleShare = async () => {
+        if (isSharing) return;
+        setIsSharing(true);
+        try {
+            const type = activeTab === 'streak' ? 'streak' : 'xp';
+            const res = await api.getLeaderboardShare(type);
+            const shareText =
+                res?.data?.shareText ||
+                'I just checked my Izabi leaderboard rank!';
+            const shareTitle = 'Izabi Leaderboard';
+
+            if (navigator.share) {
+                await navigator.share({
+                    title: shareTitle,
+                    text: shareText,
+                });
+            } else if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(shareText);
+                toast.success({
+                    title: 'Copied to clipboard',
+                    description: 'Your leaderboard share text is ready.',
+                });
+            } else {
+                toast.info({
+                    title: 'Share text',
+                    description: shareText,
+                });
+            }
+        } catch (error) {
+            toast.apiError(error, 'Failed to share rank');
+        } finally {
+            setIsSharing(false);
+        }
+    };
 
     const getMedalColor = (index: number) => {
         switch (index) {
@@ -142,62 +182,82 @@ export default function DashboardLeaderboard() {
                     </p>
                 </div>
 
-                <div className="p-3 sm:p-4 rounded-2xl bg-card/5 border border-foreground/10 backdrop-blur-md flex items-center gap-3 sm:gap-4 w-full md:w-auto md:min-w-[200px]">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0">
-                        <Target size={20} className="sm:w-6 sm:h-6" />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">
-                            Your Rank
-                        </p>
-                        <p className="text-lg sm:text-xl font-black flex items-center gap-2">
-                            {isLoading && !leaderboardData.userRank ? (
-                                <span className="animate-pulse">...</span>
-                            ) : (
-                                <>
-                                    {activeTab === 'xp'
-                                        ? leaderboardData.userRank?.xp &&
-                                          !isNaN(
-                                              Number(
-                                                  leaderboardData.userRank.xp,
-                                              ),
-                                          )
-                                            ? `#${leaderboardData.userRank.xp}`
-                                            : leaderboardData.userRank?.xp ===
-                                                'Not Ranked'
-                                              ? '#---'
-                                              : leaderboardData.userRank?.xp ||
-                                                '...'
-                                        : leaderboardData.userRank?.streak &&
-                                            !isNaN(
-                                                Number(
-                                                    leaderboardData.userRank
-                                                        .streak,
-                                                ),
-                                            )
-                                          ? `#${leaderboardData.userRank.streak}`
-                                          : leaderboardData.userRank?.streak ===
-                                              'Not Ranked'
-                                            ? '#---'
+                <div className="flex flex-col gap-3 w-full md:w-auto md:min-w-[200px]">
+                    <div className="p-3 sm:p-4 rounded-2xl bg-card/5 border border-foreground/10 backdrop-blur-md flex items-center gap-3 sm:gap-4 w-full">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0">
+                            <Target size={20} className="sm:w-6 sm:h-6" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">
+                                Your Rank
+                            </p>
+                            <p className="text-lg sm:text-xl font-black flex items-center gap-2">
+                                {isLoading && !leaderboardData.userRank ? (
+                                    <span className="animate-pulse">...</span>
+                                ) : (
+                                    <>
+                                        {activeTab === 'xp'
+                                            ? leaderboardData.userRank?.xp &&
+                                              !isNaN(
+                                                  Number(
+                                                      leaderboardData.userRank
+                                                          .xp,
+                                                  ),
+                                              )
+                                                ? `#${leaderboardData.userRank.xp}`
+                                                : leaderboardData.userRank
+                                                        ?.xp === 'Not Ranked'
+                                                  ? '#---'
+                                                  : leaderboardData.userRank
+                                                        ?.xp || '...'
                                             : leaderboardData.userRank
-                                                  ?.streak || '...'}
-                                    <RankTrend
-                                        change={
-                                            activeTab === 'xp'
-                                                ? Number(
-                                                      leaderboardData.userRank
-                                                          ?.xpChange,
-                                                  )
-                                                : Number(
-                                                      leaderboardData.userRank
-                                                          ?.streakChange,
-                                                  )
-                                        }
-                                    />
-                                </>
-                            )}
-                        </p>
+                                                    ?.streak &&
+                                                !isNaN(
+                                                    Number(
+                                                        leaderboardData.userRank
+                                                            .streak,
+                                                    ),
+                                                )
+                                              ? `#${leaderboardData.userRank.streak}`
+                                              : leaderboardData.userRank
+                                                      ?.streak === 'Not Ranked'
+                                                ? '#---'
+                                                : leaderboardData.userRank
+                                                      ?.streak || '...'}
+                                        <RankTrend
+                                            change={
+                                                activeTab === 'xp'
+                                                    ? Number(
+                                                          leaderboardData
+                                                              .userRank
+                                                              ?.xpChange,
+                                                      )
+                                                    : Number(
+                                                          leaderboardData
+                                                              .userRank
+                                                              ?.streakChange,
+                                                      )
+                                            }
+                                        />
+                                    </>
+                                )}
+                            </p>
+                        </div>
                     </div>
+
+                    <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={handleShare}
+                        disabled={isSharing || isLoading}
+                    >
+                        {isSharing ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Share2 className="h-4 w-4" />
+                        )}
+                        Share Rank
+                    </Button>
                 </div>
             </header>
 
