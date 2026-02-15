@@ -14,6 +14,7 @@ import {
     Zap,
     Target,
     Share2,
+    Copy,
     Loader2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +22,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/apiClient';
 import { cn } from '@/lib/utils';
 import gsap from 'gsap';
@@ -56,6 +66,12 @@ export default function DashboardLeaderboard() {
     }>({ topStudents: [], topStreaks: [] });
     const [isLoading, setIsLoading] = useState(true);
     const [isSharing, setIsSharing] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [sharePayload, setSharePayload] = useState<{
+        shareText: string;
+        shareBody: string;
+        shareUrl: string;
+    } | null>(null);
     const [activeTab, setActiveTab] = useState('xp');
     const containerRef = useRef(null);
     const currentUserId = localStorage.getItem('userId');
@@ -92,38 +108,90 @@ export default function DashboardLeaderboard() {
         }
     }, [isLoading, activeTab]);
 
+    const buildFallbackShare = (data: any) => {
+        const shareUrl =
+            data?.shareUrl || 'https://izabi.halixe.com/leaderboard';
+        const shareBody =
+            data?.shareBody ||
+            'I’m on the Izabi leaderboard 🚀 Can you beat me?';
+        const shareText =
+            data?.shareText || `${shareBody}\nCheck it out: ${shareUrl}`;
+        return { shareText, shareBody, shareUrl };
+    };
+
+    const openManualShare = async (payload: {
+        shareText: string;
+        shareBody: string;
+        shareUrl: string;
+    }) => {
+        setSharePayload(payload);
+        setIsShareModalOpen(true);
+
+        if (navigator.clipboard?.writeText) {
+            try {
+                await navigator.clipboard.writeText(payload.shareText);
+                toast.success({
+                    title: 'Link copied',
+                    description: 'Share text copied to your clipboard.',
+                });
+            } catch {
+                toast.info({
+                    title: 'Copy to share',
+                    description: 'Tap copy to share your rank.',
+                });
+            }
+        }
+    };
+
     const handleShare = async () => {
         if (isSharing) return;
         setIsSharing(true);
         try {
             const type = activeTab === 'streak' ? 'streak' : 'xp';
             const res = await api.getLeaderboardShare(type);
-            const shareText =
-                res?.data?.shareText ||
-                'I just checked my Izabi leaderboard rank!';
+            const payload = buildFallbackShare(res?.data);
             const shareTitle = 'Izabi Leaderboard';
 
+            // Prefer native share UI, fall back to copy + manual modal.
             if (navigator.share) {
-                await navigator.share({
-                    title: shareTitle,
-                    text: shareText,
-                });
-            } else if (navigator.clipboard?.writeText) {
-                await navigator.clipboard.writeText(shareText);
-                toast.success({
-                    title: 'Copied to clipboard',
-                    description: 'Your leaderboard share text is ready.',
-                });
+                try {
+                    await navigator.share({
+                        title: shareTitle,
+                        text: payload.shareBody,
+                        url: payload.shareUrl,
+                    });
+                } catch (error: any) {
+                    if (error?.name !== 'AbortError') {
+                        await openManualShare(payload);
+                    }
+                }
             } else {
-                toast.info({
-                    title: 'Share text',
-                    description: shareText,
-                });
+                await openManualShare(payload);
             }
         } catch (error) {
             toast.apiError(error, 'Failed to share rank');
         } finally {
             setIsSharing(false);
+        }
+    };
+
+    const handleCopyShare = async () => {
+        if (!sharePayload?.shareText) return;
+        if (!navigator.clipboard?.writeText) {
+            toast.info({
+                title: 'Copy unavailable',
+                description: 'Your browser does not support copy.',
+            });
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(sharePayload.shareText);
+            toast.success({
+                title: 'Link copied',
+                description: 'Share text copied to your clipboard.',
+            });
+        } catch (error) {
+            toast.apiError(error, 'Copy failed');
         }
     };
 
@@ -165,6 +233,37 @@ export default function DashboardLeaderboard() {
             ref={containerRef}
             className="space-y-6 md:space-y-8 pb-20 w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-0"
         >
+            <Dialog
+                open={isShareModalOpen}
+                onOpenChange={setIsShareModalOpen}
+            >
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Share your rank</DialogTitle>
+                        <DialogDescription>
+                            Copy and share your leaderboard status anywhere.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Textarea
+                        readOnly
+                        value={sharePayload?.shareText || ''}
+                        className="min-h-[140px]"
+                    />
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={handleCopyShare}
+                            disabled={!sharePayload?.shareText}
+                        >
+                            <Copy className="h-4 w-4" />
+                            Copy
+                        </Button>
+                        <Button onClick={() => setIsShareModalOpen(false)}>
+                            Done
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 pb-6 border-b border-foreground/5">
                 <div className="space-y-2">
                     <Badge
