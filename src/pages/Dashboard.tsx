@@ -65,7 +65,6 @@ const Dashboard = () => {
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
                     <AppSidebar />
-
                     <div className="flex-1 min-w-0 flex flex-col relative z-10">
                         {/* Modern Header */}
                         <header className="h-16 sm:h-20 border-b border-foreground/5 bg-background/50 backdrop-blur-xl px-3 sm:px-6 md:px-8 xl:px-10 flex items-center justify-between shrink-0">
@@ -82,22 +81,6 @@ const Dashboard = () => {
                                     <p className="text-lg font-bold tracking-tight">
                                         Izabi Workspace
                                     </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-2 sm:gap-4">
-                                <div className="hidden md:flex flex-col items-end mr-2">
-                                    <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
-                                        Aura Sync Active
-                                    </span>
-                                    <span className="text-[10px] font-mono opacity-20">
-                                        EST-992-BETA
-                                    </span>
-                                </div>
-                                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl bg-primary/20 p-[1px] border border-foreground/10 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
-                                    <div className="w-full h-full rounded-[14px] bg-background flex items-center justify-center">
-                                        <div className="w-3 h-3 rounded-full bg-primary/40 animate-pulse" />
-                                    </div>
                                 </div>
                             </div>
                         </header>

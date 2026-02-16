@@ -1,138 +1,36 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import {
-    FileText,
-    Plus,
-    Trash2,
-    Edit2,
-    Save,
-    AlertCircle,
-    Sparkles,
-    Clock,
-    Eye,
-    Upload,
-    Image,
-    Loader2,
-    Folder,
-    PencilLine,
-    Check,
-    X,
-} from 'lucide-react';
 import { useAppToast } from '@/hooks/useAppToast';
 import { formValidation } from '@/lib/formValidation';
 import { api } from '@/lib/apiClient';
 import { PageLoader } from '@/components/PageLoader';
-import RichTextEditor from '@/components/RichTextEditor';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-} from '@/components/ui/dialog';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-
-interface Note {
-    id: string;
-    _id?: string;
-    title: string;
-    content: string;
-    subject?: string;
-    category?: string;
-    groupId?: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-interface NoteGroup {
-    id: string;
-    _id?: string;
-    name: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-const getNoteId = (note: Partial<Note> | any): string =>
-    String(note?.id || note?._id || '');
-
-const normalizeNote = (note: any): Note => ({
-    ...note,
-    id: getNoteId(note),
-    _id: note?._id,
-    subject: note?.subject || note?.category || '',
-    groupId:
-        typeof note?.groupId === 'object'
-            ? note?.groupId?._id || note?.groupId?.id || null
-            : note?.groupId || null,
-});
-
-const getGroupId = (group: Partial<NoteGroup> | any): string =>
-    String(group?.id || group?._id || '');
-
-const normalizeGroup = (group: any): NoteGroup => ({
-    ...group,
-    id: getGroupId(group),
-    _id: group?._id,
-});
-
-const ACCEPTED_IMPORT_TYPES = '.txt,.pdf,.docx,.jpg,.jpeg,.png';
-const ACCEPTED_SCAN_TYPES = '.jpg,.jpeg,.png';
-
-const stripExtension = (value: string): string =>
-    value.replace(/\.[^/.]+$/, '');
-
-const isImageFile = (file: File): boolean =>
-    file.type.startsWith('image/') || /\.(jpg|jpeg|png)$/i.test(file.name);
-
-const isAllowedImportFile = (file: File): boolean =>
-    /\.(txt|pdf|docx|jpg|jpeg|png)$/i.test(file.name) ||
-    file.type.startsWith('image/') ||
-    file.type === 'application/pdf' ||
-    file.type ===
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-
-const escapeHtml = (value: string): string =>
-    value
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-
-const plainTextToHtml = (text: string): string => {
-    const paragraphs = text.split(/\n{2,}/);
-    return paragraphs
-        .map((paragraph) => {
-            const escaped = escapeHtml(paragraph.trim());
-            const withBreaks = escaped.replace(/\n/g, '<br />');
-            return `<p>${withBreaks}</p>`;
-        })
-        .join('');
-};
+import NotesHeader from '@/components/dashboard-notes/NotesHeader';
+import GroupFilterBar from '@/components/dashboard-notes/GroupFilterBar';
+import NewNoteForm from '@/components/dashboard-notes/NewNoteForm';
+import NotesGrid from '@/components/dashboard-notes/NotesGrid';
+import GroupManagerDialog from '@/components/dashboard-notes/GroupManagerDialog';
+import ImportNoteDialog from '@/components/dashboard-notes/ImportNoteDialog';
+import PreviewImportDialog from '@/components/dashboard-notes/PreviewImportDialog';
+import NoteReaderDialog from '@/components/dashboard-notes/NoteReaderDialog';
+import type { Note, NoteGroup } from '@/components/dashboard-notes/noteTypes';
+import {
+    ACCEPTED_IMPORT_TYPES,
+    ACCEPTED_SCAN_TYPES,
+    getGroupId,
+    getNoteId,
+    isAllowedImportFile,
+    isImageFile,
+    normalizeGroup,
+    normalizeNote,
+    plainTextToHtml,
+    stripExtension,
+} from '@/components/dashboard-notes/noteUtils';
 
 export default function DashboardNotes() {
     const containerRef = useRef<HTMLDivElement>(null);
-    const importInputRef = useRef<HTMLInputElement>(null);
     const hasLoadedOnceRef = useRef(false);
     const appToast = useAppToast();
     const [notes, setNotes] = useState<Note[]>([]);
@@ -725,508 +623,60 @@ export default function DashboardNotes() {
             ref={containerRef}
             className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
-            <header className="notes-header flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter mb-2 text-gradient">
-                        My Notes
-                    </h1>
-                    <p className="text-muted-foreground text-base sm:text-lg">
-                        Manage and organize all your study notes in one place.
-                    </p>
-                </div>
-                {!isAddingNote && (
-                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                        <Button
-                            variant="outline"
-                            onClick={() => openImportModal('import')}
-                            className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl w-full sm:w-auto"
-                        >
-                            <Upload className="h-4 w-4 mr-2" />
-                            Import Note
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => openImportModal('scan')}
-                            className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl w-full sm:w-auto"
-                        >
-                            <Image className="h-4 w-4 mr-2" />
-                            Scan Note (Image)
-                        </Button>
-                        <Button
-                            onClick={() => setIsAddingNote(true)}
-                            className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl shadow-glow w-full sm:w-auto"
-                        >
-                            <Plus className="h-5 w-5 mr-2" /> Create New Note
-                        </Button>
-                    </div>
-                )}
-            </header>
+            <NotesHeader
+                isAddingNote={isAddingNote}
+                onImport={() => openImportModal('import')}
+                onScan={() => openImportModal('scan')}
+                onCreate={() => setIsAddingNote(true)}
+            />
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex flex-wrap gap-2">
-                    <Button
-                        size="sm"
-                        variant={groupFilter === 'all' ? 'default' : 'outline'}
-                        onClick={() => setGroupFilter('all')}
-                        className="rounded-2xl"
-                    >
-                        All Notes
-                    </Button>
-                    <Button
-                        size="sm"
-                        variant={groupFilter === 'none' ? 'default' : 'outline'}
-                        onClick={() => setGroupFilter('none')}
-                        className="rounded-2xl"
-                    >
-                        No Group
-                    </Button>
-                    {groups.map((group) => (
-                        <Button
-                            key={group.id}
-                            size="sm"
-                            variant={
-                                groupFilter === group.id
-                                    ? 'default'
-                                    : 'outline'
-                            }
-                            onClick={() => setGroupFilter(group.id)}
-                            className="rounded-2xl"
-                        >
-                            {group.name}
-                        </Button>
-                    ))}
-                </div>
-                <div className="flex items-center gap-3">
-                    {isNotesRefreshing && (
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                            Refreshing...
-                        </div>
-                    )}
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setGroupModalOpen(true)}
-                        className="rounded-2xl"
-                    >
-                        <Folder className="h-4 w-4 mr-2" />
-                        Create Group
-                    </Button>
-                </div>
-            </div>
+            <GroupFilterBar
+                groups={groups}
+                groupFilter={groupFilter}
+                isNotesRefreshing={isNotesRefreshing}
+                onFilterChange={setGroupFilter}
+                onOpenGroupModal={() => setGroupModalOpen(true)}
+            />
 
             {isAddingNote && (
-                <Card className="glass shadow-2xl border-foreground/10 overflow-hidden stagger-card">
-                    <CardHeader className="bg-card/5 border-b border-foreground/5">
-                        <CardTitle className="flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-primary" />
-                            <span>Create New Note</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="title"
-                                    className="text-xs uppercase tracking-widest font-bold opacity-60"
-                                >
-                                    Title
-                                </Label>
-                                <Input
-                                    id="title"
-                                    value={newNote.title}
-                                    onChange={(e) =>
-                                        setNewNote({
-                                            ...newNote,
-                                            title: e.target.value,
-                                        })
-                                    }
-                                    placeholder="Enter note title..."
-                                    className={`rounded-2xl h-12 bg-card/5 border-foreground/10 ${errors.title ? 'border-destructive' : ''}`}
-                                />
-                                {errors.title && (
-                                    <p className="text-xs text-destructive flex items-center gap-1">
-                                        <AlertCircle className="h-3 w-3" />{' '}
-                                        {errors.title}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="subject"
-                                    className="text-xs uppercase tracking-widest font-bold opacity-60"
-                                >
-                                    Subject
-                                </Label>
-                                <Input
-                                    id="subject"
-                                    value={newNote.subject}
-                                    onChange={(e) =>
-                                        setNewNote({
-                                            ...newNote,
-                                            subject: e.target.value,
-                                        })
-                                    }
-                                    placeholder="e.g., Biology, Math..."
-                                    className="rounded-2xl h-12 bg-card/5 border-foreground/10"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase tracking-widest font-bold opacity-60">
-                                    Group
-                                </Label>
-                                <Select
-                                    value={newNote.groupId}
-                                    onValueChange={(value) =>
-                                        setNewNote({
-                                            ...newNote,
-                                            groupId: value,
-                                        })
-                                    }
-                                >
-                                    <SelectTrigger className="rounded-2xl h-12 bg-card/5 border-foreground/10">
-                                        <SelectValue placeholder="No Group" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none">
-                                            No Group
-                                        </SelectItem>
-                                        {groups.map((group) => (
-                                            <SelectItem
-                                                key={group.id}
-                                                value={group.id}
-                                            >
-                                                {group.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setGroupModalOpen(true)}
-                                    className="px-2 h-8 text-xs"
-                                >
-                                    <Folder className="h-3 w-3 mr-2" />
-                                    Create group
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-xs uppercase tracking-widest font-bold opacity-60">
-                                Content
-                            </Label>
-                            <RichTextEditor
-                                content={newNote.content}
-                                onChange={(val) =>
-                                    setNewNote({ ...newNote, content: val })
-                                }
-                                placeholder="Start writing your thoughts..."
-                            />
-                            {errors.content && (
-                                <p className="text-xs text-destructive flex items-center gap-1 mt-1">
-                                    <AlertCircle className="h-3 w-3" />{' '}
-                                    {errors.content}
-                                </p>
-                            )}
-                        </div>
-                        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
-                            <Button
-                                variant="ghost"
-                                onClick={() => setIsAddingNote(false)}
-                                className="rounded-2xl h-11 sm:h-12 px-4 sm:px-6 w-full sm:w-auto"
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={handleCreateNote}
-                                disabled={
-                                    !newNote.title.trim() ||
-                                    !newNote.content.trim()
-                                }
-                                className="rounded-2xl h-11 sm:h-12 px-4 sm:px-8 shadow-glow w-full sm:w-auto"
-                            >
-                                <Save className="h-4 w-4 mr-2" />
-                                Save Note
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                <NewNoteForm
+                    draft={newNote}
+                    groups={groups}
+                    errors={errors}
+                    onChange={(updates) =>
+                        setNewNote((prev) => ({ ...prev, ...updates }))
+                    }
+                    onCancel={() => setIsAddingNote(false)}
+                    onSave={handleCreateNote}
+                    onOpenGroupModal={() => setGroupModalOpen(true)}
+                />
             )}
 
-            {/* Notes list */}
-            {notes.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {notes.map((note) => (
-                        (() => {
-                            const noteId = getNoteId(note);
-                            const groupName = note.groupId
-                                ? groupMap.get(note.groupId)
-                                : null;
-                            return (
-                        <Card
-                            key={noteId}
-                            className="note-card glass shadow-lg hover-lift border-foreground/5 flex flex-col group h-[400px]"
-                        >
-                            <CardContent className="p-6 flex flex-col h-full relative">
-                                {editingId === noteId ? (
-                                    <div className="space-y-4 flex-1 flex flex-col">
-                                        <Input
-                                            value={note.title}
-                                            className="rounded-2xl bg-card/5 border-foreground/10"
-                                            onChange={(e) =>
-                                                setNotes((prev) =>
-                                                    prev.map((n) =>
-                                                        getNoteId(n) === noteId
-                                                            ? {
-                                                                  ...n,
-                                                                  title: e
-                                                                      .target
-                                                                      .value,
-                                                              }
-                                                            : n,
-                                                    ),
-                                                )
-                                            }
-                                        />
-                                        <Select
-                                            value={note.groupId || 'none'}
-                                            onValueChange={(value) =>
-                                                setNotes((prev) =>
-                                                    prev.map((n) =>
-                                                        getNoteId(n) === noteId
-                                                            ? {
-                                                                  ...n,
-                                                                  groupId:
-                                                                      value ===
-                                                                      'none'
-                                                                          ? null
-                                                                          : value,
-                                                              }
-                                                            : n,
-                                                    ),
-                                                )
-                                            }
-                                        >
-                                            <SelectTrigger className="rounded-2xl bg-card/5 border-foreground/10 h-10">
-                                                <SelectValue placeholder="No Group" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="none">
-                                                    No Group
-                                                </SelectItem>
-                                                {groups.map((group) => (
-                                                    <SelectItem
-                                                        key={group.id}
-                                                        value={group.id}
-                                                    >
-                                                        {group.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <div className="flex-1 overflow-y-auto">
-                                            <RichTextEditor
-                                                content={note.content}
-                                                onChange={(val) =>
-                                                    setNotes((prev) =>
-                                                        prev.map((n) =>
-                                                            getNoteId(n) === noteId
-                                                                ? {
-                                                                      ...n,
-                                                                      content:
-                                                                          val,
-                                                                  }
-                                                                : n,
-                                                        ),
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                        <div className="flex justify-end gap-2 pt-2">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() =>
-                                                    setEditingId(null)
-                                                }
-                                                className="rounded-lg"
-                                            >
-                                                Cancel
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                className="rounded-lg px-4"
-                                                disabled={savingId === note.id}
-                                                onClick={() => {
-                                                    const updated = notes.find(
-                                                        (n) =>
-                                                            getNoteId(n) ===
-                                                            noteId,
-                                                    );
-                                                    if (updated)
-                                                        handleUpdateNote(
-                                                            noteId,
-                                                            updated.title,
-                                                            updated.content,
-                                                            updated.groupId,
-                                                        );
-                                                }}
-                                            >
-                                                <Save
-                                                    size={14}
-                                                    className="mr-2"
-                                                />{' '}
-                                                {savingId === note.id
-                                                    ? 'Saving...'
-                                                    : 'Save'}
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col h-full">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">
-                                                        {note.subject ||
-                                                            'General'}
-                                                    </span>
-                                                    {groupName && (
-                                                        <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70 bg-foreground/10 px-2 py-0.5 rounded">
-                                                            {groupName}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <h3 className="text-xl font-bold group-hover:text-primary transition-colors line-clamp-1">
-                                                    {note.title}
-                                                </h3>
-                                            </div>
-                                            <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-8 w-8 rounded-lg"
-                                                    onClick={() =>
-                                                        setReadingNote(note)
-                                                    }
-                                                >
-                                                    <Eye size={14} />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-8 w-8 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                                                    onClick={() =>
-                                                        setEditingId(noteId)
-                                                    }
-                                                >
-                                                    <Edit2 size={14} />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-8 w-8 rounded-lg text-destructive/60 hover:text-destructive hover:bg-destructive/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                                                    onClick={() =>
-                                                        setDeleteConfirm(
-                                                            noteId,
-                                                        )
-                                                    }
-                                                >
-                                                    <Trash2 size={14} />
-                                                </Button>
-                                            </div>
-                                        </div>
+            <NotesGrid
+                notes={notes}
+                groups={groups}
+                groupMap={groupMap}
+                groupFilter={groupFilter}
+                activeGroupLabel={activeGroupLabel}
+                editingId={editingId}
+                savingId={savingId}
+                deleteConfirm={deleteConfirm}
+                onEditNote={setEditingId}
+                onReadNote={setReadingNote}
+                onDeleteConfirmChange={setDeleteConfirm}
+                onDeleteNote={handleDeleteNote}
+                onSaveNote={handleUpdateNote}
+                onUpdateDraft={(noteId, updates) =>
+                    setNotes((prev) =>
+                        prev.map((note) =>
+                            note.id === noteId ? { ...note, ...updates } : note,
+                        ),
+                    )
+                }
+                onCreateNote={() => setIsAddingNote(true)}
+            />
 
-                                        <div
-                                            className="text-sm leading-relaxed text-muted-foreground prose prose-sm dark:prose-invert max-w-none overflow-hidden mask-fade flex-1"
-                                            dangerouslySetInnerHTML={{
-                                                __html: note.content,
-                                            }}
-                                        />
-
-                                        <div className="mt-4 pt-4 border-t border-foreground/5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-40">
-                                            <Clock size={10} />
-                                            <span>
-                                                {new Date(
-                                                    note.updatedAt,
-                                                ).toLocaleDateString()}
-                                            </span>
-                                        </div>
-
-                                        {deleteConfirm === noteId && (
-                                            <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 space-y-4 z-20">
-                                                <p className="text-xs font-bold uppercase tracking-wider text-center">
-                                                    Permanently remove this
-                                                    note?
-                                                </p>
-                                                <div className="flex gap-2 w-full">
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        onClick={() =>
-                                                            setDeleteConfirm(
-                                                                null,
-                                                            )
-                                                        }
-                                                        className="flex-1 rounded-2xl bg-card/10 border-foreground/20 text-foreground hover:bg-card/20"
-                                                    >
-                                                        Cancel
-                                                    </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        className="flex-1 rounded-2xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
-                                                        onClick={() =>
-                                                            handleDeleteNote(
-                                                                noteId,
-                                                            )
-                                                        }
-                                                    >
-                                                        Delete
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                            );
-                        })()
-                    ))}
-                </div>
-            ) : (
-                <div className="flex flex-col items-center justify-center py-24 glass rounded-2xl border-dashed space-y-6">
-                    <div className="w-24 h-24 rounded-2xl bg-card/5 flex items-center justify-center border border-foreground/10">
-                        <FileText
-                            size={48}
-                            className="text-muted-foreground/30"
-                        />
-                    </div>
-                    <div className="text-center space-y-2">
-                        <h3 className="text-2xl font-bold">
-                            {groupFilter === 'all'
-                                ? 'Your Slate is Clean'
-                                : `No notes in ${activeGroupLabel}`}
-                        </h3>
-                        <p className="text-muted-foreground">
-                            {groupFilter === 'all'
-                                ? 'Your notes will appear here. Create your first note.'
-                                : 'Switch groups or import a note into this group.'}
-                        </p>
-                    </div>
-                    <Button
-                        onClick={() => setIsAddingNote(true)}
-                        size="lg"
-                        className="rounded-2xl h-12 sm:h-14 px-6 sm:px-10 shadow-glow font-bold text-base sm:text-lg w-full sm:w-auto"
-                    >
-                        <Plus size={20} className="mr-2" /> Create First Note
-                    </Button>
-                </div>
-            )}
-
-            <Dialog
+            <GroupManagerDialog
                 open={groupModalOpen}
                 onOpenChange={(open) => {
                     if (!open) {
@@ -1234,448 +684,67 @@ export default function DashboardNotes() {
                     }
                     setGroupModalOpen(open);
                 }}
-            >
-                <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-3xl sm:max-w-xl w-[95vw] p-0 overflow-hidden">
-                    <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
-                        <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
-                            Manage Groups
-                        </DialogTitle>
-                        <DialogDescription className="text-sm text-muted-foreground">
-                            Create, rename, or delete note groups.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="p-5 sm:p-6 space-y-4">
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <Input
-                                value={groupNameDraft}
-                                onChange={(e) =>
-                                    setGroupNameDraft(e.target.value)
-                                }
-                                placeholder="New group name..."
-                                className="rounded-2xl h-11 bg-card/5 border-foreground/10 flex-1"
-                            />
-                            <Button
-                                onClick={handleCreateGroup}
-                                disabled={groupBusyId === 'create'}
-                                className="rounded-2xl h-11 px-5 shadow-glow"
-                            >
-                                {groupBusyId === 'create' ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                    'Create'
-                                )}
-                            </Button>
-                        </div>
+                groups={groups}
+                groupNameDraft={groupNameDraft}
+                groupEditingId={groupEditingId}
+                groupEditingName={groupEditingName}
+                groupBusyId={groupBusyId}
+                onGroupNameDraftChange={setGroupNameDraft}
+                onGroupEditingNameChange={setGroupEditingName}
+                onCreateGroup={handleCreateGroup}
+                onStartEditGroup={startEditGroup}
+                onCancelEditGroup={cancelEditGroup}
+                onUpdateGroup={handleUpdateGroup}
+                onDeleteGroup={handleDeleteGroup}
+            />
 
-                        <div className="space-y-3">
-                            {groups.length === 0 ? (
-                                <div className="text-sm text-muted-foreground">
-                                    No groups yet. Create one to organize your
-                                    notes.
-                                </div>
-                            ) : (
-                                groups.map((group) => (
-                                    <div
-                                        key={group.id}
-                                        className="flex items-center justify-between gap-3 rounded-2xl border border-foreground/10 px-4 py-3 bg-card/5"
-                                    >
-                                        {groupEditingId === group.id ? (
-                                            <Input
-                                                value={groupEditingName}
-                                                onChange={(e) =>
-                                                    setGroupEditingName(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                className="rounded-xl h-9 bg-background/60 border-foreground/10 flex-1"
-                                            />
-                                        ) : (
-                                            <span className="font-semibold text-sm">
-                                                {group.name}
-                                            </span>
-                                        )}
-                                        <div className="flex items-center gap-2">
-                                            {groupEditingId === group.id ? (
-                                                <>
-                                                    <Button
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            handleUpdateGroup(
-                                                                group.id,
-                                                            )
-                                                        }
-                                                        className="h-9 w-9 rounded-xl"
-                                                        disabled={
-                                                            groupBusyId ===
-                                                            group.id
-                                                        }
-                                                    >
-                                                        <Check size={16} />
-                                                    </Button>
-                                                    <Button
-                                                        size="icon"
-                                                        variant="ghost"
-                                                        onClick={cancelEditGroup}
-                                                        className="h-9 w-9 rounded-xl"
-                                                    >
-                                                        <X size={16} />
-                                                    </Button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Button
-                                                        size="icon"
-                                                        variant="ghost"
-                                                        onClick={() =>
-                                                            startEditGroup(
-                                                                group,
-                                                            )
-                                                        }
-                                                        className="h-9 w-9 rounded-xl"
-                                                    >
-                                                        <PencilLine size={16} />
-                                                    </Button>
-                                                    <Button
-                                                        size="icon"
-                                                        variant="ghost"
-                                                        onClick={() =>
-                                                            handleDeleteGroup(
-                                                                group.id,
-                                                            )
-                                                        }
-                                                        className="h-9 w-9 rounded-xl text-destructive/70 hover:text-destructive"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </Button>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog
+            <ImportNoteDialog
                 open={importOpen}
                 onOpenChange={(open) => {
                     if (!open) resetImportState();
                     setImportOpen(open);
                 }}
-            >
-                <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-3xl sm:max-w-2xl w-[95vw] p-0 overflow-hidden">
-                    <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
-                        <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
-                            {importMode === 'scan'
-                                ? 'Scan Note (Image)'
-                                : 'Import Note'}
-                        </DialogTitle>
-                        <DialogDescription className="text-sm text-muted-foreground">
-                            {importMode === 'scan'
-                                ? 'Upload a clear image and we will extract the text.'
-                                : 'Upload a document to turn it into a note.'}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="p-5 sm:p-6 space-y-5">
-                        <div className="space-y-2">
-                            <Label className="text-xs uppercase tracking-widest font-bold opacity-60">
-                                File Upload
-                            </Label>
-                            <div
-                                className="border-2 border-dashed border-foreground/10 rounded-[20px] p-6 flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-all cursor-pointer relative bg-background/50"
-                                onDragOver={(e) => e.preventDefault()}
-                                onDrop={(e) => {
-                                    e.preventDefault();
-                                    handleImportFile(
-                                        e.dataTransfer.files?.[0] || null,
-                                    );
-                                }}
-                                onClick={() => importInputRef.current?.click()}
-                            >
-                                <input
-                                    ref={importInputRef}
-                                    type="file"
-                                    accept={
-                                        importMode === 'scan'
-                                            ? ACCEPTED_SCAN_TYPES
-                                            : ACCEPTED_IMPORT_TYPES
-                                    }
-                                    onChange={(e) =>
-                                        handleImportFile(
-                                            e.target.files?.[0] || null,
-                                        )
-                                    }
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                />
-                                {importFile ? (
-                                    <div className="text-center">
-                                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2 text-primary">
-                                            <FileText size={20} />
-                                        </div>
-                                        <p className="text-xs font-bold text-primary truncate max-w-[220px]">
-                                            {importFile.name}
-                                        </p>
-                                        <p className="text-[10px] uppercase font-black tracking-widest opacity-40 mt-1">
-                                            Click to change
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center">
-                                            <Upload
-                                                size={24}
-                                                className="text-muted-foreground"
-                                            />
-                                        </div>
-                                        <p className="text-[10px] font-black opacity-40 uppercase tracking-[0.2em] text-center">
-                                            Drag & drop or browse
-                                        </p>
-                                        <p className="text-[10px] uppercase tracking-widest opacity-40 text-center">
-                                            {importMode === 'scan'
-                                                ? 'JPG, JPEG, PNG'
-                                                : 'TXT, PDF, DOCX, JPG, JPEG, PNG'}
-                                        </p>
-                                    </>
-                                )}
-                            </div>
-                        </div>
+                importMode={importMode}
+                importFile={importFile}
+                importTitle={importTitle}
+                importSubject={importSubject}
+                importStatus={importStatus}
+                importError={importError}
+                isBusy={isImportBusy}
+                acceptTypes={
+                    importMode === 'scan'
+                        ? ACCEPTED_SCAN_TYPES
+                        : ACCEPTED_IMPORT_TYPES
+                }
+                onFileSelected={handleImportFile}
+                onTitleChange={setImportTitle}
+                onSubjectChange={setImportSubject}
+                onPreview={handlePreviewImport}
+                onSave={handleImportSave}
+            />
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="import-title"
-                                    className="text-xs uppercase tracking-widest font-bold opacity-60"
-                                >
-                                    Title (optional)
-                                </Label>
-                                <Input
-                                    id="import-title"
-                                    value={importTitle}
-                                    onChange={(e) =>
-                                        setImportTitle(e.target.value)
-                                    }
-                                    placeholder="Auto-generate if left blank"
-                                    className="rounded-2xl h-11 bg-card/5 border-foreground/10"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="import-subject"
-                                    className="text-xs uppercase tracking-widest font-bold opacity-60"
-                                >
-                                    Subject (optional)
-                                </Label>
-                                <Input
-                                    id="import-subject"
-                                    value={importSubject}
-                                    onChange={(e) =>
-                                        setImportSubject(e.target.value)
-                                    }
-                                    placeholder="e.g., Biology"
-                                    className="rounded-2xl h-11 bg-card/5 border-foreground/10"
-                                />
-                            </div>
-                        </div>
-
-                        {importError && (
-                            <p className="text-xs text-destructive flex items-center gap-1">
-                                <AlertCircle className="h-3 w-3" />
-                                {importError}
-                            </p>
-                        )}
-
-                        {importStatus !== 'idle' && !importError && (
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                {importStatus === 'uploading' ||
-                                importStatus === 'processing' ? (
-                                    <Loader2 className="h-3 w-3 animate-spin" />
-                                ) : null}
-                                <span>
-                                    {importStatus === 'uploading' &&
-                                        'Uploading...'}
-                                    {importStatus === 'processing' &&
-                                        'Processing...'}
-                                    {importStatus === 'success' &&
-                                        'Ready to save.'}
-                                    {importStatus === 'error' &&
-                                        'Something went wrong.'}
-                                </span>
-                            </div>
-                        )}
-
-                        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
-                            <Button
-                                variant="ghost"
-                                onClick={() => setImportOpen(false)}
-                                className="rounded-2xl h-11 px-4 w-full sm:w-auto"
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                variant="outline"
-                                disabled={!importFile || isImportBusy}
-                                onClick={handlePreviewImport}
-                                className="rounded-2xl h-11 px-4 w-full sm:w-auto"
-                            >
-                                Preview
-                            </Button>
-                            <Button
-                                onClick={handleImportSave}
-                                disabled={!importFile || isImportBusy}
-                                className="rounded-2xl h-11 px-6 shadow-glow w-full sm:w-auto"
-                            >
-                                {importMode === 'scan'
-                                    ? 'Scan & Save'
-                                    : 'Import Note'}
-                            </Button>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog
+            <PreviewImportDialog
                 open={previewOpen}
                 onOpenChange={(open) => {
                     if (!open) setPreviewOpen(false);
                 }}
-            >
-                <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-3xl sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 overflow-hidden">
-                    <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
-                        <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
-                            Preview Import
-                        </DialogTitle>
-                        <DialogDescription className="text-sm text-muted-foreground">
-                            Review the extracted text before saving.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="p-5 sm:p-6 space-y-4 max-h-[65vh] overflow-y-auto">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="preview-title"
-                                    className="text-xs uppercase tracking-widest font-bold opacity-60"
-                                >
-                                    Title
-                                </Label>
-                                <Input
-                                    id="preview-title"
-                                    value={previewTitle}
-                                    onChange={(e) =>
-                                        setPreviewTitle(e.target.value)
-                                    }
-                                    className="rounded-2xl h-11 bg-card/5 border-foreground/10"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="preview-subject"
-                                    className="text-xs uppercase tracking-widest font-bold opacity-60"
-                                >
-                                    Subject
-                                </Label>
-                                <Input
-                                    id="preview-subject"
-                                    value={previewSubject}
-                                    onChange={(e) =>
-                                        setPreviewSubject(e.target.value)
-                                    }
-                                    placeholder="Optional"
-                                    className="rounded-2xl h-11 bg-card/5 border-foreground/10"
-                                />
-                            </div>
-                        </div>
+                previewTitle={previewTitle}
+                previewSubject={previewSubject}
+                previewText={previewText}
+                previewSaving={previewSaving}
+                onTitleChange={setPreviewTitle}
+                onSubjectChange={setPreviewSubject}
+                onSave={handleSaveFromPreview}
+            />
 
-                        <div className="space-y-2">
-                            <Label className="text-xs uppercase tracking-widest font-bold opacity-60">
-                                Extracted Text
-                            </Label>
-                            <Textarea
-                                value={previewText}
-                                readOnly
-                                className="min-h-[220px] bg-card/5 border-foreground/10"
-                            />
-                        </div>
-                    </div>
-                    <div className="p-5 sm:p-6 border-t border-foreground/10 bg-card/5 flex flex-col-reverse sm:flex-row justify-end gap-3">
-                        <Button
-                            variant="ghost"
-                            onClick={() => setPreviewOpen(false)}
-                            className="rounded-2xl h-11 px-4 w-full sm:w-auto"
-                        >
-                            Close
-                        </Button>
-                        <Button
-                            onClick={handleSaveFromPreview}
-                            disabled={previewSaving}
-                            className="rounded-2xl h-11 px-6 shadow-glow w-full sm:w-auto"
-                        >
-                            {previewSaving ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                                'Save Note'
-                            )}
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog
+            <NoteReaderDialog
+                note={readingNote}
+                groupMap={groupMap}
                 open={Boolean(readingNote)}
                 onOpenChange={(open) => {
                     if (!open) setReadingNote(null);
                 }}
-            >
-                <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-3xl sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 overflow-hidden">
-                    {readingNote && (
-                        <>
-                            <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
-                                <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight leading-tight break-words">
-                                    {readingNote.title}
-                                </DialogTitle>
-                                {(() => {
-                                    const groupName = readingNote.groupId
-                                        ? groupMap.get(readingNote.groupId)
-                                        : null;
-                                    return (
-                                        <DialogDescription className="text-xs sm:text-sm flex items-center gap-2">
-                                            <span className="text-primary font-semibold">
-                                                {readingNote.subject ||
-                                                    'General'}
-                                            </span>
-                                            {groupName && (
-                                                <>
-                                                    <span>•</span>
-                                                    <span className="text-foreground/70 font-semibold">
-                                                        {groupName}
-                                                    </span>
-                                                </>
-                                            )}
-                                            <span>•</span>
-                                            <span>
-                                                Updated{' '}
-                                                {new Date(
-                                                    readingNote.updatedAt,
-                                                ).toLocaleDateString()}
-                                            </span>
-                                        </DialogDescription>
-                                    );
-                                })()}
-                            </DialogHeader>
-
-                            <div className="p-5 sm:p-6 overflow-y-auto max-h-[65vh]">
-                                <div
-                                    className="prose prose-sm sm:prose-base dark:prose-invert max-w-none leading-relaxed text-foreground/90 break-words"
-                                    dangerouslySetInnerHTML={{
-                                        __html: readingNote.content,
-                                    }}
-                                />
-                            </div>
-                        </>
-                    )}
-                </DialogContent>
-            </Dialog>
+            />
         </div>
     );
 }

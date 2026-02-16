@@ -1,624 +1,86 @@
 'use client';
 
-import * as pdfjsLib from 'pdfjs-dist';
-// Set worker path locally to bypass CORS and MIME issues from CDNs
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
-
-import { useState, useRef, useEffect, useMemo } from 'react';
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
-import apiClient, { api } from '@/lib/apiClient';
-
-// Configure retry for external calls (Cloudinary)
-axiosRetry(axios, {
-    retries: 2,
-    retryDelay: axiosRetry.exponentialDelay,
-    retryCondition: (error) =>
-        axiosRetry.isNetworkOrIdempotentRequestError(error),
-});
-
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-    FileText,
-    Brain,
-    Zap,
-    ChevronDown,
-    ChevronUp,
-    Sparkles,
-    CheckCircle2,
-    XCircle,
-    BarChart3,
-    Clock,
-    Layers,
-    RotateCcw,
-    Cpu,
-    Download,
-    Loader2,
-    Flame,
-    Trophy,
-    Upload,
-    Volume2,
-    Pause,
-} from 'lucide-react';
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import PDFUploadSection from '@/components/pdf/PDFUploadSection';
-import type { PDFSelection, StudyQuestionResponse } from '@/types/pdf';
-import { useApiError } from '@/hooks/useApiError';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import stringSimilarity from 'string-similarity';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { useGSAP } from '@gsap/react';
-import { cn } from '@/lib/utils';
-import { LOCAL_PRACTICE_QUESTION_BANK } from '@/constants/practiceQuestions';
-
-import { useLanguage } from '@/contexts/LanguageContext';
-import BrainDrop from '@/components/BrainDrop';
+import { Share2 } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { WelcomeHeader } from '@/components/dashboard-home/WelcomeHeader';
+import { GamificationStrip } from '@/components/dashboard-home/GamificationStrip';
+import { BrainDropSection } from '@/components/dashboard-home/BrainDropSection';
 import IntentCards from '@/components/IntentCards';
 import ContextCard from '@/components/ContextCard';
+import { DocumentInfo } from '@/components/dashboard-home/DocumentInfo';
+import {
+    UploadPrompt,
+    UploadSidebar,
+} from '@/components/dashboard-home/UploadPrompt';
+import { StudyControls } from '@/components/dashboard-home/StudyControls';
+import { ResultsHub } from '@/components/dashboard-home/ResultsHub';
+import { ShareProfileDialog } from '@/components/dashboard-home/ShareProfileDialog';
 import QuickTestModal from '@/components/QuickTestModal';
 import StudyTricksModal from '@/components/StudyTricksModal';
 import PracticeQuizModal from '@/components/PracticeQuizModal';
+import { Button } from '@/components/ui/button';
+import { useDashboardData } from '@/hooks/useDashboardData';
+import { useJobPolling } from '@/hooks/useJobPolling';
+import { usePDFExtraction } from '@/hooks/usePDFExtraction';
+import { useApiError } from '@/hooks/useApiError';
 import { useStudy } from '@/contexts/StudyContext';
-import { AIMarkdown } from '@/components/ui/ai-markdown';
+import { useProfileShare } from '@/hooks/useProfileShare';
+import { api } from '@/lib/apiClient';
+import { buildPracticeQuestionSet, shuffleArray } from '@/lib/quizUtils';
+import {
+    DEFAULT_PRACTICE_QUESTION_COUNT,
+    ENDPOINT_TO_MODULE_ID,
+    INITIAL_MODULE_STATUSES,
+} from '@/components/dashboard-home/dashboard';
 
-const DEFAULT_PRACTICE_QUESTION_COUNT = 2;
-type ModuleCardId = 'summarize' | 'quiz' | 'guide' | 'cards';
-type ModuleCardStatus = 'idle' | 'processing' | 'completed' | 'failed';
+gsap.registerPlugin(ScrollToPlugin);
 
-const INITIAL_MODULE_STATUSES: Record<ModuleCardId, ModuleCardStatus> = {
-    summarize: 'idle',
-    quiz: 'idle',
-    guide: 'idle',
-    cards: 'idle',
+type PendingScroll = {
+    endpoint: string;
 };
 
-const ENDPOINT_TO_MODULE_ID: Record<string, ModuleCardId> = {
-    summarize: 'summarize',
-    'generate-questions': 'quiz',
-    'generate-study-material': 'guide',
-    flashcards: 'cards',
-};
-
-const shuffleArray = <T,>(items: T[]): T[] => {
-    const shuffled = [...items];
-    for (let i = shuffled.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-};
-
-const normalizePracticeQuestion = (
-    question: Partial<StudyQuestionResponse>,
-): StudyQuestionResponse | null => {
-    const questionText =
-        typeof question?.question === 'string' ? question.question.trim() : '';
-    const answer = typeof question?.answer === 'string' ? question.answer : '';
-    const options = Array.isArray(question?.options)
-        ? question.options
-              .map((option) =>
-                  typeof option === 'string' ? option.trim() : '',
-              )
-              .filter(Boolean)
-        : [];
-
-    if (!questionText || !answer) return null;
-
-    const optionsWithAnswer = options.includes(answer)
-        ? options
-        : [...options, answer];
-
-    if (optionsWithAnswer.length < 2) return null;
-
-    return {
-        question: questionText,
-        options: optionsWithAnswer,
-        answer,
-        difficulty: question?.difficulty || 'easy',
-        questionType: question?.questionType || 'multiple_choice',
-        explanation: question?.explanation,
-    };
-};
-
-const buildPracticeQuestionSet = (
-    apiQuestions: StudyQuestionResponse[],
-    count: number,
-) => {
-    const normalized = [...apiQuestions, ...LOCAL_PRACTICE_QUESTION_BANK]
-        .map(normalizePracticeQuestion)
-        .filter((question): question is StudyQuestionResponse =>
-            Boolean(question),
-        );
-
-    const unique = Array.from(
-        new Map(
-            normalized.map((question) => [
-                question.question.toLowerCase(),
-                question,
-            ]),
-        ).values(),
-    );
-
-    return shuffleArray(unique)
-        .slice(0, count)
-        .map((question) => ({
-            ...question,
-            options: shuffleArray(question.options),
-        }));
-};
-
-const SummaryViewer = ({
-    content,
-    t,
-    audioLabel = 'Listen to Summary',
-}: {
-    content: string;
-    t: any;
-    audioLabel?: string;
-}) => {
-    const { language } = useLanguage();
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-    const isLong = content.length > 800;
-
-    const handlePlaySummary = async () => {
-        if (isPlaying) {
-            audioRef.current?.pause();
-            setIsPlaying(false);
-            return;
-        }
-
-        if (audioRef.current && audioRef.current.src) {
-            audioRef.current.play();
-            setIsPlaying(true);
-            return;
-        }
-
-        setIsLoadingAudio(true);
-        try {
-            // Map our UI languages to Google TTS codes
-            const langMap: Record<string, string> = {
-                en: 'en',
-                pidgin: 'en', // Google doesn't have pidgin, we use English voice
-                igbo: 'ig',
-                yoruba: 'yo',
-                hausa: 'ha',
-            };
-
-            const isPidgin = language === 'pidgin';
-            const res = await api.generateVoice(
-                content.substring(0, 1000),
-                langMap[language] || 'en',
-                isPidgin,
-            );
-
-            if (res.success && res.voiceUrl) {
-                const audio = new Audio(res.voiceUrl);
-                audioRef.current = audio;
-
-                audio.onended = () => setIsPlaying(false);
-                audio.onpause = () => setIsPlaying(false);
-
-                await audio.play();
-                setIsPlaying(true);
-            }
-        } catch (err) {
-            console.error('Voice generation failed', err);
-            // Optionally trigger a toast here if passed down
-        } finally {
-            setIsLoadingAudio(false);
-        }
-    };
-
-    return (
-        <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handlePlaySummary}
-                    disabled={isLoadingAudio}
-                    className="w-full sm:w-auto rounded-full bg-primary/10 text-primary hover:bg-primary/20 gap-2 font-bold text-xs"
-                >
-                    {isLoadingAudio ? (
-                        <Loader2 className="animate-spin h-3 w-3" />
-                    ) : isPlaying ? (
-                        <Pause className="h-3 w-3" />
-                    ) : (
-                        <Volume2 className="h-3 w-3" />
-                    )}
-                    {isPlaying ? 'Pause Audio' : audioLabel}
-                </Button>
-            </div>
-
-            <div
-                className={cn(
-                    'selection:bg-primary/30 transition-all duration-700 ease-in-out',
-                    !isExpanded &&
-                        isLong &&
-                        'max-h-[400px] overflow-hidden relative',
-                )}
-            >
-                <AIMarkdown content={content} className="text-sm md:text-base" />
-                {!isExpanded && isLong && (
-                    <div className="absolute bottom-0 left-0 right-0 h-40 bg-background/90 pointer-events-none" />
-                )}
-            </div>
-            {isLong && (
-                <Button
-                    variant="outline"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="w-full h-12 rounded-2xl glass hover:bg-primary/10 text-primary border-primary/20 font-bold tracking-widest uppercase text-[10px] gap-3 shadow-sm"
-                >
-                    {isExpanded ? (
-                        <>
-                            <ChevronUp size={14} />
-                            {t('dashboard.collapse_summary')}
-                        </>
-                    ) : (
-                        <>
-                            <ChevronDown size={14} />
-                            {t('dashboard.view_full_summary')}
-                        </>
-                    )}
-                </Button>
-            )}
-        </div>
-    );
-};
-
-const countWords = (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return 0;
-    return trimmed.split(/\s+/).length;
-};
-
-const DashboardHome = () => {
-    const { t } = useLanguage();
-    const { addJob, session, updateSession } = useStudy();
+export default function DashboardHome() {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [moduleStatuses, setModuleStatuses] = useState(
-        INITIAL_MODULE_STATUSES,
-    );
-
-    // UI visibility states (local for transitions, but initialized from session)
-    const [showSummary, setShowSummary] = useState(false);
-    const [showStudyGuide, setShowStudyGuide] = useState(false);
-    const [showQuestions, setShowQuestions] = useState(false);
-    const [showFlashcards, setShowFlashcards] = useState(false);
-
-    const [selectedAnswers, setSelectedAnswers] = useState<{
-        [key: number]: string;
-    }>({});
-    const [showResults, setShowResults] = useState(false);
-    const [userStats, setUserStats] = useState<any>(null);
-    const [currentCardIndex, setCurrentCardIndex] = useState(0);
-    const [isFlipped, setIsFlipped] = useState(false);
-
+    const pendingScrollRef = useRef<PendingScroll | null>(null);
+    const { session, updateSession, addJob } = useStudy();
+    const { addError, clearError } = useApiError();
     const {
-        summary,
-        studyGuide,
-        questions,
-        flashcards,
-        pdfFile,
-        pdfSelection,
-        numberOfQuestions,
-        quizDifficulty,
-        quizStyle,
-        shuffleQuestions,
-        showExplanations,
-    } = session;
-    const filteredQuestions = useMemo(() => {
-        if (quizStyle === 'mcq') {
-            return questions.filter(
-                (q) => q.questionType?.toLowerCase() !== 'short_answer',
-            );
-        }
-        if (quizStyle === 'short') {
-            return questions.filter(
-                (q) => q.questionType?.toLowerCase() === 'short_answer',
-            );
-        }
-        return questions;
-    }, [questions, quizStyle]);
-    const displayQuestions = useMemo(
-        () =>
-            shuffleQuestions
-                ? shuffleArray(filteredQuestions)
-                : filteredQuestions,
-        [filteredQuestions, shuffleQuestions],
-    );
-    const summaryWordCount = countWords(summary || '');
-    const studyGuideWordCount = countWords(studyGuide || '');
-    const answeredCount = useMemo(
-        () =>
-            displayQuestions.reduce(
-                (acc, _q, idx) =>
-                    selectedAnswers[idx] ? acc + 1 : acc,
-                0,
-            ),
-        [displayQuestions, selectedAnswers],
-    );
+        userStats,
+        brainDropQuestion,
+        isBrainDropCompleted,
+        handleBrainDropAnswer,
+        fetchStats,
+        userId,
+    } = useDashboardData();
+    const {
+        isProcessing,
+        setIsProcessing,
+        moduleStatuses,
+        setModuleStatuses,
+        pollJobStatus,
+    } = useJobPolling();
+    const { extractTextFromPDF } = usePDFExtraction();
 
-    // Sync visibility with session data on mount
-    useEffect(() => {
-        if (summary) setShowSummary(true);
-        if (studyGuide) setShowStudyGuide(true);
-        if (questions?.length > 0) setShowQuestions(true);
-        if (flashcards?.length > 0) setShowFlashcards(true);
-    }, []);
-
-    useEffect(() => {
-        setSelectedAnswers({});
-        setShowResults(false);
-    }, [quizStyle, shuffleQuestions, questions.length]);
-
-    // Brain Drop State
-    const [brainDropQuestion, setBrainDropQuestion] = useState<any>(null);
-    const [isBrainDropCompleted, setIsBrainDropCompleted] = useState(false);
-
-    // Practice Questions State
-    const [practiceQuestions, setPracticeQuestions] = useState<
-        StudyQuestionResponse[]
-    >([]);
-    const [showPracticeQuiz, setShowPracticeQuiz] = useState(false);
-
-    // Context Card State
-    const [showContextCard, setShowContextCard] = useState(false);
-    const [userExamType, setUserExamType] = useState<string | null>(null);
-
-    // Modal State
     const [showQuickTestModal, setShowQuickTestModal] = useState(false);
     const [showStudyTricksModal, setShowStudyTricksModal] = useState(false);
-
-    const { errors, addError, clearError } = useApiError();
-    const userId = localStorage.getItem('userId');
-
-    const scrollToSection = (
-        sectionId: string,
-        block: ScrollLogicalPosition = 'start',
-        delay = 120,
-    ) => {
-        window.setTimeout(() => {
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.scrollIntoView({ behavior: 'smooth', block });
-            }
-        }, delay);
-    };
-
-    const handleUploadDocument = () => {
-        updateSession({
-            pdfSelection: null,
-            pdfFile: null,
-            fileName: '',
-            summary: null,
-            studyGuide: '',
-            questions: [],
-            flashcards: [],
-        });
-        setModuleStatuses(INITIAL_MODULE_STATUSES);
-        setIsProcessing(false);
-        scrollToSection('upload-section');
-    };
-
-    const handleReadyToLearn = () => {
-        scrollToSection('upload-section');
-        const uploadInput = document.getElementById(
-            'file-upload-redesign',
-        ) as HTMLInputElement | null;
-
-        if (uploadInput) {
-            uploadInput.click();
-            return;
-        }
-
-        handleUploadDocument();
-    };
-
-    const handleFeedPet = async () => {
-        try {
-            const res = await api.feedPet();
-            if (res.success) {
-                // Optimistic update
-                setUserStats((prev: any) => ({
-                    ...prev,
-                    data: {
-                        ...prev.data,
-                        totalPoints: res.data.points,
-                        pet: res.data.pet,
-                    },
-                }));
-                const audio = new Audio('/sounds/eat.mp3'); // Optional: would need file
-                // audio.play().catch(() => {});
-            }
-        } catch (err: any) {
-            addError({
-                message: err.message || 'Failed to feed pet',
-                type: 'validation',
-            });
-        }
-    };
-
-    const handleBrainDropAnswer = async (
-        answer: string,
-        isCorrect: boolean,
-    ) => {
-        try {
-            // Award points
-            await api.submitQuizResult({
-                score: isCorrect ? 100 : 0,
-                totalQuestions: 1,
-                correctAnswers: isCorrect ? 1 : 0,
-                subject: 'Brain Drop',
-                date: new Date().toISOString(),
-            });
-
-            setIsBrainDropCompleted(true);
-            localStorage.setItem(
-                `braindrop_complete_${new Date().toDateString()}`,
-                'true',
-            );
-
-            // Show context card after they've engaged
-            const hasSeenContext = localStorage.getItem('context_card_seen');
-            if (!hasSeenContext && userExamType === null) {
-                setTimeout(() => setShowContextCard(true), 2000);
-            }
-
-            fetchStats();
-        } catch (err) {
-            console.error('Failed to submit Brain Drop', err);
-        }
-    };
-
-    const handlePracticeSkills = async () => {
-        const questionCount = DEFAULT_PRACTICE_QUESTION_COUNT;
-
-        try {
-            const res = await api.getPracticeQuestions(questionCount);
-            const apiQuestions = Array.isArray(res?.data) ? res.data : [];
-            const questions = buildPracticeQuestionSet(
-                apiQuestions,
-                questionCount,
-            );
-
-            if (questions.length === 0) {
-                throw new Error('No practice questions available.');
-            }
-
-            setPracticeQuestions(questions);
-            setShowPracticeQuiz(true);
-            updateSession({
-                questions,
-                summary: '',
-                studyGuide: '',
-                flashcards: [],
-            });
-            setShowQuestions(true);
-            scrollToSection('questions-result-section', 'start', 220);
-        } catch (err) {
-            const fallbackQuestions = buildPracticeQuestionSet(
-                [],
-                questionCount,
-            );
-
-            if (fallbackQuestions.length > 0) {
-                setPracticeQuestions(fallbackQuestions);
-                setShowPracticeQuiz(true);
-                updateSession({
-                    questions: fallbackQuestions,
-                    summary: '',
-                    studyGuide: '',
-                    flashcards: [],
-                });
-                setShowQuestions(true);
-                scrollToSection('questions-result-section', 'start', 220);
-                return;
-            }
-
-            addError({
-                message: 'Failed to load practice questions.',
-                type: 'validation',
-            });
-        }
-    };
-
-    const handleQuickTest = () => {
-        if (!pdfFile) {
-            addError({
-                message:
-                    'Please upload a PDF document first to perform a Quick Test.',
-                type: 'validation',
-            });
-            scrollToSection('upload-section');
-            return;
-        }
-        setShowQuickTestModal(true);
-    };
-
-    const handleLearnTricks = () => {
-        setShowStudyTricksModal(true);
-    };
-
-    const handleQuickTestComplete = (score: number, pointsEarned: number) => {
-        // Refresh stats to show new points
-        fetchStats();
-        // Optionally show a success toast
-        if (score >= 70) {
-            addError({
-                message: `Great job! You earned ${pointsEarned} XP!`,
-                type: 'validation',
-            });
-        }
-    };
-
-    const handleContextSelect = (examType: string) => {
-        setUserExamType(examType);
-        setShowContextCard(false);
-        localStorage.setItem('context_card_seen', 'true');
-        localStorage.setItem('user_exam_type', examType);
-    };
-
-    const handleContextDismiss = () => {
-        setShowContextCard(false);
-        localStorage.setItem('context_card_seen', 'true');
-    };
-
-    useEffect(() => {
-        const loadBrainDrop = async () => {
-            try {
-                const lastCompleted = localStorage.getItem(
-                    `braindrop_complete_${new Date().toDateString()}`,
-                );
-                if (lastCompleted) {
-                    setIsBrainDropCompleted(true);
-                }
-
-                const res = await api.getDailyChallenge();
-                if (res.success && res.data) {
-                    // Validate that we have a proper question structure
-                    if (
-                        res.data.question &&
-                        res.data.options &&
-                        Array.isArray(res.data.options) &&
-                        res.data.options.length > 0
-                    ) {
-                        setBrainDropQuestion(res.data);
-                    } else {
-                        setBrainDropQuestion(null);
-                    }
-                }
-
-                // Check if user has set exam type
-                const savedExamType = localStorage.getItem('user_exam_type');
-                if (savedExamType) {
-                    setUserExamType(savedExamType);
-                }
-            } catch (err) {
-                console.error('Failed to load Brain Drop', err);
-            }
-        };
-        loadBrainDrop();
-    }, []);
+    const [showPracticeQuiz, setShowPracticeQuiz] = useState(false);
+    const [showContextCard, setShowContextCard] = useState(false);
+    const [practiceQuestions, setPracticeQuestions] = useState<any[]>([]);
+    const [userExamType, setUserExamType] = useState<string | null>(null);
+    const {
+        isSharing,
+        isShareModalOpen,
+        setIsShareModalOpen,
+        shareProfile,
+        profileData,
+        shareUrl,
+        shareText,
+    } = useProfileShare();
 
     useGSAP(
         () => {
@@ -643,43 +105,27 @@ const DashboardHome = () => {
         { scope: containerRef },
     );
 
-    const fetchStats = async () => {
-        try {
-            // Daily Check-in to update streak
-            await apiClient.post('/api/user/check-in');
-
-            const [statsRes, profileRes] = await Promise.all([
-                api.getUserStats(),
-                api.getUserProfile(),
-            ]);
-
-            setUserStats(statsRes);
-
-            if (profileRes.data?.pet) {
-                setUserStats((prev: any) => ({
-                    ...prev,
-                    data: {
-                        ...prev?.data,
-                        pet: profileRes.data.pet,
-                    },
-                }));
-            }
-        } catch (err) {
-            console.error('Failed to fetch user stats:', err);
-        }
-    };
-
     useEffect(() => {
-        fetchStats();
+        const savedExamType = localStorage.getItem('user_exam_type');
+        if (savedExamType) {
+            setUserExamType(savedExamType);
+        }
     }, []);
 
-    const handleSelectionComplete = ({
-        selection,
-        file,
-    }: {
-        selection: PDFSelection;
-        file: File;
-    }) => {
+    const scrollToSection = (sectionId: string, delay = 120) => {
+        setTimeout(() => {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                gsap.to(window, {
+                    duration: 1,
+                    scrollTo: { y: section, offsetY: 20 },
+                    ease: 'expo.out',
+                });
+            }
+        }, delay);
+    };
+
+    const handleSelectionComplete = ({ selection, file }: any) => {
         updateSession({
             pdfSelection: selection,
             pdfFile: file,
@@ -689,187 +135,45 @@ const DashboardHome = () => {
             questions: [],
             flashcards: [],
         });
-        // Reset visibility states for the new document
-        setShowSummary(false);
-        setShowStudyGuide(false);
-        setShowQuestions(false);
-        setShowFlashcards(false);
         setModuleStatuses(INITIAL_MODULE_STATUSES);
-        setSelectedAnswers({});
-        setShowResults(false);
-        scrollToSection('study-modes-grid', 'start', 220);
+        setIsProcessing(false);
+        scrollToSection('study-modes-grid', 220);
     };
 
-    const extractTextFromPDF = async (file: File) => {
-        try {
-            const arrayBuffer = await file.arrayBuffer();
-            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-            const pdf = await loadingTask.promise;
-            let text = '';
-            const maxPages = Math.min(pdf.numPages, 300); // Support up to 300 pages for textbooks
+    const handleUploadDocument = () => {
+        updateSession({
+            pdfSelection: null,
+            pdfFile: null,
+            fileName: '',
+            summary: '',
+            studyGuide: '',
+            questions: [],
+            flashcards: [],
+        });
+        setModuleStatuses(INITIAL_MODULE_STATUSES);
+        setIsProcessing(false);
+        scrollToSection('upload-section');
+    };
 
-            for (let i = 1; i <= maxPages; i++) {
-                const page = await pdf.getPage(i);
-                const content = await page.getTextContent();
-                const pageText = content.items
-                    .map((item: any) => item.str)
-                    .join(' ');
-                text += pageText + '\n\n';
-            }
-            return text;
-        } catch (error) {
-            console.error('[Dashboard] PDF Extraction Error:', error);
-            throw new Error('Failed to extract text from PDF locally.');
+    const handleReadyToLearn = () => {
+        scrollToSection('upload-section');
+        const uploadInput = document.getElementById(
+            'file-upload-redesign',
+        ) as HTMLInputElement | null;
+
+        if (uploadInput) {
+            uploadInput.click();
+            return;
         }
+
+        handleUploadDocument();
     };
 
-    const pollJobStatus = (jobId: string, endpoint: string) => {
-        const moduleId = ENDPOINT_TO_MODULE_ID[endpoint];
-        let attempts = 0;
-        const maxAttempts = 120;
-        const interval = setInterval(async () => {
-            attempts += 1;
-
-            if (attempts > maxAttempts) {
-                setIsProcessing(false);
-                clearInterval(interval);
-                if (moduleId) {
-                    setModuleStatuses((prev) => ({
-                        ...prev,
-                        [moduleId]: 'failed',
-                    }));
-                }
-                addError({
-                    message:
-                        'Processing is taking longer than expected. Please try again.',
-                    type: 'api',
-                });
-                return;
-            }
-
-            try {
-                const response = await api.getJobStatus(jobId);
-                const job = response.data;
-
-                if (job?.status === 'COMPLETED') {
-                    setIsProcessing(false);
-                    clearInterval(interval);
-                    if (moduleId) {
-                        setModuleStatuses((prev) => ({
-                            ...prev,
-                            [moduleId]: 'completed',
-                        }));
-                    }
-
-                    const result = job.result;
-                    if (endpoint === 'summarize') {
-                        updateSession({
-                            summary: result?.summary || '',
-                            studyGuide: '',
-                            questions: [],
-                            flashcards: [],
-                        });
-                        setShowSummary(true);
-                        setShowStudyGuide(false);
-                        scrollToSection('summary-result-section', 'start', 220);
-                    } else if (endpoint === 'generate-study-material') {
-                        updateSession({
-                            summary: '',
-                            studyGuide: result?.summary || '',
-                            questions: [],
-                            flashcards: [],
-                        });
-                        setShowStudyGuide(true);
-                        setShowSummary(false);
-                        scrollToSection(
-                            'study-guide-result-section',
-                            'start',
-                            220,
-                        );
-                    } else if (endpoint === 'generate-questions') {
-                        updateSession({
-                            summary: '',
-                            studyGuide: '',
-                            questions: result?.questions || [],
-                            flashcards: [],
-                        });
-                        setShowQuestions(true);
-                        scrollToSection(
-                            'questions-result-section',
-                            'start',
-                            220,
-                        );
-                    } else if (endpoint === 'flashcards') {
-                        updateSession({
-                            summary: '',
-                            studyGuide: '',
-                            questions: [],
-                            flashcards: result?.flashcards || [],
-                        });
-                        setShowFlashcards(true);
-                        scrollToSection(
-                            'flashcards-result-section',
-                            'start',
-                            220,
-                        );
-                    }
-                } else if (job?.status === 'FAILED') {
-                    setIsProcessing(false);
-                    clearInterval(interval);
-                    if (moduleId) {
-                        setModuleStatuses((prev) => ({
-                            ...prev,
-                            [moduleId]: 'failed',
-                        }));
-                    }
-                    addError({
-                        message:
-                            job?.error ||
-                            'We could not generate your study material. Please try again.',
-                        type: 'api',
-                    });
-                }
-            } catch {
-                if (attempts >= maxAttempts) {
-                    setIsProcessing(false);
-                    clearInterval(interval);
-                    if (moduleId) {
-                        setModuleStatuses((prev) => ({
-                            ...prev,
-                            [moduleId]: 'failed',
-                        }));
-                    }
-                    addError({
-                        message:
-                            'Connection issue while checking progress. Please try again.',
-                        type: 'api',
-                    });
-                }
-            }
-        }, 1500);
-    };
-
-    /*
-     * How: Uploads the selected PDF file directly to Cloudinary (signed) and then notifies the backend to process it asynchronously.
-     * Why: This architecture prevents Render memory crashes by bypassing the backend for large files and avoids timeouts via background polling.
-     */
-    /*
-     * How: Multi-stage upload process to bypass platform timeouts.
-     * 1. Fetches a secure signature from the backend.
-     * 2. Uploads the file directly to Cloudinary (External CDN) to bypass Render 30s limits.
-     * 3. Sends the resulting URL to the backend for asynchronous AI processing.
-     * Why: Fixes "No Reaction" and "30000ms Timeout" issues on poor network conditions or large files.
-     */
-    /*
-     * How: Uploads the selected PDF file directly to the backend processing queue.
-     * Why: Simplifies the pipeline by removing external Cloudinary dependency for initial upload.
-     *      Large files are handled via local extraction if needed, or streamed to backend.
-     */
-    const handleRequest = async (
+    const handleModuleRequest = async (
         endpoint: string,
         includeQuestions = false,
     ) => {
-        if (!pdfFile || !pdfSelection) {
+        if (!session.pdfFile || !session.pdfSelection) {
             addError({
                 message: 'Please upload a document first.',
                 type: 'validation',
@@ -878,7 +182,6 @@ const DashboardHome = () => {
         }
 
         const moduleId = ENDPOINT_TO_MODULE_ID[endpoint];
-
         setIsProcessing(true);
         if (moduleId) {
             setModuleStatuses((prev) => ({
@@ -887,11 +190,9 @@ const DashboardHome = () => {
             }));
         }
         clearError();
-        setSelectedAnswers({});
-        setShowResults(false);
 
         try {
-            const typeMap: any = {
+            const typeMap: Record<string, string> = {
                 summarize: 'summary',
                 'generate-questions': 'quiz',
                 flashcards: 'flashcards',
@@ -900,26 +201,20 @@ const DashboardHome = () => {
 
             const type = typeMap[endpoint] || endpoint;
             const options = includeQuestions
-                ? { count: numberOfQuestions }
+                ? { count: session.numberOfQuestions }
                 : {};
+
             if (endpoint === 'generate-questions') {
                 Object.assign(options, {
-                    difficulty: quizDifficulty,
-                    questionStyle: quizStyle,
-                    shuffle: shuffleQuestions,
+                    difficulty: session.quizDifficulty,
+                    questionStyle: session.quizStyle,
+                    shuffle: session.shuffleQuestions,
                 });
             }
 
-            // --- LARGE FILE BYPASS (Neural Client Extraction) ---
-            // If file exceeds 10MB limit, we extract text LOCALLY to avoid timeout/payload issues.
-            if (
-                pdfFile &&
-                pdfFile.size > 10 * 1024 * 1024 &&
-                pdfFile.type === 'application/pdf'
-            ) {
+            if (session.pdfFile.size > 10 * 1024 * 1024) {
                 try {
-                    const localText = await extractTextFromPDF(pdfFile);
-
+                    const localText = await extractTextFromPDF(session.pdfFile);
                     if (localText.trim().length < 30) {
                         throw new Error(
                             'Local extraction produced insufficient text.',
@@ -928,38 +223,40 @@ const DashboardHome = () => {
 
                     const ingestRes = await api.ingestText({
                         text: localText,
-                        fileName: pdfFile.name,
+                        fileName: session.pdfFile.name,
                         type,
                         options,
                     });
 
-                    addJob(ingestRes.jobId, pdfFile.name, type);
+                    addJob(ingestRes.jobId, session.pdfFile.name, type);
+                    pendingScrollRef.current = { endpoint };
                     pollJobStatus(ingestRes.jobId, endpoint);
                     return;
-                } catch (localExtractionError) {
+                } catch (localError) {
                     console.warn(
-                        '[SmartStudy] Local extraction fallback failed, using direct ingestion.',
-                        localExtractionError,
+                        'Local extraction failed, using direct ingestion.',
+                        localError,
                     );
                 }
             }
 
-            // STANDARD UPLOAD: Direct to Backend
-            const ingestRes = await api.ingestDirect(pdfFile, type, options);
-
-            addJob(ingestRes.jobId, pdfFile.name, type);
-
-            // Background Polling
+            const ingestRes = await api.ingestDirect(
+                session.pdfFile,
+                type,
+                options,
+            );
+            addJob(ingestRes.jobId, session.pdfFile.name, type);
+            pendingScrollRef.current = { endpoint };
             pollJobStatus(ingestRes.jobId, endpoint);
         } catch (err: any) {
-            console.error('[SmartStudy] Protocol Failure:', err);
-
-            const errorMsg =
-                err.response?.data?.message ||
-                err.message ||
-                'Failed to start processing the document.';
-            addError({ message: errorMsg, type: 'api' });
-
+            console.error('Request failed:', err);
+            addError({
+                message:
+                    err.response?.data?.message ||
+                    err.message ||
+                    'Failed to start processing.',
+                type: 'api',
+            });
             setIsProcessing(false);
             if (moduleId) {
                 setModuleStatuses((prev) => ({
@@ -967,71 +264,167 @@ const DashboardHome = () => {
                     [moduleId]: 'failed',
                 }));
             }
+        }
+    };
+
+    useEffect(() => {
+        if (!pendingScrollRef.current) return;
+        const { endpoint } = pendingScrollRef.current;
+        const moduleId = ENDPOINT_TO_MODULE_ID[endpoint];
+        if (!moduleId) return;
+
+        if (moduleStatuses[moduleId] === 'completed') {
+            pendingScrollRef.current = null;
+            const sectionMap: Record<string, string> = {
+                summarize: 'summary-result-section',
+                guide: 'study-guide-result-section',
+                quiz: 'questions-result-section',
+                cards: 'flashcards-result-section',
+            };
+            const target = sectionMap[moduleId];
+            if (target) {
+                scrollToSection(target, 220);
+            }
+        } else if (moduleStatuses[moduleId] === 'failed') {
+            pendingScrollRef.current = null;
+        }
+    }, [moduleStatuses]);
+
+    const handlePracticeSkills = async () => {
+        const questionCount = DEFAULT_PRACTICE_QUESTION_COUNT;
+
+        try {
+            const res = await api.getPracticeQuestions(questionCount);
+            const apiQuestions = Array.isArray(res?.data) ? res.data : [];
+            const questions = buildPracticeQuestionSet(
+                apiQuestions,
+                questionCount,
+            );
+
+            if (questions.length === 0) {
+                throw new Error('No practice questions available.');
+            }
+
+            setPracticeQuestions(questions);
+            setShowPracticeQuiz(true);
             updateSession({
+                questions,
                 summary: '',
                 studyGuide: '',
-                questions: [],
                 flashcards: [],
+            });
+            scrollToSection('questions-result-section', 220);
+        } catch (err) {
+            const fallbackQuestions = buildPracticeQuestionSet(
+                [],
+                questionCount,
+            );
+
+            if (fallbackQuestions.length > 0) {
+                setPracticeQuestions(fallbackQuestions);
+                setShowPracticeQuiz(true);
+                updateSession({
+                    questions: fallbackQuestions,
+                    summary: '',
+                    studyGuide: '',
+                    flashcards: [],
+                });
+                scrollToSection('questions-result-section', 220);
+                return;
+            }
+
+            addError({
+                message: 'Failed to load practice questions.',
+                type: 'validation',
             });
         }
     };
 
-    const handleAnswerSelect = (qIndex: number, option: string) => {
-        if (!showResults)
-            setSelectedAnswers((prev) => ({ ...prev, [qIndex]: option }));
+    const handleQuickTest = () => {
+        if (!session.pdfFile) {
+            addError({
+                message:
+                    'Please upload a PDF document first to perform a Quick Test.',
+                type: 'validation',
+            });
+            scrollToSection('upload-section');
+            return;
+        }
+        setShowQuickTestModal(true);
     };
 
-    const handleShortAnswerChange = (qIndex: number, value: string) => {
-        if (!showResults)
-            setSelectedAnswers((prev) => ({ ...prev, [qIndex]: value }));
+    const handleLearnTricks = () => {
+        setShowStudyTricksModal(true);
     };
 
-    const isShortAnswerCorrect = (input: string, correctAnswer: string) =>
-        stringSimilarity.compareTwoStrings(
-            input.trim().toLowerCase(),
-            correctAnswer.trim().toLowerCase(),
-        ) > 0.7;
+    const handleQuickTestComplete = (score: number, pointsEarned: number) => {
+        fetchStats();
+        if (score >= 70) {
+            addError({
+                message: `Great job! You earned ${pointsEarned} XP!`,
+                type: 'validation',
+            });
+        }
+    };
 
-    /*
-     * How: Compares user answers against the correct answers, accounting for both multiple choice and fuzzy matching for short answers.
-     * Why: To calculate the final score and verify mastery of the material.
-     */
-    const scoreQuiz = () =>
-        displayQuestions.reduce((acc, q, i) => {
-            const userAnswer = selectedAnswers[i];
-            if (!userAnswer) return acc;
-            if (q.questionType?.toLowerCase() === 'short_answer') {
-                return (
-                    acc +
-                    (isShortAnswerCorrect(userAnswer, q.answer || '') ? 1 : 0)
-                );
+    const handleContextSelect = (examType: string) => {
+        setUserExamType(examType);
+        setShowContextCard(false);
+        localStorage.setItem('context_card_seen', 'true');
+        localStorage.setItem('user_exam_type', examType);
+    };
+
+    const handleContextDismiss = () => {
+        setShowContextCard(false);
+        localStorage.setItem('context_card_seen', 'true');
+    };
+
+    const handleBrainDropSubmission = async (
+        answer: string,
+        isCorrect: boolean,
+    ) => {
+        const ok = await handleBrainDropAnswer(answer, isCorrect);
+        if (ok) {
+            const hasSeenContext = localStorage.getItem('context_card_seen');
+            if (!hasSeenContext && userExamType === null) {
+                setTimeout(() => setShowContextCard(true), 2000);
             }
-            return acc + (userAnswer === q.answer ? 1 : 0);
-        }, 0);
+        }
+    };
 
-    const handleFinalizeQuiz = async () => {
-        const score = scoreQuiz();
-        const total = displayQuestions.length;
+    const handleShareProfile = () => {
+        if (!userId) {
+            addError({
+                message: 'Unable to share profile right now.',
+                type: 'validation',
+            });
+            return;
+        }
+
+        void shareProfile(userId);
+    };
+
+    const handleQuizSubmit = async (
+        score: number,
+        total: number,
+        percentage: number,
+    ) => {
         if (total === 0) return;
-        const percentage = Math.round((score / total) * 100);
-
-        setShowResults(true);
-        gsap.to(window, {
-            duration: 1,
-            scrollTo: '#mastery-verdict',
-            ease: 'expo.out',
-        });
 
         try {
             await api.submitQuizResult({
                 score: percentage,
                 totalQuestions: total,
                 correctAnswers: score,
-                subject: pdfFile?.name.split('.')[0] || 'General',
+                subject: session.pdfFile?.name.split('.')[0] || 'General',
                 date: new Date().toISOString(),
             });
-            // Refresh stats to show new points/progress
             fetchStats();
+            gsap.to(window, {
+                duration: 1,
+                scrollTo: '#mastery-verdict',
+                ease: 'expo.out',
+            });
         } catch (err) {
             console.error('Failed to submit quiz result:', err);
         }
@@ -1039,7 +432,9 @@ const DashboardHome = () => {
 
     const handleDownload = (content: string, filename: string) => {
         const header = `----------------------------------------\nIZABI STUDY ASSISTANT: STUDY MATERIAL\nTIMESTAMP: ${new Date().toLocaleString()}\nPROTOCOL: STANDARD_V2\n----------------------------------------\n\n`;
-        const blob = new Blob([header + content], { type: 'text/markdown' });                          
+        const blob = new Blob([header + content], {
+            type: 'text/markdown',
+        });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -1051,29 +446,44 @@ const DashboardHome = () => {
     };
 
     const downloadSummary = () => {
-        if (!summary) return;
+        if (!session.summary) return;
         handleDownload(
-            summary,
-            `Izabi_Summary_${pdfFile?.name.split('.')[0] || 'Note'}`,
+            session.summary,
+            `Izabi_Summary_${session.pdfFile?.name.split('.')[0] || 'Note'}`,
         );
     };
 
     const downloadStudyGuide = () => {
-        if (!studyGuide) return;
+        if (!session.studyGuide) return;
         handleDownload(
-            studyGuide,
-            `Izabi_Study_Guide_${pdfFile?.name.split('.')[0] || 'Note'}`,
+            session.studyGuide,
+            `Izabi_Study_Guide_${session.pdfFile?.name.split('.')[0] || 'Note'}`,
         );
     };
 
+    const getDownloadQuestions = () => {
+        const questions = session.questions || [];
+        const filtered = session.quizStyle === 'mcq'
+            ? questions.filter(
+                  (q: any) => q.questionType?.toLowerCase() !== 'short_answer',
+              )
+            : session.quizStyle === 'short'
+              ? questions.filter(
+                    (q: any) => q.questionType?.toLowerCase() === 'short_answer',
+                )
+              : questions;
+        return session.shuffleQuestions ? shuffleArray(filtered) : filtered;
+    };
+
     const downloadQuiz = () => {
-        if (displayQuestions.length === 0) return;
-        let content = `# Quiz: ${pdfFile?.name.split('.')[0] || 'Document'}\n\n`;
-        displayQuestions.forEach((q, i) => {
+        const questions = getDownloadQuestions();
+        if (questions.length === 0) return;
+        let content = `# Quiz: ${session.pdfFile?.name.split('.')[0] || 'Document'}\n\n`;
+        questions.forEach((q: any, i: number) => {
             content += `## Question ${i + 1}\n${q.question}\n\n`;
             if (q.options && q.options.length > 0) {
                 content += `Options:\n`;
-                q.options.forEach((opt, idx) => {
+                q.options.forEach((opt: string, idx: number) => {
                     content += `${String.fromCharCode(65 + idx)}) ${opt}\n`;
                 });
                 content += `\n`;
@@ -1084,7 +494,7 @@ const DashboardHome = () => {
         });
         handleDownload(
             content,
-            `Izabi_Quiz_${pdfFile?.name.split('.')[0] || 'Assessment'}`,
+            `Izabi_Quiz_${session.pdfFile?.name.split('.')[0] || 'Assessment'}`,
         );
     };
 
@@ -1094,107 +504,41 @@ const DashboardHome = () => {
                 ref={containerRef}
                 className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-10"
             >
-                {/* Error handling through useApiError toasts */}
+                <WelcomeHeader firstName={userStats?.data?.firstName} />
 
-                {/* Welcome Section - GSAP Target */}
-                <div id="dashboard-welcome" className="welcome-text space-y-2">
-                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/40 leading-tight">
-                        {t('dashboard.greeting') || 'Welcome back,'}{' '}
-                        {userStats?.data?.firstName || 'Scholar'}
-                    </h1>
-                    <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium max-w-2xl leading-relaxed">
-                        {t('dashboard.intro') ||
-                            'Your study workspace is ready. Upload a document to begin.'}
-                    </p>
-                </div>
-
-                {/* Gamification Strip - Always Visible */}
                 {userStats?.data && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20"
-                    >
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
-                            <div className="flex items-center gap-2">
-                                <Flame
-                                    size={20}
-                                    className="text-blue-500"
-                                    fill="currentColor"
-                                />
-                                <span className="text-sm font-bold text-foreground">
-                                    {(userStats.data.streakData
-                                        ?.academicStreak ??
-                                        userStats.data.studyStreak) ||
-                                        0}{' '}
-                                    day streak
-                                </span>
+                    <div className="space-y-3">
+                        <GamificationStrip
+                            streak={
+                                userStats.data.streakData?.academicStreak ??
+                                userStats.data.studyStreak ??
+                                0
+                            }
+                            xp={userStats.data.totalPoints || 0}
+                        />
+                        {userId && (
+                            <div className="flex justify-end">
+                                <Button
+                                    variant="outline"
+                                    className="h-11 rounded-2xl border-primary/30 text-primary hover:bg-primary/10 gap-2"
+                                    onClick={handleShareProfile}
+                                    disabled={isSharing}
+                                >
+                                    <Share2 size={16} />
+                                    {isSharing ? 'Preparing...' : 'Share Profile'}
+                                </Button>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Trophy size={20} className="text-blue-400" />
-                                <span className="text-sm font-bold text-foreground">
-                                    {userStats.data.totalPoints || 0} XP
-                                </span>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-
-                {/* Brain Drop - Instant Engagement (Priority #1) */}
-                {!isBrainDropCompleted && (
-                    <div id="brain-drop-section" className="stagger-card">
-                        {brainDropQuestion ? (
-                            <BrainDrop
-                                question={brainDropQuestion}
-                                onAnswer={handleBrainDropAnswer}
-                            />
-                        ) : (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="relative overflow-hidden rounded-[24px] sm:rounded-[40px] bg-blue-600/10 border border-blue-500/20 p-5 sm:p-8 md:p-14 text-center group"
-                            >
-                                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                                    <Brain
-                                        size={180}
-                                        className="stroke-blue-500"
-                                    />
-                                </div>
-                                <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-                                    <div className="flex justify-center">
-                                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[20px] sm:rounded-[28px] bg-blue-500/20 flex items-center justify-center text-blue-500 shadow-xl shadow-blue-500/10">
-                                            <Sparkles size={40} />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <h3 className="text-2xl sm:text-3xl md:text-5xl font-black text-foreground tracking-tighter italic">
-                                            Personalize your{' '}
-                                            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-                                                Brain Drop
-                                            </span>
-                                        </h3>
-                                        <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium leading-relaxed opacity-80">
-                                            Click to Upload Document to add your
-                                            class notes or textbook PDF. We'll
-                                            generate daily personalized
-                                            challenges to match your learning
-                                            goals.
-                                        </p>
-                                    </div>
-                                    <button
-                                        onClick={handleReadyToLearn}
-                                        className="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-[16px] sm:rounded-[20px] bg-blue-600 text-white font-black uppercase tracking-[0.15em] sm:tracking-widest text-[10px] sm:text-xs md:text-sm hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95"
-                                    >
-                                        <Upload size={20} />
-                                        Click to Upload Document
-                                    </button>
-                                </div>
-                            </motion.div>
                         )}
                     </div>
                 )}
 
-                {/* Intent Cards - Action First (Priority #2) */}
+                <BrainDropSection
+                    isCompleted={isBrainDropCompleted}
+                    question={brainDropQuestion}
+                    onAnswer={handleBrainDropSubmission}
+                    onUploadClick={handleReadyToLearn}
+                />
+
                 <div className="stagger-card">
                     <IntentCards
                         onPracticeSkills={handlePracticeSkills}
@@ -1204,7 +548,6 @@ const DashboardHome = () => {
                     />
                 </div>
 
-                {/* Context Card - Non-blocking Onboarding (Priority #3) */}
                 <AnimatePresence>
                     {showContextCard && (
                         <div className="stagger-card">
@@ -1217,1204 +560,75 @@ const DashboardHome = () => {
                 </AnimatePresence>
 
                 <div className="workspace-area">
-                    {pdfSelection ? (
+                    {session.pdfSelection ? (
                         <div className="grid grid-cols-1 2xl:grid-cols-12 gap-8 stagger-card">
-                            {/* Document Info & Quick Stats */}
                             <div className="2xl:col-span-4 space-y-6">
-                                <Card className="glass border-primary/20 rounded-[32px] overflow-hidden shadow-2xl relative">
-                                    <div className="absolute top-0 right-0 p-6 opacity-5">
-                                        <FileText size={100} />
-                                    </div>
-                                    <CardHeader className="p-8">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="p-2 rounded-xl bg-primary/20 text-primary">
-                                                <FileText size={16} />
-                                            </div>
-                                            <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">
-                                                Current Document
-                                            </span>
-                                        </div>
-                                        <CardTitle className="text-2xl font-bold truncate leading-tight">
-                                            {pdfSelection.metadata.fileName}
-                                        </CardTitle>
-                                        <CardDescription className="flex items-center gap-2 font-bold text-primary">
-                                            <Sparkles size={14} />
-                                            Ready to study
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="px-8 pb-8 space-y-6">
-                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-card/5 border border-foreground/5">
-                                            <div className="flex items-center gap-3">
-                                                <Layers
-                                                    size={18}
-                                                    className="text-primary/60"
-                                                />
-                                                <span className="text-xs font-bold opacity-60">
-                                                    Status
-                                                </span>
-                                            </div>
-                                            <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase">
-                                                Active
-                                            </div>
-                                        </div>
-                                        <Button
-                                            variant="ghost"
-                                            onClick={() =>
-                                                updateSession({
-                                                    pdfSelection: null,
-                                                    pdfFile: null,
-                                                    fileName: '',
-                                                })
-                                            }
-                                            className="w-full h-12 rounded-2xl border border-foreground/5 hover:bg-destructive/10 hover:text-destructive font-bold text-xs gap-2 transition-all"
-                                        >
-                                            <RotateCcw size={14} />
-                                            Change document
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Card className="glass border-foreground/5 p-6 rounded-[28px] group hover:bg-primary/5 transition-all">
-                                        <BarChart3
-                                            size={20}
-                                            className="text-primary mb-3 group-hover:scale-110 transition-transform"
-                                        />
-                                        <div className="text-[9px] font-bold opacity-40 uppercase tracking-widest">
-                                            {t('dashboard.stats_eff')}
-                                        </div>
-                                        <div className="text-2xl font-bold text-foreground">
-                                            +{userStats?.data?.dailyPoints || 0}
-                                        </div>
-                                    </Card>
-                                    <Card className="glass border-foreground/5 p-6 rounded-[28px] group hover:bg-primary/5 transition-all">
-                                        <Clock
-                                            size={20}
-                                            className="text-primary mb-3 group-hover:scale-110 transition-transform"
-                                        />
-                                        <div className="text-[9px] font-bold opacity-40 uppercase tracking-widest">
-                                            {t('dashboard.stats_time')}
-                                        </div>
-                                        <div className="text-2xl font-bold text-foreground">
-                                            {userStats?.data
-                                                ?.totalStudyMinutes || 0}
-                                            m
-                                        </div>
-                                    </Card>
-                                </div>
+                                <DocumentInfo
+                                    fileName={
+                                        session.pdfSelection?.metadata
+                                            ?.fileName || session.fileName
+                                    }
+                                    userStats={userStats}
+                                    onReset={handleUploadDocument}
+                                />
                             </div>
+                            <div className="2xl:col-span-8 space-y-6">
+                                <StudyControls
+                                    moduleStatuses={moduleStatuses}
+                                    isProcessing={isProcessing}
+                                    numberOfQuestions={session.numberOfQuestions}
+                                    quizDifficulty={session.quizDifficulty}
+                                    quizStyle={session.quizStyle}
+                                    shuffleQuestions={session.shuffleQuestions}
+                                    showExplanations={session.showExplanations}
+                                    onModuleClick={handleModuleRequest}
+                                    onQuestionsChange={(value) =>
+                                        updateSession({
+                                            numberOfQuestions: value,
+                                        })
+                                    }
+                                    onDifficultyChange={(value) =>
+                                        updateSession({ quizDifficulty: value })
+                                    }
+                                    onStyleChange={(value) =>
+                                        updateSession({ quizStyle: value })
+                                    }
+                                    onShuffleChange={(checked) =>
+                                        updateSession({
+                                            shuffleQuestions: checked,
+                                        })
+                                    }
+                                    onExplanationsChange={(checked) =>
+                                        updateSession({
+                                            showExplanations: checked,
+                                        })
+                                    }
+                                />
 
-                            {/* Main Hub Controls */}
-                            <div className="2xl:col-span-8 flex flex-col gap-6">
-                                <Card className="glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden relative border border-foreground/5">
-                                    <div
-                                        id="study-modes-grid"
-                                        className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-px bg-foreground/5"
-                                    >
-                                        {[
-                                            {
-                                                id: 'summarize',
-                                                icon: Brain,
-                                                label: t(
-                                                    'dashboard.mod_summary',
-                                                ),
-                                                desc: t(
-                                                    'dashboard.mod_summary_desc',
-                                                ),
-                                                color: 'text-blue-400',
-                                            },
-                                            {
-                                                id: 'quiz',
-                                                icon: Zap,
-                                                label: t('dashboard.mod_quiz'),
-                                                desc: t(
-                                                    'dashboard.mod_quiz_desc',
-                                                ),
-                                                color: 'text-yellow-400',
-                                            },
-                                            {
-                                                id: 'guide',
-                                                icon: FileText,
-                                                label: t('dashboard.mod_guide'),
-                                                desc: t(
-                                                    'dashboard.mod_guide_desc',
-                                                ),
-                                                color: 'text-emerald-400',
-                                            },
-                                            {
-                                                id: 'cards',
-                                                icon: Layers,
-                                                label: t(
-                                                    'dashboard.mod_flashcards',
-                                                ),
-                                                desc: t(
-                                                    'dashboard.mod_flashcards_desc',
-                                                ),
-                                                color: 'text-blue-400',
-                                            },
-                                        ].map((module) => {
-                                            const moduleStatus =
-                                                moduleStatuses[
-                                                    module.id as ModuleCardId
-                                                ];
-                                            const statusMeta = {
-                                                idle: {
-                                                    label: 'Ready',
-                                                    className:
-                                                        'bg-card/10 text-foreground/60',
-                                                    icon: null,
-                                                },
-                                                processing: {
-                                                    label: 'Processing',
-                                                    className:
-                                                        'bg-blue-500/15 text-blue-400',
-                                                    icon: (
-                                                        <Loader2
-                                                            size={10}
-                                                            className="animate-spin"
-                                                        />
-                                                    ),
-                                                },
-                                                completed: {
-                                                    label: 'Completed',
-                                                    className:
-                                                        'bg-primary/15 text-primary',
-                                                    icon: (
-                                                        <CheckCircle2 size={10} />
-                                                    ),
-                                                },
-                                                failed: {
-                                                    label: 'Failed',
-                                                    className:
-                                                        'bg-destructive/20 text-destructive',
-                                                    icon: <XCircle size={10} />,
-                                                },
-                                            }[moduleStatus];
-
-                                            return (
-                                                <button
-                                                    key={module.id}
-                                                    onClick={() => {
-                                                        if (
-                                                            module.id ===
-                                                            'summarize'
-                                                        )
-                                                            handleRequest(
-                                                                'summarize',
-                                                            );
-                                                        if (
-                                                            module.id ===
-                                                            'quiz'
-                                                        )
-                                                            handleRequest(
-                                                                'generate-questions',
-                                                                true,
-                                                            );
-                                                        if (
-                                                            module.id ===
-                                                            'guide'
-                                                        )
-                                                            handleRequest(
-                                                                'generate-study-material',
-                                                                true,
-                                                            );
-                                                        if (
-                                                            module.id ===
-                                                            'cards'
-                                                        )
-                                                            handleRequest(
-                                                                'flashcards',
-                                                            );
-                                                    }}
-                                                    disabled={isProcessing}
-                                                    className="relative text-left p-6 sm:p-8 bg-card/90 hover:bg-card/95 active:bg-card/90 transition-all group flex flex-col gap-4"
-                                                >
-                                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_transparent_60%)]" />
-                                                    <div className="relative flex items-start justify-between gap-4">
-                                                        <div
-                                                            className={cn(
-                                                                'p-3 rounded-2xl bg-card/10 ring-1 ring-foreground/10 shadow-2xl',
-                                                                module.color,
-                                                            )}
-                                                        >
-                                                            <module.icon
-                                                                size={22}
-                                                            />
-                                                        </div>
-                                                        <div
-                                                            className={cn(
-                                                                'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.18em]',
-                                                                statusMeta.className,
-                                                            )}
-                                                        >
-                                                            {statusMeta.icon}
-                                                            <span>
-                                                                {statusMeta.label}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="relative space-y-1">
-                                                        <div className="text-lg font-bold">
-                                                            {module.label}
-                                                        </div>
-                                                        <div className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
-                                                            {module.desc}
-                                                        </div>
-                                                    </div>
-                                                    <div className="relative mt-auto flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] opacity-50">
-                                                        <span>
-                                                            {isProcessing
-                                                                ? 'Working...'
-                                                                : 'Tap to generate'}
-                                                        </span>
-                                                        <span className="px-2 py-1 rounded-full bg-foreground/5">
-                                                            {module.id ===
-                                                            'quiz'
-                                                                ? `${numberOfQuestions} Qs`
-                                                                : 'Run'}
-                                                        </span>
-                                                    </div>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-
-                                    <div className="p-4 sm:p-6 bg-card/[0.02] border-t border-foreground/5 space-y-4">
-                                        <div className="flex items-center justify-between gap-3">
-                                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-                                                Session Settings
-                                            </div>
-                                            <div className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-30">
-                                                Mobile Ready
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-3">
-                                                <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                                                    Questions
-                                                </div>
-                                                <ToggleGroup
-                                                    type="single"
-                                                    value={String(
-                                                        numberOfQuestions,
-                                                    )}
-                                                    onValueChange={(val) => {
-                                                        if (!val) return;
-                                                        updateSession({
-                                                            numberOfQuestions:
-                                                                Number(val),
-                                                        });
-                                                    }}
-                                                    disabled={isProcessing}
-                                                    className="grid grid-cols-3 sm:grid-cols-5 gap-2"
-                                                >
-                                                    {[3, 5, 8, 10, 15].map(
-                                                        (num) => (
-                                                            <ToggleGroupItem
-                                                                key={num}
-                                                                value={String(
-                                                                    num,
-                                                                )}
-                                                                className="h-10 text-xs font-bold"
-                                                            >
-                                                                {num}
-                                                            </ToggleGroupItem>
-                                                        ),
-                                                    )}
-                                                </ToggleGroup>
-                                            </div>
-
-                                            <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-3">
-                                                <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                                                    Difficulty
-                                                </div>
-                                                <ToggleGroup
-                                                    type="single"
-                                                    value={quizDifficulty}
-                                                    onValueChange={(val) => {
-                                                        if (!val) return;
-                                                        updateSession({
-                                                            quizDifficulty:
-                                                                val as
-                                                                    | 'easy'
-                                                                    | 'balanced'
-                                                                    | 'hard',
-                                                        });
-                                                    }}
-                                                    disabled={isProcessing}
-                                                    className="grid grid-cols-3 gap-2"
-                                                >
-                                                    <ToggleGroupItem
-                                                        value="easy"
-                                                        className="h-10 text-xs font-bold"
-                                                    >
-                                                        Easy
-                                                    </ToggleGroupItem>
-                                                    <ToggleGroupItem
-                                                        value="balanced"
-                                                        className="h-10 text-xs font-bold"
-                                                    >
-                                                        Balanced
-                                                    </ToggleGroupItem>
-                                                    <ToggleGroupItem
-                                                        value="hard"
-                                                        className="h-10 text-xs font-bold"
-                                                    >
-                                                        Hard
-                                                    </ToggleGroupItem>
-                                                </ToggleGroup>
-                                            </div>
-
-                                            <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-3">
-                                                <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                                                    Question Type
-                                                </div>
-                                                <ToggleGroup
-                                                    type="single"
-                                                    value={quizStyle}
-                                                    onValueChange={(val) => {
-                                                        if (!val) return;
-                                                        updateSession({
-                                                            quizStyle: val as
-                                                                | 'mixed'
-                                                                | 'mcq'
-                                                                | 'short',
-                                                        });
-                                                    }}
-                                                    disabled={isProcessing}
-                                                    className="grid grid-cols-3 gap-2"
-                                                >
-                                                    <ToggleGroupItem
-                                                        value="mixed"
-                                                        className="h-10 text-[11px] font-bold"
-                                                    >
-                                                        Mixed
-                                                    </ToggleGroupItem>
-                                                    <ToggleGroupItem
-                                                        value="mcq"
-                                                        className="h-10 text-[11px] font-bold"
-                                                    >
-                                                        MCQ
-                                                    </ToggleGroupItem>
-                                                    <ToggleGroupItem
-                                                        value="short"
-                                                        className="h-10 text-[11px] font-bold"
-                                                    >
-                                                        Short
-                                                    </ToggleGroupItem>
-                                                </ToggleGroup>
-                                            </div>
-
-                                            <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-4">
-                                                <div className="flex items-center justify-between gap-3">
-                                                    <div className="space-y-1">
-                                                        <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                                                            Shuffle Questions
-                                                        </div>
-                                                        <div className="text-xs font-medium text-muted-foreground">
-                                                            Keeps the order fresh
-                                                        </div>
-                                                    </div>
-                                                    <Switch
-                                                        checked={
-                                                            shuffleQuestions
-                                                        }
-                                                        onCheckedChange={(
-                                                            checked,
-                                                        ) =>
-                                                            updateSession({
-                                                                shuffleQuestions:
-                                                                    checked,
-                                                            })
-                                                        }
-                                                        disabled={isProcessing}
-                                                    />
-                                                </div>
-
-                                                <div className="flex items-center justify-between gap-3">
-                                                    <div className="space-y-1">
-                                                        <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                                                            Show Explanations
-                                                        </div>
-                                                        <div className="text-xs font-medium text-muted-foreground">
-                                                            Reveal why answers are correct
-                                                        </div>
-                                                    </div>
-                                                    <Switch
-                                                        checked={
-                                                            showExplanations
-                                                        }
-                                                        onCheckedChange={(
-                                                            checked,
-                                                        ) =>
-                                                            updateSession({
-                                                                showExplanations:
-                                                                    checked,
-                                                            })
-                                                        }
-                                                        disabled={isProcessing}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {isProcessing && (
-                                            <div className="flex items-center gap-4 text-primary animate-pulse">
-                                                <Loader2
-                                                    className="animate-spin"
-                                                    size={16}
-                                                />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">
-                                                    Creating your study plan...
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </Card>
-
-                                {/* Results View nested if preferred or kept outside. Let's keep it below for space. */}
+                                <ResultsHub
+                                    onDownloadSummary={downloadSummary}
+                                    onDownloadGuide={downloadStudyGuide}
+                                    onDownloadQuiz={downloadQuiz}
+                                    onSubmitQuiz={handleQuizSubmit}
+                                />
                             </div>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 2xl:grid-cols-12 gap-8 stagger-card">
-                            <div className="2xl:col-span-8">
-                                <Card
-                                    id="upload-section"
-                                    className="h-full glass shadow-2xl rounded-[28px] md:rounded-[48px] overflow-hidden group relative border-0"
-                                >
-                                    <div className="absolute inset-0 bg-primary/5 opacity-50 pointer-events-none" />
-                                    <CardHeader className="p-6 sm:p-10 md:p-14 text-center md:text-left text-foreground">
-                                        <CardTitle className="text-3xl sm:text-4xl md:text-5xl font-bold font-mono tracking-tighter mb-4 sm:mb-6 relative uppercase">
-                                            {t('dashboard.upload_title') ||
-                                                'Document Upload'}
-                                            <span className="absolute -top-1 -right-8 w-2 h-2 bg-primary rounded-full animate-ping" />
-                                        </CardTitle>
-                                        <CardDescription className="text-base sm:text-lg font-medium opacity-60 max-w-xl mx-auto md:mx-0 leading-relaxed font-mono">
-                                            {t('dashboard.upload_desc') ||
-                                                'Upload notes or textbooks to start studying.'}
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="px-4 sm:px-6 md:px-8 lg:px-10 pb-8 sm:pb-14">
-                                        <PDFUploadSection
-                                            onSelectionComplete={
-                                                handleSelectionComplete
-                                            }
-                                            className="md:mt-0"
-                                        />
-                                    </CardContent>
-                                </Card>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 stagger-card">
+                            <div className="lg:col-span-7">
+                                <UploadPrompt
+                                    onSelectionComplete={handleSelectionComplete}
+                                    onReadyToLearn={handleReadyToLearn}
+                                />
                             </div>
-                            <div className="2xl:col-span-4 space-y-6">
-                                <Card className="glass shadow-2xl p-6 sm:p-10 md:p-14 rounded-[28px] md:rounded-[48px] flex flex-col items-center text-center space-y-6 sm:space-y-8 h-full min-h-[320px] sm:min-h-[400px] border-0">
-                                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[24px] sm:rounded-[32px] bg-card/5 flex items-center justify-center border border-foreground/5 shadow-2xl rotate-3 group-hover:rotate-0 transition-all mt-2 sm:mt-4">
-                                        <Cpu
-                                            size={48}
-                                            className="text-primary animate-float"
-                                        />
-                                    </div>
-                                    <div className="space-y-4 pt-4">
-                                        <h3 className="text-2xl sm:text-3xl font-bold tracking-tight font-sans uppercase">
-                                            {t('dashboard.init_node') ||
-                                                'Study Setup'}
-                                        </h3>
-                                        <p className="text-base font-medium text-muted-foreground leading-relaxed max-w-[280px] mx-auto">
-                                            {t('dashboard.init_desc') ||
-                                                'Upload a document to unlock your personalized study tools.'}
-                                        </p>
-                                    </div>
-                                    <div className="flex-1 flex items-end pb-4">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={handleReadyToLearn}
-                                            className="h-10 rounded-full border-foreground/10 bg-card/5 px-4 text-[10px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] opacity-70 hover:opacity-100"
-                                        >
-                                            <Upload size={12} />
-                                            <span>Upload document</span>
-                                        </Button>
-                                    </div>
-                                </Card>
+                            <div className="lg:col-span-5">
+                                <UploadSidebar onReadyToLearn={handleReadyToLearn} />
                             </div>
-                        </div>
-                    )}
-
-                    {/* Results Hub */}
-                    {(summary ||
-                        studyGuide ||
-                        questions.length > 0 ||
-                        flashcards.length > 0) && (
-                        <div
-                            id="results-hub"
-                            className="space-y-6 sm:space-y-8 pt-8 sm:pt-10 md:pt-12 stagger-card px-4 md:px-0"
-                        >
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-2xl sm:text-4xl font-bold flex items-center gap-3 sm:gap-4 tracking-tighter">
-                                    <div className="w-2 h-10 bg-primary rounded-3xl" />
-                                    <span>{t('dashboard.results_title')}</span>
-                                </h2>
-                            </div>
-
-                            {flashcards.length > 0 && (
-                                <div id="flashcards-result-section">
-                                    <Collapsible
-                                        open={showFlashcards}
-                                        onOpenChange={setShowFlashcards}
-                                    >
-                                        <Card className="relative glass border-foreground/5 rounded-2xl md:rounded-[32px] overflow-hidden shadow-2xl bg-gradient-to-br from-card/70 via-card/40 to-background/90">
-                                            <CollapsibleTrigger asChild>
-                                                <button className="w-full text-left p-4 sm:p-6 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
-                                                    <div className="min-w-0 flex items-center gap-4 sm:gap-5">
-                                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-3xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                            <Layers className="h-5 w-5 md:h-6 md:w-6" />
-                                                        </div>
-                                                        <div className="min-w-0 space-y-1">
-                                                            <div className="flex items-center gap-2 flex-wrap">
-                                                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight break-words">
-                                                                    {t(
-                                                                        'dashboard.res_flashcards',
-                                                                    )}
-                                                                </h3>
-                                                                <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-[9px] font-black uppercase tracking-[0.18em] opacity-60">
-                                                                    {flashcards.length}{' '}
-                                                                    {t(
-                                                                        'dashboard.res_flashcards_desc',
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                            <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
-                                                                Tap to flip and master quick facts
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                                                        <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[9px] font-black uppercase tracking-[0.18em]">
-                                                            Active
-                                                        </div>
-                                                        <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
-                                                            {showFlashcards ? (
-                                                                <ChevronUp size={20} />
-                                                            ) : (
-                                                                <ChevronDown
-                                                                    size={20}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </button>
-                                            </CollapsibleTrigger>
-                                        <CollapsibleContent>
-                                            <CardContent className="p-4 sm:p-6 md:p-10 flex flex-col items-center space-y-5 sm:space-y-8">
-                                                <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl bg-card/5 border border-foreground/5 px-4 py-3">
-                                                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50">
-                                                        Flip to reveal answers
-                                                    </div>
-                                                    <div className="text-xs font-bold">
-                                                        {currentCardIndex + 1} /{' '}
-                                                        {flashcards.length} cards
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    className="relative w-full max-w-sm sm:max-w-md h-[240px] sm:h-64 cursor-pointer perspective-1000 touch-manipulation"
-                                                    onClick={() =>
-                                                        setIsFlipped(!isFlipped)
-                                                    }
-                                                >
-                                                    <div
-                                                        className={`relative w-full h-full transition-all duration-500 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}
-                                                    >
-                                                        {/* Front */}
-                                                        <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-5 sm:p-8 rounded-3xl glass bg-card/[0.02] border-2 border-primary/20 shadow-xl overflow-hidden">
-                                                            <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30">
-                                                                Front
-                                                            </div>
-                                                            <p className="text-base sm:text-xl md:text-2xl font-bold text-center text-foreground break-words leading-snug">
-                                                                {
-                                                                    flashcards[
-                                                                        currentCardIndex
-                                                                    ]?.front
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                        {/* Back */}
-                                                        <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-5 sm:p-8 rounded-3xl glass bg-primary/10 border-2 border-primary/40 shadow-xl overflow-hidden">
-                                                            <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30 text-primary">
-                                                                Back
-                                                            </div>
-                                                            <p className="text-sm sm:text-lg md:text-xl font-bold text-center text-foreground/90 leading-relaxed break-words">
-                                                                {
-                                                                    flashcards[
-                                                                        currentCardIndex
-                                                                    ]?.back
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center gap-3 sm:gap-6">
-                                                    <Button
-                                                        variant="outline"
-                                                        className="h-10 sm:h-12 px-4 sm:px-0 sm:w-12 rounded-3xl glass hover:bg-card/10"
-                                                        onClick={() => {
-                                                            setIsFlipped(false);
-                                                            setCurrentCardIndex(
-                                                                (prev) =>
-                                                                    prev > 0
-                                                                        ? prev -
-                                                                          1
-                                                                        : flashcards.length -
-                                                                          1,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <ChevronDown className="rotate-90" />
-                                                        <span className="ml-1 text-[10px] font-bold uppercase tracking-widest sm:hidden">
-                                                            Prev
-                                                        </span>
-                                                    </Button>
-                                                    <span className="text-sm sm:text-lg font-bold tracking-tighter whitespace-nowrap">
-                                                        {currentCardIndex + 1} /{' '}
-                                                        {flashcards.length}
-                                                    </span>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="h-10 sm:h-12 px-4 sm:px-0 sm:w-12 rounded-3xl glass hover:bg-card/10"
-                                                        onClick={() => {
-                                                            setIsFlipped(false);
-                                                            setCurrentCardIndex(
-                                                                (prev) =>
-                                                                    prev <
-                                                                    flashcards.length -
-                                                                        1
-                                                                        ? prev +
-                                                                          1
-                                                                        : 0,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <ChevronDown className="-rotate-90" />
-                                                        <span className="ml-1 text-[10px] font-bold uppercase tracking-widest sm:hidden">
-                                                            Next
-                                                        </span>
-                                                    </Button>
-                                                </div>
-
-                                                <Button
-                                                    variant="ghost"
-                                                    className="w-full sm:w-auto text-[10px] font-bold uppercase tracking-[0.12em] sm:tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity gap-2"
-                                                    onClick={() => {
-                                                        setCurrentCardIndex(0);
-                                                        setIsFlipped(false);
-                                                    }}
-                                                >
-                                                    <RotateCcw size={14} />
-                                                    Reset Flashcards
-                                                </Button>
-                                            </CardContent>
-                                        </CollapsibleContent>
-                                        </Card>
-                                    </Collapsible>
-                                </div>
-                            )}
-
-                            {summary && (
-                                <div id="summary-result-section">
-                                    <Collapsible
-                                        open={showSummary}
-                                        onOpenChange={setShowSummary}
-                                    >
-                                        <Card className="relative glass border-foreground/5 rounded-2xl md:rounded-[32px] overflow-hidden shadow-2xl bg-gradient-to-br from-card/70 via-card/40 to-background/90">
-                                            <CollapsibleTrigger asChild>
-                                                <button className="w-full text-left p-4 sm:p-6 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
-                                                    <div className="flex items-center gap-4 md:gap-6">
-                                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-3xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                            <Brain className="h-5 w-5 md:h-6 md:w-6" />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center gap-2 flex-wrap">
-                                                                <h3 className="text-xl md:text-2xl font-bold leading-tight">
-                                                                    {t(
-                                                                        'dashboard.res_summary',
-                                                                    )}
-                                                                </h3>
-                                                                <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-[9px] font-black uppercase tracking-[0.18em] opacity-60">
-                                                                    {summaryWordCount} words
-                                                                </div>
-                                                            </div>
-                                                            <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
-                                                                {t(
-                                                                    'dashboard.res_summary_desc',
-                                                                )}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-10 w-10 rounded-3xl glass hover:bg-primary/20 text-primary"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                downloadSummary();
-                                                            }}
-                                                        >
-                                                            <Download size={18} />
-                                                        </Button>
-                                                        <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
-                                                            {showSummary ? (
-                                                                <ChevronUp
-                                                                    size={20}
-                                                                />
-                                                            ) : (
-                                                                <ChevronDown
-                                                                    size={20}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </button>
-                                            </CollapsibleTrigger>
-                                        <CollapsibleContent>
-                                            <CardContent className="px-4 sm:px-6 md:px-16 pb-8 sm:pb-10 md:pb-16 pt-2">
-                                                <SummaryViewer
-                                                    content={summary}
-                                                    t={t}
-                                                />
-                                            </CardContent>
-                                        </CollapsibleContent>
-                                        </Card>
-                                    </Collapsible>
-                                </div>
-                            )}
-
-                            {studyGuide && (
-                                <div id="study-guide-result-section">
-                                    <Collapsible
-                                        open={showStudyGuide}
-                                        onOpenChange={setShowStudyGuide}
-                                    >
-                                        <Card className="relative glass border-foreground/5 rounded-2xl md:rounded-[32px] overflow-hidden shadow-2xl bg-gradient-to-br from-card/70 via-card/40 to-background/90">
-                                            <CollapsibleTrigger asChild>
-                                                <button className="w-full text-left p-4 sm:p-6 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
-                                                    <div className="flex items-center gap-4 md:gap-6">
-                                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-3xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                            <FileText className="h-5 w-5 md:h-6 md:w-6" />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center gap-2 flex-wrap">
-                                                                <h3 className="text-xl md:text-2xl font-bold leading-tight">
-                                                                    {t(
-                                                                        'dashboard.mod_guide',
-                                                                    )}
-                                                                </h3>
-                                                                <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-[9px] font-black uppercase tracking-[0.18em] opacity-60">
-                                                                    {studyGuideWordCount} words
-                                                                </div>
-                                                            </div>
-                                                            <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
-                                                                {t(
-                                                                    'dashboard.mod_guide_desc',
-                                                                )}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-10 w-10 rounded-3xl glass hover:bg-emerald-500/20 text-emerald-400"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                downloadStudyGuide();
-                                                            }}
-                                                        >
-                                                            <Download size={18} />
-                                                        </Button>
-                                                        <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
-                                                            {showStudyGuide ? (
-                                                                <ChevronUp
-                                                                    size={20}
-                                                                />
-                                                            ) : (
-                                                                <ChevronDown
-                                                                    size={20}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </button>
-                                            </CollapsibleTrigger>
-                                            <CollapsibleContent>
-                                            <CardContent className="px-4 sm:px-6 md:px-16 pb-8 sm:pb-10 md:pb-16 pt-2">
-                                                <SummaryViewer
-                                                    content={studyGuide}
-                                                    t={t}
-                                                    audioLabel="Listen to Guide"
-                                                />
-                                                </CardContent>
-                                            </CollapsibleContent>
-                                        </Card>
-                                    </Collapsible>
-                                </div>
-                            )}
-
-                            {questions.length > 0 && (
-                                <div id="questions-result-section">
-                                    <Collapsible
-                                        open={showQuestions}
-                                        onOpenChange={setShowQuestions}
-                                    >
-                                        <Card className="relative glass border-foreground/5 rounded-2xl md:rounded-[32px] overflow-hidden shadow-2xl bg-gradient-to-br from-card/70 via-card/40 to-background/90">
-                                            <CollapsibleTrigger asChild>
-                                                <button className="w-full text-left p-4 sm:p-6 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
-                                                    <div className="flex items-center gap-4 md:gap-6">
-                                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-3xl bg-amber-500/15 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                            <Zap className="h-5 w-5 md:h-6 md:w-6" />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center gap-2 flex-wrap">
-                                                                <h3 className="text-xl md:text-2xl font-bold leading-tight">
-                                                                    {t(
-                                                                        'dashboard.res_quiz',
-                                                                    )}
-                                                                </h3>
-                                                                <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-[9px] font-black uppercase tracking-[0.18em] opacity-60">
-                                                                    {displayQuestions.length} questions
-                                                                </div>
-                                                            </div>
-                                                            <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
-                                                                {t(
-                                                                    'dashboard.res_quiz_desc',
-                                                                )}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-10 w-10 rounded-3xl glass hover:bg-primary/20 text-primary"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                downloadQuiz();
-                                                            }}
-                                                        >
-                                                            <Download size={18} />
-                                                        </Button>
-                                                        <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
-                                                            {showQuestions ? (
-                                                                <ChevronUp
-                                                                    size={20}
-                                                                />
-                                                            ) : (
-                                                                <ChevronDown
-                                                                    size={20}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </button>
-                                            </CollapsibleTrigger>
-                                        <CollapsibleContent>
-                                            <CardContent className="p-4 sm:p-6 md:p-10 space-y-6 md:space-y-8">
-                                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-card/5 border border-foreground/5 px-4 py-3">
-                                                    <div className="space-y-1">
-                                                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50">
-                                                            Progress
-                                                        </div>
-                                                        <div className="text-sm font-bold">
-                                                            {answeredCount} /{' '}
-                                                            {displayQuestions.length} answered
-                                                        </div>
-                                                    </div>
-                                                    <div className="w-full sm:w-40 h-2 rounded-full bg-card/10 overflow-hidden">
-                                                        <div
-                                                            className="h-full bg-primary transition-all"
-                                                            style={{
-                                                                width: `${displayQuestions.length ? Math.round((answeredCount / displayQuestions.length) * 100) : 0}%`,
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                                                        {showResults
-                                                            ? 'Results locked'
-                                                            : 'Select answers'}
-                                                    </div>
-                                                </div>
-                                                {displayQuestions.length === 0 && (
-                                                    <div className="p-5 rounded-2xl border border-foreground/10 bg-card/5 text-center space-y-3">
-                                                        <div className="text-sm font-bold">
-                                                            No questions match this mode.
-                                                        </div>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            Switch to Mixed or generate more questions.
-                                                        </p>
-                                                        <Button
-                                                            variant="outline"
-                                                            className="h-10 rounded-full text-xs font-bold uppercase tracking-widest"
-                                                            onClick={() =>
-                                                                updateSession({
-                                                                    quizStyle:
-                                                                        'mixed',
-                                                                })
-                                                            }
-                                                        >
-                                                            Use Mixed Mode
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                                {displayQuestions.map((q, i) => {
-                                                    const userAnswer =
-                                                        selectedAnswers[i];
-                                                    const isShort =
-                                                        q.questionType?.toLowerCase() ===
-                                                        'short_answer';
-                                                    const correct =
-                                                        isShort && userAnswer
-                                                            ? isShortAnswerCorrect(
-                                                                  userAnswer,
-                                                                  q.answer ||
-                                                                      '',
-                                                              )
-                                                            : userAnswer ===
-                                                              q.answer;
-
-                                                    return (
-                                                        <Card
-                                                            key={i}
-                                                            className="bg-card/[0.02] border-foreground/5 rounded-2xl md:rounded-3xl p-4 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group"
-                                                        >
-                                                            <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-6">
-                                                                <div className="space-y-2 md:space-y-3">
-                                                                    <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
-                                                                        Question{' '}
-                                                                        {i + 1}
-                                                                    </div>
-                                                                    <h4 className="text-base md:text-xl font-bold leading-tight text-foreground break-words">
-                                                                        {
-                                                                            q.question
-                                                                        }
-                                                                    </h4>
-                                                                </div>
-                                                                {showResults && (
-                                                                    <div
-                                                                        className={`w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-3xl text-[10px] font-bold tracking-widest uppercase flex items-center gap-2 shadow-2xl transition-all
-                                                                        ${correct ? 'bg-primary text-foreground shadow-primary/20' : 'bg-destructive text-primary-foreground shadow-destructive/20'}`}
-                                                                    >
-                                                                        {correct ? (
-                                                                            <CheckCircle2
-                                                                                size={
-                                                                                    12
-                                                                                }
-                                                                            />
-                                                                        ) : (
-                                                                            <XCircle
-                                                                                size={
-                                                                                    12
-                                                                                }
-                                                                            />
-                                                                        )}
-                                                                        {correct
-                                                                            ? 'Correct'
-                                                                            : 'Incorrect'}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-
-                                                            {!isShort ? (
-                                                                <div className="grid grid-cols-1 gap-3 md:gap-4">
-                                                                    {q.options?.map(
-                                                                        (
-                                                                            opt,
-                                                                            idx,
-                                                                        ) => {
-                                                                            const isSelected =
-                                                                                userAnswer ===
-                                                                                opt;
-                                                                            const isCorrect =
-                                                                                showResults &&
-                                                                                opt ===
-                                                                                    q.answer;
-                                                                            const isWrong =
-                                                                                showResults &&
-                                                                                isSelected &&
-                                                                                opt !==
-                                                                                    q.answer;
-
-                                                                            return (
-                                                                                <Button
-                                                                                    key={
-                                                                                        idx
-                                                                                    }
-                                                                                    onClick={() =>
-                                                                                        handleAnswerSelect(
-                                                                                            i,
-                                                                                            opt,
-                                                                                        )
-                                                                                    }
-                                                                                    disabled={
-                                                                                        showResults
-                                                                                    }
-                                                                                    className={`h-auto py-4 md:py-6 px-4 md:px-8 justify-start text-left rounded-2xl md:rounded-3xl transition-all duration-300 font-bold border border-foreground/5 w-full touch-manipulation
-                                                                                    ${isSelected ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-card/5 hover:bg-card/10 text-primary-foreground/70'}
-                                                                                    ${isCorrect ? 'bg-primary/20 border-primary/50 text-primary !bg-opacity-20' : ''}
-                                                                                    ${isWrong ? 'bg-destructive/20 border-destructive/50 text-destructive-foreground !bg-opacity-20' : ''}
-                                                                                `}
-                                                                                >
-                                                                                    <div className="flex items-start gap-3 md:gap-4 w-full">
-                                                                                        <div
-                                                                                            className={`w-7 h-7 md:w-8 md:h-8 rounded-2xl md:rounded-3xl flex items-center justify-center font-bold text-xs transition-opacity flex-shrink-0
-                                                                                        ${isSelected ? 'bg-background/10' : 'bg-card/10 opacity-30'}`}
-                                                                                        >
-                                                                                            {String.fromCharCode(
-                                                                                                65 +
-                                                                                                    idx,
-                                                                                            )}
-                                                                                        </div>
-                                                                                        <span className="text-[15px] sm:text-base break-words flex-1">
-                                                                                            {
-                                                                                                opt
-                                                                                            }
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </Button>
-                                                                            );
-                                                                        },
-                                                                    )}
-                                                                </div>
-                                                            ) : (
-                                                                <div className="space-y-4">
-                                                                    <Input
-                                                                        value={
-                                                                            userAnswer ||
-                                                                            ''
-                                                                        }
-                                                                        placeholder="Type your answer here..."
-                                                                        onChange={(
-                                                                            e,
-                                                                        ) =>
-                                                                            handleShortAnswerChange(
-                                                                                i,
-                                                                                e
-                                                                                    .target
-                                                                                    .value,
-                                                                            )
-                                                                        }
-                                                                        disabled={
-                                                                            showResults
-                                                                        }
-                                                                        className="rounded-2xl md:rounded-3xl h-14 md:h-16 bg-card/5 border-foreground/5 focus:bg-card/10 transition-all font-bold px-4 md:px-8 text-[15px] sm:text-base text-foreground w-full"
-                                                                    />
-                                                                    {showResults &&
-                                                                        !correct && (
-                                                                            <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5">
-                                                                                <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">
-                                                                                    Correct
-                                                                                    Answer
-                                                                                </div>
-                                                                                <p className="text-sm font-bold opacity-80">
-                                                                                    {
-                                                                                        q.answer
-                                                                                    }
-                                                                                </p>
-                                                                            </div>
-                                                                        )}
-                                                                </div>
-                                                            )}
-                                                            {showResults &&
-                                                                showExplanations &&
-                                                                q.explanation && (
-                                                                    <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5 mt-4">
-                                                                        <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">
-                                                                            Explanation
-                                                                        </div>
-                                                                        <p className="text-sm font-bold opacity-80 italic">
-                                                                            "
-                                                                            {
-                                                                                q.explanation
-                                                                            }
-                                                                            "
-                                                                        </p>
-                                                                    </div>
-                                                                )}
-                                                        </Card>
-                                                    );
-                                                })}
-
-                                                {displayQuestions.length > 0 && (
-                                                    <div className="pt-8">
-                                                        {!showResults ? (
-                                                            <Button
-                                                                onClick={
-                                                                    handleFinalizeQuiz
-                                                                }
-                                                                className="w-full h-16 md:h-20 rounded-2xl md:rounded-3xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg md:text-2xl shadow-glow group"
-                                                            >
-                                                                <span>
-                                                                    {t(
-                                                                        'dashboard.finalize',
-                                                                    )}
-                                                                </span>
-                                                            </Button>
-                                                        ) : (
-                                                            <div
-                                                                id="mastery-verdict"
-                                                                className="p-4 md:p-10 rounded-2xl md:rounded-3xl bg-primary relative overflow-hidden group shadow-glow"
-                                                            >
-                                                                <div className="absolute inset-0 bg-background/10 transition-colors" />
-                                                                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
-                                                                    <div className="space-y-2 text-center md:text-left">
-                                                                        <h3 className="text-2xl md:text-4xl font-bold text-foreground tracking-tighter">
-                                                                            {t(
-                                                                                'dashboard.mastery_confirmed',
-                                                                            )}
-                                                                        </h3>
-                                                                        <p className="text-foreground/70 font-bold text-base md:text-lg">
-                                                                            {t(
-                                                                                'dashboard.mastery_desc',
-                                                                            )}
-                                                                        </p>
-                                                                    </div>
-                                                                    <div className="flex items-center gap-4 md:gap-8 glass p-4 md:p-8 rounded-2xl md:rounded-3xl border-foreground/20 bg-background/20">
-                                                                        <div className="text-center">
-                                                                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/50 mb-2">
-                                                                                {t(
-                                                                                    'dashboard.resultant_yield',
-                                                                                )}
-                                                                            </div>
-                                                                            <div className="text-2xl md:text-4xl font-bold text-foreground">
-                                                                                {scoreQuiz()}{' '}
-                                                                                /{' '}
-                                                                                {displayQuestions.length}
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-primary text-primary-foreground flex items-center justify-center text-lg md:text-2xl font-bold shadow-glow">
-                                                                            {Math.round(
-                                                                                (scoreQuiz() /
-                                                                                    displayQuestions.length) *
-                                                                                    100,
-                                                                            )}
-                                                                            %
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </CardContent>
-                                        </CollapsibleContent>
-                                        </Card>
-                                    </Collapsible>
-                                </div>
-                            )}
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Modals */}
             <QuickTestModal
                 isOpen={showQuickTestModal}
                 onClose={() => setShowQuickTestModal(false)}
@@ -2429,8 +643,15 @@ const DashboardHome = () => {
                 onClose={() => setShowPracticeQuiz(false)}
                 questions={practiceQuestions}
             />
+            {profileData && (
+                <ShareProfileDialog
+                    open={isShareModalOpen}
+                    onOpenChange={setIsShareModalOpen}
+                    profileData={profileData}
+                    shareUrl={shareUrl}
+                    shareText={shareText}
+                />
+            )}
         </ErrorBoundary>
     );
-};
-
-export default DashboardHome;
+}

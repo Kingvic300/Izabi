@@ -1,52 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import {
-    BookOpen,
-    GraduationCap,
-    School,
-    Search,
-    Zap,
-    Clock,
-    CheckCircle2,
-    XCircle,
-    ChevronRight,
-    Trophy,
-    Target,
-    Sparkles,
-    Filter,
-    Play,
-    Loader2,
-    Calendar,
-    ArrowLeft,
-    FileText,
-    Upload,
-} from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { api } from '@/lib/apiClient';
-import { cn } from '@/lib/utils';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useAppToast } from '@/hooks/useAppToast';
-import type { Exam, Question } from '@/types/api';
+import type { Exam } from '@/types/api';
+import ExamLobby from '@/components/dashboard-exams/ExamLobby';
+import ExamView from '@/components/dashboard-exams/ExamView';
+import ExamResult from '@/components/dashboard-exams/ExamResult';
+import ExamReview from '@/components/dashboard-exams/ExamReview';
 
 const DashboardExams = () => {
     const [view, setView] = useState<'lobby' | 'exam' | 'result' | 'review'>(
@@ -416,699 +381,6 @@ const DashboardExams = () => {
         }
     }, [view, timeLeft, submitExam]);
 
-    const formatTime = (seconds: number) => {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${m}:${s < 10 ? '0' : ''}${s}`;
-    };
-
-    const renderLobby = () => (
-        <div className="w-full space-y-8 animate-in fade-in duration-700">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
-                <div>
-                    <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tighter mb-2 italic">
-                        Exam{' '}
-                        <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
-                            Center
-                        </span>
-                    </h1>
-                    <p className="text-muted-foreground text-base sm:text-lg lg:text-xl font-medium">
-                        Select your category and start a professional
-                        simulation.
-                    </p>
-                </div>
-
-                {localStorage.getItem('active_exam') && view === 'lobby' && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-primary/10 border border-primary/20 p-4 rounded-3xl flex items-center justify-between gap-6"
-                    >
-                        <div className="flex items-center gap-4 px-2">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center animate-pulse border border-primary/30">
-                                <Play
-                                    className="text-primary fill-primary"
-                                    size={20}
-                                />
-                            </div>
-                            <div>
-                                <p className="font-bold text-sm">
-                                    Ongoing Session
-                                </p>
-                                <p className="text-[10px] uppercase font-black tracking-widest opacity-40">
-                                    Ready to resume
-                                </p>
-                            </div>
-                        </div>
-                        <Button
-                            onClick={() => setView('exam')}
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-xs px-8 h-12 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95"
-                        >
-                            Resume Now
-                        </Button>
-                    </motion.div>
-                )}
-
-                <div className="flex bg-card/20 p-1.5 rounded-3xl backdrop-blur-xl border border-foreground/5 shadow-inner overflow-x-auto scrollbar-hide max-w-full w-full md:w-auto">
-                    {(['JAMB', 'WAEC', 'JUPEB', 'UNIVERSITY'] as const).map(
-                        (tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={cn(
-                                    'px-5 sm:px-8 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-[0.15em] sm:tracking-[0.2em] whitespace-nowrap',
-                                    activeTab === tab
-                                        ? 'bg-primary text-primary-foreground shadow-2xl flex items-center gap-2'
-                                        : 'hover:bg-foreground/5 text-muted-foreground',
-                                )}
-                            >
-                                {activeTab === tab && (
-                                    <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                                )}
-                                {tab}
-                            </button>
-                        ),
-                    )}
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto">
-                {/* Simulation Card */}
-                <Card className="glass-card stagger-card border-primary/20 shadow-2xl relative overflow-hidden group rounded-[40px]">
-                    <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <CardHeader className="relative z-10 p-5 sm:p-8">
-                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-black italic tracking-tighter">
-                            <div className="p-3 rounded-2xl bg-primary/20 text-primary shadow-inner">
-                                <Zap className="fill-primary" size={24} />
-                            </div>
-                            Full <span className="text-primary">Sim</span>
-                        </CardTitle>
-                        <CardDescription className="text-base font-medium opacity-70">
-                            Timed, standard exam conditions for final prep.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6 relative z-20 p-5 sm:p-8 pt-0">
-                        <div className="space-y-4">
-                            {activeTab === 'UNIVERSITY' ? (
-                                <>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
-                                            University
-                                        </label>
-                                        <Input
-                                            placeholder="e.g. UNILAG"
-                                            value={simUniName}
-                                            onChange={(e) =>
-                                                setSimUniName(e.target.value)
-                                            }
-                                            className="bg-background/50 border-foreground/10 h-14 rounded-2xl focus:ring-primary/20"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
-                                            Course Title
-                                        </label>
-                                        <Input
-                                            placeholder="e.g. Intro to Computer Science"
-                                            value={simCourseTitle}
-                                            onChange={(e) =>
-                                                setSimCourseTitle(
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="bg-background/50 border-foreground/10 h-14 rounded-2xl focus:ring-primary/20"
-                                        />
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
-                                        Subject
-                                    </label>
-                                    <Input
-                                        id="sim-subject-input"
-                                        type="text"
-                                        placeholder="e.g. Use of English, Mathematics"
-                                        value={simSubject}
-                                        onChange={(e) =>
-                                            setSimSubject(e.target.value)
-                                        }
-                                        className="bg-background/50 border-foreground/10 h-14 rounded-2xl shadow-sm focus:border-primary/50 text-lg font-bold"
-                                        autoFocus
-                                    />
-                                </div>
-                            )}
-                        </div>
-                        <Button
-                            onClick={startSimulation}
-                            disabled={isSimulating}
-                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-primary hover:bg-primary/90 text-primary-foreground mt-4 relative z-30 shadow-2xl shadow-primary/20 active:scale-95 transition-all rounded-[20px]"
-                        >
-                            {isSimulating ? (
-                                <Loader2 className="animate-spin" />
-                            ) : (
-                                'Start Exam'
-                            )}
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Note Practice Card */}
-                <Card className="glass-card stagger-card border-blue-600/20 shadow-2xl relative overflow-hidden group rounded-[40px]">
-                    <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <CardHeader className="relative z-10 p-5 sm:p-8">
-                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-black italic tracking-tighter">
-                            <div className="p-3 rounded-2xl bg-blue-600/20 text-blue-600 shadow-inner">
-                                <FileText size={24} />
-                            </div>
-                            Notes{' '}
-                            <span className="text-blue-600">Practice</span>
-                        </CardTitle>
-                        <CardDescription className="text-base font-medium opacity-70">
-                            Upload PDF notes to practice on your own material.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6 relative z-20 p-5 sm:p-8 pt-0">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
-                                Upload PDF
-                            </label>
-                            <div className="border-2 border-dashed border-foreground/10 rounded-[20px] p-6 flex flex-col items-center justify-center gap-3 hover:border-blue-600/50 transition-all cursor-pointer relative bg-background/50 group/upload hover:bg-blue-600/5">
-                                <input
-                                    type="file"
-                                    accept=".pdf"
-                                    onChange={(e) =>
-                                        setSelectedFile(
-                                            e.target.files?.[0] || null,
-                                        )
-                                    }
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                />
-                                {selectedFile ? (
-                                    <div className="text-center">
-                                        <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center mx-auto mb-2 text-blue-600">
-                                            <FileText size={20} />
-                                        </div>
-                                        <p className="text-xs font-bold text-blue-600 truncate max-w-[170px] sm:max-w-[200px]">
-                                            {selectedFile.name}
-                                        </p>
-                                        <p className="text-[10px] uppercase font-black tracking-widest opacity-40 mt-1">
-                                            Click to change
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center group-hover/upload:scale-110 transition-transform">
-                                            <Upload
-                                                size={24}
-                                                className="text-muted-foreground group-hover/upload:text-blue-600 transition-colors"
-                                            />
-                                        </div>
-                                        <p className="text-[10px] font-black opacity-40 uppercase tracking-[0.2em]">
-                                            Select Research Notes
-                                        </p>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                        <Button
-                            onClick={startNotePractice}
-                            disabled={isNotePracticing || !selectedFile}
-                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-blue-700 hover:bg-blue-600 text-white mt-4 relative z-30 shadow-2xl shadow-blue-700/20 active:scale-95 transition-all rounded-[20px]"
-                        >
-                            {isNotePracticing ? (
-                                <Loader2 className="animate-spin" />
-                            ) : (
-                                'Start Note Exam'
-                            )}
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="stagger-card glass-card rounded-[24px] sm:rounded-[40px] p-5 sm:p-10 border border-foreground/5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none">
-                    <Trophy size={200} />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10 relative z-10">
-                    <h3 className="text-2xl sm:text-3xl font-black flex items-center gap-3 sm:gap-4 tracking-tighter italic">
-                        <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
-                            <Trophy size={28} />
-                        </div>
-                        RECENT{' '}
-                        <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent underline decoration-blue-500/30">
-                            STATS
-                        </span>
-                    </h3>
-                    <Button
-                        variant="ghost"
-                        onClick={() =>
-                            (window.location.href = '/dashboard/history')
-                        }
-                        className="h-12 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] opacity-40 hover:opacity-100 hover:bg-foreground/5 transition-all"
-                    >
-                        Historical Data{' '}
-                        <ChevronRight size={14} className="ml-2" />
-                    </Button>
-                </div>
-
-                <div className="relative z-10">
-                    {recentResults.length > 0 ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {recentResults.map((res, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => {
-                                        setSelectedResult(res);
-                                        setView('review');
-                                    }}
-                                    className="flex items-center justify-between p-6 bg-card/40 rounded-[24px] border border-foreground/5 hover:border-primary/20 transition-all group/stat hover:translate-x-1 cursor-pointer text-left w-full"
-                                >
-                                    <div className="flex items-center gap-5">
-                                        <div
-                                            className={cn(
-                                                'w-16 h-16 rounded-[20px] flex items-center justify-center font-black text-2xl shadow-inner',
-                                                res.score >= 70
-                                                    ? 'bg-blue-500/10 text-blue-500'
-                                                    : res.score >= 45
-                                                      ? 'bg-blue-400/10 text-blue-400'
-                                                      : 'bg-destructive/10 text-destructive',
-                                            )}
-                                        >
-                                            {Math.round(res.score)}
-                                            <span className="text-xs opacity-60 ml-0.5">
-                                                %
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <p className="font-black text-base sm:text-lg uppercase tracking-tight truncate max-w-[170px] sm:max-w-[200px] mb-1">
-                                                {res.subject}
-                                            </p>
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex items-center gap-1 text-[10px] font-black opacity-30 uppercase tracking-widest bg-foreground/5 px-2 py-1 rounded-md">
-                                                    <Calendar size={10} />{' '}
-                                                    {new Date(
-                                                        res.date,
-                                                    ).toLocaleDateString()}
-                                                </div>
-                                                <div className="flex items-center gap-1 text-[10px] font-black opacity-30 uppercase tracking-widest bg-blue-500/5 text-blue-500/60 px-2 py-1 rounded-md">
-                                                    <CheckCircle2 size={10} />{' '}
-                                                    {res.correctAnswers}/
-                                                    {res.totalQuestions}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="w-10 h-10 rounded-xl bg-primary/5 text-primary opacity-0 group-hover/stat:opacity-100 transition-all flex items-center justify-center group-hover/stat:bg-primary group-hover/stat:text-white">
-                                        <ChevronRight size={20} />
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-20 bg-background/40 rounded-[32px] border border-dashed border-foreground/10">
-                            <div className="w-20 h-20 rounded-3xl bg-foreground/5 flex items-center justify-center mx-auto mb-6">
-                                <Clock
-                                    size={40}
-                                    className="text-muted-foreground opacity-30"
-                                />
-                            </div>
-                            <h4 className="text-xl font-black uppercase tracking-widest opacity-20">
-                                Archive Empty
-                            </h4>
-                            <p className="text-sm opacity-40 mt-2 max-w-xs mx-auto font-medium leading-relaxed">
-                                Complete your first simulation to begin tracking
-                                your neural improvement.
-                            </p>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-
-    const renderExam = () => (
-        <div className="w-full min-h-screen flex flex-col pb-16 sm:pb-20">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6 sm:mb-8 sticky top-2 sm:top-4 z-50 bg-background/80 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-foreground/10 shadow-xl">
-                <div className="min-w-0">
-                    <h2 className="text-base sm:text-xl font-bold truncate max-w-[140px] sm:max-w-[200px] md:max-w-md">
-                        {currentExam?.subject}
-                    </h2>
-                    <p className="text-xs font-bold uppercase opacity-60 tracking-widest">
-                        {activeTab} • Question {currentQuestionIndex + 1} of{' '}
-                        {currentExam?.questions.length}
-                    </p>
-                </div>
-                <div
-                    className={`px-3 sm:px-4 py-2 rounded-xl font-mono font-black text-lg sm:text-2xl ${timeLeft < 60 ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-blue-500/10 text-blue-500'}`}
-                >
-                    {formatTime(timeLeft)}
-                </div>
-            </div>
-
-            {/* CBT Question Navigator */}
-            <div className="sticky top-[78px] sm:top-[96px] z-40 mb-4 sm:mb-6 rounded-2xl border border-foreground/10 bg-card/80 backdrop-blur-md p-3 sm:p-4 shadow-lg">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest opacity-80">
-                        Question Navigator
-                    </p>
-                    <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold">
-                        <span className="rounded-md bg-foreground/5 px-2 py-1">
-                            Total: {currentExam?.questions.length || 0}
-                        </span>
-                        <span className="rounded-md bg-green-500/15 px-2 py-1 text-green-500">
-                            Answered: {Object.keys(answers).length}
-                        </span>
-                        <span className="rounded-md bg-foreground/5 px-2 py-1">
-                            Left:{' '}
-                            {(currentExam?.questions.length || 0) -
-                                Object.keys(answers).length}
-                        </span>
-                    </div>
-                </div>
-                <div className="mb-2 text-[10px] sm:text-xs font-bold opacity-50">
-                    Tap any number to jump
-                </div>
-                <div className="grid grid-cols-6 gap-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12">
-                    {currentExam?.questions.map((_, index) => {
-                        const isCurrent = index === currentQuestionIndex;
-                        const isAnswered = answers[index] !== undefined;
-                        const isVisited = visitedQuestions.includes(index);
-
-                        return (
-                            <button
-                                key={index}
-                                type="button"
-                                onClick={() => setCurrentQuestionIndex(index)}
-                                aria-label={`Go to question ${index + 1}`}
-                                className={cn(
-                                    'h-9 sm:h-10 rounded-lg border text-xs sm:text-sm font-black transition-all',
-                                    isAnswered
-                                        ? 'border-green-500 bg-green-500 text-white shadow-lg shadow-green-500/20'
-                                        : isCurrent
-                                          ? 'border-foreground/50 ring-2 ring-foreground/20 bg-background text-foreground'
-                                          : isVisited
-                                            ? 'border-foreground/20 bg-background text-foreground hover:bg-card/80'
-                                            : 'border-foreground/10 bg-background/60 text-foreground hover:bg-card/80',
-                                )}
-                            >
-                                {index + 1}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Question Card */}
-            <motion.div
-                key={currentQuestionIndex}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="flex-1"
-            >
-                <Card className="glass border-foreground/10 shadow-2xl p-6 md:p-10 rounded-[32px]">
-                    <div className="mb-8">
-                        <p className="text-lg md:text-2xl font-medium leading-relaxed">
-                            {
-                                currentExam?.questions[currentQuestionIndex]
-                                    .question
-                            }
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                        {currentExam?.questions[
-                            currentQuestionIndex
-                        ].options.map((option, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => handleAnswer(option)}
-                                className={`text-left p-6 rounded-2xl transition-all border-2 flex items-center gap-4 group ${
-                                    answers[currentQuestionIndex] === option
-                                        ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(37,99,235,0.15)]'
-                                        : 'border-foreground/5 bg-card/5 hover:bg-card/10 hover:border-foreground/10'
-                                }`}
-                            >
-                                <div
-                                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs shrink-0 ${
-                                        answers[currentQuestionIndex] === option
-                                            ? 'border-blue-500 bg-blue-500 text-white'
-                                            : 'border-foreground/20'
-                                    }`}
-                                >
-                                    {String.fromCharCode(65 + idx)}
-                                </div>
-                                <span className="text-lg font-medium">
-                                    {option}
-                                </span>
-                            </button>
-                        ))}
-                    </div>
-                </Card>
-
-                {/* Footer Navigation */}
-                <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pb-12 w-full max-w-md mx-auto">
-                    <Button
-                        variant="ghost"
-                        onClick={() =>
-                            setCurrentQuestionIndex((prev) =>
-                                Math.max(0, prev - 1),
-                            )
-                        }
-                        disabled={currentQuestionIndex === 0}
-                        className="w-full sm:w-32 h-12 rounded-xl font-bold border border-foreground/5 hover:bg-card"
-                    >
-                        Previous
-                    </Button>
-
-                    {currentQuestionIndex ===
-                    (currentExam?.questions.length || 0) - 1 ? (
-                        <Button
-                            onClick={submitExam}
-                            className="w-full sm:w-48 h-14 rounded-2xl font-black uppercase tracking-widest text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-2xl shadow-blue-600/20 active:scale-95 transition-all"
-                        >
-                            Final Submission
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={() =>
-                                setCurrentQuestionIndex((prev) => prev + 1)
-                            }
-                            className="w-full sm:w-32 h-12 rounded-[14px] font-black uppercase tracking-widest text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all active:scale-95"
-                        >
-                            Next
-                        </Button>
-                    )}
-                </div>
-            </motion.div>
-        </div>
-    );
-
-    const renderResult = () => (
-            <div className="w-full text-center space-y-8 sm:space-y-12 pt-8 sm:pt-10 px-4 md:px-8 lg:px-10">
-            <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="w-40 h-40 sm:w-56 sm:h-56 mx-auto rounded-full bg-blue-600 flex items-center justify-center shadow-[0_0_50px_rgba(37,99,235,0.4)] mb-6 sm:mb-8 border-4 border-white/10"
-            >
-                <div className="text-5xl sm:text-7xl font-black text-white">
-                    {Math.round(score)}%
-                </div>
-            </motion.div>
-
-            <h2 className="text-2xl sm:text-4xl font-bold tracking-tighter">
-                {score >= 70
-                    ? 'Excellent Work! 🎉'
-                    : score >= 50
-                      ? 'Good Effort! 👍'
-                      : 'Keep Practicing! 💪'}
-            </h2>
-            <p className="text-base sm:text-xl text-muted-foreground">
-                You answered{' '}
-                {Math.round(
-                    (score / 100) * (currentExam?.questions.length || 0),
-                )}{' '}
-                out of {currentExam?.questions.length} questions correctly.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <Card className="p-6 sm:p-10 bg-blue-500/5 border-blue-500/20 rounded-[24px] sm:rounded-[32px] shadow-inner group">
-                    <div className="font-black text-blue-500 text-sm uppercase tracking-widest mb-2 group-hover:translate-x-1 transition-transform">
-                        Correct Responses
-                    </div>
-                    <div className="text-4xl sm:text-5xl font-black">
-                        {Math.round(
-                            (score / 100) *
-                                (currentExam?.questions.length || 0),
-                        )}
-                    </div>
-                </Card>
-                <Card className="p-6 sm:p-10 bg-destructive/5 border-destructive/20 rounded-[24px] sm:rounded-[32px] shadow-inner group">
-                    <div className="font-black text-destructive/60 text-sm uppercase tracking-widest mb-2 group-hover:translate-x-1 transition-transform">
-                        Incorrect Responses
-                    </div>
-                    <div className="text-4xl sm:text-5xl font-black">
-                        {(currentExam?.questions.length || 0) -
-                            Math.round(
-                                (score / 100) *
-                                    (currentExam?.questions.length || 0),
-                            )}
-                    </div>
-                </Card>
-            </div>
-
-            <Button
-                onClick={() => setView('lobby')}
-                className="h-14 sm:h-16 px-8 sm:px-12 rounded-[20px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xl shadow-primary/20 transition-all active:scale-95"
-            >
-                Return to Lobby
-            </Button>
-        </div>
-    );
-
-    const renderReview = () => {
-        if (!selectedResult) return null;
-
-        return (
-            <div className="w-full space-y-8 animate-in fade-in duration-700">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <Button
-                            variant="ghost"
-                            onClick={() => setView('lobby')}
-                            className="mb-4 h-10 px-4 rounded-xl font-bold hover:bg-card/50 gap-2"
-                        >
-                            <ArrowLeft size={16} />
-                            Back to Lobby
-                        </Button>
-                        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tighter mb-2 italic">
-                            Exam{' '}
-                            <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
-                                Review
-                            </span>
-                        </h1>
-                        <p className="text-muted-foreground text-lg font-medium">
-                            {selectedResult.subject} •{' '}
-                            {new Date(selectedResult.date).toLocaleDateString()}
-                        </p>
-                    </div>
-
-                    <div className="text-center shrink-0">
-                        <div
-                            className={cn(
-                                'w-24 h-24 sm:w-32 sm:h-32 rounded-[20px] sm:rounded-[28px] flex items-center justify-center font-black text-3xl sm:text-4xl shadow-2xl mb-2',
-                                selectedResult.score >= 70
-                                    ? 'bg-blue-500/10 text-blue-500 border-2 border-blue-500/20'
-                                    : selectedResult.score >= 45
-                                      ? 'bg-blue-400/10 text-blue-400 border-2 border-blue-400/20'
-                                      : 'bg-destructive/10 text-destructive border-2 border-destructive/20',
-                            )}
-                        >
-                            {Math.round(selectedResult.score)}
-                            <span className="text-lg opacity-60">%</span>
-                        </div>
-                        <p className="text-sm font-bold opacity-40 uppercase tracking-widest">
-                            Final Score
-                        </p>
-                    </div>
-                </div>
-
-                {/* Stats Summary */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card className="p-6 bg-blue-500/5 border-blue-500/20 rounded-2xl">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-500">
-                                <CheckCircle2 size={24} />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-black">
-                                    {selectedResult.correctAnswers}
-                                </p>
-                                <p className="text-xs font-bold opacity-40 uppercase tracking-widest">
-                                    Correct
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
-                    <Card className="p-6 bg-destructive/5 border-destructive/20 rounded-2xl">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center text-destructive">
-                                <XCircle size={24} />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-black">
-                                    {selectedResult.totalQuestions -
-                                        selectedResult.correctAnswers}
-                                </p>
-                                <p className="text-xs font-bold opacity-40 uppercase tracking-widest">
-                                    Incorrect
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
-                    <Card className="p-6 bg-primary/5 border-primary/20 rounded-2xl">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-                                <Target size={24} />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-black">
-                                    {selectedResult.totalQuestions}
-                                </p>
-                                <p className="text-xs font-bold opacity-40 uppercase tracking-widest">
-                                    Total Questions
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
-                </div>
-
-                {/* Question Breakdown */}
-                <div className="space-y-4">
-                    <h3 className="text-2xl font-black tracking-tighter">
-                        Question Breakdown
-                    </h3>
-                    <p className="text-sm text-muted-foreground font-medium">
-                        Detailed review is coming soon. Full
-                        question-by-question analysis will be available in the
-                        next update.
-                    </p>
-
-                    <Card className="p-8 bg-card/40 border-foreground/5 rounded-2xl">
-                        <div className="text-center py-12">
-                            <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mx-auto mb-4">
-                                <Sparkles
-                                    size={32}
-                                    className="text-muted-foreground opacity-30"
-                                />
-                            </div>
-                            <h4 className="text-lg font-black uppercase tracking-widest opacity-20 mb-2">
-                                Feature In Development
-                            </h4>
-                            <p className="text-sm opacity-40 max-w-md mx-auto font-medium">
-                                Detailed question-by-question review with
-                                explanations and learning insights is being
-                                built.
-                            </p>
-                        </div>
-                    </Card>
-                </div>
-
-                <div className="flex gap-4 justify-center pt-8">
-                    <Button
-                        onClick={() => setView('lobby')}
-                        className="h-14 px-8 rounded-2xl font-black uppercase tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl shadow-primary/20 transition-all active:scale-95"
-                    >
-                        Back to Lobby
-                    </Button>
-                </div>
-            </div>
-        );
-    };
-
     return (
         <div
             ref={containerRef}
@@ -1123,7 +395,32 @@ const DashboardExams = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
-                            {renderLobby()}
+                            <ExamLobby
+                                activeTab={activeTab}
+                                onTabChange={setActiveTab}
+                                showResume={
+                                    typeof window !== 'undefined' &&
+                                    Boolean(localStorage.getItem('active_exam'))
+                                }
+                                onResume={() => setView('exam')}
+                                simSubject={simSubject}
+                                simUniName={simUniName}
+                                simCourseTitle={simCourseTitle}
+                                onSimSubjectChange={setSimSubject}
+                                onSimUniNameChange={setSimUniName}
+                                onSimCourseTitleChange={setSimCourseTitle}
+                                onStartSimulation={startSimulation}
+                                isSimulating={isSimulating}
+                                selectedFile={selectedFile}
+                                onSelectFile={setSelectedFile}
+                                onStartNotePractice={startNotePractice}
+                                isNotePracticing={isNotePracticing}
+                                recentResults={recentResults}
+                                onSelectResult={(result) => {
+                                    setSelectedResult(result);
+                                    setView('review');
+                                }}
+                            />
                         </motion.div>
                     )}
                     {view === 'exam' && (
@@ -1133,7 +430,25 @@ const DashboardExams = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
-                            {renderExam()}
+                            <ExamView
+                                activeTab={activeTab}
+                                currentExam={currentExam}
+                                currentQuestionIndex={currentQuestionIndex}
+                                answers={answers}
+                                visitedQuestions={visitedQuestions}
+                                timeLeft={timeLeft}
+                                onAnswer={handleAnswer}
+                                onNavigate={setCurrentQuestionIndex}
+                                onPrev={() =>
+                                    setCurrentQuestionIndex((prev) =>
+                                        Math.max(0, prev - 1),
+                                    )
+                                }
+                                onNext={() =>
+                                    setCurrentQuestionIndex((prev) => prev + 1)
+                                }
+                                onSubmit={submitExam}
+                            />
                         </motion.div>
                     )}
                     {view === 'result' && (
@@ -1143,7 +458,13 @@ const DashboardExams = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
-                            {renderResult()}
+                            <ExamResult
+                                score={score}
+                                totalQuestions={
+                                    currentExam?.questions.length || 0
+                                }
+                                onReturn={() => setView('lobby')}
+                            />
                         </motion.div>
                     )}
                     {view === 'review' && (
@@ -1153,7 +474,10 @@ const DashboardExams = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
-                            {renderReview()}
+                            <ExamReview
+                                result={selectedResult}
+                                onBack={() => setView('lobby')}
+                            />
                         </motion.div>
                     )}
                 </AnimatePresence>

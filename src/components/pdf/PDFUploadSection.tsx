@@ -2,16 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import {
     Upload,
     FileText,
     Eye,
     Settings,
-    ShieldCheck,
-    Database,
     Zap,
-    Binary,
     Trash2,
     ArrowRight,
 } from 'lucide-react';
@@ -276,37 +273,6 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                     onValueChange={setActiveTab}
                     className="w-full"
                 >
-                    <div className="mb-8">
-                        <TabsList className="grid w-full grid-cols-3 glass p-1.5 rounded-[22px] h-16 border border-foreground/5 shadow-none">
-                            <TabsTrigger
-                                value="load"
-                                className="rounded-[18px] h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-bold tracking-tight transition-all gap-2"
-                            >
-                                <Binary size={18} />
-                                <span className="hidden md:inline">LOAD</span>
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="analyze"
-                                disabled={
-                                    !uploadedFile ||
-                                    uploadedFile.type !== 'application/pdf'
-                                }
-                                className="rounded-[18px] h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-bold tracking-tight transition-all gap-2"
-                            >
-                                <ShieldCheck size={18} />
-                                <span className="hidden md:inline">SCAN</span>
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="sync"
-                                disabled={!uploadedFile}
-                                className="rounded-[18px] h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-bold tracking-tight transition-all gap-2"
-                            >
-                                <Database size={18} />
-                                <span className="hidden md:inline">SYNC</span>
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
-
                     <TabsContent
                         key="load"
                         value="load"
