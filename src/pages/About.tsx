@@ -136,7 +136,7 @@ const About = () => {
                                         Active Scholars
                                     </span>
                                     <span className="text-sm font-black text-primary">
-                                        10,000+
+                                        100+
                                     </span>
                                 </div>
                                 <div className="min-h-11 rounded-xl border border-foreground/10 bg-background/40 px-4 flex items-center justify-between">
@@ -191,7 +191,7 @@ const About = () => {
                                 <p>
                                     Today, Izabi supports over{' '}
                                     <span className="text-foreground">
-                                        10,000 scholars across Africa
+                                        100 scholars across Africa
                                     </span>
                                     , with an average GPA increase of 1.2 points
                                     and over 500 hours saved annually per active

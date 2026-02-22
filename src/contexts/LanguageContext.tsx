@@ -17,7 +17,7 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.client_portal': 'Login',
         'nav.get_started': 'Create Account',
         'nav.get_early_access': 'Get Early Access',
-        'hero.trusted': 'Trusted by 10,000+ Students globally',
+        'hero.trusted': 'Trusted by 100+ Students globally',
         'hero.title_top': 'Revolutionize How',
         'hero.title_bottom': 'You Absorb Knowledge',
         'hero.tagline':
@@ -132,7 +132,7 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.client_portal': 'Login',
         'nav.get_started': 'Create Account',
         'nav.get_early_access': 'Enter Early',
-        'hero.trusted': 'More than 10,000 students don join us',
+        'hero.trusted': 'More than 100 students don join us',
         'hero.title_top': 'Change The Way',
         'hero.title_bottom': 'You De Carry Book',
         'hero.tagline':
@@ -364,7 +364,7 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.client_portal': 'Wọle',
         'nav.get_started': 'Ṣẹda Akanti',
         'nav.get_early_access': 'Wọle Ni Tete',
-        'hero.trusted': 'Awọn ọmọ ile-iwe to ju 10,000 lọ gbẹkẹle wa',
+        'hero.trusted': 'Awọn ọmọ ile-iwe to ju 100 lọ gbẹkẹle wa',
         'hero.title_top': 'Yi Bi O Ṣe',
         'hero.title_bottom': 'Kọ Ẹkọ Pada',
         'hero.tagline':
@@ -482,7 +482,7 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.client_portal': 'Shiga',
         'nav.get_started': 'Kirkiri Asusun',
         'nav.get_early_access': 'Samu Dama da Wuri',
-        'hero.trusted': 'Dalibai sama da 10,000 sun amince da mu',
+        'hero.trusted': 'Dalibai sama da 100 sun amince da mu',
         'hero.title_top': 'Sauya Yadda Kake',
         'hero.title_bottom': 'Koyan Karatu',
         'hero.tagline':

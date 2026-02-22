@@ -28,44 +28,44 @@ const Testimonials = () => {
     const testimonials = [
         {
             name: 'Chioma Okafor',
-            role: 'University Scholar',
+            role: 'University Student',
             initials: 'CO',
-            text: 'Izabi completely recalibrated how I ingest information. I went from surviving my neural load to acing my honors. The synthesis engine is a masterwork.',
+            text: 'This app really helped me understand my courses better. I stopped cramming and actually started getting the concepts. My grades improved a lot.',
             rating: 5,
         },
         {
             name: 'Tunde Adeyemi',
             role: 'UTME Candidate',
             initials: 'TA',
-            text: 'The Sonic Lexicon module is indispensable. I synchronize my commute with my study protocols. My performance metric rose by 35% in just one cycle.',
+            text: 'I use it mostly when I’m on the move. Being able to listen and study at the same time helped me stay consistent. I saw real improvement in my scores.',
             rating: 5,
         },
         {
             name: 'Zainab Hassan',
-            role: 'Secondary Scholar',
+            role: 'Secondary School Student',
             initials: 'ZH',
-            text: 'The Scholar Duels provide a competitive incentive that makes information retrieval natural. Learning no longer feels like labor.',
+            text: 'The quiz and challenge parts make it more interesting. It doesn’t feel boring like normal studying, so I actually stick with it.',
             rating: 5,
         },
         {
             name: 'Emeka Nwosu',
-            role: 'Postgrad Scholar',
+            role: 'Postgraduate Student',
             initials: 'EN',
-            text: 'Contextual summaries save me hours of manual extraction. I can now focus on high-level analysis rather than raw transcription.',
+            text: 'The summaries save me a lot of time. I can quickly understand materials and focus more on analysis instead of reading everything word for word.',
             rating: 5,
         },
         {
             name: 'Amara Obi',
-            role: 'Linguistic Scholar',
+            role: 'Language Student',
             initials: 'AO',
-            text: 'Localized Pidgin support is a breakthrough for clarity. It breaks down the cognitive barrier of purely academic syntax.',
+            text: 'I like how it explains things in simpler terms when needed. It makes tough topics easier to understand without feeling overwhelmed.',
             rating: 5,
         },
         {
             name: 'Seun Oluwaseun',
             role: 'Exam Candidate',
             initials: 'SO',
-            text: "The readiness tracking indicates exactly when I've achieved 100% mastery. I entered my exams with absolute confidence.",
+            text: 'The progress tracking helped me know when I was actually ready. I went into my exams feeling more confident than usual.',
             rating: 5,
         },
     ];
@@ -88,7 +88,7 @@ const Testimonials = () => {
                     </div>
                     <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-8 leading-none tracking-tighter">
                         Validated by{' '}
-                        <span className="text-gradient">10,000+ Scholars</span>
+                        <span className="text-gradient">100+ Scholars</span>
                     </h1>
                     <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
                         The objective impact of the Izabi Neural Protocol on
@@ -146,48 +146,6 @@ const Testimonials = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Impact Metrics */}
-            <section className="py-20 sm:py-32 relative z-10 border-y border-foreground/5 bg-card/[0.01]">
-                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-12">
-                        {[
-                            {
-                                val: '10K+',
-                                label: 'Active Nodes',
-                                color: 'text-primary',
-                            },
-                            {
-                                val: '4.9/5',
-                                label: 'Protocol Rating',
-                                color: 'text-primary',
-                            },
-                            {
-                                val: '40%',
-                                label: 'Grade Yield',
-                                color: 'text-primary',
-                            },
-                            {
-                                val: '50K+',
-                                label: 'Syntheses Generated',
-                                color: 'text-primary',
-                            },
-                        ].map((stat, i) => (
-                            <div key={i} className="text-center space-y-2">
-                                <div
-                                    className={`text-3xl sm:text-5xl font-bold ${stat.color} tracking-tighter`}
-                                >
-                                    {stat.val}
-                                </div>
-                                <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-                                    {stat.label}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             <Footer />
         </div>
     );

@@ -101,10 +101,6 @@ export const Footer = () => {
                             >
                                 FAQ
                             </Link>
-                            <div className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3 text-[10px] font-bold uppercase tracking-widest text-primary">
-                                <Sparkles size={11} />
-                                <span>v2.0</span>
-                            </div>
                         </div>
                     </div>
                 </div>
