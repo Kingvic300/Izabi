@@ -17,7 +17,7 @@ const STAT_CONFIG: Array<{
 }> = [
     {
         key: 'totalUsers',
-        label: 'Toal Users',
+        label: 'Total Users',
         sub: (stats: AdminStats) => `+${stats.growth}% this month`,
         icon: Users,
         color: 'text-primary',
