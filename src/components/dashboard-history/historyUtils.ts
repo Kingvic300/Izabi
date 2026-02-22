@@ -46,7 +46,18 @@ export const normalizeHistory = (
             ...c,
             hType: 'chat',
             hDate: c.updatedAt || c.createdAt || new Date(),
-            message: c.lastMessage?.content || '',
+            message:
+                c.lastUserMessage?.content ||
+                (c.lastMessage?.role === 'user'
+                    ? c.lastMessage?.content
+                    : '') ||
+                '',
+            response:
+                c.lastAssistantMessage?.content ||
+                (c.lastMessage?.role === 'assistant'
+                    ? c.lastMessage?.content
+                    : '') ||
+                '',
             title: c.title
                 ? c.title.length > 30
                     ? c.title.substring(0, 30) + '...'

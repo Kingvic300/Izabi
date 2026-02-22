@@ -17,7 +17,7 @@ const STAT_CONFIG: Array<{
 }> = [
     {
         key: 'totalUsers',
-        label: 'Fleet Population',
+        label: 'Toal Users',
         sub: (stats: AdminStats) => `+${stats.growth}% this month`,
         icon: Users,
         color: 'text-primary',
@@ -25,7 +25,7 @@ const STAT_CONFIG: Array<{
     },
     {
         key: 'activeNow',
-        label: 'Active Neurons',
+        label: 'Active Users',
         sub: () => 'Live connected users',
         icon: Activity,
         color: 'text-primary',
@@ -33,7 +33,7 @@ const STAT_CONFIG: Array<{
     },
     {
         key: 'totalNotes',
-        label: 'Knowledge Base',
+        label: 'Notes Generated',
         sub: () => 'Student notes indexed',
         icon: Database,
         color: 'text-primary',

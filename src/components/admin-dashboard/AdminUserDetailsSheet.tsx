@@ -5,13 +5,16 @@ import {
     Calendar,
     CheckCircle2,
     Clock,
+    Eye,
     FileText,
     Key,
     ShieldCheck,
+    StopCircle,
     TrendingUp,
     XCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Sheet,
     SheetContent,
@@ -29,6 +32,9 @@ type AdminUserDetailsSheetProps = {
     onOpenChange: (open: boolean) => void;
     userDetails: any;
     isDetailsLoading: boolean;
+    onImpersonate?: (userId: string) => void;
+    isImpersonating?: boolean;
+    impersonationTargetId?: string | null;
 };
 
 export default function AdminUserDetailsSheet({
@@ -36,7 +42,16 @@ export default function AdminUserDetailsSheet({
     onOpenChange,
     userDetails,
     isDetailsLoading,
+    onImpersonate,
+    isImpersonating,
+    impersonationTargetId,
 }: AdminUserDetailsSheetProps) {
+    const currentUserId =
+        typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
+    const currentUserRole =
+        typeof window !== 'undefined' ? localStorage.getItem('userRole') : null;
+    const normalizedRole = (currentUserRole || '').trim().toLowerCase();
+    const isAdmin = normalizedRole === 'admin' || normalizedRole === 'super_admin';
     const selectedUserName = userDetails
         ? `${userDetails.user?.firstName || ''} ${userDetails.user?.lastName || ''}`.trim() ||
           userDetails.user?.email ||
@@ -61,12 +76,21 @@ export default function AdminUserDetailsSheet({
     const petProfile = userDetails?.user?.pet;
     const signalCount = userDetails?.missingActions?.length || 0;
     const hasSignals = signalCount > 0;
+    const targetUserId = userDetails?.user?.id;
+    const targetRole = (userDetails?.user?.role || '').trim().toLowerCase();
+    const isTargetAdmin = targetRole === 'admin' || targetRole === 'super_admin';
+    const canImpersonate =
+        Boolean(onImpersonate) &&
+        Boolean(targetUserId) &&
+        isAdmin &&
+        !isTargetAdmin &&
+        (!currentUserId || currentUserId !== targetUserId);
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent
                 side="right"
-                className="w-full sm:max-w-xl p-0 glass border-l border-foreground/10 gap-0 overflow-hidden flex flex-col h-[100svh]"
+                className="w-full sm:max-w-2xl lg:max-w-3xl p-0 glass border-l border-foreground/10 gap-0 overflow-hidden flex flex-col h-[100svh]"
             >
                 <SheetHeader className="sr-only">
                     <SheetTitle>User details</SheetTitle>
@@ -82,8 +106,8 @@ export default function AdminUserDetailsSheet({
                             <div className="absolute -top-28 -right-16 h-64 w-64 rounded-full bg-primary/25 blur-3xl pointer-events-none" />
                             <div className="absolute -bottom-28 -left-20 h-64 w-64 rounded-full bg-sky-500/20 blur-3xl pointer-events-none" />
                             <div className="relative z-10 p-5 md:p-8 space-y-6">
-                                <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                                    <div className="flex items-center gap-4 md:gap-6">
+                                <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+                                    <div className="flex items-start gap-4 md:gap-6">
                                         <div className="relative">
                                             <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-card/10 border border-foreground/10 shadow-xl flex items-center justify-center text-2xl md:text-3xl font-bold text-foreground/70">
                                                 {selectedUserInitial.toUpperCase()}
@@ -103,13 +127,47 @@ export default function AdminUserDetailsSheet({
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.45em] text-foreground/40 font-semibold">
+                                        <div className="space-y-3">
+                                            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-foreground/40 font-semibold">
                                                 User Dossier
                                             </p>
-                                            <h2 className="text-2xl md:text-4xl font-bold tracking-tight">
-                                                {selectedUserName}
-                                            </h2>
+                                            <div className="flex flex-wrap items-center gap-3">
+                                                <h2 className="text-2xl md:text-4xl font-bold tracking-tight">
+                                                    {selectedUserName}
+                                                </h2>
+                                                {canImpersonate && (
+                                                    <Button
+                                                        variant={impersonationTargetId === userDetails.user.id ? "destructive" : "outline"}
+                                                        size="sm"
+                                                        className={cn(
+                                                            "rounded-xl text-[10px] font-bold uppercase tracking-wider",
+                                                            impersonationTargetId === userDetails.user.id 
+                                                                ? "bg-destructive/20 hover:bg-destructive/30 border-destructive/50"
+                                                                : "border-foreground/10 bg-card/5 hover:bg-card/10"
+                                                        )}
+                                                        onClick={() => {
+                                                            if (impersonationTargetId === userDetails.user.id) {
+                                                                // Already impersonating this user - stop impersonation
+                                                                onImpersonate('STOP');
+                                                            } else {
+                                                                onImpersonate(userDetails.user.id);
+                                                            }
+                                                        }}
+                                                    >
+                                                        {impersonationTargetId === userDetails.user.id ? (
+                                                            <>
+                                                                <StopCircle size={14} className="mr-1" />
+                                                                Stop
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Eye size={14} className="mr-1" />
+                                                                view as user
+                                                            </>
+                                                        )}
+                                                    </Button>
+                                                )}
+                                            </div>
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <Badge
                                                     variant="outline"
@@ -138,7 +196,7 @@ export default function AdminUserDetailsSheet({
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-wrap items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2 md:justify-end">
                                         <Badge
                                             variant="outline"
                                             className="border-foreground/10 bg-card/5 text-[10px] uppercase tracking-widest font-bold"
@@ -161,7 +219,7 @@ export default function AdminUserDetailsSheet({
                                         </Badge>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                                     <div className="p-3 md:p-4 rounded-2xl bg-card/10 border border-foreground/10 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
                                         <div className="flex items-center gap-2 mb-2 text-foreground/60">
                                             <Calendar size={14} />
@@ -216,7 +274,7 @@ export default function AdminUserDetailsSheet({
 
                         <ScrollArea className="flex-1">
                             <div className="p-4 md:p-8 space-y-6 md:space-y-8">
-                                <div className="grid lg:grid-cols-[1fr_1.2fr] gap-6">
+                                <div className="grid xl:grid-cols-[1fr_1.2fr] gap-6 md:gap-8">
                                     <div className="space-y-6">
                                         <div className="rounded-3xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(239,68,68,0.05),_rgba(15,23,42,0.2))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">

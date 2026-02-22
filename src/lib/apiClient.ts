@@ -4,6 +4,7 @@ import { BASE_URL } from '@/constants';
 import { toast } from 'sonner';
 import { getReadableError } from '@/lib/readableErrors';
 import { getToastDedupe } from '@/lib/toastDedupe';
+import { clearImpersonationSession } from '@/lib/impersonation';
 
 // Simple in-memory cache for GET requests
 const apiCache = new Map<string, { data: any; timestamp: number }>();
@@ -44,6 +45,7 @@ const clearAuthSession = () => {
     localStorage.removeItem('userFirstName');
     localStorage.removeItem('userLastName');
     localStorage.removeItem('userProfilePicturePath');
+    clearImpersonationSession();
 };
 
 const redirectToLogin = () => {
@@ -360,8 +362,7 @@ export const api = {
             `/api/notes/import${previewParam}`,
             formData,
             {
-                headers: { 'Content-Type': 'multipart/form-data' },
-                skipCache: true,
+                headers: { 'Content-Type': 'multipart/form-data', 'x-skip-cache': 'true' },
             },
         );
         return response.data;
@@ -688,11 +689,6 @@ export const api = {
         return response.data;
     },
 
-    async getContributedKeys() {
-        const response = await apiClient.get('/api/admin/contributed-keys');
-        return response.data;
-    },
-
     async sendLiveAnnouncement(payload?: { dryRun?: boolean; limit?: number }) {
         const response = await apiClient.post(
             '/api/admin/announce-live',
@@ -704,13 +700,33 @@ export const api = {
     async getUserHistory(userId: string) {
         const response = await apiClient.get(
             `/api/admin/users/${userId}/history`,
-            { skipCache: true } as any,
         );
         return response.data;
     },
 
     async deleteUser(userId: string) {
         await apiClient.delete(`/api/admin/users/${userId}`);
+    },
+
+    // Impersonation API
+    async startImpersonation(userId: string) {
+        const response = await apiClient.post(`/api/admin/impersonate/${userId}`);
+        return response.data;
+    },
+
+    async stopImpersonation() {
+        const response = await apiClient.post('/api/admin/stop-impersonation');
+        return response.data;
+    },
+
+    async getImpersonationStatus() {
+        const response = await apiClient.get('/api/admin/impersonation-status');
+        return response.data;
+    },
+
+    async getImpersonationHistory() {
+        const response = await apiClient.get('/api/admin/impersonation-history');
+        return response.data;
     },
 
     async logout() {

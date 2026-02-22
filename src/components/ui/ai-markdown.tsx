@@ -3,14 +3,15 @@ import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';
 
 interface AIMarkdownProps {
-    content: string;
+    content?: string | null;
     className?: string;
 }
 
 const STRUCTURED_MARKDOWN_PATTERN =
     /(^|\n)\s{0,3}(#{1,6}\s|[-*+]\s|\d+[.)]\s|>\s|```)|\|.+\|/m;
 
-const normalizeAIContent = (value: string): string => {
+const normalizeAIContent = (value?: string | null): string => {
+    if (typeof value !== 'string') return '';
     const normalized = value.replace(/\r\n/g, '\n').trim();
     if (!normalized) return '';
 

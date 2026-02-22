@@ -23,6 +23,8 @@ export default function DashboardLeaderboard() {
     const [activeTab, setActiveTab] = useState<LeaderboardType>('xp');
     const containerRef = useRef(null);
     const currentUserId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
+    const userRole = typeof window !== 'undefined' ? localStorage.getItem('userRole') : null;
+    const isAdmin = (userRole || '').trim().toUpperCase() === 'ADMIN';
     
     const {
         isSharing,
@@ -67,12 +69,14 @@ export default function DashboardLeaderboard() {
             ref={containerRef}
             className="space-y-6 md:space-y-8 pb-20 w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-0"
         >
-            <ShareRankDialog
-                open={isShareModalOpen}
-                onOpenChange={setIsShareModalOpen}
-                sharePayload={sharePayload}
-                onCopy={handleCopyShare}
-            />
+            {!isAdmin ? (
+                <ShareRankDialog
+                    open={isShareModalOpen}
+                    onOpenChange={setIsShareModalOpen}
+                    sharePayload={sharePayload}
+                    onCopy={handleCopyShare}
+                />
+            ) : null}
 
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 pb-6 border-b border-foreground/5">
                 <div className="space-y-2">
@@ -97,6 +101,7 @@ export default function DashboardLeaderboard() {
                     isSharing={isSharing}
                     userRank={leaderboardData.userRank}
                     onShare={() => handleShare(activeTab)}
+                    showShare={!isAdmin}
                 />
             </header>
 

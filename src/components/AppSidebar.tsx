@@ -20,6 +20,10 @@ import {
 } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { api, clearApiCache } from '@/lib/apiClient';
+import {
+    endImpersonationSession,
+    isImpersonationActive,
+} from '@/lib/impersonation';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     Sidebar,
@@ -193,6 +197,41 @@ export function AppSidebar() {
         }
     };
 
+    const [impersonating, setImpersonating] = useState(
+        isImpersonationActive(),
+    );
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            setImpersonating(isImpersonationActive());
+        };
+        window.addEventListener('storage', handleStorageChange);
+        handleStorageChange();
+
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
+
+    const handleStopImpersonation = async () => {
+        try {
+            const result = await api.stopImpersonation();
+            if (result?.success) {
+                endImpersonationSession();
+                appToast.success({
+                    title: 'Impersonation Ended',
+                    description: 'You are now viewing as yourself.',
+                });
+                window.location.href = '/dashboard/admin';
+                return;
+            }
+            appToast.error({
+                title: 'Could not stop',
+                description: result?.message || 'Failed to end impersonation.',
+            });
+        } catch (error) {
+            appToast.apiError(error, 'Failed to end impersonation');
+        }
+    };
+
     return (
         <Sidebar
             collapsible="icon"
@@ -334,6 +373,20 @@ export function AppSidebar() {
 
             {/* Footer / User Profile */}
             <SidebarFooter className="p-4 border-t border-foreground/5">
+                {impersonating && (
+                    <div className="mb-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3">
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-amber-300 mb-2">
+                            Impersonating
+                        </p>
+                        <Button
+                            variant="outline"
+                            className="w-full rounded-xl border-amber-500/30 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20"
+                            onClick={handleStopImpersonation}
+                        >
+                            Stop Impersonation
+                        </Button>
+                    </div>
+                )}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton

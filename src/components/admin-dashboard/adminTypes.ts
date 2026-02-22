@@ -13,6 +13,5 @@ export type AdminStats = {
     totalUsers: number;
     activeNow: number;
     totalNotes: number;
-    contributedKeys: number;
     growth: number;
 };

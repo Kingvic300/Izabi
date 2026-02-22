@@ -11,6 +11,7 @@ interface YourRankCardProps {
     isSharing: boolean;
     userRank?: LeaderboardData['userRank'];
     onShare: () => void;
+    showShare?: boolean;
 }
 
 export const YourRankCard = ({
@@ -19,6 +20,7 @@ export const YourRankCard = ({
     isSharing,
     userRank,
     onShare,
+    showShare = true,
 }: YourRankCardProps) => {
     const getRank = () => {
         if (isLoading && !userRank) return <span className="animate-pulse">...</span>;
@@ -55,19 +57,21 @@ export const YourRankCard = ({
                 </div>
             </div>
 
-            <Button
-                variant="outline"
-                className="w-full"
-                onClick={onShare}
-                disabled={isSharing || isLoading}
-            >
-                {isSharing ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                    <Share2 className="h-4 w-4" />
-                )}
-                Share Rank
-            </Button>
+            {showShare ? (
+                <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={onShare}
+                    disabled={isSharing || isLoading}
+                >
+                    {isSharing ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                        <Share2 className="h-4 w-4" />
+                    )}
+                    Share Rank
+                </Button>
+            ) : null}
         </div>
     );
 };

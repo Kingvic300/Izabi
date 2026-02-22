@@ -101,6 +101,14 @@ export const useLeaderboardShare = () => {
         setIsSharing(true);
         try {
             const res = await api.getLeaderboardShare(type);
+            if (res?.data?.disabled) {
+                toast.info({
+                    title: 'Sharing disabled',
+                    description:
+                        res?.data?.reason || 'Sharing is not available.',
+                });
+                return;
+            }
             const payload = buildFallbackShare(res?.data);
             const shareTitle = 'Izabi Leaderboard';
 

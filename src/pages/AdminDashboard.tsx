@@ -16,13 +16,16 @@ import AdminAnnouncementDialog from '@/components/admin-dashboard/AdminAnnouncem
 import AdminTerminateDialog from '@/components/admin-dashboard/AdminTerminateDialog';
 import { processChartData } from '@/components/admin-dashboard/adminUtils';
 import type { AdminStats, AdminUser } from '@/components/admin-dashboard/adminTypes';
+import {
+    endImpersonationSession,
+    startImpersonationSession,
+} from '@/lib/impersonation';
 
 // Initial empty state
 const INITIAL_STATS: AdminStats = {
     totalUsers: 0,
     activeNow: 0,
     totalNotes: 0,
-    contributedKeys: 0,
     growth: 0,
 };
 
@@ -31,7 +34,6 @@ export default function AdminDashboard() {
     const appToast = useAppToast();
     const [stats, setStats] = useState(INITIAL_STATS);
     const [users, setUsers] = useState<any[]>([]);
-    const [keys, setKeys] = useState<any[]>([]);
     const [chartData, setChartData] = useState<any[]>([]);
     const [activityChartData, setActivityChartData] = useState<any[]>([]);
     const [recentActivities, setRecentActivities] = useState<any[]>([]);
@@ -55,6 +57,11 @@ export default function AdminDashboard() {
     const [userDetails, setUserDetails] = useState<any>(null);
     const [isDetailsLoading, setIsDetailsLoading] = useState(false);
 
+    // Impersonation State
+    const [isImpersonating, setIsImpersonating] = useState(false);
+    const [impersonationTargetId, setImpersonationTargetId] = useState<string | null>(null);
+    const [isImpersonationLoading, setIsImpersonationLoading] = useState(false);
+
     const fetchAdminData = useCallback(
         async (setPageLoading = false): Promise<boolean> => {
             if (setPageLoading) {
@@ -62,18 +69,15 @@ export default function AdminDashboard() {
             }
 
             try {
-                const [statsResponse, usersResponse, keysResponse] =
+                const [statsResponse, usersResponse] =
                     await Promise.allSettled([
                         api.getAdminStats(),
                         api.getAllUsers(),
-                        api.getContributedKeys(),
                     ]);
 
-                const hasAnySuccess = [
-                    statsResponse,
-                    usersResponse,
-                    keysResponse,
-                ].some((result) => result.status === 'fulfilled');
+                const hasAnySuccess = [statsResponse, usersResponse].some(
+                    (result) => result.status === 'fulfilled',
+                );
 
                 if (!hasAnySuccess) {
                     throw new Error('Failed to refresh admin data from server');
@@ -88,7 +92,6 @@ export default function AdminDashboard() {
                         totalUsers: data.totalUsers || 0,
                         activeNow: data.activeNow || 0,
                         totalNotes: data.totalNotes || 0,
-                        contributedKeys: data.contributedKeys || 0,
                         growth: data.growth || 0,
                     });
 
@@ -128,14 +131,6 @@ export default function AdminDashboard() {
                         const processedChart = processChartData(userList);
                         setChartData(processedChart);
                     }
-                }
-
-                const keysData =
-                    keysResponse.status === 'fulfilled'
-                        ? keysResponse.value.data
-                        : null;
-                if (keysData) {
-                    setKeys(Array.isArray(keysData) ? keysData : []);
                 }
 
                 return true;
@@ -196,14 +191,13 @@ export default function AdminDashboard() {
         if (isExportingReport) return;
         setIsExportingReport(true);
         try {
-            const report = {
-                generatedAt: new Date().toISOString(),
-                stats,
-                users,
-                contributedKeys: keys,
-                activity: recentActivities,
-                charts: {
-                    users: chartData,
+                const report = {
+                    generatedAt: new Date().toISOString(),
+                    stats,
+                    users,
+                    activity: recentActivities,
+                    charts: {
+                        users: chartData,
                     activity: activityChartData,
                 },
             };
@@ -344,6 +338,93 @@ export default function AdminDashboard() {
         }
     };
 
+    // Check impersonation status on mount
+    useEffect(() => {
+        const checkImpersonationStatus = async () => {
+            try {
+                const response = await api.getImpersonationStatus();
+                if (response.success && response.data) {
+                    setIsImpersonating(response.data.isImpersonating);
+                    setImpersonationTargetId(response.data.activeSession?.targetUserId || null);
+                }
+            } catch (error) {
+                console.error('Failed to check impersonation status:', error);
+            }
+        };
+        checkImpersonationStatus();
+    }, []);
+
+    const handleImpersonate = async (userIdOrStop: string) => {
+        if (isImpersonationLoading) return;
+        
+        setIsImpersonationLoading(true);
+        try {
+            if (userIdOrStop === 'STOP') {
+                // Stop impersonation
+                const result = await api.stopImpersonation();
+                if (result.success) {
+                    endImpersonationSession();
+                    setIsImpersonating(false);
+                    setImpersonationTargetId(null);
+                    appToast.success({
+                        title: 'Impersonation Ended',
+                        description: 'You are now viewing as yourself.',
+                    });
+                    // Refresh the page to get fresh data
+                    window.location.reload();
+                }
+            } else {
+                // Start impersonation
+                const result = await api.startImpersonation(userIdOrStop);
+                if (result.success) {
+                    if (!result.data?.token) {
+                        appToast.error({
+                            title: 'Impersonation Failed',
+                            description: 'Missing impersonation token.',
+                        });
+                        return;
+                    }
+                    startImpersonationSession({
+                        token: result.data?.token,
+                        targetUser: result.data?.targetUser || {
+                            id: userIdOrStop,
+                            role: 'USER',
+                        },
+                    });
+                    setIsImpersonating(true);
+                    setImpersonationTargetId(userIdOrStop);
+                    appToast.success({
+                        title: 'Impersonation Started',
+                        description: 'You are now viewing as this user.',
+                    });
+                    window.location.href = '/dashboard';
+                } else {
+                    appToast.error({
+                        title: 'Impersonation Failed',
+                        description: result.message || 'Could not start impersonation.',
+                    });
+                }
+            }
+        } catch (error: any) {
+            const status = error?.response?.status;
+            if (status === 403) {
+                appToast.error({
+                    title: 'Access Denied',
+                    description: 'You do not have permission to impersonate users.',
+                });
+            } else if (status === 404) {
+                appToast.error({
+                    title: 'User Not Found',
+                    description: 'The user may have been deleted.',
+                });
+            } else {
+                appToast.apiError(error, 'Impersonation Failed');
+            }
+        } finally {
+            setIsImpersonationLoading(false);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="h-[80vh] flex flex-col items-center justify-center space-y-4">
@@ -442,6 +523,9 @@ export default function AdminDashboard() {
                 onOpenChange={setIsSheetOpen}
                 userDetails={userDetails}
                 isDetailsLoading={isDetailsLoading}
+                onImpersonate={handleImpersonate}
+                isImpersonating={isImpersonating}
+                impersonationTargetId={impersonationTargetId}
             />
 
             <AdminAnnouncementDialog

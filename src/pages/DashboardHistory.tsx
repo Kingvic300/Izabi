@@ -121,7 +121,7 @@ const DashboardHistory = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8 pb-24 sm:pb-32 px-4 sm:px-6 md:px-0">
+        <div className="w-full space-y-6 sm:space-y-8 pb-24 sm:pb-32 px-4 sm:px-6">
             <HistoryHeader
                 activeType={activeType}
                 onTypeChange={setActiveType}
