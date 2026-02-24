@@ -1,6 +1,9 @@
+'use client';
+
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';
+import { MermaidBlock } from '@/components/ui/mermaid-block';
 
 interface AIMarkdownProps {
     content?: string | null;
@@ -47,7 +50,40 @@ const normalizeAIContent = (value?: string | null): string => {
 export const AIMarkdown = ({ content, className }: AIMarkdownProps) => {
     return (
         <div className={cn('ai-readable break-words', className)}>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                    pre({ children }) {
+                        const child = Array.isArray(children)
+                            ? children[0]
+                            : children;
+                        const childClass =
+                            (child as any)?.props?.className || '';
+                        if (
+                            typeof childClass === 'string' &&
+                            childClass.toLowerCase().includes('language-mermaid')
+                        ) {
+                            return <>{children}</>;
+                        }
+                        return <pre>{children}</pre>;
+                    },
+                    code({ inline, className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || '');
+                        if (!inline && match?.[1]?.toLowerCase() === 'mermaid') {
+                            return (
+                                <MermaidBlock
+                                    code={String(children || '').trim()}
+                                />
+                            );
+                        }
+                        return (
+                            <code className={className} {...props}>
+                                {children}
+                            </code>
+                        );
+                    },
+                }}
+            >
                 {normalizeAIContent(content)}
             </ReactMarkdown>
         </div>

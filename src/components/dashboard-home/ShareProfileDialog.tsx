@@ -56,11 +56,13 @@ export const ShareProfileDialog = ({
     const [activeTab, setActiveTab] = useState('link');
     const [copied, setCopied] = useState(false);
     const toast = useAppToast();
+    const canNativeShare =
+        typeof navigator !== 'undefined' && Boolean(navigator.share);
 
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://izabi.halixe.com';
-    const profileUrl = customShareUrl || `${baseUrl}/profile/${profileData.userId}`;
+    const profileUrl = customShareUrl || `${baseUrl}/leaderboard?userId=${profileData.userId}`;
     
-    const defaultShareText = `Check out ${profileData.firstName || 'my'} profile on Izabi! 🚀\n\n` +
+    const defaultShareText = `Check out ${profileData.firstName || 'my'} leaderboard profile on Izabi! 🚀\n\n` +
         `${profileData.firstName || 'Scholar'} ${profileData.lastName || ''}\n` +
         `${profileData.institution ? `📚 ${profileData.institution}\n` : ''}` +
         `🏆 ${profileData.totalPoints || 0} XP • 🔥 ${profileData.studyStreak || 0} day streak\n\n` +
@@ -113,7 +115,7 @@ export const ShareProfileDialog = ({
     };
 
     const handleShare = async () => {
-        if (navigator.share) {
+        if (canNativeShare) {
             try {
                 await navigator.share({
                     title: `${profileData.firstName || 'Scholar'}'s Profile | Izabi`,
@@ -127,8 +129,9 @@ export const ShareProfileDialog = ({
                 }
             }
         } else {
-            // Fallback to copy
+            // Fallback to copy link
             setActiveTab('link');
+            await handleCopyLink();
         }
     };
 
@@ -356,7 +359,7 @@ export const ShareProfileDialog = ({
                         className="w-full sm:w-auto gap-2"
                     >
                         <Copy size={16} />
-                        Share Profile
+                        {canNativeShare ? 'Share Profile' : 'Copy Link'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { PageLoader } from '@/components/PageLoader';
 import { lazyRetry as lazy } from '@/lib/lazyLoad';
@@ -61,6 +61,10 @@ const DashboardLeaderboard = lazy(
     () => import('@/pages/DashboardLeaderboard'),
     'DashboardLeaderboard',
 );
+const LeaderboardPublic = lazy(
+    () => import('@/pages/LeaderboardPublic'),
+    'LeaderboardPublic',
+);
 const DashboardSupport = lazy(
     () => import('@/pages/DashboardSupport'),
     'DashboardSupport',
@@ -114,16 +118,6 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>;
 };
 
-const LeaderboardRedirect = () => {
-    const location = useLocation();
-    return (
-        <Navigate
-            to={`/dashboard/leaderboard${location.search || ''}`}
-            replace
-        />
-    );
-};
-
 const routes = () => {
     return (
         <BrowserRouter>
@@ -171,7 +165,7 @@ const routes = () => {
                     <Route path="/signup" element={withErrorBoundary(Signup)} />
                     <Route
                         path="/leaderboard"
-                        element={<LeaderboardRedirect />}
+                        element={withErrorBoundary(LeaderboardPublic)}
                     />
 
                     <Route

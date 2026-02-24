@@ -470,11 +470,14 @@ export const api = {
         text: string,
         lang: string = 'en',
         isPidgin: boolean = false,
+        options?: { voice?: string; speed?: number },
     ) {
         const response = await apiClient.post('/api/study/generate-voice', {
             text,
             lang,
             isPidgin,
+            voice: options?.voice,
+            speed: options?.speed,
         });
         return response.data;
     },
@@ -484,6 +487,15 @@ export const api = {
         const userId = localStorage.getItem('userId');
         const response = await apiClient.get(
             `/api/study/leaderboard${userId ? `?userId=${userId}` : ''}`,
+        );
+        return response.data;
+    },
+
+    async getPublicLeaderboard(userId?: string | null) {
+        const query = new URLSearchParams();
+        if (userId) query.set('userId', userId);
+        const response = await apiClient.get(
+            `/api/study/leaderboard/public${query.toString() ? `?${query.toString()}` : ''}`,
         );
         return response.data;
     },

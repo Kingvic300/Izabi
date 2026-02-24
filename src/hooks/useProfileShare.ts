@@ -48,10 +48,10 @@ export const useProfileShare = (): UseProfileShareReturn => {
             typeof window !== 'undefined'
                 ? window.location.origin
                 : 'https://izabi.halixe.com';
-        const url = `${baseUrl}/profile/${data.userId}`;
+        const url = `${baseUrl}/leaderboard?userId=${data.userId}`;
 
         return (
-            `Check out ${data.firstName || 'my'} profile on Izabi! 🚀\n\n` +
+            `Check out ${data.firstName || 'my'} leaderboard profile on Izabi! 🚀\n\n` +
             `${data.firstName || 'Scholar'} ${data.lastName || ''}\n` +
             `${data.institution ? `📚 ${data.institution}\n` : ''}` +
             `🏆 ${data.totalPoints || 0} XP • 🔥 ${data.studyStreak || 0} day streak\n\n` +
@@ -97,7 +97,7 @@ export const useProfileShare = (): UseProfileShareReturn => {
                 typeof window !== 'undefined'
                     ? window.location.origin
                     : 'https://izabi.halixe.com';
-            const url = `${baseUrl}/profile/${data.userId}`;
+            const url = `${baseUrl}/leaderboard?userId=${data.userId}`;
             const text = buildProfileShareText(data);
 
             setProfileData(data);
