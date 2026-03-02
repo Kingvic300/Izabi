@@ -27,7 +27,7 @@ export const UploadPrompt = ({ onSelectionComplete, onReadyToLearn }: UploadProm
                 </CardTitle>
                 <CardDescription className="text-base sm:text-lg font-medium opacity-60 max-w-xl mx-auto md:mx-0 leading-relaxed font-mono">
                     {t('dashboard.upload_desc') ||
-                        'Upload notes or textbooks to start studying.'}
+                        'Upload notes, textbooks, images, or documents to start studying.'}
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-4 sm:px-6 md:px-8 lg:px-10 pb-8 sm:pb-14">

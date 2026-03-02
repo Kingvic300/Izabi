@@ -37,9 +37,7 @@ const DashboardAIAssistant = () => {
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isUploadingPdf, setIsUploadingPdf] = useState(false);
-    const [activeDocument, setActiveDocument] = useState<ActiveDocument | null>(
-        null,
-    );
+    const [activeDocuments, setActiveDocuments] = useState<ActiveDocument[]>([]);
     const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
     const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
 
@@ -286,7 +284,7 @@ const DashboardAIAssistant = () => {
                     setIsLoading(false);
                     loadSessions(sessionIdToUse || undefined);
                 },
-                activeDocument?.documentId,
+                activeDocuments.map((d) => d.documentId).join(','),
                 sessionIdToUse,
             );
         } catch (error) {
@@ -334,59 +332,66 @@ const DashboardAIAssistant = () => {
         }
     };
 
-    const handlePdfUpload = async (
+    const handleFileUploads = async (
         event: React.ChangeEvent<HTMLInputElement>,
     ) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
+        const files = Array.from(event.target.files || []);
+        if (files.length === 0) return;
 
-        const isPdf =
-            file.type.toLowerCase().includes('pdf') ||
-            file.name.toLowerCase().endsWith('.pdf');
-        if (!isPdf) {
+        // Limit total to 5
+        const currentCount = activeDocuments.length;
+        const incomingCount = files.length;
+        if (currentCount + incomingCount > 5) {
             appToast.error({
-                title: 'Invalid File',
-                description: 'Please upload a PDF document.',
+                title: 'Limit Reached',
+                description: 'You can only have up to 5 documents active at once.',
             });
             event.target.value = '';
             return;
         }
 
-        const MAX_PDF_BYTES = 100 * 1024 * 1024;
-        if (file.size > MAX_PDF_BYTES) {
+        const MAX_FILE_BYTES = 100 * 1024 * 1024;
+        const validFiles = files.filter((f) => f.size <= MAX_FILE_BYTES);
+
+        if (validFiles.length < files.length) {
             appToast.error({
-                title: 'File Too Large',
-                description: 'PDF size must be 100MB or less.',
+                title: 'Some Files Too Large',
+                description: 'One or more files exceed the 100MB limit and were skipped.',
             });
+        }
+
+        if (validFiles.length === 0) {
             event.target.value = '';
             return;
         }
 
         setIsUploadingPdf(true);
         try {
-            const res = await api.uploadPDFForChat(file);
-            if (res?.success && res?.data?.documentId) {
-                setActiveDocument({
-                    documentId: res.data.documentId,
-                    fileName: res.data.fileName || file.name,
-                });
+            const res = await api.uploadFilesForChat(validFiles);
+            if (res?.success && Array.isArray(res?.data)) {
+                const newDocs: ActiveDocument[] = res.data.map((d: any) => ({
+                    documentId: d.documentId,
+                    fileName: d.fileName,
+                }));
 
+                setActiveDocuments((prev) => [...prev, ...newDocs]);
+
+                const fileNames = newDocs.map((d) => `"${d.fileName}"`).join(', ');
                 const systemMessage: Message = {
-                    id: `pdf-${Date.now()}`,
+                    id: `upload-${Date.now()}`,
                     role: 'assistant',
-                    content: `PDF "${res.data.fileName || file.name}" uploaded successfully. Ask me anything from this document.`,
+                    content: `${newDocs.length} file(s) [${fileNames}] uploaded successfully. I will now use them to answer your questions.`,
                     timestamp: new Date(),
                 };
                 setMessages((prev) => [...prev, systemMessage]);
 
                 appToast.success({
-                    title: 'PDF Ready',
-                    description:
-                        'Your PDF has been indexed and is now available in chat.',
+                    title: 'Upload Successful',
+                    description: `${newDocs.length} new materials indexed and ready for chat.`,
                 });
             }
         } catch (error: any) {
-            console.error('PDF upload failed:', error);
+            console.error('File upload failed:', error);
             appToast.error({
                 title: 'Upload Failed',
                 description: getReadableErrorMessage(error),
@@ -450,7 +455,7 @@ const DashboardAIAssistant = () => {
                 onCopyTranscript={handleCopyTranscript}
                 onShareTranscript={handleShareTranscript}
                 pdfInputRef={pdfInputRef}
-                onPdfUpload={handlePdfUpload}
+                onPdfUpload={handleFileUploads}
                 onClearHistory={handleClearHistory}
                 chatSessions={chatSessions}
                 activeSessionId={activeSessionId}
@@ -473,7 +478,7 @@ const DashboardAIAssistant = () => {
                     />
 
                     <ChatInput
-                        activeDocument={activeDocument}
+                        activeDocuments={activeDocuments}
                         inputValue={inputValue}
                         isLoading={isLoading}
                         isUploadingPdf={isUploadingPdf}
@@ -481,7 +486,11 @@ const DashboardAIAssistant = () => {
                         onKeyPress={handleKeyPress}
                         onSend={handleSendMessage}
                         onUploadClick={handlePdfTrigger}
-                        onRemoveDocument={() => setActiveDocument(null)}
+                        onRemoveDocument={(id) =>
+                            setActiveDocuments((prev) =>
+                                prev.filter((d) => d.documentId !== id),
+                            )
+                        }
                         onSuggestionClick={redirectToDashboardUpload}
                     />
                 </CardContent>

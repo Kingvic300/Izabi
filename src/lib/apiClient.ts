@@ -659,6 +659,13 @@ export const api = {
         return response.data;
     },
 
+    async uploadFilesForChat(files: File[]) {
+        const formData = new FormData();
+        files.forEach((file) => formData.append('files', file));
+        const response = await apiClient.post('/api/ai/upload-files', formData);
+        return response.data;
+    },
+
     async uploadPDFForChat(file: File) {
         const formData = new FormData();
         formData.append('file', file);
@@ -760,6 +767,21 @@ export const api = {
 
         const response = await apiClient.post(
             '/api/study/ingest-direct',
+            formData,
+        );
+        return response.data;
+    },
+
+    async ingestMultiDirect(files: File[], type: string, options?: any) {
+        const formData = new FormData();
+        files.forEach((file) => formData.append('files', file));
+        formData.append('type', type);
+        if (options) {
+            formData.append('options', JSON.stringify(options));
+        }
+
+        const response = await apiClient.post(
+            '/api/study/ingest-multi-direct',
             formData,
         );
         return response.data;

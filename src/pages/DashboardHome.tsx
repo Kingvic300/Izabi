@@ -1,13 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { useGSAP } from '@gsap/react';
-import { Share2 } from 'lucide-react';
+import { Sparkles, FileStack, CheckCircle2, ChevronRight, X, Share2, BrainCircuit, Eye, FileText } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { WelcomeHeader } from '@/components/dashboard-home/WelcomeHeader';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 import { GamificationStrip } from '@/components/dashboard-home/GamificationStrip';
 import { BrainDropSection } from '@/components/dashboard-home/BrainDropSection';
 import IntentCards from '@/components/IntentCards';
@@ -23,6 +27,13 @@ import { ShareProfileDialog } from '@/components/dashboard-home/ShareProfileDial
 import QuickTestModal from '@/components/QuickTestModal';
 import StudyTricksModal from '@/components/StudyTricksModal';
 import PracticeQuizModal from '@/components/PracticeQuizModal';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import PDFPreview from '@/components/pdf/PDFPreview';
 import { Button } from '@/components/ui/button';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { useJobPolling } from '@/hooks/useJobPolling';
@@ -45,6 +56,7 @@ type PendingScroll = {
 };
 
 export default function DashboardHome() {
+    const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
     const pendingScrollRef = useRef<PendingScroll | null>(null);
     const { session, updateSession, addJob } = useStudy();
@@ -72,6 +84,19 @@ export default function DashboardHome() {
     const [showContextCard, setShowContextCard] = useState(false);
     const [practiceQuestions, setPracticeQuestions] = useState<any[]>([]);
     const [userExamType, setUserExamType] = useState<string | null>(null);
+    const [showAIUpdate, setShowAIUpdate] = useState(false);
+    const [previewFile, setPreviewFile] = useState<File | null>(null);
+
+    useEffect(() => {
+        const dismissed = localStorage.getItem('ai_update_dismissed');
+        if (!dismissed) setShowAIUpdate(true);
+    }, []);
+
+    const dismissAIUpdate = () => {
+        setShowAIUpdate(false);
+        localStorage.setItem('ai_update_dismissed', 'true');
+    };
+
     const {
         isSharing,
         isShareModalOpen,
@@ -125,11 +150,11 @@ export default function DashboardHome() {
         }, delay);
     };
 
-    const handleSelectionComplete = ({ selection, file }: any) => {
+    const handleSelectionComplete = ({ selections, files }: any) => {
         updateSession({
-            pdfSelection: selection,
-            pdfFile: file,
-            fileName: file.name,
+            pdfSelections: selections,
+            pdfFiles: files,
+            fileNames: files.map((f: any) => f.name),
             summary: '',
             studyGuide: '',
             questions: [],
@@ -142,9 +167,9 @@ export default function DashboardHome() {
 
     const handleUploadDocument = () => {
         updateSession({
-            pdfSelection: null,
-            pdfFile: null,
-            fileName: '',
+            pdfSelections: [],
+            pdfFiles: [],
+            fileNames: [],
             summary: '',
             studyGuide: '',
             questions: [],
@@ -153,6 +178,26 @@ export default function DashboardHome() {
         setModuleStatuses(INITIAL_MODULE_STATUSES);
         setIsProcessing(false);
         scrollToSection('upload-section');
+    };
+
+    const handleAddMore = () => {
+        updateSession({
+            pdfSelections: [],
+        });
+        // Scroll and then automatically trigger the file picker
+        setTimeout(() => {
+            scrollToSection('upload-section');
+            // Give it another tiny moment to ensure the component is mounted and animations are in progress
+            setTimeout(() => {
+                const uploadInput = document.getElementById('file-upload-redesign') as HTMLInputElement | null;
+                if (uploadInput) uploadInput.click();
+            }, 300);
+        }, 100);
+    };
+
+    const handlePreviewFile = (index: number) => {
+        const file = session.pdfFiles[index];
+        if (file) setPreviewFile(file);
     };
 
     const handleReadyToLearn = () => {
@@ -173,9 +218,9 @@ export default function DashboardHome() {
         endpoint: string,
         includeQuestions = false,
     ) => {
-        if (!session.pdfFile || !session.pdfSelection) {
+        if (session.pdfFiles.length === 0) {
             addError({
-                message: 'Please upload a document first.',
+                message: 'Please upload at least one document first.',
                 type: 'validation',
             });
             return;
@@ -212,9 +257,10 @@ export default function DashboardHome() {
                 });
             }
 
-            if (session.pdfFile.size > 10 * 1024 * 1024) {
+            if (session.pdfFiles.length === 1 && session.pdfFiles[0].size > 10 * 1024 * 1024) {
+                const file = session.pdfFiles[0];
                 try {
-                    const localText = await extractTextFromPDF(session.pdfFile);
+                    const localText = await extractTextFromPDF(file);
                     if (localText.trim().length < 30) {
                         throw new Error(
                             'Local extraction produced insufficient text.',
@@ -223,12 +269,12 @@ export default function DashboardHome() {
 
                     const ingestRes = await api.ingestText({
                         text: localText,
-                        fileName: session.pdfFile.name,
+                        fileName: file.name,
                         type,
                         options,
                     });
 
-                    addJob(ingestRes.jobId, session.pdfFile.name, type);
+                    addJob(ingestRes.jobId, [file.name], type);
                     pendingScrollRef.current = { endpoint };
                     pollJobStatus(ingestRes.jobId, endpoint);
                     return;
@@ -240,12 +286,12 @@ export default function DashboardHome() {
                 }
             }
 
-            const ingestRes = await api.ingestDirect(
-                session.pdfFile,
+            const ingestRes = await api.ingestMultiDirect(
+                session.pdfFiles,
                 type,
                 options,
             );
-            addJob(ingestRes.jobId, session.pdfFile.name, type);
+            addJob(ingestRes.jobId, session.pdfFiles.map(f => f.name), type);
             pendingScrollRef.current = { endpoint };
             pollJobStatus(ingestRes.jobId, endpoint);
         } catch (err: any) {
@@ -341,10 +387,10 @@ export default function DashboardHome() {
     };
 
     const handleQuickTest = () => {
-        if (!session.pdfFile) {
+        if (session.pdfFiles.length === 0) {
             addError({
                 message:
-                    'Please upload a PDF document first to perform a Quick Test.',
+                    'Please upload a document first to perform a Quick Test.',
                 type: 'validation',
             });
             scrollToSection('upload-section');
@@ -416,7 +462,7 @@ export default function DashboardHome() {
                 score: percentage,
                 totalQuestions: total,
                 correctAnswers: score,
-                subject: session.pdfFile?.name.split('.')[0] || 'General',
+                subject: session.fileNames[0]?.split('.')[0] || 'General',
                 date: new Date().toISOString(),
             });
             fetchStats();
@@ -447,17 +493,25 @@ export default function DashboardHome() {
 
     const downloadSummary = () => {
         if (!session.summary) return;
+        const baseName = session.fileNames.length > 1 
+            ? 'Combined_Set' 
+            : (session.fileNames[0]?.split('.')[0] || 'Note');
+        
         handleDownload(
             session.summary,
-            `Izabi_Summary_${session.pdfFile?.name.split('.')[0] || 'Note'}`,
+            `Izabi_Summary_${baseName}`,
         );
     };
 
     const downloadStudyGuide = () => {
         if (!session.studyGuide) return;
+        const baseName = session.fileNames.length > 1 
+            ? 'Combined_Set' 
+            : (session.fileNames[0]?.split('.')[0] || 'Note');
+
         handleDownload(
             session.studyGuide,
-            `Izabi_Study_Guide_${session.pdfFile?.name.split('.')[0] || 'Note'}`,
+            `Izabi_Study_Guide_${baseName}`,
         );
     };
 
@@ -478,7 +532,12 @@ export default function DashboardHome() {
     const downloadQuiz = () => {
         const questions = getDownloadQuestions();
         if (questions.length === 0) return;
-        let content = `# Quiz: ${session.pdfFile?.name.split('.')[0] || 'Document'}\n\n`;
+        
+        const baseName = session.fileNames.length > 1 
+            ? 'Combined_Set' 
+            : (session.fileNames[0]?.split('.')[0] || 'Assessment');
+
+        let content = `# Quiz: ${baseName}\n\n`;
         questions.forEach((q: any, i: number) => {
             content += `## Question ${i + 1}\n${q.question}\n\n`;
             if (q.options && q.options.length > 0) {
@@ -492,9 +551,10 @@ export default function DashboardHome() {
             if (q.explanation) content += `**Explanation:** ${q.explanation}\n`;
             content += `\n---\n\n`;
         });
+
         handleDownload(
             content,
-            `Izabi_Quiz_${session.pdfFile?.name.split('.')[0] || 'Assessment'}`,
+            `Izabi_Quiz_${baseName}`,
         );
     };
 
@@ -502,9 +562,79 @@ export default function DashboardHome() {
         <ErrorBoundary>
             <div
                 ref={containerRef}
-                className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-10"
+                className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-10 pt-4 md:pt-10 max-w-[1800px] mx-auto"
             >
                 <WelcomeHeader firstName={userStats?.data?.firstName} />
+
+                <AnimatePresence>
+                    {showAIUpdate && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                            exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                            className="stagger-card overflow-hidden"
+                        >
+                            <Alert className="relative border-primary/20 bg-primary/5 p-4 sm:p-6 rounded-3xl overflow-hidden group">
+                                {/* Decorative Gradient */}
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-primary/20 transition-all duration-700" />
+                                
+                                <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                    <div className="flex gap-4 sm:gap-6">
+                                        <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                                            <BrainCircuit className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                                        </div>
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                <Badge variant="secondary" className="bg-primary/20 text-primary border-none text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-0.5">
+                                                    New v2.0
+                                                </Badge>
+                                                <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                                            </div>
+                                            <AlertTitle className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
+                                                Advanced Academic AI
+                                            </AlertTitle>
+                                            <AlertDescription className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed">
+                                                Experience the next-gen Izabi AI. Now featuring <span className="text-foreground font-bold">Multi-Document Chat</span> (up to 5 files), 100% Academic Grounding, and support for <span className="text-foreground font-bold">PDF, Images, Word & Excel</span>.
+                                            </AlertDescription>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-3">
+                                        <Button 
+                                            onClick={() => navigate('/dashboard/ai-assistant')}
+                                            className="h-11 sm:h-13 px-6 sm:px-8 bg-primary hover:bg-primary/90 text-white rounded-2xl font-bold shadow-xl shadow-primary/20 group/btn transition-all hover:scale-105 active:scale-95"
+                                        >
+                                            Try Now
+                                            <ChevronRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover/btn:translate-x-1 transition-transform" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={dismissAIUpdate}
+                                            className="h-11 w-11 sm:h-13 sm:w-13 rounded-2xl border-foreground/10 hover:bg-foreground/5 shadow-sm"
+                                        >
+                                            <X className="h-4 w-4 sm:h-5 sm:w-5" />
+                                        </Button>
+                                    </div>
+                                </div>
+                                
+                                <div className="mt-6 pt-6 border-t border-primary/10 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {[
+                                        { label: 'Multi-File Chat', icon: FileStack },
+                                        { label: 'OCR Image Support', icon: Sparkles },
+                                        { label: 'Deep Synthesis', icon: BrainCircuit },
+                                        { label: 'Source Grounded', icon: CheckCircle2 },
+                                    ].map((feat, i) => (
+                                        <div key={i} className="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                                            <feat.icon className="h-3 w-3 text-primary/50" />
+                                            {feat.label}
+                                        </div>
+                                    ))}
+                                </div>
+                            </Alert>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {userStats?.data && (
                     <div className="space-y-3">
@@ -560,59 +690,60 @@ export default function DashboardHome() {
                 </AnimatePresence>
 
                 <div className="workspace-area">
-                    {session.pdfSelection ? (
-                        <div className="grid grid-cols-1 2xl:grid-cols-12 gap-8 stagger-card">
-                            <div className="2xl:col-span-4 space-y-6">
-                                <DocumentInfo
-                                    fileName={
-                                        session.pdfSelection?.metadata
-                                            ?.fileName || session.fileName
-                                    }
-                                    userStats={userStats}
-                                    onReset={handleUploadDocument}
-                                />
+                    {session.pdfSelections.length > 0 ? (
+                        <>
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-10 stagger-card">
+                                <div className="lg:col-span-4 xl:col-span-3 space-y-6">
+                                    <DocumentInfo
+                                        fileNames={session.fileNames}
+                                        userStats={userStats}
+                                        onReset={handleUploadDocument}
+                                        onAddMore={handleAddMore}
+                                        onPreview={handlePreviewFile}
+                                    />
+                                </div>
+                                <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+                                    <StudyControls
+                                        moduleStatuses={moduleStatuses}
+                                        isProcessing={isProcessing}
+                                        numberOfQuestions={session.numberOfQuestions}
+                                        quizDifficulty={session.quizDifficulty}
+                                        quizStyle={session.quizStyle}
+                                        shuffleQuestions={session.shuffleQuestions}
+                                        showExplanations={session.showExplanations}
+                                        onModuleClick={handleModuleRequest}
+                                        onQuestionsChange={(value) =>
+                                            updateSession({
+                                                numberOfQuestions: value,
+                                            })
+                                        }
+                                        onDifficultyChange={(value) =>
+                                            updateSession({ quizDifficulty: value })
+                                        }
+                                        onStyleChange={(value) =>
+                                            updateSession({ quizStyle: value })
+                                        }
+                                        onShuffleChange={(checked) =>
+                                            updateSession({
+                                                shuffleQuestions: checked,
+                                            })
+                                        }
+                                        onExplanationsChange={(checked) =>
+                                            updateSession({
+                                                showExplanations: checked,
+                                            })
+                                        }
+                                    />
+                                </div>
                             </div>
-                            <div className="2xl:col-span-8 space-y-6">
-                                <StudyControls
-                                    moduleStatuses={moduleStatuses}
-                                    isProcessing={isProcessing}
-                                    numberOfQuestions={session.numberOfQuestions}
-                                    quizDifficulty={session.quizDifficulty}
-                                    quizStyle={session.quizStyle}
-                                    shuffleQuestions={session.shuffleQuestions}
-                                    showExplanations={session.showExplanations}
-                                    onModuleClick={handleModuleRequest}
-                                    onQuestionsChange={(value) =>
-                                        updateSession({
-                                            numberOfQuestions: value,
-                                        })
-                                    }
-                                    onDifficultyChange={(value) =>
-                                        updateSession({ quizDifficulty: value })
-                                    }
-                                    onStyleChange={(value) =>
-                                        updateSession({ quizStyle: value })
-                                    }
-                                    onShuffleChange={(checked) =>
-                                        updateSession({
-                                            shuffleQuestions: checked,
-                                        })
-                                    }
-                                    onExplanationsChange={(checked) =>
-                                        updateSession({
-                                            showExplanations: checked,
-                                        })
-                                    }
-                                />
 
-                                <ResultsHub
-                                    onDownloadSummary={downloadSummary}
-                                    onDownloadGuide={downloadStudyGuide}
-                                    onDownloadQuiz={downloadQuiz}
-                                    onSubmitQuiz={handleQuizSubmit}
-                                />
-                            </div>
-                        </div>
+                            <ResultsHub
+                                onDownloadSummary={downloadSummary}
+                                onDownloadGuide={downloadStudyGuide}
+                                onDownloadQuiz={downloadQuiz}
+                                onSubmitQuiz={handleQuizSubmit}
+                            />
+                        </>
                     ) : (
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 stagger-card">
                             <div className="lg:col-span-7">
@@ -652,6 +783,59 @@ export default function DashboardHome() {
                     shareText={shareText}
                 />
             )}
+
+            {/* Document Preview Dialog */}
+            <Dialog open={!!previewFile} onOpenChange={() => setPreviewFile(null)}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 glass border-foreground/10 rounded-2xl">
+                    <DialogHeader className="p-6 border-b border-foreground/5 shrink-0 bg-card/60 backdrop-blur-xl">
+                        <DialogTitle className="flex items-center gap-3">
+                            <FileText className="text-primary" />
+                            <div className="flex flex-col">
+                                <span className="text-lg font-bold truncate max-w-[300px] sm:max-w-md uppercase tracking-tight">
+                                    {previewFile?.name}
+                                </span>
+                                <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
+                                    Review Document
+                                </span>
+                            </div>
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-1 overflow-auto p-4 sm:p-6 bg-background/40">
+                        {previewFile && (
+                            <div className="w-full flex justify-center">
+                                {previewFile.type.startsWith('image/') ? (
+                                    <div className="relative group rounded-xl overflow-hidden shadow-2xl border border-foreground/5">
+                                        <img 
+                                            src={URL.createObjectURL(previewFile)} 
+                                            alt={previewFile.name}
+                                            className="max-w-full h-auto object-contain rounded-xl"
+                                        />
+                                    </div>
+                                ) : previewFile.type === 'application/pdf' ? (
+                                    <div className="w-full h-[600px] rounded-xl overflow-hidden shadow-2xl border border-foreground/5">
+                                        <PDFPreview 
+                                            file={previewFile}
+                                            className="w-full h-full"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="w-full p-8 rounded-2xl border border-dashed border-foreground/10 flex flex-col items-center justify-center gap-4 text-center">
+                                        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <FileText size={40} className="text-primary" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <h4 className="font-bold text-lg">Document Analysis</h4>
+                                            <p className="text-sm text-muted-foreground max-w-xs">
+                                                Direct preview is unavailable for this specialized format, but your academic AI has fully ingested the content.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </ErrorBoundary>
     );
 }

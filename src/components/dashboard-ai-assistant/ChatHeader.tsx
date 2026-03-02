@@ -92,7 +92,7 @@ export default function ChatHeader({
                     onClick={handleUploadClick}
                     disabled={isUploadingPdf || isLoading}
                     className="sm:hidden h-9 w-9"
-                    aria-label="Upload PDF"
+                    aria-label="Upload Files"
                 >
                     {isUploadingPdf ? (
                         <Loader className="h-4 w-4 animate-spin" />
@@ -112,12 +112,13 @@ export default function ChatHeader({
                     ) : (
                         <Paperclip className="h-3 w-3" />
                     )}
-                    Upload PDF
+                    Upload Materials
                 </Button>
                 <input
                     ref={pdfInputRef}
                     type="file"
-                    accept="application/pdf"
+                    multiple
+                    accept=".pdf,.docx,.xlsx,.txt,.csv,.md,.html,image/*"
                     onChange={onPdfUpload}
                     className="hidden"
                 />

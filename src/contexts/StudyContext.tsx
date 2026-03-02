@@ -17,9 +17,9 @@ interface StudyJob {
 }
 
 interface StudySession {
-    fileName: string;
-    pdfFile?: File | null;
-    pdfSelection?: any | null;
+    fileNames: string[];
+    pdfFiles: File[];
+    pdfSelections: any[];
     numberOfQuestions: number;
     quizDifficulty: 'easy' | 'balanced' | 'hard';
     quizStyle: 'mixed' | 'mcq' | 'short';
@@ -35,7 +35,7 @@ interface StudySession {
 interface StudyContextType {
     activeJobs: StudyJob[];
     session: StudySession;
-    addJob: (jobId: string, fileName: string, type: string) => void;
+    addJob: (jobId: string, fileNames: string[], type: string) => void;
     removeJob: (jobId: string) => void;
     updateSession: (updates: Partial<StudySession>) => void;
     clearSession: () => void;
@@ -48,9 +48,9 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
     const [activeJobs, setActiveJobs] = useState<StudyJob[]>([]);
     const [session, setSession] = useState<StudySession>({
-        fileName: '',
-        pdfFile: null,
-        pdfSelection: null,
+        fileNames: [],
+        pdfFiles: [],
+        pdfSelections: [],
         numberOfQuestions: 5,
         quizDifficulty: 'balanced',
         quizStyle: 'mixed',
@@ -62,12 +62,12 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
         studyGuide: '',
     });
 
-    const addJob = useCallback((id: string, fileName: string, type: string) => {
+    const addJob = useCallback((id: string, fileNames: string[], type: string) => {
         setActiveJobs((prev) => [
             ...prev,
-            { id, fileName, status: 'PENDING', progress: 0, type },
+            { id, fileName: fileNames.join(', '), status: 'PENDING', progress: 0, type },
         ]);
-        setSession((prev) => ({ ...prev, lastJobId: id, fileName }));
+        setSession((prev) => ({ ...prev, lastJobId: id, fileNames }));
     }, []);
 
     const updateSession = useCallback((updates: Partial<StudySession>) => {
@@ -76,9 +76,9 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const clearSession = useCallback(() => {
         setSession({
-            fileName: '',
-            pdfFile: null,
-            pdfSelection: null,
+            fileNames: [],
+            pdfFiles: [],
+            pdfSelections: [],
             numberOfQuestions: 5,
             quizDifficulty: 'balanced',
             quizStyle: 'mixed',

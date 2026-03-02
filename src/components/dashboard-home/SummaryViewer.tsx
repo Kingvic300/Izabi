@@ -216,36 +216,9 @@ export const SummaryViewer = ({ content, audioLabel = 'Listen to Summary' }: Sum
                 </p>
             </div>
 
-            <div
-                className={cn(
-                    'selection:bg-primary/30 transition-all duration-700 ease-in-out',
-                    !isExpanded && isLong && 'max-h-[400px] overflow-hidden relative',
-                )}
-            >
+            <div className="selection:bg-primary/30">
                 <AIMarkdown content={content} className="text-sm md:text-base" />
-                {!isExpanded && isLong && (
-                    <div className="absolute bottom-0 left-0 right-0 h-40 bg-background/90 pointer-events-none" />
-                )}
             </div>
-            {isLong && (
-                <Button
-                    variant="outline"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="w-full h-12 rounded-2xl glass hover:bg-primary/10 text-primary border-primary/20 font-bold tracking-widest uppercase text-[10px] gap-3 shadow-sm"
-                >
-                    {isExpanded ? (
-                        <>
-                            <ChevronUp size={14} />
-                            Collapse
-                        </>
-                    ) : (
-                        <>
-                            <ChevronDown size={14} />
-                            View Full Summary
-                        </>
-                    )}
-                </Button>
-            )}
         </div>
     );
 };

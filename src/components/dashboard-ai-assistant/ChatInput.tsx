@@ -16,7 +16,7 @@ import {
 import type { ActiveDocument } from './types';
 
 type ChatInputProps = {
-    activeDocument: ActiveDocument | null;
+    activeDocuments: ActiveDocument[];
     inputValue: string;
     isLoading: boolean;
     isUploadingPdf: boolean;
@@ -24,12 +24,12 @@ type ChatInputProps = {
     onKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => void;
     onSend: () => void;
     onUploadClick: () => void;
-    onRemoveDocument: () => void;
+    onRemoveDocument: (documentId: string) => void;
     onSuggestionClick: (feature: string) => void;
 };
 
 export default function ChatInput({
-    activeDocument,
+    activeDocuments,
     inputValue,
     isLoading,
     isUploadingPdf,
@@ -43,22 +43,28 @@ export default function ChatInput({
     return (
         <div className="shrink-0 p-3 md:p-6 pt-0">
             <div className="mx-auto w-full max-w-[1500px] space-y-3 md:space-y-4">
-                {activeDocument && (
-                    <div className="flex items-center justify-between gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
-                        <div className="flex items-center gap-2 text-[10px] text-primary font-medium min-w-0">
-                            <FileText className="h-3 w-3" />
-                            <span className="truncate max-w-[170px] sm:max-w-[220px] md:max-w-[420px]">
-                                {activeDocument.fileName}
-                            </span>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={onRemoveDocument}
-                            className="h-7 px-2 text-[11px]"
-                        >
-                            Remove
-                        </Button>
+                {activeDocuments.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                        {activeDocuments.map((doc) => (
+                            <div
+                                key={doc.documentId}
+                                className="flex items-center justify-between gap-2 rounded-xl border border-primary/20 bg-primary/5 px-2 py-1"
+                            >
+                                <div className="flex items-center gap-2 text-[10px] text-primary font-medium min-w-0">
+                                    <FileText className="h-3 w-3" />
+                                    <span className="truncate max-w-[120px] sm:max-w-[180px]">
+                                        {doc.fileName}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => onRemoveDocument(doc.documentId)}
+                                    className="text-primary/70 hover:text-primary transition-colors font-bold text-xs"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 )}
 
@@ -100,8 +106,8 @@ export default function ChatInput({
                 <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-card/5 backdrop-blur-xl">
                     <Input
                         placeholder={
-                            activeDocument
-                                ? 'Ask questions about your uploaded PDF...'
+                            activeDocuments.length > 0
+                                ? 'Ask questions about your uploaded materials...'
                                 : 'Ask Izabi to generate something or explain a topic...'
                         }
                         value={inputValue}

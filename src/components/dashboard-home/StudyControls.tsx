@@ -43,7 +43,7 @@ export const StudyControls = ({
     };
 
     return (
-        <Card className="glass border-foreground/5 rounded-[40px] shadow-2xl overflow-hidden relative border">
+        <Card className="glass border-foreground/5 rounded-[24px] sm:rounded-[40px] shadow-2xl overflow-hidden relative border">
             <div id="study-modes-grid" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-px bg-foreground/5">
                 {MODULE_CARDS.map((module) => (
                     <ModuleCard
