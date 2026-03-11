@@ -45,7 +45,7 @@ const FAQ = () => {
                 },
                 {
                     q: 'Are there upload limits?',
-                    a: 'Yes. Upload limits depend on your plan, and higher plans allow more daily uploads.',
+                    a: 'Yes. The current per-file upload cap is 25MB. Daily upload limits still depend on your plan.',
                 },
             ],
         },

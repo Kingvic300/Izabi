@@ -38,7 +38,8 @@ interface PDFUploadSectionProps {
     className?: string;
 }
 
-const UPLOAD_LIMIT_MB = 500;
+const UPLOAD_LIMIT_MB =
+    Number(import.meta.env.VITE_UPLOAD_LIMIT_MB) || 25;
 const LARGE_FILE_NOTICE_MB = 100;
 
 const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
