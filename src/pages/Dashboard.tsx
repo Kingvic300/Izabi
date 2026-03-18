@@ -67,23 +67,11 @@ const Dashboard = () => {
                     <AppSidebar />
                     <div className="flex-1 min-w-0 flex flex-col relative z-10">
                         {/* Modern Header */}
-                        <header className="h-16 sm:h-20 border-b border-foreground/5 bg-background/50 backdrop-blur-xl px-3 sm:px-6 md:px-8 xl:px-10 flex items-center justify-between shrink-0">
-                            <div className="flex items-center space-x-3 sm:space-x-6 min-w-0">
-                                <SidebarTrigger className="text-muted-foreground hover:text-primary transition-colors scale-125" />
-                                <Separator
-                                    orientation="vertical"
-                                    className="h-8 bg-card/10 hidden sm:block"
-                                />
-                                <div className="hidden sm:flex flex-col">
-                                    <h1 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">
-                                        System Node
-                                    </h1>
-                                    <p className="text-lg font-bold tracking-tight">
-                                        Izabi Workspace
-                                    </p>
-                                </div>
-                            </div>
+                        <header className="h-20 border-b border-foreground/5 bg-background/50 backdrop-blur-xl px-4 sm:px-8 md:px-12 flex items-center justify-between shrink-0 relative z-20">
+                            <SidebarTrigger className="text-muted-foreground hover:text-primary transition-colors scale-125" />
+                            <div />
                         </header>
+
 
                         {/* Main Content Area */}
                         <main

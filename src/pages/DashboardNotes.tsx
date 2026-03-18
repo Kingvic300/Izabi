@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { Clock, FileText, FolderOpen, Filter } from 'lucide-react';
 import { useAppToast } from '@/hooks/useAppToast';
 import { formValidation } from '@/lib/formValidation';
 import { api } from '@/lib/apiClient';
@@ -167,6 +168,13 @@ export default function DashboardNotes() {
         if (groupFilter === 'all') return 'All Notes';
         return groupMap.get(groupFilter) || 'Group';
     }, [groupFilter, groupMap]);
+    const totalNotes = notes.length;
+    const totalGroups = groups.length;
+    const recentNotes = useMemo(() => {
+        return [...notes]
+            .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+            .slice(0, 3);
+    }, [notes]);
 
     const resetImportState = () => {
         setImportFile(null);
@@ -603,11 +611,11 @@ export default function DashboardNotes() {
     if (isLoading) {
         return (
             <div className="space-y-6">
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gradient">
+                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
                     My Notes
                 </h1>
                 <p className="text-muted-foreground">
-                    Manage and organize all your study notes in one place.
+                    Organize, search, and create study notes with ease.
                 </p>
                 <PageLoader
                     variant="skeleton-cards"
@@ -621,60 +629,142 @@ export default function DashboardNotes() {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
+            className="space-y-8 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
-            <NotesHeader
-                isAddingNote={isAddingNote}
-                onImport={() => openImportModal('import')}
-                onScan={() => openImportModal('scan')}
-                onCreate={() => setIsAddingNote(true)}
-            />
+            <div className="notes-header space-y-6">
+                <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                            Notes
+                        </span>
+                    </div>
+                    <NotesHeader
+                        isAddingNote={isAddingNote}
+                        onImport={() => openImportModal('import')}
+                        onScan={() => openImportModal('scan')}
+                        onCreate={() => setIsAddingNote(true)}
+                    />
+                </div>
 
-            <GroupFilterBar
-                groups={groups}
-                groupFilter={groupFilter}
-                isNotesRefreshing={isNotesRefreshing}
-                onFilterChange={setGroupFilter}
-                onOpenGroupModal={() => setGroupModalOpen(true)}
-            />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="glass-card border-foreground/10 rounded-2xl p-5">
+                        <div className="flex items-center justify-between">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <FileText size={18} />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                Total Notes
+                            </span>
+                        </div>
+                        <div className="mt-4 text-2xl font-black tracking-tight">
+                            {totalNotes}
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium">
+                            Notes saved in your workspace
+                        </p>
+                    </div>
 
-            {isAddingNote && (
-                <NewNoteForm
-                    draft={newNote}
+                    <div className="glass-card border-foreground/10 rounded-2xl p-5">
+                        <div className="flex items-center justify-between">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <FolderOpen size={18} />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                Folders
+                            </span>
+                        </div>
+                        <div className="mt-4 text-2xl font-black tracking-tight">
+                            {totalGroups}
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium">
+                            Organize notes into groups
+                        </p>
+                    </div>
+
+                    <div className="glass-card border-foreground/10 rounded-2xl p-5">
+                        <div className="flex items-center justify-between">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <Clock size={18} />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                Recent Updates
+                            </span>
+                        </div>
+                        <div className="mt-4 space-y-2">
+                            {recentNotes.length === 0 ? (
+                                <p className="text-xs text-muted-foreground font-medium">
+                                    No notes updated yet.
+                                </p>
+                            ) : (
+                                recentNotes.map((note) => (
+                                    <div
+                                        key={note.id}
+                                        className="text-xs text-foreground/80 font-semibold truncate"
+                                    >
+                                        {note.title}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6 space-y-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground">
+                        <Filter size={12} className="text-primary" />
+                        {activeGroupLabel}
+                    </div>
+                    <GroupFilterBar
+                        groups={groups}
+                        groupFilter={groupFilter}
+                        isNotesRefreshing={isNotesRefreshing}
+                        onFilterChange={setGroupFilter}
+                        onOpenGroupModal={() => setGroupModalOpen(true)}
+                    />
+                </div>
+
+                {isAddingNote && (
+                    <NewNoteForm
+                        draft={newNote}
+                        groups={groups}
+                        errors={errors}
+                        onChange={(updates) =>
+                            setNewNote((prev) => ({ ...prev, ...updates }))
+                        }
+                        onCancel={() => setIsAddingNote(false)}
+                        onSave={handleCreateNote}
+                        onOpenGroupModal={() => setGroupModalOpen(true)}
+                    />
+                )}
+
+                <NotesGrid
+                    notes={notes}
                     groups={groups}
-                    errors={errors}
-                    onChange={(updates) =>
-                        setNewNote((prev) => ({ ...prev, ...updates }))
+                    groupMap={groupMap}
+                    groupFilter={groupFilter}
+                    activeGroupLabel={activeGroupLabel}
+                    editingId={editingId}
+                    savingId={savingId}
+                    deleteConfirm={deleteConfirm}
+                    onEditNote={setEditingId}
+                    onReadNote={setReadingNote}
+                    onDeleteConfirmChange={setDeleteConfirm}
+                    onDeleteNote={handleDeleteNote}
+                    onSaveNote={handleUpdateNote}
+                    onUpdateDraft={(noteId, updates) =>
+                        setNotes((prev) =>
+                            prev.map((note) =>
+                                note.id === noteId
+                                    ? { ...note, ...updates }
+                                    : note,
+                            ),
+                        )
                     }
-                    onCancel={() => setIsAddingNote(false)}
-                    onSave={handleCreateNote}
-                    onOpenGroupModal={() => setGroupModalOpen(true)}
+                    onCreateNote={() => setIsAddingNote(true)}
                 />
-            )}
-
-            <NotesGrid
-                notes={notes}
-                groups={groups}
-                groupMap={groupMap}
-                groupFilter={groupFilter}
-                activeGroupLabel={activeGroupLabel}
-                editingId={editingId}
-                savingId={savingId}
-                deleteConfirm={deleteConfirm}
-                onEditNote={setEditingId}
-                onReadNote={setReadingNote}
-                onDeleteConfirmChange={setDeleteConfirm}
-                onDeleteNote={handleDeleteNote}
-                onSaveNote={handleUpdateNote}
-                onUpdateDraft={(noteId, updates) =>
-                    setNotes((prev) =>
-                        prev.map((note) =>
-                            note.id === noteId ? { ...note, ...updates } : note,
-                        ),
-                    )
-                }
-                onCreateNote={() => setIsAddingNote(true)}
-            />
+            </div>
 
             <GroupManagerDialog
                 open={groupModalOpen}

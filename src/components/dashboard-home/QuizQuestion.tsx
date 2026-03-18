@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Lightbulb } from 'lucide-react';
 import { Question } from '@/components/dashboard-home/types';
 import { cn } from '@/lib/utils';
 
@@ -30,10 +31,27 @@ export const QuizQuestion = ({
     onShortAnswerChange,
 }: QuizQuestionProps) => {
     const isShort = question.questionType?.toLowerCase() === 'short_answer';
+    const [showHint, setShowHint] = useState(false);
+
+    const hintText = (() => {
+        if (isShort && question.answer) {
+            const firstWord = question.answer.split(/\s+/)[0];
+            return `Starts with "${firstWord}"`;
+        }
+        if (question.answer && question.options?.length) {
+            const idx = question.options.findIndex(
+                (opt) =>
+                    opt.trim().toLowerCase() ===
+                    question.answer!.trim().toLowerCase(),
+            );
+            if (idx >= 0) return `Correct option is near choice ${String.fromCharCode(65 + idx)}`;
+        }
+        return null;
+    })();
 
     return (
         <Card className="bg-card/[0.02] border-foreground/5 rounded-2xl md:rounded-3xl p-4 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-3 md:gap-6">
                 <div className="space-y-2 md:space-y-3">
                     <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
                         Question {index + 1}
@@ -42,6 +60,18 @@ export const QuizQuestion = ({
                         {question.question}
                     </h4>
                 </div>
+                {hintText && !showResults && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="rounded-full gap-2 text-xs font-bold"
+                        onClick={() => setShowHint((v) => !v)}
+                    >
+                        <Lightbulb size={14} />
+                        {showHint ? 'Hide Hint' : 'Hint'}
+                    </Button>
+                )}
                 {showResults && (
                     <div
                         className={cn(
@@ -58,7 +88,7 @@ export const QuizQuestion = ({
             </div>
 
             {!isShort ? (
-                <div className="grid grid-cols-1 gap-3 md:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 w-full">
                     {question.options?.map((opt, idx) => {
                         const isSelected = userAnswer === opt;
                         const isCorrect = showResults && opt === question.answer;
@@ -70,7 +100,8 @@ export const QuizQuestion = ({
                                 onClick={() => onAnswerSelect(opt)}
                                 disabled={showResults}
                                 className={cn(
-                                    "h-auto py-4 md:py-6 px-4 md:px-8 justify-start text-left rounded-2xl md:rounded-3xl transition-all duration-300 font-bold border border-foreground/5 w-full touch-manipulation",
+                                    "h-auto min-h-[72px] py-4 md:py-6 px-4 md:px-6 justify-start text-left rounded-2xl md:rounded-3xl transition-all duration-300 font-bold border border-foreground/5 w-full touch-manipulation",
+                                    "whitespace-normal break-words",
                                     isSelected && 'bg-primary text-primary-foreground shadow-glow',
                                     !isSelected && 'bg-card/5 hover:bg-card/10 text-primary-foreground/70',
                                     isCorrect && 'bg-primary/20 border-primary/50 text-primary !bg-opacity-20',
@@ -84,7 +115,7 @@ export const QuizQuestion = ({
                                     )}>
                                         {String.fromCharCode(65 + idx)}
                                     </div>
-                                    <span className="text-[15px] sm:text-base break-words flex-1">
+                                    <span className="text-[15px] sm:text-base leading-snug break-words flex-1">
                                         {opt}
                                     </span>
                                 </div>
@@ -101,6 +132,11 @@ export const QuizQuestion = ({
                         disabled={showResults}
                         className="rounded-2xl md:rounded-3xl h-14 md:h-16 bg-card/5 border-foreground/5 focus:bg-card/10 transition-all font-bold px-4 md:px-8 text-[15px] sm:text-base text-foreground w-full"
                     />
+                    {showHint && hintText && !showResults && (
+                        <div className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-2xl px-4 py-3">
+                            {hintText}
+                        </div>
+                    )}
                     {showResults && !isCorrect && (
                         <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5">
                             <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">
@@ -111,6 +147,11 @@ export const QuizQuestion = ({
                             </p>
                         </div>
                     )}
+                </div>
+            )}
+            {!isShort && showHint && hintText && !showResults && (
+                <div className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-2xl px-4 py-3">
+                    {hintText}
                 </div>
             )}
             

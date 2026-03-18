@@ -53,8 +53,8 @@ const DashboardProgress = () => {
     if (isLoading) {
         return (
             <div className="space-y-6">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter italic bg-gradient-to-r from-blue-500 to-emerald-500 bg-clip-text text-transparent">
-                    Learning Progress
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+                    Your Performance
                 </h1>
                 <p className="text-muted-foreground">
                     Track your learning journey and see your improvement over
@@ -72,28 +72,69 @@ const DashboardProgress = () => {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
+            className="space-y-8 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
-            <ProgressHeader studyStreak={progressData.studyStreak} />
+            <div className="prog-header space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                        Progress
+                    </span>
+                </div>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div className="space-y-2">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+                            Your Performance
+                        </h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
+                            Visualize your study momentum, streaks, and weekly
+                            growth at a glance.
+                        </p>
+                    </div>
+                </div>
+                <div className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6">
+                    <ProgressHeader studyStreak={progressData.studyStreak} />
+                </div>
+            </div>
 
             {/* Usage & Subscription Banner */}
             {usage && (
-                <UsageBanner usage={usage} subscription={subscription} />
+                <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+                    <UsageBanner usage={usage} subscription={subscription} />
+                </div>
             )}
 
-            <ProgressStatCards progressData={progressData} />
+            <section className="space-y-4">
+                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                    Performance Snapshot
+                </div>
+                <ProgressStatCards progressData={progressData} />
+            </section>
 
-            {/* Multi-Streak Tracks */}
-            <ActivityStreaks
-                activityStreaks={progressData.activityStreaks}
-            />
+            <section className="space-y-4">
+                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                    Streaks
+                </div>
+                <ActivityStreaks
+                    activityStreaks={progressData.activityStreaks}
+                />
+            </section>
 
-            <ProgressCharts
-                chartData={chartData}
-                subjectData={subjectData}
-            />
+            <section className="space-y-4">
+                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                    Insights
+                </div>
+                <ProgressCharts
+                    chartData={chartData}
+                    subjectData={subjectData}
+                />
+            </section>
 
-            <AchievementsSection progressData={progressData} />
+            <section className="space-y-4">
+                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                    Achievements
+                </div>
+                <AchievementsSection progressData={progressData} />
+            </section>
         </div>
     );
 };

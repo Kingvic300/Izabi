@@ -256,7 +256,7 @@ const Signup = () => {
 
             <div
                 ref={cardRef}
-                className="w-full max-w-[520px] space-y-6 sm:space-y-8 relative z-10"
+                className="w-full max-w-full sm:max-w-[520px] space-y-6 sm:space-y-8 relative z-10 px-1"
             >
                 {/* Branding */}
                 <div className="text-center space-y-2 sm:space-y-3">
@@ -499,7 +499,6 @@ const Signup = () => {
                                                 'Google sign-up failed. Please try again or use the signup form.',
                                         });
                                     }}
-                                    useOneTap
                                     label="Sign up with Google"
                                 />
                             </div>

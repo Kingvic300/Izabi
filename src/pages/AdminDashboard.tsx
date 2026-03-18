@@ -463,60 +463,81 @@ export default function AdminDashboard() {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-10 w-full pb-6 md:pb-20 px-4 sm:px-6 md:px-6 lg:px-8 xl:px-10 pt-4 md:pt-8 max-w-[1700px] mx-auto"
+            className="space-y-8 md:space-y-12 w-full pb-6 md:pb-20 px-4 sm:px-6 md:px-6 lg:px-8 xl:px-10 pt-4 md:pt-10"
         >
-            <AdminDashboardHeader
-                onOpenAnnouncement={() => setIsAnnouncementDialogOpen(true)}
-                onSyncRegistry={handleSyncRegistry}
-                onExportReport={handleExportReport}
-                isSendingAnnouncement={isSendingAnnouncement}
-                isSyncingRegistry={isSyncingRegistry}
-                isExportingReport={isExportingReport}
-            />
-
-            <AdminQuickStats stats={stats} />
-
-            <Tabs defaultValue="overview" className="w-full">
-                <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
-                    <TabsList className="h-14 bg-card/5 border border-foreground/10 p-1.5 rounded-2xl mb-4 w-full md:w-auto inline-flex min-w-max">
-                        <TabsTrigger
-                            value="overview"
-                            className="flex-1 md:flex-none rounded-xl px-6 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-                        >
-                            Overview
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="users"
-                            className="flex-1 md:flex-none rounded-xl px-6 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-                        >
-                            User Registry
-                        </TabsTrigger>
-                    </TabsList>
-                </div>
-
-                <TabsContent value="overview">
-                    <AdminOverviewTab
-                        chartData={chartData}
-                        recentActivities={recentActivities}
-                        onViewUser={handleViewUser}
-                    />
-                </TabsContent>
-
-                <TabsContent value="users">
-                    <AdminUsersTab
-                        filteredUsers={filteredUsers}
-                        searchQuery={searchQuery}
-                        onSearchChange={setSearchQuery}
-                        showActiveOnly={showActiveOnly}
-                        onToggleActiveOnly={() =>
-                            setShowActiveOnly(!showActiveOnly)
+            <div className="space-y-6">
+                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+                    <div className="space-y-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-[10px] uppercase tracking-widest font-bold">
+                            Admin Command Center
+                        </div>
+                        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                            System <span className="text-gradient">Intelligence</span>
+                        </h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
+                            Live visibility into users, growth, and platform operations.
+                        </p>
+                    </div>
+                    <AdminDashboardHeader
+                        onOpenAnnouncement={() =>
+                            setIsAnnouncementDialogOpen(true)
                         }
-                        onFilterAction={handleFilterAction}
-                        onViewUser={handleViewUser}
-                        onDeleteUser={handleDeleteUser}
+                        onSyncRegistry={handleSyncRegistry}
+                        onExportReport={handleExportReport}
+                        isSendingAnnouncement={isSendingAnnouncement}
+                        isSyncingRegistry={isSyncingRegistry}
+                        isExportingReport={isExportingReport}
                     />
-                </TabsContent>
-            </Tabs>
+                </div>
+            </div>
+
+            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+                <AdminQuickStats stats={stats} />
+            </div>
+
+            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+                <Tabs defaultValue="overview" className="w-full">
+                    <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
+                        <TabsList className="h-14 bg-card/5 border border-foreground/10 p-1.5 rounded-2xl mb-4 w-full md:w-auto inline-flex min-w-max">
+                            <TabsTrigger
+                                value="overview"
+                                className="flex-1 md:flex-none rounded-xl px-6 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+                            >
+                                Overview
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="users"
+                                className="flex-1 md:flex-none rounded-xl px-6 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+                            >
+                                User Registry
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
+
+                    <TabsContent value="overview">
+                        <AdminOverviewTab
+                            chartData={chartData}
+                            recentActivities={recentActivities}
+                            onViewUser={handleViewUser}
+                        />
+                    </TabsContent>
+
+                    <TabsContent value="users">
+                        <AdminUsersTab
+                            filteredUsers={filteredUsers}
+                            searchQuery={searchQuery}
+                            onSearchChange={setSearchQuery}
+                            showActiveOnly={showActiveOnly}
+                            onToggleActiveOnly={() =>
+                                setShowActiveOnly(!showActiveOnly)
+                            }
+                            onFilterAction={handleFilterAction}
+                            onViewUser={handleViewUser}
+                            onDeleteUser={handleDeleteUser}
+                        />
+                    </TabsContent>
+                </Tabs>
+            </div>
 
             <AdminUserDetailsSheet
                 open={isSheetOpen}

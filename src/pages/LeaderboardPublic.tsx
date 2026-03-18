@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { Trophy, Flame, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,6 +14,7 @@ import {
 import { Podium } from '@/components/dashboard-leaderboard/Podium';
 import { LeaderboardTable } from '@/components/dashboard-leaderboard/LeaderboardTable';
 import { useLocation } from 'react-router-dom';
+import { getLeaderboardSocket } from '@/lib/leaderboardSocket';
 
 export default function LeaderboardPublic() {
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardData>({
@@ -30,21 +31,33 @@ export default function LeaderboardPublic() {
         return params.get('userId');
     }, [location.search]);
 
-    useEffect(() => {
-        const fetchLeaderboard = async () => {
-            try {
-                const res = await api.getPublicLeaderboard(sharedUserId);
-                if (res.success && res.data) {
-                    setLeaderboardData(res.data);
-                }
-            } catch (error) {
-                console.error('Failed to fetch leaderboard', error);
-            } finally {
-                setIsLoading(false);
+    const fetchLeaderboard = useCallback(async () => {
+        try {
+            const res = await api.getPublicLeaderboard(sharedUserId);
+            if (res.success && res.data) {
+                setLeaderboardData(res.data);
             }
-        };
-        fetchLeaderboard();
+        } catch (error) {
+            console.error('Failed to fetch leaderboard', error);
+        } finally {
+            setIsLoading(false);
+        }
     }, [sharedUserId]);
+
+    useEffect(() => {
+        fetchLeaderboard();
+    }, [fetchLeaderboard]);
+
+    useEffect(() => {
+        const socket = getLeaderboardSocket();
+        const handleUpdate = () => {
+            fetchLeaderboard();
+        };
+        socket.on('leaderboard:updated', handleUpdate);
+        return () => {
+            socket.off('leaderboard:updated', handleUpdate);
+        };
+    }, [fetchLeaderboard]);
 
     useGSAP(() => {
         if (!isLoading) {

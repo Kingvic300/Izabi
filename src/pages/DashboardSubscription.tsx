@@ -151,22 +151,30 @@ const DashboardSubscription = () => {
     return (
         <div className="min-h-screen w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-10 pb-24 sm:pb-32">
             <ErrorBoundary>
-                <div className="space-y-6 md:space-y-12">
+                <div className="space-y-8 md:space-y-12">
                     {/* Header */}
-                    <div className="text-center space-y-2 md:space-y-4">
-                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-tight">
-                            Subscription{' '}
-                            <span className="text-gradient">Plans</span>
-                        </h1>
-                        <p className="text-muted-foreground text-sm md:text-lg max-w-2xl mx-auto px-4">
-                            Choose the plan that fits your learning needs.
-                            Manage your billing directly from this workspace.
-                        </p>
+                    <div className="space-y-6">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                                Subscription
+                            </span>
+                        </div>
+                        <div className="glass-card border-foreground/10 rounded-[28px] p-6 sm:p-8 text-center space-y-2 md:space-y-4">
+                            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-tight">
+                                Pick the plan that{' '}
+                                <span className="text-gradient">fits you</span>
+                            </h1>
+                            <p className="text-muted-foreground text-sm md:text-lg max-w-none px-4">
+                                Choose the plan that fits your learning needs.
+                                Manage your billing directly from this
+                                workspace.
+                            </p>
+                        </div>
                     </div>
 
                     {/* Current Usage Stats */}
                     {stats && (
-                        <div className="max-w-4xl mx-auto space-y-4">
+                        <div className="w-full space-y-4">
                             <Card className="glass border-primary/20 rounded-3xl overflow-hidden shadow-xl">
                                 <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 md:p-6 pb-2">
                                     <CardTitle className="flex items-center gap-3 text-lg md:text-xl">
@@ -304,7 +312,7 @@ const DashboardSubscription = () => {
                     )}
 
                     {/* Plans Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto pt-4 md:pt-8 px-2 md:px-0">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 w-full pt-4 md:pt-8 px-2 md:px-0">
                         {plans.map((plan, idx) => {
                             const Icon = plan.icon;
                             const isCurrent = plan.id === currentTier;
@@ -438,7 +446,7 @@ const DashboardSubscription = () => {
                     </div>
 
                     {/* Footer Note */}
-                    <div className="text-center text-sm text-muted-foreground max-w-2xl mx-auto space-y-4 pt-8 border-t border-foreground/5">
+                    <div className="glass-card border-foreground/10 rounded-[28px] p-6 sm:p-8 text-center text-sm text-muted-foreground max-w-none space-y-4">
                         <p className="font-bold text-foreground">
                             Terms & Conditions
                         </p>

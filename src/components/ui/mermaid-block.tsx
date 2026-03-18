@@ -44,6 +44,20 @@ export const MermaidBlock = ({ code }: MermaidBlockProps) => {
         let active = true;
 
         initializeMermaid();
+        try {
+            // Pre-parse to give clearer errors and avoid noisy console rejects
+            mermaid.parse(code);
+        } catch (err: any) {
+            if (!active) return;
+            console.error('Mermaid render failed', err);
+            setError(
+                typeof err?.str === 'string'
+                    ? `Diagram error: ${err.str}`
+                    : 'Diagram rendering failed.',
+            );
+            return;
+        }
+
         mermaid
             .render(id, code)
             .then(({ svg }) => {

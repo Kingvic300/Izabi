@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Flame, Trophy } from 'lucide-react';
+import { Flame, Trophy, Zap, Activity } from 'lucide-react';
 
 interface GamificationStripProps {
     streak: number;
@@ -11,23 +11,76 @@ interface GamificationStripProps {
 export const GamificationStrip = ({ streak, xp }: GamificationStripProps) => {
     return (
         <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col md:flex-row md:items-center justify-between gap-6"
         >
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
-                <div className="flex items-center gap-2">
-                    <Flame size={20} className="text-blue-500" fill="currentColor" />
-                    <span className="text-sm font-bold text-foreground">
-                        {streak} day streak
-                    </span>
+            <div className="flex flex-wrap items-center gap-6 sm:gap-10">
+                <div className="flex items-center gap-4 group">
+                    <div className="h-12 w-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 border border-orange-500/20 group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-orange-500/5">
+                        <Flame size={24} fill="currentColor" />
+                    </div>
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                            Active Streak
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-2xl font-black text-foreground antialiased italic">
+                                {streak} <span className="text-sm not-italic opacity-50">Days</span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Trophy size={20} className="text-blue-400" />
-                    <span className="text-sm font-bold text-foreground">
-                        {xp} XP
-                    </span>
+
+                <div className="h-10 w-px bg-foreground/5 hidden sm:block" />
+
+                <div className="flex items-center gap-4 group">
+                    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-primary/5">
+                        <Zap size={24} fill="currentColor" />
+                    </div>
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                            Knowledge XP
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-2xl font-black text-foreground antialiased italic">
+                                {xp.toLocaleString()} <span className="text-sm not-italic opacity-50">Pts</span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
+
+                <div className="h-10 w-px bg-foreground/5 hidden sm:block" />
+
+                <div className="flex items-center gap-4 group">
+                    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-primary/5">
+                        <Activity size={24} />
+                    </div>
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                            Study Velocity
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-2xl font-black text-foreground antialiased italic">
+                                High <span className="text-sm not-italic opacity-50">Mode</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-3 bg-foreground/5 rounded-2xl p-2 px-4 border border-foreground/5">
+                <div className="h-2 w-32 bg-foreground/10 rounded-full overflow-hidden">
+                    <motion.div 
+                       initial={{ width: 0 }}
+                       animate={{ width: '65%' }}
+                       transition={{ duration: 1, ease: 'easeOut' }}
+                       className="h-full bg-primary"
+                    />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">
+                    Level 12
+                </span>
             </div>
         </motion.div>
     );

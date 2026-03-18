@@ -4,6 +4,7 @@ import { ModuleCardId, ModuleCardStatus } from '@/components/dashboard-home/type
 import { useApiError } from '@/hooks/useApiError';
 import { useStudy } from '@/contexts/StudyContext';
 import { ENDPOINT_TO_MODULE_ID } from '@/components/dashboard-home/dashboard';
+import { normalizeSummaryContent } from '@/lib/summaryUtils';
 
 export const useJobPolling = () => {
     const [isProcessing, setIsProcessing] = useState(false);
@@ -20,12 +21,20 @@ export const useJobPolling = () => {
         const moduleId = ENDPOINT_TO_MODULE_ID[endpoint];
         let attempts = 0;
         const maxAttempts = 120;
-        const interval = setInterval(async () => {
+        const baseDelay = 1500;
+        const maxDelay = 12000;
+
+        const scheduleNext = (fn: () => void) => {
+            const exponent = Math.min(Math.floor(attempts / 4), 4);
+            const delay = Math.min(maxDelay, baseDelay * Math.pow(2, exponent));
+            return window.setTimeout(fn, delay);
+        };
+
+        const tick = async () => {
             attempts += 1;
 
             if (attempts > maxAttempts) {
                 setIsProcessing(false);
-                clearInterval(interval);
                 if (moduleId) {
                     setModuleStatuses((prev) => ({
                         ...prev,
@@ -46,7 +55,6 @@ export const useJobPolling = () => {
 
                 if (job?.status === 'COMPLETED') {
                     setIsProcessing(false);
-                    clearInterval(interval);
                     if (moduleId) {
                         setModuleStatuses((prev) => ({
                             ...prev,
@@ -57,7 +65,7 @@ export const useJobPolling = () => {
                     const result = job.result;
                     if (endpoint === 'summarize') {
                         updateSession({
-                            summary: result?.summary || '',
+                            summary: normalizeSummaryContent(result?.summary),
                             studyGuide: '',
                             questions: [],
                             flashcards: [],
@@ -86,7 +94,6 @@ export const useJobPolling = () => {
                     }
                 } else if (job?.status === 'FAILED') {
                     setIsProcessing(false);
-                    clearInterval(interval);
                     if (moduleId) {
                         setModuleStatuses((prev) => ({
                             ...prev,
@@ -99,11 +106,12 @@ export const useJobPolling = () => {
                             'We could not generate your study material. Please try again.',
                         type: 'api',
                     });
+                } else {
+                    scheduleNext(tick);
                 }
             } catch {
                 if (attempts >= maxAttempts) {
                     setIsProcessing(false);
-                    clearInterval(interval);
                     if (moduleId) {
                         setModuleStatuses((prev) => ({
                             ...prev,
@@ -115,9 +123,13 @@ export const useJobPolling = () => {
                             'Connection issue while checking progress. Please try again.',
                         type: 'api',
                     });
+                } else {
+                    scheduleNext(tick);
                 }
             }
-        }, 1500);
+        };
+
+        scheduleNext(tick);
     };
 
     return {

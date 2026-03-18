@@ -32,7 +32,7 @@ export const MODULE_CARDS: Array<{
         icon: FileText,
         label: 'Study Guide',
         desc: 'Structured notes',
-        color: 'text-emerald-400',
+        color: 'text-primary',
         endpoint: 'generate-study-material',
     },
     {

@@ -18,7 +18,7 @@ export default function ProfileHeader({
         <div className="profile-header flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-2">
-                    My <span className="text-gradient">Profile</span>
+                    Your <span className="text-gradient">scholar profile</span>
                 </h1>
                 <p className="text-muted-foreground font-medium text-base sm:text-lg">
                     Manage your digital scholar identity

@@ -48,17 +48,24 @@ export default function DashboardSupport() {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 sm:space-y-8 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
+            className="space-y-8 sm:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
             {/* Header Section */}
-            <div className="page-header space-y-4">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter leading-tight">
-                    Contact <span className="text-gradient">Support</span>
-                </h1>
-                <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium max-w-2xl leading-relaxed">
-                    Need help or have questions? Reach out to our support team
-                    directly. We are here to assist you.
-                </p>
+            <div className="page-header space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                        Support
+                    </span>
+                </div>
+                <div className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6 space-y-2">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter leading-tight">
+                        We’ve got you <span className="text-gradient">covered</span>
+                    </h1>
+                    <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium max-w-none leading-relaxed">
+                        Need help or have questions? Reach out to our support
+                        team directly. We are here to assist you.
+                    </p>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -77,9 +84,10 @@ export default function DashboardSupport() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-8 pt-2 space-y-4">
-                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 font-mono text-sm md:text-base font-bold truncate">
-                            victor7ishola@gmail.com
-                        </div>
+                        <p className="text-sm text-muted-foreground font-medium">
+                            Reach us directly by email for account, billing, or
+                            study assistance.
+                        </p>
                         <Button
                             className="w-full h-12 rounded-xl font-bold gap-2"
                             onClick={() =>
@@ -107,9 +115,9 @@ export default function DashboardSupport() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-8 pt-2 space-y-4">
-                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 font-mono text-sm md:text-base font-bold truncate">
-                            +234 814 478 2521
-                        </div>
+                        <p className="text-sm text-muted-foreground font-medium">
+                            Chat with support on WhatsApp for faster responses.
+                        </p>
                         <Button
                             className="w-full h-12 rounded-xl font-bold gap-2 bg-green-600 hover:bg-green-500 text-white"
                             onClick={() =>
@@ -127,7 +135,7 @@ export default function DashboardSupport() {
             </div>
 
             {/* Additional Info / FAQ Link could go here */}
-            <div className="contact-card bg-card/5 border border-foreground/5 rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
+            <div className="contact-card glass-card border-foreground/10 rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
                 <div className="space-y-2 text-center md:text-left">
                     <h3 className="text-2xl font-bold flex items-center justify-center md:justify-start gap-3">
                         <HelpCircle className="text-primary" />

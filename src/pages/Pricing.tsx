@@ -129,7 +129,7 @@ const Pricing = () => {
                                 key={i}
                                 className={`pricing-card p-6 sm:p-10 transition-all relative overflow-hidden border-foreground/5 flex flex-col ${
                                     plan.highlighted
-                                        ? 'glass shadow-[0_0_80px_rgba(59,130,246,0.15)] ring-2 ring-primary md:scale-110 z-20 py-10 sm:py-16'
+                                        ? 'glass shadow-[0_0_80px_rgba(59,130,246,0.15)] ring-2 ring-primary lg:scale-110 z-20 py-10 sm:py-16'
                                         : 'glass bg-card/[0.02]'
                                 }`}
                             >

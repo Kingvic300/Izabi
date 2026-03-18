@@ -63,6 +63,10 @@ export default function AdminUserDetailsSheet({
         userDetails?.user?.email?.[0] ||
         'U';
     const selectedUserEmail = userDetails?.user?.email || 'No email on file';
+    const selectedUserRole =
+        (userDetails?.user?.role || 'USER').toString().toUpperCase();
+    const isVerified = Boolean(userDetails?.user?.isVerified);
+    const subscriptionStatus = userDetails?.user?.subscriptionStatus;
     const joinedLabel = userDetails?.user?.createdAt
         ? new Date(userDetails.user.createdAt).toLocaleDateString()
         : '—';
@@ -74,6 +78,10 @@ export default function AdminUserDetailsSheet({
         : 'No activity yet';
     const studyStats = userDetails?.user?.studyStats || {};
     const petProfile = userDetails?.user?.pet;
+    const totalStudyMinutes = userDetails?.user?.totalStudyMinutes || 0;
+    const dailyPoints = userDetails?.user?.dailyPoints || 0;
+    const studyLevel = userDetails?.user?.level || 0;
+    const streakFreezes = userDetails?.user?.streakFreezes || 0;
     const signalCount = userDetails?.missingActions?.length || 0;
     const hasSignals = signalCount > 0;
     const targetUserId = userDetails?.user?.id;
@@ -85,6 +93,10 @@ export default function AdminUserDetailsSheet({
         isAdmin &&
         !isTargetAdmin &&
         (!currentUserId || currentUserId !== targetUserId);
+    const formattedMinutes =
+        totalStudyMinutes >= 60
+            ? `${(totalStudyMinutes / 60).toFixed(1)} hrs`
+            : `${totalStudyMinutes} mins`;
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
@@ -175,6 +187,33 @@ export default function AdminUserDetailsSheet({
                                                 >
                                                     {selectedUserEmail}
                                                 </Badge>
+                                                <Badge
+                                                    variant="outline"
+                                                    className="border-foreground/10 bg-card/5 text-[11px] font-bold uppercase tracking-widest"
+                                                >
+                                                    {selectedUserRole}
+                                                </Badge>
+                                                <Badge
+                                                    variant="outline"
+                                                    className={cn(
+                                                        'text-[11px] font-semibold',
+                                                        isVerified
+                                                            ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
+                                                            : 'border-amber-500/30 bg-amber-500/10 text-amber-200',
+                                                    )}
+                                                >
+                                                    {isVerified
+                                                        ? 'Verified'
+                                                        : 'Unverified'}
+                                                </Badge>
+                                                {subscriptionStatus ? (
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="border-foreground/10 bg-card/5 text-[11px] font-semibold capitalize"
+                                                    >
+                                                        {subscriptionStatus}
+                                                    </Badge>
+                                                ) : null}
                                                 <Badge className="bg-primary text-primary-foreground hover:bg-primary/80 border-none text-[11px] font-bold">
                                                     {userDetails.user.points ||
                                                         0}{' '}
@@ -276,6 +315,58 @@ export default function AdminUserDetailsSheet({
                             <div className="p-4 md:p-8 space-y-6 md:space-y-8">
                                 <div className="grid xl:grid-cols-[1fr_1.2fr] gap-6 md:gap-8">
                                     <div className="space-y-6">
+                                        <div className="rounded-3xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(15,23,42,0.4),_rgba(59,130,246,0.06))] p-5 md:p-6">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50 flex items-center gap-2">
+                                                    <ShieldCheck
+                                                        size={14}
+                                                        className="text-primary"
+                                                    />
+                                                    Account Snapshot
+                                                </h3>
+                                                <Badge
+                                                    variant="outline"
+                                                    className="border-foreground/10 bg-card/10 text-[10px] uppercase tracking-widest"
+                                                >
+                                                    Profile
+                                                </Badge>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
+                                                    <p className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                        Level
+                                                    </p>
+                                                    <p className="text-2xl font-bold">
+                                                        {studyLevel}
+                                                    </p>
+                                                </div>
+                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
+                                                    <p className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                        Daily XP
+                                                    </p>
+                                                    <p className="text-2xl font-bold">
+                                                        {dailyPoints}
+                                                    </p>
+                                                </div>
+                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
+                                                    <p className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                        Study Time
+                                                    </p>
+                                                    <p className="text-2xl font-bold">
+                                                        {formattedMinutes}
+                                                    </p>
+                                                </div>
+                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
+                                                    <p className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                        Streak Freezes
+                                                    </p>
+                                                    <p className="text-2xl font-bold">
+                                                        {streakFreezes}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div className="rounded-3xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(239,68,68,0.05),_rgba(15,23,42,0.2))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">
                                                 <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50 flex items-center gap-2">

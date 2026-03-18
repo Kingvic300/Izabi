@@ -446,55 +446,59 @@ const DashboardAIAssistant = () => {
     return (
         <div
             ref={containerRef}
-            className="space-y-4 md:space-y-8 w-full px-3 md:px-6 xl:px-8 pt-4 md:pt-6 pb-0 flex flex-col h-full min-h-0 overflow-hidden"
+            className="w-full px-3 md:px-6 xl:px-8 pt-4 md:pt-6 pb-0 flex flex-col h-full min-h-0 overflow-hidden"
         >
-            <ChatHeader
-                isUploadingPdf={isUploadingPdf}
-                isLoading={isLoading}
-                onStartNewChat={startNewChat}
-                onCopyTranscript={handleCopyTranscript}
-                onShareTranscript={handleShareTranscript}
-                pdfInputRef={pdfInputRef}
-                onPdfUpload={handleFileUploads}
-                onClearHistory={handleClearHistory}
-                chatSessions={chatSessions}
-                activeSessionId={activeSessionId}
-                onSelectSession={handleSelectSession}
-            />
+            <div className="flex flex-col min-h-0 gap-4 md:gap-6 flex-1">
+                <ChatHeader
+                    isUploadingPdf={isUploadingPdf}
+                    isLoading={isLoading}
+                    onStartNewChat={startNewChat}
+                    onCopyTranscript={handleCopyTranscript}
+                    onShareTranscript={handleShareTranscript}
+                    pdfInputRef={pdfInputRef}
+                    onPdfUpload={handleFileUploads}
+                    onClearHistory={handleClearHistory}
+                    chatSessions={chatSessions}
+                    activeSessionId={activeSessionId}
+                    onSelectSession={handleSelectSession}
+                />
 
-            <Card className="chat-card flex-1 min-h-0 flex flex-col overflow-hidden glass-card border-foreground/10 rounded-2xl shadow-xl md:shadow-2xl relative">
-                {/* Background decorative element */}
+                <Card className="chat-card flex-1 min-h-0 flex flex-col overflow-hidden glass-card border-foreground/10 rounded-2xl shadow-xl md:shadow-2xl relative">
+                    {/* Background decorative element */}
 
-                <CardContent className="flex-1 min-h-0 flex flex-col overflow-hidden p-0">
-                    <ChatMessages
-                        messages={messages}
-                        isLoading={isLoading}
-                        copiedMessageId={copiedMessageId}
-                        onCopyMessage={handleCopyMessage}
-                        onShareMessage={(content) =>
-                            handleShareText(content, 'Izabi message')
-                        }
-                        messagesEndRef={messagesEndRef}
-                    />
+                    <CardContent className="flex-1 min-h-0 flex flex-col overflow-hidden p-0">
+                        <ChatMessages
+                            messages={messages}
+                            isLoading={isLoading}
+                            copiedMessageId={copiedMessageId}
+                            onCopyMessage={handleCopyMessage}
+                            onShareMessage={(content) =>
+                                handleShareText(content, 'Izabi message')
+                            }
+                            messagesEndRef={messagesEndRef}
+                        />
 
-                    <ChatInput
-                        activeDocuments={activeDocuments}
-                        inputValue={inputValue}
-                        isLoading={isLoading}
-                        isUploadingPdf={isUploadingPdf}
-                        onInputChange={setInputValue}
-                        onKeyPress={handleKeyPress}
-                        onSend={handleSendMessage}
-                        onUploadClick={handlePdfTrigger}
-                        onRemoveDocument={(id) =>
-                            setActiveDocuments((prev) =>
-                                prev.filter((d) => d.documentId !== id),
-                            )
-                        }
-                        onSuggestionClick={redirectToDashboardUpload}
-                    />
-                </CardContent>
-            </Card>
+                        <ChatInput
+                            activeDocuments={activeDocuments}
+                            inputValue={inputValue}
+                            isLoading={isLoading}
+                            isUploadingPdf={isUploadingPdf}
+                            onInputChange={setInputValue}
+                            onKeyPress={handleKeyPress}
+                            onSend={handleSendMessage}
+                            onUploadClick={handlePdfTrigger}
+                            onRemoveDocument={(id) =>
+                                setActiveDocuments((prev) =>
+                                    prev.filter(
+                                        (d) => d.documentId !== id,
+                                    ),
+                                )
+                            }
+                            onSuggestionClick={redirectToDashboardUpload}
+                        />
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 };

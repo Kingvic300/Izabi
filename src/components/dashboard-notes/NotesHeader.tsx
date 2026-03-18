@@ -15,7 +15,7 @@ export default function NotesHeader({
     onCreate,
 }: NotesHeaderProps) {
     return (
-        <header className="notes-header flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <header className="notes-header flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-24">
             <div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter mb-2 text-gradient">
                     My Notes
@@ -25,7 +25,7 @@ export default function NotesHeader({
                 </p>
             </div>
             {!isAddingNote && (
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto md:mt-0 mt-6">
                     <Button
                         variant="outline"
                         onClick={onImport}

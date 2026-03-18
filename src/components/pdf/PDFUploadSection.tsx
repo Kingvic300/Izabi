@@ -289,502 +289,430 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                     onValueChange={setActiveTab}
                     className="w-full"
                 >
-                    <TabsContent
-                        key="load"
-                        value="load"
-                        className="m-0 outline-none"
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4 }}
-                            className="space-y-6 md:space-y-8"
-                        >
-                            {/* Header */}
-                            <div className="text-center space-y-2 sm:space-y-3 px-4">
-                                <motion.div
-                                    initial={{ scale: 0.8, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ delay: 0.1 }}
-                                    className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-primary/10 border border-primary/20"
-                                >
-                                    <Zap
-                                        size={16}
-                                        className="sm:w-5 sm:h-5 text-primary"
-                                        fill="currentColor"
-                                    />
-                                    <span className="font-bold text-xs sm:text-sm uppercase tracking-wider">
-                                        AI-Powered Study Generator
-                                    </span>
-                                </motion.div>
-                                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent px-2">
-                                    Study Material Setup
-                                </h2>
-                                <p className="text-muted-foreground text-xs sm:text-sm md:text-base max-w-2xl mx-auto px-4">
-                                    Choose your preferred method to generate
-                                    personalized study materials
-                                </p>
-                            </div>
-
-                            {/* Main Content - Two Column Grid on Desktop */}
-                            <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-                                {/* Option 1: Quick Topic Input */}
-                                <motion.div
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.2 }}
-                                    className="relative group"
-                                >
-                                    <div className="absolute -inset-0.5 bg-primary rounded-xl md:rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                                    <div className="relative h-full bg-card border border-foreground/10 rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 hover:border-primary/30 transition-all">
-                                        {/* Icon Header */}
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div className="space-y-1.5 sm:space-y-2 flex-1 min-w-0">
-                                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
-                                                    <FileText
-                                                        size={20}
-                                                        className="sm:w-6 sm:h-6 text-foreground"
-                                                    />
-                                                </div>
-                                                <h3 className="text-lg sm:text-xl font-bold">
-                                                    Type a Topic
-                                                </h3>
-                                                <p className="text-xs sm:text-sm text-muted-foreground">
-                                                    Quick generation from any
-                                                    subject
-                                                </p>
-                                            </div>
-                                            <div className="px-2 sm:px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] sm:text-xs font-bold shrink-0">
-                                                FASTEST
-                                            </div>
-                                        </div>
-
-                                        {/* Text Input */}
-                                        <div className="space-y-2 sm:space-y-3">
-                                            <textarea
-                                                value={topicText}
-                                                onChange={(e) =>
-                                                    setTopicText(e.target.value)
-                                                }
-                                                onKeyDown={handleKeyDown}
-                                                placeholder="E.g., Photosynthesis, World War II, Quantum Physics..."
-                                                className="w-full h-28 sm:h-32 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-card/5 border border-foreground/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm placeholder:text-muted-foreground/50"
-                                                maxLength={500}
-                                            />
-
-                                            <div className="flex items-center justify-between text-[10px] sm:text-xs">
-                                                <span className="text-muted-foreground/60">
-                                                    {topicText.length}/500
-                                                </span>
-                                                <span className="text-muted-foreground/40 hidden sm:inline">
-                                                    Enter to submit •
-                                                    Shift+Enter for new line
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Submit Button */}
-                                        <Button
-                                            onClick={handleTopicSubmit}
-                                            disabled={
-                                                !topicText.trim() ||
-                                                topicText.trim().length < 3
-                                            }
-                                            className="w-full h-11 sm:h-12 rounded-lg sm:rounded-xl bg-primary hover:bg-primary/90 text-foreground font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
-                                        >
-                                            <Zap
-                                                size={16}
-                                                className="sm:w-[18px] sm:h-[18px]"
-                                                fill="currentColor"
-                                            />
-                                            <span className="ml-2">
-                                                Generate Now
-                                            </span>
-                                        </Button>
-                                    </div>
-                                </motion.div>
-
-                                {/* Option 2: File Upload */}
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                    className="relative group"
-                                >
-                                    <div className="absolute -inset-0.5 bg-primary rounded-xl md:rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                                    <div className="relative h-full bg-card border border-foreground/10 rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 hover:border-primary/30 transition-all">
-                                        {/* Icon Header */}
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div className="space-y-1.5 sm:space-y-2 flex-1 min-w-0">
-                                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-primary/80 flex items-center justify-center shadow-lg shadow-primary/10 shrink-0">
-                                                    <Upload
-                                                        size={20}
-                                                        className="sm:w-6 sm:h-6 text-foreground"
-                                                    />
-                                                </div>
-                                                <h3 className="text-lg sm:text-xl font-bold">
-                                                    Upload Files{' '}
-                                                    <span className={cn(
-                                                        "text-xs ml-2 px-2 py-0.5 rounded-full border bg-card/60",
-                                                        uploadedFiles.length >= 5 ? "text-destructive border-destructive/20" : "text-primary border-primary/20"
-                                                    )}>
-                                                        {uploadedFiles.length}/5
-                                                    </span>
-                                                </h3>
-                                                <p className="text-xs sm:text-sm text-muted-foreground">
-                                                    PDF, images, documents &
-                                                    more
-                                                </p>
-                                                <p className="text-[11px] text-muted-foreground/80 mt-1">
-                                                    Max 5 files. One-by-one or all at once.
-                                                </p>
-                                                <p className="text-[11px] text-muted-foreground/80">
-                                                    Files above{' '}
-                                                    {LARGE_FILE_NOTICE_MB}
-                                                    MB may take longer to upload.
-                                                </p>
-                                            </div>
-                                            <div className="px-2 sm:px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] sm:text-xs font-bold shrink-0 whitespace-nowrap">
-                                                {UPLOAD_LIMIT_MB}MB Limit
-                                            </div>
-                                        </div>
-
-                                        {/* Upload Area */}
-                                        <input
-                                            type="file"
-                                            onChange={handleFileUpload}
-                                            className="hidden"
-                                            id="file-upload-redesign"
-                                            multiple
-                                            accept=".pdf,.docx,.doc,.txt,.csv,.md,.png,.jpg,.jpeg"
-                                        />
-                                        <label
-                                            htmlFor="file-upload-redesign"
-                                            className="block cursor-pointer"
-                                        >
-                                            <div className="relative border-2 border-dashed border-primary/20 hover:border-primary/50 rounded-xl sm:rounded-2xl p-4 sm:p-8 text-center transition-all group/upload bg-primary/[0.02] hover:bg-primary/[0.05] active:scale-[0.98]">
-                                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/upload:opacity-100 rounded-xl sm:rounded-2xl transition-opacity"></div>
-                                                <div className="relative space-y-2 sm:space-y-4">
-                                                    {uploadedFiles.length >= 5 ? (
-                                                        <>
-                                                            <div className="w-10 h-10 sm:w-16 sm:h-16 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
-                                                                <FileText
-                                                                     size={20}
-                                                                     className="sm:w-7 sm:h-7 text-destructive"
-                                                                 />
-                                                            </div>
-                                                            <div className="space-y-1">
-                                                                <p className="font-bold text-xs sm:text-sm text-destructive uppercase tracking-widest">
-                                                                     Limit Reached
-                                                                 </p>
-                                                                 <p className="text-[10px] sm:text-xs text-muted-foreground">
-                                                                     Max 5 documents per node
-                                                                 </p>
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <div className="w-10 h-10 sm:w-16 sm:h-16 mx-auto rounded-full border-2 border-dashed border-primary/30 flex items-center justify-center group-hover/upload:border-primary/50 group-hover/upload:scale-110 transition-all bg-primary/5">
-                                                                <Upload
-                                                                     size={20}
-                                                                     className="sm:w-7 sm:h-7 text-primary transition-colors"
-                                                                 />
-                                                            </div>
-                                                            <div className="space-y-1">
-                                                                <p className="font-bold text-xs sm:text-sm uppercase tracking-widest">
-                                                                    {uploadedFiles.length > 0 ? "Add Another Node" : "Ingest Document"}
-                                                                </p>
-                                                                <p className="text-[10px] sm:text-xs text-muted-foreground opacity-60">
-                                                                    {uploadedFiles.length > 0 ? `Stacking library (${uploadedFiles.length}/5)` : "Select PDF, Word, or Image"}
-                                                                </p>
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </label>
-
-                                        {/* Progress Bar for indexing */}
-                                        {uploadedFiles.length > 0 && scanProgress < 100 && (
-                                            <div className="space-y-2 px-1 sm:px-4 pt-2">
-                                                <div className="flex justify-between text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-                                                    <span className="flex items-center gap-2">
-                                                        <Sparkles size={10} className="text-primary animate-pulse" />
-                                                        Indexing source...
-                                                    </span>
-                                                    <span>{Math.round(scanProgress)}%</span>
-                                                </div>
-                                                <div className="w-full h-1 bg-primary/10 rounded-full overflow-hidden">
-                                                    <motion.div
-                                                        className="h-full bg-primary shadow-[0_0_10px_#10b981]"
-                                                        initial={{ width: 0 }}
-                                                        animate={{ width: `${scanProgress}%` }}
-                                                        transition={{ duration: 0.3 }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Quick File List in Upload Tab */}
-                                        {uploadedFiles.length > 0 && (
-                                            <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1 sm:pr-2 custom-scrollbar">
-                                                {uploadedFiles.map((file, idx) => (
-                                                    <div key={idx} className="flex items-center justify-between p-2 rounded-xl bg-primary/[0.03] border border-primary/5 text-[10px] sm:text-xs">
-                                                        <div className="flex items-center gap-2 truncate flex-1">
-                                                            <FileText size={12} className="text-primary/60 shrink-0" />
-                                                            <span className="truncate font-bold opacity-80">{file.name}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1 ml-2">
-                                                            <button 
-                                                                onClick={(e) => { e.preventDefault(); removeFile(idx); }}
-                                                                className="p-1.5 hover:bg-destructive/10 hover:text-destructive rounded-lg transition-all"
-                                                                title="Remove"
-                                                            >
-                                                                <Trash2 size={12} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        {/* Continue Button */}
-                                        {uploadedFiles.length > 0 &&
-                                            scanProgress === 100 && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    className="pt-2"
-                                                >
-                                                    <Button
-                                                        onClick={() =>
-                                                            setActiveTab(
-                                                                uploadedFiles.length === 1 && uploadedFiles[0].type ===
-                                                                    'application/pdf'
-                                                                    ? 'analyze'
-                                                                    : 'sync',
-                                                            )
-                                                        }
-                                                        className="w-full h-11 sm:h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] text-xs sm:text-sm uppercase tracking-widest flex items-center justify-center gap-2"
+                     <TabsContent
+                         key="load"
+                         value="load"
+                         className="m-0 outline-none"
+                     >
+                         <motion.div
+                             initial={{ opacity: 0, y: 20 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             transition={{ duration: 0.4 }}
+                             className="space-y-10"
+                         >
+                             {/* Main Content - Two Column/Stacked Hybrid */}
+                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                 {/* Primary: File Upload */}
+                                 <motion.div
+                                     initial={{ opacity: 0, x: -20 }}
+                                     animate={{ opacity: 1, x: 0 }}
+                                     transition={{ delay: 0.2 }}
+                                     className="relative group"
+                                 >
+                                     <div className="relative bg-foreground/[0.02] border border-foreground/5 rounded-[32px] p-8 space-y-8 shadow-2xl transition-all duration-500 hover:border-primary/20">
+                                         <div className="flex items-start justify-between">
+                                             <div className="space-y-2">
+                                                 <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-lg">
+                                                     <Upload size={24} />
+                                                 </div>
+                                                 <h3 className="text-2xl font-black tracking-tight mt-4">
+                                                     System <span className="text-primary italic">Files</span>
+                                                 </h3>
+                                                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                                                     {uploadedFiles.length}/5 Registered
+                                                 </p>
+                                             </div>
+                                             <div className="text-right">
+                                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">
+                                                     Max Capacity
+                                                 </span>
+                                                 <div className="text-xl font-black italic">
+                                                     {UPLOAD_LIMIT_MB}MB
+                                                 </div>
+                                             </div>
+                                         </div>
+ 
+                                         <input
+                                             type="file"
+                                             onChange={handleFileUpload}
+                                             className="hidden"
+                                             id="file-upload-redesign"
+                                             multiple
+                                             accept=".pdf,.docx,.doc,.txt,.csv,.md,.png,.jpg,.jpeg"
+                                         />
+                                         <label
+                                             htmlFor="file-upload-redesign"
+                                             className="block cursor-pointer group/label"
+                                         >
+                                             <div className="relative border-2 border-dashed border-foreground/10 group-hover/label:border-primary/40 rounded-[28px] p-10 text-center transition-all duration-500 bg-foreground/[0.01] group-hover/label:bg-primary/[0.03]">
+                                                 <div className="space-y-6">
+                                                     <div className="relative inline-block">
+                                                         <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-0 group-hover/label:opacity-100 transition-opacity" />
+                                                         <div className="relative w-16 h-16 mx-auto rounded-2xl border-2 border-dashed border-primary/40 flex items-center justify-center group-hover/label:scale-110 transition-all duration-500">
+                                                             <Upload size={28} className="text-primary" />
+                                                         </div>
+                                                     </div>
+                                                     <div className="space-y-2">
+                                                         <p className="font-black text-xs uppercase tracking-[0.4em]">
+                                                             {uploadedFiles.length > 0 ? 'Inject More Data' : 'Initialize Intake'}
+                                                         </p>
+                                                         <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest leading-relaxed">
+                                                             Drag & Drop or Click to Browse System Metadata
+                                                         </p>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </label>
+ 
+                                         {uploadedFiles.length > 0 && scanProgress < 100 && (
+                                             <div className="space-y-3 px-2">
+                                                 <div className="flex justify-between items-center">
+                                                     <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary animate-pulse flex items-center gap-2">
+                                                         <Sparkles size={12} fill="currentColor" />
+                                                         Analyzing Fragments...
+                                                     </span>
+                                                     <span className="text-xs font-black italic">{Math.round(scanProgress)}%</span>
+                                                 </div>
+                                                 <div className="w-full h-1.5 bg-foreground/5 rounded-full overflow-hidden">
+                                                     <motion.div
+                                                         className="h-full bg-primary"
+                                                         initial={{ width: 0 }}
+                                                         animate={{ width: `${scanProgress}%` }}
+                                                     />
+                                                 </div>
+                                             </div>
+                                         )}
+ 
+                                         {uploadedFiles.length > 0 && (
+                                             <div className="space-y-3 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+                                                 {uploadedFiles.map((file, idx) => (
+                                                     <motion.div 
+                                                        key={idx}
+                                                        initial={{ opacity: 0, x: -10 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        className="flex items-center justify-between p-4 rounded-2xl bg-foreground/5 border border-transparent hover:border-primary/20 transition-all duration-300 group/file"
                                                     >
-                                                        Parameter Setup
-                                                        <ArrowRight
-                                                            size={14}
-                                                            className="sm:w-4 sm:h-4"
-                                                        />
-                                                    </Button>
-                                                </motion.div>
-                                            )}
-                                    </div>
-                                </motion.div>
-                            </div>
+                                                         <div className="flex items-center gap-4 truncate">
+                                                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0 border border-primary/10">
+                                                                <FileText size={18} />
+                                                             </div>
+                                                             <div className="flex flex-col truncate">
+                                                                <span className="text-xs font-black truncate">{file.name}</span>
+                                                                <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
+                                                                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                                                                </span>
+                                                             </div>
+                                                         </div>
+                                                         <button 
+                                                             onClick={(e) => { e.preventDefault(); removeFile(idx); }}
+                                                             className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
+                                                         >
+                                                             <Trash2 size={16} />
+                                                         </button>
+                                                     </motion.div>
+                                                 ))}
+                                             </div>
+                                         )}
+ 
+                                         {uploadedFiles.length > 0 && scanProgress === 100 && (
+                                             <Button
+                                                 onClick={() => setActiveTab('sync')}
+                                                 className="w-full h-14 rounded-2xl bg-foreground text-background hover:bg-primary hover:text-white font-black text-xs uppercase tracking-[0.2em] transition-all duration-500 shadow-xl"
+                                             >
+                                                 Configure Parameters
+                                                 <ArrowRight size={16} className="ml-2" />
+                                             </Button>
+                                         )}
+                                     </div>
+                                 </motion.div>
+ 
+                                 {/* Secondary: Quick Topic Input */}
+                                 <motion.div
+                                     initial={{ opacity: 0, x: 20 }}
+                                     animate={{ opacity: 1, x: 0 }}
+                                     transition={{ delay: 0.3 }}
+                                     className="relative group"
+                                 >
+                                     <div className="relative bg-foreground/[0.02] border border-foreground/5 rounded-[32px] p-8 space-y-8 shadow-2xl transition-all duration-500 hover:border-primary/20 h-full flex flex-col">
+                                         <div className="flex items-start justify-between">
+                                             <div className="space-y-2">
+                                                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-lg">
+                                                    <Zap size={24} fill="currentColor" />
+                                                </div>
+                                                <h3 className="text-2xl font-black tracking-tight mt-4">
+                                                    Quick <span className="text-primary italic">Topic</span>
+                                                </h3>
+                                                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                                                     Immediate Synthesis
+                                                 </p>
+                                             </div>
+                                         </div>
+ 
+                                         <div className="flex-1 space-y-4">
+                                             <textarea
+                                                 value={topicText}
+                                                 onChange={(e) => setTopicText(e.target.value)}
+                                                 onKeyDown={handleKeyDown}
+                                                 placeholder="E.g., The Industrial Revolution, Photosynthesis, Thermodynamics..."
+                                                 className="w-full h-32 md:h-48 px-6 py-5 rounded-[24px] bg-foreground/5 border border-foreground/5 focus:border-primary/30 focus:outline-none focus:ring-0 transition-all duration-300 resize-none font-medium placeholder:text-muted-foreground/30 text-sm"
+                                                 maxLength={500}
+                                             />
+                                             <div className="flex justify-between items-center px-2">
+                                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+                                                     {topicText.length} / 500
+                                                 </span>
+                                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+                                                     Neural Prompt
+                                                 </span>
+                                             </div>
+                                         </div>
+ 
+                                         <Button
+                                             onClick={handleTopicSubmit}
+                                             disabled={!topicText.trim() || topicText.trim().length < 3}
+                                        className="w-full h-14 rounded-2xl bg-primary text-white hover:bg-primary/90 font-black text-xs uppercase tracking-[0.2em] transition-all duration-500 shadow-xl disabled:opacity-30"
+                                         >
+                                             Execute Generation
+                                             <Zap size={16} fill="currentColor" className="ml-2" />
+                                         </Button>
+                                     </div>
+                                 </motion.div>
+                             </div>
+ 
+                             {/* Features Footer */}
+                             <motion.div
+                                 initial={{ opacity: 0 }}
+                                 animate={{ opacity: 1 }}
+                                 transition={{ delay: 0.5 }}
+                                 className="grid grid-cols-2 md:grid-cols-4 gap-4 px-2"
+                             >
+                                 {[
+                                     { label: 'Neural Link' },
+                                     { label: 'Privacy Core' },
+                                     { label: 'Deep Context' },
+                                     { label: 'Fast Sync' },
+                                 ].map((feature, idx) => (
+                                     <div key={idx} className="flex items-center gap-3">
+                                         <div className="h-1.5 w-1.5 rounded-full bg-primary/40" />
+                                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40">
+                                             {feature.label}
+                                         </span>
+                                     </div>
+                                 ))}
+                             </motion.div>
+                         </motion.div>
+                     </TabsContent>
 
-                            {/* Features Footer */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.4 }}
-                                className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 pt-2 sm:pt-4"
-                            >
-                                {[
-                                    { icon: '⚡', label: 'Instant Generation' },
-                                    { icon: '🎯', label: 'AI-Powered' },
-                                    { icon: '📚', label: 'Multiple Formats' },
-                                    { icon: '🔒', label: 'Secure & Private' },
-                                ].map((feature, idx) => (
-                                    <div
-                                        key={idx}
-                                        className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg sm:rounded-xl bg-card/[0.02] border border-foreground/5"
-                                    >
-                                        <span className="text-base sm:text-xl shrink-0">
-                                            {feature.icon}
-                                        </span>
-                                        <span className="text-[10px] sm:text-xs font-medium text-muted-foreground truncate">
-                                            {feature.label}
-                                        </span>
-                                    </div>
-                                ))}
-                            </motion.div>
-                        </motion.div>
-                    </TabsContent>
 
-                    <TabsContent
-                        key="analyze"
-                        value="analyze"
-                        className="m-0 outline-none"
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.98 }}
-                            className="space-y-6"
-                        >
-                            {uploadedFiles.length === 1 && uploadedFiles[0].type === 'application/pdf' && (
-                                <div className="glass border-foreground/5 rounded-2xl overflow-hidden p-4 md:p-8 space-y-6 md:space-y-8">
-                                    <div className="flex items-center justify-between">
-                                        <div className="space-y-1">
-                                            <h3 className="text-xl font-bold flex items-center gap-3">
-                                                <div className="w-2 h-6 bg-primary rounded-2xl" />
-                                                SCAN MODE
-                                            </h3>
-                                            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">
-                                                Verifying neural fragments
-                                            </p>
-                                        </div>
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => setActiveTab('sync')}
-                                            disabled={totalPages === 0}
-                                            className="rounded-2xl font-bold border-foreground/10 hover:bg-card/5 gap-2 px-6"
-                                        >
-                                            NEXT
-                                            <ArrowRight size={16} />
-                                        </Button>
-                                    </div>
+                     <TabsContent
+                         key="analyze"
+                         value="analyze"
+                         className="m-0 outline-none"
+                     >
+                         <motion.div
+                             initial={{ opacity: 0, scale: 0.98 }}
+                             animate={{ opacity: 1, scale: 1 }}
+                             exit={{ opacity: 0, scale: 0.98 }}
+                             className="space-y-8"
+                         >
+                             {uploadedFiles.length === 1 && uploadedFiles[0].type === 'application/pdf' && (
+                                 <div className="bg-foreground/[0.02] border border-foreground/5 rounded-[32px] p-8 md:p-12 space-y-10 shadow-2xl overflow-hidden relative">
+                                     <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+                                        <Sparkles size={160} className="text-primary" />
+                                     </div>
 
-                                    <div className="rounded-2xl overflow-hidden border border-foreground/5 shadow-2xl bg-card/60 relative group min-h-[400px]">
-                                        <div className="absolute inset-x-0 h-0.5 bg-primary/40 shadow-glow top-0 animate-[scan_3s_ease-in-out_infinite] z-10 pointer-events-none" />
-                                        <PDFPreview
-                                            file={uploadedFiles[0]}
-                                            onLoadSuccess={handlePDFLoadSuccess}
-                                            onLoadError={(e) => addError(e)}
-                                            selectedPages={selectedPages}
-                                            onPageSelect={handlePageSelect}
-                                            className="w-full opacity-80 group-hover:opacity-100 transition-opacity"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </motion.div>
-                    </TabsContent>
+                                     <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative">
+                                         <div className="space-y-2 text-center md:text-left">
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/60">
+                                                Verification Layer
+                                            </span>
+                                             <h3 className="text-3xl font-black tracking-tight italic">
+                                                 Scan <span className="text-primary not-italic">Mode</span>
+                                             </h3>
+                                             <p className="text-[11px] font-bold uppercase tracking-widest opacity-40">
+                                                 Verifying Neural Fragments & OCR Integrity
+                                             </p>
+                                         </div>
+                                         <Button
+                                             variant="outline"
+                                             onClick={() => setActiveTab('sync')}
+                                             disabled={totalPages === 0}
+                                             className="h-14 rounded-2xl font-black border-foreground/10 bg-card/40 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 gap-3 px-10 text-xs uppercase tracking-widest shadow-xl"
+                                         >
+                                             Next Phase
+                                             <ArrowRight size={18} />
+                                         </Button>
+                                     </div>
+ 
+                                     <div className="rounded-[28px] overflow-hidden border border-foreground/5 shadow-2xl bg-card/60 relative group min-h-[500px]">
+                                         <div className="absolute inset-x-0 h-1 bg-primary/40 shadow-[0_0_20px_rgba(59,130,246,0.5)] top-0 animate-[scan_4s_ease-in-out_infinite] z-20 pointer-events-none" />
+                                         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-primary/5 opacity-50 pointer-events-none z-10" />
+                                         <PDFPreview
+                                             file={uploadedFiles[0]}
+                                             onLoadSuccess={handlePDFLoadSuccess}
+                                             onLoadError={(e) => addError(e)}
+                                             selectedPages={selectedPages}
+                                             onPageSelect={handlePageSelect}
+                                             className="w-full opacity-90 group-hover:opacity-100 transition-opacity"
+                                         />
+                                     </div>
+                                     
+                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                        {[
+                                            { label: 'Pages', value: totalPages || '...' },
+                                            { label: 'OCR Status', value: 'Active', color: 'text-primary' },
+                                            { label: 'Density', value: 'Optimal' },
+                                            { label: 'Integrity', value: '99.8%' },
+                                        ].map((stat, i) => (
+                                            <div key={i} className="p-6 rounded-2xl bg-foreground/5 border border-foreground/5 space-y-1">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.3em] opacity-40">{stat.label}</p>
+                                                <p className={cn("text-lg font-black italic", stat.color || "text-foreground")}>{stat.value}</p>
+                                            </div>
+                                        ))}
+                                     </div>
+                                 </div>
+                             )}
+                         </motion.div>
+                     </TabsContent>
 
-                    <TabsContent
-                        key="sync"
-                        value="sync"
-                        className="m-0 outline-none"
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="flex flex-col gap-8"
-                        >
-                            {uploadedFiles.length === 1 &&
-                                uploadedFiles[0].type === 'application/pdf' && (
-                                    <PageSelector
-                                        totalPages={totalPages}
-                                        selectedPages={selectedPages}
-                                        onSelectionChange={setSelectedPages}
-                                        className="glass border-foreground/5 rounded-2xl p-8 shadow-none"
-                                    />
-                                )}
 
-                            <div className="glass p-10 rounded-2xl border border-foreground/5 space-y-10 relative overflow-hidden">
-                                <div className="relative">
-                                    <h3 className="text-2xl font-bold mb-2 tracking-tight">
-                                        SYNC PARAMETERS
-                                    </h3>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">
-                                        Optimize extraction weights
-                                    </p>
-                                </div>
+                     <TabsContent
+                         key="sync"
+                         value="sync"
+                         className="m-0 outline-none"
+                     >
+                         <motion.div
+                             initial={{ opacity: 0, y: 20 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             exit={{ opacity: 0, y: -20 }}
+                             className="flex flex-col gap-8"
+                         >
+                             {uploadedFiles.length === 1 &&
+                                 uploadedFiles[0].type === 'application/pdf' && (
+                                     <div className="bg-foreground/[0.02] border border-foreground/5 rounded-[32px] p-8">
+                                         <PageSelector
+                                             totalPages={totalPages}
+                                             selectedPages={selectedPages}
+                                             onSelectionChange={setSelectedPages}
+                                             className="bg-transparent border-0 p-0 shadow-none"
+                                         />
+                                     </div>
+                                 )}
+ 
+                             <div className="relative bg-foreground/[0.02] border border-foreground/5 p-10 rounded-[32px] space-y-10 overflow-hidden shadow-2xl">
+                                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+                                     <Settings size={120} className="text-primary" />
+                                 </div>
 
-                                <div className="space-y-6 relative">
-                                    <div className="flex justify-between items-end">
-                                        <Label className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-                                            Output Density (KP Generator)
-                                        </Label>
-                                        <span className="text-2xl font-bold text-primary">
-                                            {numQuestions}
-                                        </span>
-                                    </div>
-                                    <div className="relative pt-2">
-                                        <input
-                                            type="range"
-                                            min={3}
-                                            max={30}
-                                            value={numQuestions}
-                                            onChange={(e) =>
-                                                setNumQuestions(
-                                                    parseInt(e.target.value),
-                                                )
-                                            }
-                                            className="w-full h-2 bg-card/5 rounded-2xl appearance-none cursor-pointer accent-primary"
-                                        />
-                                        <div className="flex justify-between mt-3 text-[10px] font-bold opacity-30">
-                                            <span>LOW FREQUENCY</span>
-                                            <span>HIGH FREQUENCY</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                 <div className="relative">
+                                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/60">
+                                         Phase 02
+                                     </span>
+                                     <h3 className="text-3xl font-black tracking-tight mt-2 italic">
+                                         Sync <span className="text-primary not-italic">Parameters</span>
+                                     </h3>
+                                     <p className="text-[11px] font-bold uppercase tracking-widest opacity-40 mt-1">
+                                         Initialize Neural Extraction Weights
+                                     </p>
+                                 </div>
+ 
+                                 <div className="space-y-8 relative">
+                                     <div className="flex justify-between items-end">
+                                         <Label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">
+                                             Extraction Density
+                                         </Label>
+                                         <div className="flex items-center gap-2">
+                                             <span className="text-4xl font-black text-primary italic">
+                                                 {numQuestions}
+                                             </span>
+                                             <span className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">
+                                                 Units
+                                             </span>
+                                         </div>
+                                     </div>
+                                     <div className="relative pt-2">
+                                         <input
+                                             type="range"
+                                             min={3}
+                                             max={30}
+                                             value={numQuestions}
+                                             onChange={(e) =>
+                                                 setNumQuestions(
+                                                     parseInt(e.target.value),
+                                                 )
+                                             }
+                                             className="w-full h-1.5 bg-foreground/5 rounded-full appearance-none cursor-pointer accent-primary"
+                                         />
+                                         <div className="flex justify-between mt-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
+                                             <span>Lean Dataset</span>
+                                             <span>Dense Network</span>
+                                         </div>
+                                     </div>
+                                 </div>
+ 
+                                 <div className="p-8 rounded-[24px] bg-foreground/[0.03] border border-foreground/5 space-y-6">
+                                     <div className="flex justify-between items-center text-sm">
+                                         <span className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">
+                                             Registry
+                                         </span>
+                                         <span className="text-sm font-black truncate max-w-[240px]">
+                                             {uploadedFiles.length === 1 ? uploadedFiles[0].name : `${uploadedFiles.length} Records Detected`}
+                                         </span>
+                                     </div>
+                                     <div className="flex justify-between items-center text-sm">
+                                         <span className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">
+                                             Data Blocks
+                                         </span>
+                                         <span className="text-sm font-black text-primary italic">
+                                             {selectedPages.length || 1} Sync-Points
+                                         </span>
+                                     </div>
+                                     <div className="h-1.5 w-full bg-foreground/5 rounded-full overflow-hidden mt-2">
+                                         <motion.div
+                                             className="h-full bg-primary"
+                                             initial={{ width: 0 }}
+                                             animate={{
+                                                 width: `${(Math.max(selectedPages.length, 1) / Math.max(totalPages, 1)) * 100}%`,
+                                             }}
+                                         />
+                                     </div>
+                                 </div>
+ 
+                                 <div className="flex flex-col gap-4 pt-4">
+                                     <Button
+                                         onClick={handleProcessSelection}
+                                         disabled={
+                                             isProcessing ||
+                                             uploadedFiles.length === 0
+                                         }
+                                         className="w-full h-20 rounded-[28px] bg-primary hover:bg-primary/90 text-white font-black text-xl shadow-2xl transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] gap-4"
+                                     >
+                                         {isProcessing ? (
+                                             <>
+                                                 <LoadingSpinner size="sm" />
+                                                 <span className="uppercase tracking-[0.2em]">Processing...</span>
+                                             </>
+                                         ) : (
+                                             <>
+                                                 <span className="uppercase tracking-[0.2em]">Activate Node</span>
+                                                 <Zap size={24} fill="currentColor" />
+                                             </>
+                                         )}
+                                     </Button>
+ 
+                                     <Button
+                                         variant="ghost"
+                                         onClick={resetUpload}
+                                         className="w-full h-12 font-black text-[10px] tracking-[0.4em] opacity-40 hover:opacity-100 hover:text-destructive hover:bg-destructive/5 transition-all uppercase"
+                                     >
+                                         <Trash2 size={14} className="mr-2" />
+                                         Purge Selection
+                                     </Button>
+                                 </div>
+                             </div>
+                         </motion.div>
+                     </TabsContent>
 
-                                <div className="p-8 rounded-2xl bg-card/5 border border-foreground/5 space-y-4 shadow-inner">
-                                    <div className="flex justify-between text-sm py-2 border-b border-foreground/5">
-                                        <span className="font-bold opacity-30 uppercase tracking-widest text-[10px]">
-                                            Reference
-                                        </span>
-                                        <span className="font-bold truncate max-w-[200px]">
-                                            {uploadedFiles.length === 1 ? uploadedFiles[0].name : `${uploadedFiles.length} Documents`}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between text-sm py-2">
-                                        <span className="font-bold opacity-30 uppercase tracking-widest text-[10px]">
-                                            Segment Count
-                                        </span>
-                                        <span className="font-bold text-primary">
-                                            {selectedPages.length || 1} Blocks
-                                        </span>
-                                    </div>
-                                    <div className="h-1.5 w-full bg-card/5 rounded-2xl overflow-hidden mt-4">
-                                        <motion.div
-                                            className="h-full bg-primary shadow-[0_0_15px_#10b981]"
-                                            initial={{ width: 0 }}
-                                            animate={{
-                                                width: `${(Math.max(selectedPages.length, 1) / Math.max(totalPages, 1)) * 100}%`,
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col gap-4">
-                                    <Button
-                                        onClick={handleProcessSelection}
-                                        disabled={
-                                            isProcessing ||
-                                            uploadedFiles.length === 0
-                                        }
-                                        className="w-full h-14 sm:h-16 md:h-20 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg md:text-xl shadow-glow transition-all hover:scale-[1.02] active:scale-[0.98] gap-3 sm:gap-4"
-                                    >
-                                        {isProcessing ? (
-                                            <>
-                                                <LoadingSpinner size="sm" />
-                                                <span>
-                                                    INITIALIZING NODE...
-                                                </span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <span>ACTIVATE NODE</span>
-                                                <Zap
-                                                    size={24}
-                                                    fill="currentColor"
-                                                />
-                                            </>
-                                        )}
-                                    </Button>
-
-                                    <Button
-                                        variant="ghost"
-                                        onClick={resetUpload}
-                                        className="w-full h-12 font-bold text-[10px] tracking-[0.3em] opacity-20 hover:opacity-100 hover:bg-transparent text-destructive gap-2"
-                                    >
-                                        <Trash2 size={14} />
-                                        TERMINATE SEQUENCE
-                                    </Button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </TabsContent>
                 </Tabs>
             </div>
 

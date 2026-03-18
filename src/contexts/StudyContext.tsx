@@ -6,6 +6,10 @@ import React, {
     useCallback,
 } from 'react';
 import { api } from '@/lib/apiClient';
+import {
+    SummaryContent,
+    normalizeSummaryContent,
+} from '@/lib/summaryUtils';
 
 interface StudyJob {
     id: string;
@@ -25,7 +29,7 @@ interface StudySession {
     quizStyle: 'mixed' | 'mcq' | 'short';
     shuffleQuestions: boolean;
     showExplanations: boolean;
-    summary: string;
+    summary: SummaryContent;
     questions: any[];
     flashcards: any[];
     studyGuide: string;
@@ -82,9 +86,9 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
             numberOfQuestions: 5,
             quizDifficulty: 'balanced',
             quizStyle: 'mixed',
-            shuffleQuestions: true,
-            showExplanations: true,
-            summary: '',
+        shuffleQuestions: true,
+        showExplanations: true,
+        summary: '',
             questions: [],
             flashcards: [],
             studyGuide: '',
@@ -106,7 +110,19 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Polling logic for all active jobs
     useEffect(() => {
-        const interval = setInterval(async () => {
+        let attempts = 0;
+        let timeout: number | undefined;
+        const baseDelay = 1500;
+        const maxDelay = 12000;
+
+        const scheduleNext = () => {
+            const exponent = Math.min(Math.floor(attempts / 4), 4);
+            const delay = Math.min(maxDelay, baseDelay * Math.pow(2, exponent));
+            timeout = window.setTimeout(tick, delay);
+        };
+
+        const tick = async () => {
+            attempts += 1;
             const jobsToPoll = activeJobs.filter(
                 (j) => j.status === 'PENDING' || j.status === 'PROCESSING',
             );
@@ -128,7 +144,9 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
                         if (session.lastJobId === job.id) {
                             if (job.type === 'summary') {
                                 updateSession({
-                                    summary: jobInfo.result?.summary || '',
+                                    summary: normalizeSummaryContent(
+                                        jobInfo.result?.summary,
+                                    ),
                                 });
                             } else if (job.type === 'study-guide') {
                                 updateSession({
@@ -145,7 +163,6 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
                                 });
                             }
                         }
-
                     } else if (jobInfo?.status === 'FAILED') {
                         updateJobStatus(job.id, { status: 'FAILED' });
                     } else {
@@ -162,9 +179,23 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
                     console.error('Polling error for job', job.id, err);
                 }
             }
-        }, 1500); // Halved interval for better responsiveness
 
-        return () => clearInterval(interval);
+            if (activeJobs.some(
+                (j) => j.status === 'PENDING' || j.status === 'PROCESSING',
+            )) {
+                scheduleNext();
+            }
+        };
+
+        if (activeJobs.length > 0) {
+            scheduleNext();
+        }
+
+        return () => {
+            if (timeout) {
+                window.clearTimeout(timeout);
+            }
+        };
     }, [activeJobs, updateJobStatus]);
 
     return (

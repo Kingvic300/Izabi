@@ -21,21 +21,8 @@ export default function AdminDashboardHeader({
     isExportingReport,
 }: AdminDashboardHeaderProps) {
     return (
-        <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6 pb-3 border-b border-foreground/5">
-            <div className="space-y-1">
-                <div className="flex items-center gap-2 mb-2">
-                    <Badge
-                        variant="outline"
-                        className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-[10px] tracking-widest uppercase"
-                    >
-                        Admin Command Center
-                    </Badge>
-                </div>
-                <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tighter leading-none">
-                    System <span className="text-gradient">Intelligence</span>
-                </h1>
-            </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+        <header className="flex flex-col lg:flex-row lg:items-center justify-end gap-4 md:gap-6 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-5 lg:gap-6 w-full lg:w-auto lg:justify-end">
                 <Button
                     variant="outline"
                     onClick={onOpenAnnouncement}

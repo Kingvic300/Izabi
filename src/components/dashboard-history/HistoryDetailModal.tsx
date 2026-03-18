@@ -3,6 +3,11 @@ import { Brain, X, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AIMarkdown } from '@/components/ui/ai-markdown';
+import {
+    getSummaryText,
+    parseStructuredSummary,
+} from '@/lib/summaryUtils';
+import { StructuredSummaryContent } from '@/components/dashboard-home/StructuredSummaryContent';
 
 type HistoryDetailModalProps = {
     item: any | null;
@@ -62,10 +67,29 @@ export default function HistoryDetailModal({
                                             <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
                                                 <Brain size={14} /> AI Summary
                                             </h4>
-                                            <AIMarkdown
-                                                content={item.summary}
-                                                className="text-base sm:text-lg"
-                                            />
+                                            {(() => {
+                                                const structured =
+                                                    parseStructuredSummary(
+                                                        item.summary,
+                                                    );
+                                                if (structured) {
+                                                    return (
+                                                        <StructuredSummaryContent
+                                                            summary={structured}
+                                                            showQuiz={false}
+                                                            className="text-base sm:text-lg"
+                                                        />
+                                                    );
+                                                }
+                                                return (
+                                                    <AIMarkdown
+                                                        content={getSummaryText(
+                                                            item.summary,
+                                                        )}
+                                                        className="text-base sm:text-lg"
+                                                    />
+                                                );
+                                            })()}
                                         </div>
 
                                         {item.keyPoints?.length > 0 && (

@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, Zap } from 'lucide-react';
 import { ModuleCardStatus } from '@/components/dashboard-home/types';
 
 interface ModuleCardProps {
@@ -18,23 +18,23 @@ interface ModuleCardProps {
 
 const statusMeta: Record<ModuleCardStatus, { label: string; className: string; icon: any }> = {
     idle: {
-        label: 'Ready',
-        className: 'bg-card/10 text-foreground/60',
+        label: 'Standby',
+        className: 'bg-card/20 text-muted-foreground/40',
         icon: null,
     },
     processing: {
         label: 'Processing',
-        className: 'bg-blue-500/15 text-blue-400',
+        className: 'bg-primary/20 text-primary border-primary/20',
         icon: <Loader2 size={10} className="animate-spin" />,
     },
     completed: {
-        label: 'Completed',
-        className: 'bg-primary/15 text-primary',
+        label: 'Active',
+        className: 'bg-primary/20 text-primary border-primary/20',
         icon: <CheckCircle2 size={10} />,
     },
     failed: {
-        label: 'Failed',
-        className: 'bg-destructive/20 text-destructive',
+        label: 'Error',
+        className: 'bg-destructive/20 text-destructive border-destructive/20',
         icon: <XCircle size={10} />,
     },
 };
@@ -56,32 +56,41 @@ export const ModuleCard = ({
         <button
             onClick={onClick}
             disabled={isProcessing}
-            className="relative text-left p-6 sm:p-8 bg-card/90 hover:bg-card/95 active:bg-card/90 transition-all group flex flex-col gap-4"
+            className="relative text-left p-8 bg-card/40 hover:bg-card/60 transition-all duration-300 group flex flex-col gap-6 overflow-hidden border-r border-foreground/5 last:border-r-0"
         >
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_transparent_60%)]" />
-            <div className="relative flex items-start justify-between gap-4">
-                <div className={cn('p-3 rounded-2xl bg-card/10 ring-1 ring-foreground/10 shadow-2xl', color)}>
-                    <Icon size={22} />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_top,_rgba(var(--primary),0.05),_transparent_70%)]" />
+            
+            <div className="relative flex items-center justify-between">
+                <div className={cn('h-14 w-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-lg', color)}>
+                    <Icon size={28} />
                 </div>
                 <div className={cn(
-                    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.18em]',
+                    'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border',
                     meta.className
                 )}>
                     {meta.icon}
                     <span>{meta.label}</span>
                 </div>
             </div>
-            <div className="relative space-y-1">
-                <div className="text-lg font-bold">{label}</div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
+
+            <div className="relative space-y-2 mt-2">
+                <h4 className="text-xl font-black tracking-tight group-hover:text-primary transition-colors">
+                   {label}
+                </h4>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground leading-relaxed">
                     {desc}
-                </div>
+                </p>
             </div>
-            <div className="relative mt-auto flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] opacity-50">
-                <span>{isProcessing ? 'Working...' : 'Tap to generate'}</span>
-                <span className="px-2 py-1 rounded-full bg-foreground/5">
-                    {id === 'quiz' ? `${numberOfQuestions} Qs` : 'Run'}
-                </span>
+
+            <div className="relative mt-8 flex items-center justify-between text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+                <div className="flex items-center gap-2">
+                   <div className="h-1 w-1 rounded-full bg-primary/40" />
+                   <span>{isProcessing ? 'Synthesizing...' : 'Execute Module'}</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-foreground/5 border border-foreground/5">
+                   <Zap size={10} className="text-primary/60" />
+                   <span>{id === 'quiz' ? `${numberOfQuestions} Units` : 'Standard'}</span>
+                </div>
             </div>
         </button>
     );

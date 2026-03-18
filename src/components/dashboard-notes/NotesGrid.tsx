@@ -86,7 +86,7 @@ export default function NotesGrid({
                 return (
                     <Card
                         key={noteId}
-                        className="note-card glass shadow-lg hover-lift border-foreground/5 flex flex-col group h-[400px]"
+                        className="note-card glass shadow-lg hover-lift border-foreground/5 flex flex-col group h-[400px] break-words"
                     >
                         <CardContent className="p-6 flex flex-col h-full relative">
                             {editingId === noteId ? (

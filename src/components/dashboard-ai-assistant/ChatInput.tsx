@@ -41,8 +41,8 @@ export default function ChatInput({
     onSuggestionClick,
 }: ChatInputProps) {
     return (
-        <div className="shrink-0 p-3 md:p-6 pt-0">
-            <div className="mx-auto w-full max-w-[1500px] space-y-3 md:space-y-4">
+        <div className="shrink-0 p-0">
+            <div className="w-full space-y-2 md:space-y-3">
                 {activeDocuments.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         {activeDocuments.map((doc) => (
@@ -70,7 +70,7 @@ export default function ChatInput({
 
                 {/* Smart Suggestions */}
                 {!inputValue && !isLoading && (
-                    <div className="flex gap-2 overflow-x-auto pb-1 animate-in fade-in slide-in-from-bottom-1.5 duration-500">
+                    <div className="flex gap-2 overflow-x-auto pb-0 animate-in fade-in slide-in-from-bottom-1.5 duration-500">
                         {[
                             {
                                 label: 'Generate Flashcards',
@@ -140,7 +140,7 @@ export default function ChatInput({
                         <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:animate-shimmer" />
                     </Button>
                 </div>
-                <p className="text-[9px] md:text-[10px] text-center mt-2 md:mt-3 text-muted-foreground/60 uppercase tracking-[0.15em] font-medium">
+                <p className="text-[9px] md:text-[10px] text-center mt-1 md:mt-2 text-muted-foreground/60 uppercase tracking-[0.15em] font-medium">
                     Izabi AI may provide inaccurate info. Verify important facts.
                 </p>
             </div>

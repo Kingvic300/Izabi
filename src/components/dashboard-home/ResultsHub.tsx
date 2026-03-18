@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { FlashcardsSection } from './FlashcardsSection';
 import { SummarySection } from './SummarySection';
 import { QuizSection } from './QuizSection';
-import { Brain, FileText, Flame } from 'lucide-react';
+import { Brain, FileText, Flame, Sparkles, Terminal } from 'lucide-react';
 import { useStudy } from '@/contexts/StudyContext';
+import { motion } from 'framer-motion';
 
 interface ResultsHubProps {
     onDownloadSummary: () => void;
@@ -40,59 +41,86 @@ export const ResultsHub = ({
     if (!hasContent) return null;
 
     return (
-        <div id="results-hub" className="space-y-6 sm:space-y-8 pt-8 sm:pt-10 md:pt-12 stagger-card px-4 md:px-0">
-            <div className="flex items-center justify-between">
-                <h2 className="text-2xl sm:text-4xl font-bold flex items-center gap-3 sm:gap-4 tracking-tighter">
-                    <div className="w-2 h-10 bg-primary rounded-3xl" />
-                    <span>Study Results</span>
-                </h2>
+        <div id="results-hub" className="space-y-12 md:space-y-20 pt-16 md:pt-24 stagger-card">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-0">
+                <div className="space-y-4">
+                    <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex items-center gap-3"
+                    >
+                        <div className="h-px w-8 bg-primary/40" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/60">
+                            Synthesis Complete
+                        </span>
+                    </motion.div>
+                    <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none italic">
+                        Knowledge <span className="text-primary not-italic">Vault</span>
+                    </h2>
+                </div>
+                
+                <div className="flex items-center gap-4 bg-foreground/5 p-4 rounded-2xl border border-foreground/5">
+                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+                        <Terminal size={18} />
+                    </div>
+                    <div>
+                        <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                            Protocol
+                        </div>
+                        <div className="text-xs font-bold font-mono tracking-tighter">
+                            A-STUDY_v2.0_STABLE
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            {flashcards.length > 0 && (
-                <FlashcardsSection
-                    flashcards={flashcards}
-                    isOpen={showFlashcards}
-                    onOpenChange={setShowFlashcards}
-                />
-            )}
-
-            {summary && (
-                <SummarySection
-                    content={summary}
-                    isOpen={showSummary}
-                    onOpenChange={setShowSummary}
-                    onDownload={onDownloadSummary}
-                    title="Smart Summary"
-                    icon={Brain}
-                    iconColor="text-blue-400"
-                />
-            )}
-
-            {studyGuide && (
-                <SummarySection
-                    content={studyGuide}
-                    isOpen={showStudyGuide}
-                    onOpenChange={setShowStudyGuide}
-                    onDownload={onDownloadGuide}
-                    title="Study Guide"
-                    icon={FileText}
-                    iconColor="text-emerald-400"
-                    audioLabel="Listen to Guide"
-                />
-            )}
-
-            {questions.length > 0 && (
-                <QuizSection
-                    questions={questions}
-                    isOpen={showQuestions}
-                    onOpenChange={setShowQuestions}
-                    onDownload={onDownloadQuiz}
-                    quizStyle={session.quizStyle}
-                    shuffleEnabled={session.shuffleQuestions}
-                    showExplanations={session.showExplanations}
-                    onSubmitQuiz={onSubmitQuiz}
-                />
-            )}
+ 
+            <div className="space-y-10">
+                {flashcards.length > 0 && (
+                    <FlashcardsSection
+                        flashcards={flashcards}
+                        isOpen={showFlashcards}
+                        onOpenChange={setShowFlashcards}
+                    />
+                )}
+    
+                {summary && (
+                    <SummarySection
+                        content={summary}
+                        isOpen={showSummary}
+                        onOpenChange={setShowSummary}
+                        onDownload={onDownloadSummary}
+                        title="Core Synthesis"
+                        icon={Brain}
+                        iconColor="text-primary"
+                    />
+                )}
+    
+                {studyGuide && (
+                    <SummarySection
+                        content={studyGuide}
+                        isOpen={showStudyGuide}
+                        onOpenChange={setShowStudyGuide}
+                        onDownload={onDownloadGuide}
+                        title="Tactical Guide"
+                        icon={FileText}
+                        iconColor="text-primary"
+                        audioLabel="Vocalize Guide"
+                    />
+                )}
+    
+                {questions.length > 0 && (
+                    <QuizSection
+                        questions={questions}
+                        isOpen={showQuestions}
+                        onOpenChange={setShowQuestions}
+                        onDownload={onDownloadQuiz}
+                        quizStyle={session.quizStyle}
+                        shuffleEnabled={session.shuffleQuestions}
+                        showExplanations={session.showExplanations}
+                        onSubmitQuiz={onSubmitQuiz}
+                    />
+                )}
+            </div>
         </div>
     );
 };

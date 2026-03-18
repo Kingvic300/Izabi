@@ -85,7 +85,7 @@ export default function ExamView({
                 <div className="mb-2 text-[10px] sm:text-xs font-bold opacity-50">
                     Tap any number to jump
                 </div>
-                <div className="grid grid-cols-6 gap-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12">
+                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
                     {currentExam.questions.map((_, index) => {
                         const isCurrent = index === currentQuestionIndex;
                         const isAnswered = answers[index] !== undefined;
@@ -135,7 +135,7 @@ export default function ExamView({
                             <button
                                 key={idx}
                                 onClick={() => onAnswer(option)}
-                                className={`text-left p-6 rounded-2xl transition-all border-2 flex items-center gap-4 group ${
+                                className={`text-left p-6 rounded-2xl transition-all border-2 flex items-start gap-4 group whitespace-normal ${
                                     answers[currentQuestionIndex] === option
                                         ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(37,99,235,0.15)]'
                                         : 'border-foreground/5 bg-card/5 hover:bg-card/10 hover:border-foreground/10'
@@ -150,7 +150,7 @@ export default function ExamView({
                                 >
                                     {String.fromCharCode(65 + idx)}
                                 </div>
-                                <span className="text-lg font-medium">
+                                <span className="text-sm sm:text-base font-medium leading-snug break-words">
                                     {option}
                                 </span>
                             </button>

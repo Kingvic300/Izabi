@@ -49,9 +49,18 @@ const DashboardSettings = () => {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-12 w-full min-w-0 pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
+            className="space-y-8 md:space-y-12 w-full min-w-0 pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
-            <SettingsHeader />
+            <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                        Settings
+                    </span>
+                </div>
+                <div className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6">
+                    <SettingsHeader />
+                </div>
+            </div>
 
             <AppearanceSection
                 currentTheme={settings.theme}

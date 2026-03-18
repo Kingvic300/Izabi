@@ -6,7 +6,20 @@ import { AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { useGSAP } from '@gsap/react';
-import { Sparkles, FileStack, CheckCircle2, ChevronRight, X, Share2, BrainCircuit, Eye, FileText } from 'lucide-react';
+import {
+    Sparkles,
+    FileStack,
+    CheckCircle2,
+    ChevronRight,
+    X,
+    Share2,
+    BrainCircuit,
+    FileText,
+    CalendarClock,
+    BarChart3,
+    MessageCircle,
+    Upload,
+} from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { WelcomeHeader } from '@/components/dashboard-home/WelcomeHeader';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -17,10 +30,7 @@ import { BrainDropSection } from '@/components/dashboard-home/BrainDropSection';
 import IntentCards from '@/components/IntentCards';
 import ContextCard from '@/components/ContextCard';
 import { DocumentInfo } from '@/components/dashboard-home/DocumentInfo';
-import {
-    UploadPrompt,
-    UploadSidebar,
-} from '@/components/dashboard-home/UploadPrompt';
+import { UploadPrompt } from '@/components/dashboard-home/UploadPrompt';
 import { StudyControls } from '@/components/dashboard-home/StudyControls';
 import { ResultsHub } from '@/components/dashboard-home/ResultsHub';
 import { ShareProfileDialog } from '@/components/dashboard-home/ShareProfileDialog';
@@ -43,6 +53,7 @@ import { useStudy } from '@/contexts/StudyContext';
 import { useProfileShare } from '@/hooks/useProfileShare';
 import { api } from '@/lib/apiClient';
 import { buildPracticeQuestionSet, shuffleArray } from '@/lib/quizUtils';
+import { formatSummaryForDownload } from '@/lib/summaryUtils';
 import {
     DEFAULT_PRACTICE_QUESTION_COUNT,
     ENDPOINT_TO_MODULE_ID,
@@ -86,6 +97,20 @@ export default function DashboardHome() {
     const [userExamType, setUserExamType] = useState<string | null>(null);
     const [showAIUpdate, setShowAIUpdate] = useState(false);
     const [previewFile, setPreviewFile] = useState<File | null>(null);
+    const streakValue =
+        userStats?.data?.streakData?.academicStreak ??
+        userStats?.data?.studyStreak ??
+        0;
+    const totalPoints = userStats?.data?.totalPoints ?? 0;
+    const dailyPoints = userStats?.data?.dailyPoints ?? 0;
+    const totalStudyMinutes = userStats?.data?.totalStudyMinutes ?? 0;
+    const totalStudyHours = Math.round((totalStudyMinutes / 60) * 10) / 10;
+    const progressPercent = Math.min(
+        100,
+        Math.round((totalStudyMinutes / 300) * 100),
+    );
+    const recentFiles = session.fileNames?.slice(0, 3) ?? [];
+    const hasRecentFiles = recentFiles.length > 0;
 
     useEffect(() => {
         const dismissed = localStorage.getItem('ai_update_dismissed');
@@ -498,7 +523,7 @@ export default function DashboardHome() {
             : (session.fileNames[0]?.split('.')[0] || 'Note');
         
         handleDownload(
-            session.summary,
+            formatSummaryForDownload(session.summary),
             `Izabi_Summary_${baseName}`,
         );
     };
@@ -562,9 +587,63 @@ export default function DashboardHome() {
         <ErrorBoundary>
             <div
                 ref={containerRef}
-                className="space-y-6 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-10 pt-4 md:pt-10 max-w-[1800px] mx-auto"
+                className="w-full max-w-[1780px] mx-auto px-3 sm:px-8 md:px-12 lg:px-16 pt-8 md:pt-16 pb-32 space-y-12 md:space-y-20 rounded-[24px] sm:rounded-[40px] lg:rounded-[48px] border border-foreground/10 bg-card/20 backdrop-blur-xl"
             >
-                <WelcomeHeader firstName={userStats?.data?.firstName} />
+                {/* Header Section */}
+                <header className="space-y-6">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <div className="space-y-3">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                                <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                                    Dashboard
+                                </span>
+                            </div>
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">
+                            Here’s your study cockpit for today
+                        </h1>
+                            <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
+                                Stay on track with your streaks, progress, and AI study tools in one focused workspace.
+                            </p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3">
+                            {userStats?.data && userId && (
+                                <Button
+                                    variant="outline"
+                                    className="h-10 rounded-xl border-foreground/10 text-primary hover:bg-primary/10 gap-2 text-[10px] uppercase tracking-[0.2em] font-bold"
+                                    onClick={handleShareProfile}
+                                    disabled={isSharing}
+                                >
+                                    <Share2 size={14} />
+                                    {isSharing ? 'Preparing...' : 'Share Profile'}
+                                </Button>
+                            )}
+                            <Button
+                                onClick={() => navigate('/dashboard/ai-assistant')}
+                                className="h-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold gap-2 shadow-lg shadow-primary/20"
+                            >
+                                <MessageCircle size={14} />
+                                AI Assistant
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="glass p-6 md:p-8 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl">
+                        <WelcomeHeader firstName={userStats?.data?.firstName} />
+                        <div className="mt-4 flex flex-wrap items-center gap-3">
+                            <Badge className="bg-primary/15 text-primary border-none text-[10px] font-black uppercase tracking-[0.2em]">
+                                Today
+                            </Badge>
+                            <span className="text-xs font-semibold text-muted-foreground">
+                                Upload a file to unlock your study tools.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="glass p-5 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-foreground/10 shadow-xl">
+                        <GamificationStrip streak={streakValue} xp={totalPoints} />
+                    </div>
+                </header>
+
 
                 <AnimatePresence>
                     {showAIUpdate && (
@@ -574,7 +653,7 @@ export default function DashboardHome() {
                             exit={{ opacity: 0, height: 0, scale: 0.95 }}
                             className="stagger-card overflow-hidden"
                         >
-                            <Alert className="relative border-primary/20 bg-primary/5 p-4 sm:p-6 rounded-3xl overflow-hidden group">
+                            <Alert className="relative border-foreground/10 bg-card/50 p-4 sm:p-6 rounded-3xl overflow-hidden group">
                                 {/* Decorative Gradient */}
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-primary/20 transition-all duration-700" />
                                 
@@ -636,47 +715,156 @@ export default function DashboardHome() {
                     )}
                 </AnimatePresence>
 
-                {userStats?.data && (
-                    <div className="space-y-3">
-                        <GamificationStrip
-                            streak={
-                                userStats.data.streakData?.academicStreak ??
-                                userStats.data.studyStreak ??
-                                0
-                            }
-                            xp={userStats.data.totalPoints || 0}
-                        />
-                        {userId && (
-                            <div className="flex justify-end">
-                                <Button
-                                    variant="outline"
-                                    className="h-11 rounded-2xl border-primary/30 text-primary hover:bg-primary/10 gap-2"
-                                    onClick={handleShareProfile}
-                                    disabled={isSharing}
-                                >
-                                    <Share2 size={16} />
-                                    {isSharing ? 'Preparing...' : 'Share Profile'}
-                                </Button>
+                <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+                    <div className="glass-card p-5 sm:p-6 border border-foreground/10 rounded-[24px]">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <BarChart3 size={18} />
                             </div>
-                        )}
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                Progress
+                            </span>
+                        </div>
+                        <div className="text-2xl font-black tracking-tight">
+                            {totalStudyHours}h
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium">
+                            Total study time
+                        </p>
+                        <div className="mt-4">
+                            <div className="h-2 rounded-full bg-foreground/10 overflow-hidden">
+                                <div
+                                    className="h-full bg-primary"
+                                    style={{ width: `${progressPercent}%` }}
+                                />
+                            </div>
+                            <div className="mt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                                {progressPercent}% of weekly goal
+                            </div>
+                        </div>
                     </div>
-                )}
 
-                <BrainDropSection
-                    isCompleted={isBrainDropCompleted}
-                    question={brainDropQuestion}
-                    onAnswer={handleBrainDropSubmission}
-                    onUploadClick={handleReadyToLearn}
-                />
+                    <div className="glass-card p-5 sm:p-6 border border-foreground/10 rounded-[24px]">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <FileText size={18} />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                Recent Notes
+                            </span>
+                        </div>
+                        <div className="space-y-2">
+                            {hasRecentFiles ? (
+                                recentFiles.map((file) => (
+                                    <div
+                                        key={file}
+                                        className="flex items-center gap-2 text-xs font-semibold text-foreground/80"
+                                    >
+                                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                        <span className="truncate">{file}</span>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-xs text-muted-foreground font-medium">
+                                    No uploads yet. Add a document to start.
+                                </p>
+                            )}
+                        </div>
+                        <Button
+                            variant="outline"
+                            onClick={handleUploadDocument}
+                            className="mt-4 h-9 rounded-xl border-foreground/10 text-primary hover:bg-primary/10 gap-2 text-[10px] uppercase tracking-[0.2em] font-bold"
+                        >
+                            <Upload size={12} />
+                            Upload Notes
+                        </Button>
+                    </div>
 
-                <div className="stagger-card">
-                    <IntentCards
-                        onPracticeSkills={handlePracticeSkills}
-                        onQuickTest={handleQuickTest}
-                        onLearnTricks={handleLearnTricks}
-                        onUploadDocument={handleUploadDocument}
-                    />
-                </div>
+                    <div className="glass-card p-5 sm:p-6 border border-foreground/10 rounded-[24px]">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <CalendarClock size={18} />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                Upcoming Exam
+                            </span>
+                        </div>
+                        <div className="text-lg font-bold text-foreground">
+                            {userExamType ? `${userExamType} Prep` : 'No exam selected'}
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium">
+                            {userExamType
+                                ? 'Set milestones and practice daily.'
+                                : 'Choose your exam type to get tailored prep.'}
+                        </p>
+                        <Button
+                            variant="outline"
+                            onClick={() => navigate('/dashboard/profile')}
+                            className="mt-4 h-9 rounded-xl border-foreground/10 text-primary hover:bg-primary/10 gap-2 text-[10px] uppercase tracking-[0.2em] font-bold"
+                        >
+                            Update Profile
+                        </Button>
+                    </div>
+
+                    <div className="glass-card p-5 sm:p-6 border border-foreground/10 rounded-[24px]">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <BrainCircuit size={18} />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                Daily XP
+                            </span>
+                        </div>
+                        <div className="text-2xl font-black tracking-tight">
+                            {dailyPoints.toLocaleString()}
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium">
+                            Points earned today
+                        </p>
+                        <Button
+                            onClick={() => navigate('/dashboard/ai-assistant')}
+                            className="mt-4 h-9 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold gap-2"
+                        >
+                            <MessageCircle size={12} />
+                            Ask AI
+                        </Button>
+                    </div>
+                </section>
+
+                    <section className="grid grid-cols-1 xl:grid-cols-2 gap-8 md:gap-12 items-stretch">
+                        <div className="flex flex-col h-full">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
+                                    Daily Pulse
+                                </span>
+                            </div>
+                            <div className="flex-1 glass p-4 sm:p-6 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl">
+                                <BrainDropSection
+                                    isCompleted={isBrainDropCompleted}
+                                    question={brainDropQuestion}
+                                    onAnswer={handleBrainDropSubmission}
+                                    onUploadClick={handleReadyToLearn}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="flex flex-col h-full">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
+                                    Quick Actions
+                                </span>
+                            </div>
+                            <div className="flex-1 glass p-2 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl group">
+                                <IntentCards
+                                    onPracticeSkills={handlePracticeSkills}
+                                    onQuickTest={handleQuickTest}
+                                    onLearnTricks={handleLearnTricks}
+                                    onUploadDocument={handleUploadDocument}
+                                />
+                            </div>
+                        </div>
+                    </section>
+
 
                 <AnimatePresence>
                     {showContextCard && (
@@ -689,7 +877,17 @@ export default function DashboardHome() {
                     )}
                 </AnimatePresence>
 
-                <div className="workspace-area">
+                <section className="workspace-area space-y-6">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                                Study Workspace
+                            </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground/70">
+                            Upload documents, then choose what to generate.
+                        </span>
+                    </div>
                     {session.pdfSelections.length > 0 ? (
                         <>
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-10 stagger-card">
@@ -745,19 +943,14 @@ export default function DashboardHome() {
                             />
                         </>
                     ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 stagger-card">
-                            <div className="lg:col-span-7">
-                                <UploadPrompt
-                                    onSelectionComplete={handleSelectionComplete}
-                                    onReadyToLearn={handleReadyToLearn}
-                                />
-                            </div>
-                            <div className="lg:col-span-5">
-                                <UploadSidebar onReadyToLearn={handleReadyToLearn} />
-                            </div>
+                        <div className="stagger-card">
+                            <UploadPrompt
+                                onSelectionComplete={handleSelectionComplete}
+                                onReadyToLearn={handleReadyToLearn}
+                            />
                         </div>
                     )}
-                </div>
+                </section>
             </div>
 
             <QuickTestModal

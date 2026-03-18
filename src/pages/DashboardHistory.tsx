@@ -60,7 +60,7 @@ const DashboardHistory = () => {
                 )
                     .toLowerCase()
                     .includes(searchQuery.toLowerCase()) ||
-                (item.summary || item.content || '')
+                (item.summaryText || item.summary || item.content || '')
                     .toLowerCase()
                     .includes(searchQuery.toLowerCase());
 
@@ -121,23 +121,50 @@ const DashboardHistory = () => {
     }
 
     return (
-        <div className="w-full space-y-6 sm:space-y-8 pb-24 sm:pb-32 px-4 sm:px-6">
-            <HistoryHeader
-                activeType={activeType}
-                onTypeChange={setActiveType}
-            />
+        <div className="w-full space-y-8 sm:space-y-12 pb-24 sm:pb-32 px-4 sm:px-6 md:px-8 xl:px-10 pt-6 md:pt-12">
+            <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                        History
+                    </span>
+                </div>
+                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+                    <div className="space-y-2">
+                        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                            Learning History
+                        </h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
+                            Review your notes, quizzes, and AI sessions in one
+                            searchable feed.
+                        </p>
+                    </div>
+                    <HistoryHeader
+                        activeType={activeType}
+                        onTypeChange={setActiveType}
+                    />
+                </div>
+            </div>
 
-            <HistoryStatsRow stats={stats} />
+            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+                <HistoryStatsRow stats={stats} />
+            </div>
 
-            <HistorySearchBar
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-            />
+            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6 space-y-4">
+                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                    Search & Filters
+                </div>
+                <HistorySearchBar
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                />
+            </div>
 
-            <HistoryList
-                items={filteredHistory}
-                onSelect={setSelectedItem}
-            />
+            <div className="glass-card border-foreground/10 rounded-[28px] p-2 sm:p-4">
+                <HistoryList
+                    items={filteredHistory}
+                    onSelect={setSelectedItem}
+                />
+            </div>
 
             <HistoryDetailModal
                 item={selectedItem}

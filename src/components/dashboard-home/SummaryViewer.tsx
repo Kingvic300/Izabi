@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { AIMarkdown } from '@/components/ui/ai-markdown';
-import { Volume2, Pause, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Volume2, Pause, Loader2 } from 'lucide-react';
 import { api } from '@/lib/apiClient';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
@@ -15,9 +14,15 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import {
+    SummaryContent,
+    getSummaryText,
+    parseStructuredSummary,
+} from '@/lib/summaryUtils';
+import { StructuredSummaryContent } from '@/components/dashboard-home/StructuredSummaryContent';
 
 interface SummaryViewerProps {
-    content: string;
+    content: SummaryContent;
     audioLabel?: string;
 }
 
@@ -29,7 +34,9 @@ export const SummaryViewer = ({ content, audioLabel = 'Listen to Summary' }: Sum
     const [voiceId, setVoiceId] = useState('default');
     const [playbackRate, setPlaybackRate] = useState(1);
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    const isLong = content.length > 800;
+    const audioCacheRef = useRef<Map<string, string>>(new Map());
+    const structured = parseStructuredSummary(content);
+    const summaryText = getSummaryText(content);
 
     const voiceOptions = useMemo(() => {
         if (language === 'pidgin' || language === 'en') {
@@ -101,6 +108,20 @@ export const SummaryViewer = ({ content, audioLabel = 'Listen to Summary' }: Sum
         setIsPlaying(false);
     }, [voiceId, language]);
 
+    const buildVoiceKey = (
+        text: string,
+        lang: string,
+        voice: string,
+        rate: number,
+    ) => {
+        const normalized = text.trim();
+        let hash = 5381;
+        for (let i = 0; i < normalized.length; i += 1) {
+            hash = (hash * 33) ^ normalized.charCodeAt(i);
+        }
+        return `${lang}:${voice}:${rate.toFixed(2)}:${hash >>> 0}`;
+    };
+
     const handlePlaySummary = async () => {
         if (isPlaying) {
             audioRef.current?.pause();
@@ -113,6 +134,8 @@ export const SummaryViewer = ({ content, audioLabel = 'Listen to Summary' }: Sum
             setIsPlaying(true);
             return;
         }
+
+        if (!summaryText.trim()) return;
 
         setIsLoadingAudio(true);
         try {
@@ -127,14 +150,34 @@ export const SummaryViewer = ({ content, audioLabel = 'Listen to Summary' }: Sum
             const isPidgin = language === 'pidgin';
             const baseLang = langMap[language] || 'en';
             const voiceLang = voiceId !== 'default' ? voiceId : baseLang;
+            const cacheKey = buildVoiceKey(
+                summaryText.substring(0, 1000),
+                baseLang,
+                voiceLang,
+                playbackRate,
+            );
+
+            const cachedUrl = audioCacheRef.current.get(cacheKey);
+            if (cachedUrl) {
+                const cachedAudio = new Audio(cachedUrl);
+                cachedAudio.playbackRate = playbackRate;
+                audioRef.current = cachedAudio;
+                cachedAudio.onended = () => setIsPlaying(false);
+                cachedAudio.onpause = () => setIsPlaying(false);
+                await cachedAudio.play();
+                setIsPlaying(true);
+                return;
+            }
+
             const res = await api.generateVoice(
-                content.substring(0, 1000),
+                summaryText.substring(0, 1000),
                 baseLang,
                 isPidgin,
                 { voice: voiceLang, speed: playbackRate },
             );
 
             if (res.success && res.voiceUrl) {
+                audioCacheRef.current.set(cacheKey, res.voiceUrl);
                 const audio = new Audio(res.voiceUrl);
                 audio.playbackRate = playbackRate;
                 audioRef.current = audio;
@@ -217,7 +260,14 @@ export const SummaryViewer = ({ content, audioLabel = 'Listen to Summary' }: Sum
             </div>
 
             <div className="selection:bg-primary/30">
-                <AIMarkdown content={content} className="text-sm md:text-base" />
+                {structured ? (
+                    <StructuredSummaryContent summary={structured} />
+                ) : (
+                    <AIMarkdown
+                        content={summaryText}
+                        className="text-sm md:text-base"
+                    />
+                )}
             </div>
         </div>
     );

@@ -179,14 +179,23 @@ const DashboardProfile = () => {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-8 w-full min-w-0 pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
+            className="space-y-8 md:space-y-12 w-full min-w-0 pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
         >
-            <ProfileHeader
-                isEditing={isEditing}
-                isSaving={loading}
-                onToggleEdit={() => setIsEditing(!isEditing)}
-                onSave={handleSaveProfile}
-            />
+            <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                        Profile
+                    </span>
+                </div>
+                <div className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6">
+                    <ProfileHeader
+                        isEditing={isEditing}
+                        isSaving={loading}
+                        onToggleEdit={() => setIsEditing(!isEditing)}
+                        onSave={handleSaveProfile}
+                    />
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                 <div className="md:col-span-4 space-y-6">

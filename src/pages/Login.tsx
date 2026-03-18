@@ -239,7 +239,7 @@ const Login = () => {
 
             <div
                 ref={cardRef}
-                className="w-full max-w-[480px] space-y-6 sm:space-y-8 relative z-10"
+                className="w-full max-w-full sm:max-w-[480px] space-y-6 sm:space-y-8 relative z-10 px-1"
             >
                 {/* Branding */}
                 <div className="text-center space-y-3 sm:space-y-4">
@@ -382,7 +382,6 @@ const Login = () => {
                                                 'Google sign-in failed. Please try again or use your email and password.',
                                         });
                                     }}
-                                    useOneTap
                                     label="Sign in with Google"
                                 />
                             </div>

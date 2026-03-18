@@ -395,32 +395,49 @@ const DashboardExams = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
-                            <ExamLobby
-                                activeTab={activeTab}
-                                onTabChange={setActiveTab}
-                                showResume={
-                                    typeof window !== 'undefined' &&
-                                    Boolean(localStorage.getItem('active_exam'))
-                                }
-                                onResume={() => setView('exam')}
-                                simSubject={simSubject}
-                                simUniName={simUniName}
-                                simCourseTitle={simCourseTitle}
-                                onSimSubjectChange={setSimSubject}
-                                onSimUniNameChange={setSimUniName}
-                                onSimCourseTitleChange={setSimCourseTitle}
-                                onStartSimulation={startSimulation}
-                                isSimulating={isSimulating}
-                                selectedFile={selectedFile}
-                                onSelectFile={setSelectedFile}
-                                onStartNotePractice={startNotePractice}
-                                isNotePracticing={isNotePracticing}
-                                recentResults={recentResults}
-                                onSelectResult={(result) => {
-                                    setSelectedResult(result);
-                                    setView('review');
-                                }}
-                            />
+                            <div className="space-y-6">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                                        Exams
+                                    </span>
+                                </div>
+                              
+
+                                <div className="glass-card border-foreground/10 rounded-[32px] p-4 sm:p-6">
+                                    <ExamLobby
+                                        activeTab={activeTab}
+                                        onTabChange={setActiveTab}
+                                        showResume={
+                                            typeof window !== 'undefined' &&
+                                            Boolean(
+                                                localStorage.getItem(
+                                                    'active_exam',
+                                                ),
+                                            )
+                                        }
+                                        onResume={() => setView('exam')}
+                                        simSubject={simSubject}
+                                        simUniName={simUniName}
+                                        simCourseTitle={simCourseTitle}
+                                        onSimSubjectChange={setSimSubject}
+                                        onSimUniNameChange={setSimUniName}
+                                        onSimCourseTitleChange={
+                                            setSimCourseTitle
+                                        }
+                                        onStartSimulation={startSimulation}
+                                        isSimulating={isSimulating}
+                                        selectedFile={selectedFile}
+                                        onSelectFile={setSelectedFile}
+                                        onStartNotePractice={startNotePractice}
+                                        isNotePracticing={isNotePracticing}
+                                        recentResults={recentResults}
+                                        onSelectResult={(result) => {
+                                            setSelectedResult(result);
+                                            setView('review');
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         </motion.div>
                     )}
                     {view === 'exam' && (

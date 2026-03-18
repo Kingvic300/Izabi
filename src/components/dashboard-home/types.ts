@@ -1,3 +1,5 @@
+import type { SummaryContent } from '@/lib/summaryUtils';
+
 export type ModuleCardId = 'summarize' | 'quiz' | 'guide' | 'cards';
 export type ModuleCardStatus = 'idle' | 'processing' | 'completed' | 'failed';
 export type QuizDifficulty = 'easy' | 'balanced' | 'hard';
@@ -25,7 +27,7 @@ export interface Flashcard {
 }
 
 export interface DashboardSession {
-    summary: string | null;
+    summary: SummaryContent;
     studyGuide: string;
     questions: Question[];
     flashcards: Flashcard[];

@@ -1,3 +1,8 @@
+import {
+    getSummaryText,
+    normalizeSummaryContent,
+} from '@/lib/summaryUtils';
+
 const extractItems = (res: any) => {
     if (!res) return [];
     if (Array.isArray(res)) return res;
@@ -18,12 +23,17 @@ export const normalizeHistory = (
     const chats = extractItems(chatsRes);
 
     return [
-        ...generations.map((g: any) => ({
-            ...g,
-            hType: 'generation',
-            hDate: g.createdAt || g.timestamp || new Date(),
-            title: g.fileName || g.topic || 'Study Material',
-        })),
+        ...generations.map((g: any) => {
+            const summary = normalizeSummaryContent(g.summary);
+            return {
+                ...g,
+                hType: 'generation',
+                hDate: g.createdAt || g.timestamp || new Date(),
+                title: g.fileName || g.topic || 'Study Material',
+                summary,
+                summaryText: getSummaryText(summary),
+            };
+        }),
         ...quizResults.map((q: any) => ({
             ...q,
             hType: 'quiz',

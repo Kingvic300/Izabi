@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Trophy, Flame, Zap, BadgeCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,6 +13,7 @@ import { Podium } from '@/components/dashboard-leaderboard/Podium';
 import { LeaderboardTable } from '@/components/dashboard-leaderboard/LeaderboardTable';
 import { ShareRankDialog } from '@/components/dashboard-leaderboard/ShareRankDialog';
 import { useLeaderboardShare } from '@/components/dashboard-leaderboard/useLeaderboardShare';
+import { getLeaderboardSocket } from '@/lib/leaderboardSocket';
 
 export default function DashboardLeaderboard() {
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardData>({
@@ -35,21 +36,33 @@ export default function DashboardLeaderboard() {
         handleCopyShare,
     } = useLeaderboardShare();
 
-    useEffect(() => {
-        const fetchLeaderboard = async () => {
-            try {
-                const res = await api.getLeaderboard();
-                if (res.success && res.data) {
-                    setLeaderboardData(res.data);
-                }
-            } catch (error) {
-                console.error('Failed to fetch leaderboard', error);
-            } finally {
-                setIsLoading(false);
+    const fetchLeaderboard = useCallback(async () => {
+        try {
+            const res = await api.getLeaderboard();
+            if (res.success && res.data) {
+                setLeaderboardData(res.data);
             }
-        };
-        fetchLeaderboard();
+        } catch (error) {
+            console.error('Failed to fetch leaderboard', error);
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchLeaderboard();
+    }, [fetchLeaderboard]);
+
+    useEffect(() => {
+        const socket = getLeaderboardSocket();
+        const handleUpdate = () => {
+            fetchLeaderboard();
+        };
+        socket.on('leaderboard:updated', handleUpdate);
+        return () => {
+            socket.off('leaderboard:updated', handleUpdate);
+        };
+    }, [fetchLeaderboard]);
 
     useGSAP(() => {
         if (!isLoading) {
@@ -67,7 +80,7 @@ export default function DashboardLeaderboard() {
     return (
         <div
             ref={containerRef}
-            className="space-y-6 md:space-y-8 pb-20 w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-0"
+            className="space-y-8 md:space-y-12 pb-20 w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 md:pt-12"
         >
             {!isAdmin ? (
                 <ShareRankDialog
@@ -78,87 +91,119 @@ export default function DashboardLeaderboard() {
                 />
             ) : null}
 
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 pb-6 border-b border-foreground/5">
-                <div className="space-y-2">
-                    <Badge
-                        variant="outline"
-                        className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-[10px] tracking-widest uppercase mb-1"
+            <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                        Leaderboard
+                    </span>
+                </div>
+                <header className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
+                    <div className="space-y-2">
+                        <Badge
+                            variant="outline"
+                            className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-[10px] tracking-widest uppercase mb-1"
+                        >
+                            Global Rankings
+                        </Badge>
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter leading-none">
+                            The <span className="text-gradient">scholar spotlight</span>
+                        </h1>
+                        <p className="text-muted-foreground text-sm sm:text-base font-medium max-w-none">
+                            See where you stand among the top scholars. Compete
+                            for XP or maintain your daily study consistency.
+                        </p>
+                    </div>
+
+                    <YourRankCard
+                        activeTab={activeTab}
+                        isLoading={isLoading}
+                        isSharing={isSharing}
+                        userRank={leaderboardData.userRank}
+                        onShare={() => handleShare(activeTab)}
+                        showShare={!isAdmin}
+                    />
+                </header>
+            </div>
+
+            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+                <Tabs
+                    defaultValue="xp"
+                    className="w-full"
+                    onValueChange={(value) =>
+                        setActiveTab(value as LeaderboardType)
+                    }
+                >
+                    <div className="flex justify-center mb-6 sm:mb-10 overflow-x-auto pb-2 scrollbar-none">
+                        <TabsList className="bg-card/5 border border-foreground/10 p-1 rounded-full h-12 sm:h-14">
+                            <TabsTrigger
+                                value="xp"
+                                className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
+                            >
+                                <Zap
+                                    size={14}
+                                    className="sm:w-4 sm:h-4"
+                                />{' '}
+                                Total XP
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="streak"
+                                className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-orange-500 data-[state=active]:text-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
+                            >
+                                <Flame
+                                    size={14}
+                                    className="sm:w-4 sm:h-4"
+                                />{' '}
+                                Top Streaks
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
+
+                    <TabsContent value="xp" className="space-y-6 sm:space-y-10">
+                        <Podium
+                            users={leaderboardData.topStudents || []}
+                            type="xp"
+                            currentUserId={currentUserId}
+                        />
+
+                        <LeaderboardTable
+                            users={leaderboardData.topStudents || []}
+                            type="xp"
+                            currentUserId={currentUserId}
+                            title="Leaderboard Standings"
+                            icon={
+                                <Trophy
+                                    className="text-primary sm:w-5 sm:h-5"
+                                    size={18}
+                                />
+                            }
+                        />
+                    </TabsContent>
+
+                    <TabsContent
+                        value="streak"
+                        className="space-y-6 sm:space-y-10"
                     >
-                        Global Rankings
-                    </Badge>
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter leading-none">
-                        Hall of <span className="text-gradient">Fame</span>
-                    </h1>
-                    <p className="text-muted-foreground text-sm sm:text-base font-medium max-w-lg">
-                        See where you stand among the top scholars. Compete for
-                        XP or maintain your daily study consistency.
-                    </p>
-                </div>
+                        <Podium
+                            users={leaderboardData.topStreaks || []}
+                            type="streak"
+                            currentUserId={currentUserId}
+                        />
 
-                <YourRankCard
-                    activeTab={activeTab}
-                    isLoading={isLoading}
-                    isSharing={isSharing}
-                    userRank={leaderboardData.userRank}
-                    onShare={() => handleShare(activeTab)}
-                    showShare={!isAdmin}
-                />
-            </header>
-
-            <Tabs
-                defaultValue="xp"
-                className="w-full"
-                onValueChange={(value) => setActiveTab(value as LeaderboardType)}
-            >
-                <div className="flex justify-center mb-6 sm:mb-10 overflow-x-auto pb-2 scrollbar-none">
-                    <TabsList className="bg-card/5 border border-foreground/10 p-1 rounded-full h-12 sm:h-14">
-                        <TabsTrigger
-                            value="xp"
-                            className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
-                        >
-                            <Zap size={14} className="sm:w-4 sm:h-4" /> Total XP
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="streak"
-                            className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-orange-500 data-[state=active]:text-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
-                        >
-                            <Flame size={14} className="sm:w-4 sm:h-4" /> Top Streaks
-                        </TabsTrigger>
-                    </TabsList>
-                </div>
-
-                <TabsContent value="xp" className="space-y-6 sm:space-y-10">
-                    <Podium
-                        users={leaderboardData.topStudents || []}
-                        type="xp"
-                        currentUserId={currentUserId}
-                    />
-
-                    <LeaderboardTable
-                        users={leaderboardData.topStudents || []}
-                        type="xp"
-                        currentUserId={currentUserId}
-                        title="Leaderboard Standings"
-                        icon={<Trophy className="text-primary sm:w-5 sm:h-5" size={18} />}
-                    />
-                </TabsContent>
-
-                <TabsContent value="streak" className="space-y-6 sm:space-y-10">
-                    <Podium
-                        users={leaderboardData.topStreaks || []}
-                        type="streak"
-                        currentUserId={currentUserId}
-                    />
-
-                    <LeaderboardTable
-                        users={leaderboardData.topStreaks || []}
-                        type="streak"
-                        currentUserId={currentUserId}
-                        title="Persistence Rankings"
-                        icon={<Flame className="text-orange-500 sm:w-5 sm:h-5" size={18} />}
-                    />
-                </TabsContent>
-            </Tabs>
+                        <LeaderboardTable
+                            users={leaderboardData.topStreaks || []}
+                            type="streak"
+                            currentUserId={currentUserId}
+                            title="Persistence Rankings"
+                            icon={
+                                <Flame
+                                    className="text-orange-500 sm:w-5 sm:h-5"
+                                    size={18}
+                                />
+                            }
+                        />
+                    </TabsContent>
+                </Tabs>
+            </div>
         </div>
     );
 }

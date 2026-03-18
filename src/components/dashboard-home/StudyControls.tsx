@@ -43,33 +43,43 @@ export const StudyControls = ({
     };
 
     return (
-        <Card className="glass border-foreground/5 rounded-[24px] sm:rounded-[40px] shadow-2xl overflow-hidden relative border">
-            <div id="study-modes-grid" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-px bg-foreground/5">
-                {MODULE_CARDS.map((module) => (
-                    <ModuleCard
-                        key={module.id}
-                        {...module}
-                        status={moduleStatuses[module.id]}
-                        isProcessing={isProcessing}
-                        numberOfQuestions={numberOfQuestions}
-                        onClick={getModuleHandler(module)}
-                    />
-                ))}
-            </div>
+        <div className="space-y-6">
+            <Card className="relative overflow-hidden rounded-[32px] border border-foreground/5 bg-card/30 backdrop-blur-xl shadow-2xl transition-all duration-500">
+                <div id="study-modes-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-y divide-foreground/5">
+                    {MODULE_CARDS.map((module) => (
+                        <ModuleCard
+                            key={module.id}
+                            {...module}
+                            status={moduleStatuses[module.id]}
+                            isProcessing={isProcessing}
+                            numberOfQuestions={numberOfQuestions}
+                            onClick={getModuleHandler(module)}
+                        />
+                    ))}
+                </div>
+            </Card>
 
-            <SettingsPanel
-                numberOfQuestions={numberOfQuestions}
-                quizDifficulty={quizDifficulty}
-                quizStyle={quizStyle}
-                shuffleQuestions={shuffleQuestions}
-                showExplanations={showExplanations}
-                isProcessing={isProcessing}
-                onQuestionsChange={onQuestionsChange}
-                onDifficultyChange={onDifficultyChange}
-                onStyleChange={onStyleChange}
-                onShuffleChange={onShuffleChange}
-                onExplanationsChange={onExplanationsChange}
-            />
-        </Card>
+            <Card className="rounded-[32px] border border-foreground/5 bg-card/30 backdrop-blur-xl p-8 shadow-xl">
+                <div className="flex items-center gap-3 mb-8">
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">
+                        Engine Parameters
+                    </span>
+                    <div className="h-px flex-1 bg-foreground/5" />
+                </div>
+                <SettingsPanel
+                    numberOfQuestions={numberOfQuestions}
+                    quizDifficulty={quizDifficulty}
+                    quizStyle={quizStyle}
+                    shuffleQuestions={shuffleQuestions}
+                    showExplanations={showExplanations}
+                    isProcessing={isProcessing}
+                    onQuestionsChange={onQuestionsChange}
+                    onDifficultyChange={onDifficultyChange}
+                    onStyleChange={onStyleChange}
+                    onShuffleChange={onShuffleChange}
+                    onExplanationsChange={onExplanationsChange}
+                />
+            </Card>
+        </div>
     );
 };

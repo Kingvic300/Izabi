@@ -87,7 +87,11 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
             <div className="absolute inset-0 z-10 opacity-0 [&_div]:w-full [&_div]:h-full [&_iframe]:w-full [&_iframe]:h-full">
                 <GoogleLogin
                     onSuccess={onSuccess}
-                    onError={onError}
+                    onError={(err) => {
+                        // FedCM AbortError is noisy but expected when user dismisses the prompt.
+                        if ((err as any)?.type === 'popup_closed_by_user') return;
+                        onError();
+                    }}
                     useOneTap={useOneTap}
                     theme="outline"
                     size="large"

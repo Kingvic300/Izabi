@@ -8,7 +8,7 @@ export default function SettingsHeader({
     return (
         <div className="settings-header">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-2">
-                System <span className="text-gradient">Preferences</span>
+                Tune your <span className="text-gradient">workspace</span>
             </h1>
             <p className="text-muted-foreground font-medium text-base sm:text-lg">
                 {subtitle}

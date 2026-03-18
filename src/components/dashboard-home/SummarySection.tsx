@@ -7,10 +7,11 @@ import { Brain, Download, ChevronDown, ChevronUp } from 'lucide-react';
 import { SummaryViewer } from '@/components/dashboard-home/SummaryViewer';
 import { countWords } from '@/lib/quizUtils';
 import { cn } from '@/lib/utils';
+import { SummaryContent, getSummaryText } from '@/lib/summaryUtils';
 
 
 interface SummarySectionProps {
-    content: string;
+    content: SummaryContent;
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
     onDownload: () => void;
@@ -30,7 +31,8 @@ export const SummarySection = ({
     iconColor = 'text-blue-400',
     audioLabel,
 }: SummarySectionProps) => {
-    const wordCount = countWords(content);
+    const summaryText = getSummaryText(content);
+    const wordCount = countWords(summaryText);
 
     return (
         <div id="summary-result-section">
