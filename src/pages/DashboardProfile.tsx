@@ -35,26 +35,26 @@ const DashboardProfile = () => {
 
     // Load profile on mount
     useEffect(() => {
-        /*
-         * How: Fetches user profile data from the backend using the stored userId.
-         * Why: To populate the form with existing user data for viewing or editing.
-         */
         const loadProfile = async () => {
             try {
                 const response = await apiClient.get(`/api/user/profile`);
                 const userData = response.data.data;
+                const activeEmail = userData.email || localStorage.getItem('userEmail') || '';
+                
                 setProfileData((prev) => ({
                     ...prev,
                     ...userData,
-                    email: localStorage.getItem('userEmail') || userData.email,
+                    email: activeEmail,
                 }));
+                
                 if (userData.firstName)
                     localStorage.setItem('userFirstName', userData.firstName);
                 if (userData.lastName)
                     localStorage.setItem('userLastName', userData.lastName);
+                    
                 syncAvatarInStorage(
                     userData.profilePicturePath || '',
-                    userData.email || profileData.email,
+                    activeEmail,
                 );
             } catch (err) {
                 console.error('Error loading profile:', err);

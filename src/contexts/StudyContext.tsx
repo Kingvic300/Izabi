@@ -18,6 +18,7 @@ interface StudyJob {
     progress: number;
     type: string;
     result?: any;
+    startedAt?: number;
 }
 
 interface StudySession {
@@ -69,7 +70,7 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
     const addJob = useCallback((id: string, fileNames: string[], type: string) => {
         setActiveJobs((prev) => [
             ...prev,
-            { id, fileName: fileNames.join(', '), status: 'PENDING', progress: 0, type },
+            { id, fileName: fileNames.join(', '), status: 'PENDING', progress: 0, type, startedAt: Date.now() },
         ]);
         setSession((prev) => ({ ...prev, lastJobId: id, fileNames }));
     }, []);
@@ -123,6 +124,13 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
             );
 
             for (const job of jobsToPoll) {
+                // Check timeout: 2 minutes (120,000 ms)
+                if (job.startedAt && (Date.now() - job.startedAt) > 120000) {
+                    console.error('Job timed out after 2 minutes', job.id);
+                    updateJobStatus(job.id, { status: 'FAILED' });
+                    continue;
+                }
+
                 try {
                     const statusData = await api.getJobStatus(job.id);
                     // Standardize access to the nested data property
