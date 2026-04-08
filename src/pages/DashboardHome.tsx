@@ -587,7 +587,7 @@ export default function DashboardHome() {
         <ErrorBoundary>
             <div
                 ref={containerRef}
-                className="w-full max-w-[1780px] mx-auto px-3 sm:px-8 md:px-12 lg:px-16 pt-8 md:pt-16 pb-32 space-y-12 md:space-y-20 rounded-[24px] sm:rounded-[40px] lg:rounded-[48px] border border-foreground/10 bg-card/20 backdrop-blur-xl"
+                className="full-bleed w-full max-w-[1780px] mx-auto px-0 sm:px-6 md:px-10 lg:px-16 pt-6 md:pt-16 pb-32 space-y-12 md:space-y-20 rounded-none sm:rounded-[32px] lg:rounded-[48px] border-0 sm:border border-foreground/10 bg-card/20 backdrop-blur-xl"
             >
                 {/* Header Section */}
                 <header className="space-y-6">

@@ -261,7 +261,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
     };
 
     return (
-        <div className={cn('space-y-8', className)}>
+        <div className={cn('space-y-8 full-bleed sm:mx-auto px-0', className)}>
             {/* Error handling handled via toast in useApiError */}
 
             {success && (
@@ -301,7 +301,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                              className="space-y-10"
                          >
                              {/* Main Content - Two Column/Stacked Hybrid */}
-                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
                                  {/* Primary: File Upload */}
                                  <motion.div
                                      initial={{ opacity: 0, x: -20 }}
@@ -309,7 +309,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                                      transition={{ delay: 0.2 }}
                                      className="relative group"
                                  >
-                                     <div className="relative bg-foreground/[0.02] border border-foreground/5 rounded-[32px] p-8 space-y-8 shadow-2xl transition-all duration-500 hover:border-primary/20">
+                                     <div className="relative bg-foreground/[0.02] border border-foreground/5 rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 space-y-8 shadow-2xl transition-all duration-500 hover:border-primary/20">
                                          <div className="flex items-start justify-between">
                                              <div className="space-y-2">
                                                  <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-lg">
@@ -344,7 +344,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                                              htmlFor="file-upload-redesign"
                                              className="block cursor-pointer group/label"
                                          >
-                                             <div className="relative border-2 border-dashed border-foreground/10 group-hover/label:border-primary/40 rounded-[28px] p-10 text-center transition-all duration-500 bg-foreground/[0.01] group-hover/label:bg-primary/[0.03]">
+                                             <div className="relative border-2 border-dashed border-foreground/10 group-hover/label:border-primary/40 rounded-[20px] sm:rounded-[28px] p-6 sm:p-10 text-center transition-all duration-500 bg-foreground/[0.01] group-hover/label:bg-primary/[0.03]">
                                                  <div className="space-y-6">
                                                      <div className="relative inline-block">
                                                          <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-0 group-hover/label:opacity-100 transition-opacity" />

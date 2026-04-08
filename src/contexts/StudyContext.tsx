@@ -110,19 +110,14 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Polling logic for all active jobs
     useEffect(() => {
-        let attempts = 0;
         let timeout: number | undefined;
-        const baseDelay = 1500;
-        const maxDelay = 12000;
+        const pollingInterval = 1500; // Fast polling for snappy UI updates
 
         const scheduleNext = () => {
-            const exponent = Math.min(Math.floor(attempts / 4), 4);
-            const delay = Math.min(maxDelay, baseDelay * Math.pow(2, exponent));
-            timeout = window.setTimeout(tick, delay);
+            timeout = window.setTimeout(tick, pollingInterval);
         };
 
         const tick = async () => {
-            attempts += 1;
             const jobsToPoll = activeJobs.filter(
                 (j) => j.status === 'PENDING' || j.status === 'PROCESSING',
             );

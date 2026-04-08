@@ -79,6 +79,45 @@
     }
 }
 
+/* Utility: force edge-to-edge on mobile, revert to normal on sm+ */
+.full-bleed {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+}
+@media (min-width: 640px) {
+    .full-bleed {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+/* Remove mobile side gutters so layouts can stretch edge-to-edge */
+@media (max-width: 640px) {
+    nav > .w-full,
+    header > .w-full,
+    main > .w-full,
+    section > .w-full,
+    footer > .w-full {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
+/* Remove all decorative borders site-wide */
+.border,
+.border-2,
+.border-4,
+[class*='border-foreground\\/'],
+[class*='border-primary\\/'],
+[class*='border-secondary\\/'],
+[class*='border-muted\\/'],
+[class*='border-accent\\/'] {
+    border-width: 0 !important;
+    border-color: transparent !important;
+}
+
 @layer base {
     * {
         @apply border-border selection:bg-primary/30;
@@ -328,6 +367,24 @@
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: hsl(var(--foreground) / 0.2);
+    }
+
+    /* 3D Flip Utilities */
+    .perspective-1000 {
+        perspective: 1000px;
+    }
+
+    .preserve-3d {
+        transform-style: preserve-3d;
+    }
+
+    .backface-hidden {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+
+    .rotate-y-180 {
+        transform: rotateY(180deg);
     }
 }
 

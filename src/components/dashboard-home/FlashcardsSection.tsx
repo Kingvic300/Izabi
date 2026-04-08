@@ -82,7 +82,7 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
                                         <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30">
                                             Front
                                         </div>
-                                        <p className="text-base sm:text-xl md:text-2xl font-bold text-center text-foreground break-words leading-snug">
+                                        <p className="text-base sm:text-lg md:text-xl font-bold text-center text-foreground break-words leading-normal whitespace-pre-wrap">
                                             {flashcards[currentCardIndex]?.front}
                                         </p>
                                     </div>
@@ -90,7 +90,7 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
                                         <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30 text-primary">
                                             Back
                                         </div>
-                                        <p className="text-sm sm:text-lg md:text-xl font-bold text-center text-foreground/90 leading-relaxed break-words">
+                                        <p className="text-sm sm:text-base md:text-lg font-bold text-center text-foreground/90 leading-relaxed break-words whitespace-pre-wrap">
                                             {flashcards[currentCardIndex]?.back}
                                         </p>
                                     </div>

@@ -24,7 +24,7 @@ export const UploadPrompt = ({ onSelectionComplete, onReadyToLearn }: UploadProm
     return (
         <Card
             id="upload-section"
-            className="relative overflow-hidden rounded-[32px] border border-foreground/5 bg-card/30 backdrop-blur-xl shadow-2xl transition-all duration-500"
+            className="relative overflow-hidden rounded-none sm:rounded-[32px] border-0 sm:border border-foreground/5 bg-card/30 backdrop-blur-xl shadow-2xl transition-all duration-500 full-bleed sm:mx-auto"
         >
             <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
                 <Database size={160} className="text-primary" />
@@ -57,9 +57,9 @@ export const UploadPrompt = ({ onSelectionComplete, onReadyToLearn }: UploadProm
                 </div>
             </CardHeader>
 
-            <CardContent className="px-8 md:px-12 pb-12">
-                <div className="rounded-[32px] border border-foreground/5 bg-background/40 backdrop-blur-md p-2 shadow-inner group">
-                    <div className="p-6 md:p-8 space-y-8">
+            <CardContent className="px-4 sm:px-8 md:px-12 pb-10 sm:pb-12">
+                <div className="rounded-[24px] sm:rounded-[32px] border border-foreground/5 bg-background/40 backdrop-blur-md p-1.5 sm:p-2 shadow-inner group">
+                    <div className="p-5 sm:p-6 md:p-8 space-y-8">
                         <div className="flex items-center justify-between gap-4">
                             <div>
                                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/60">
