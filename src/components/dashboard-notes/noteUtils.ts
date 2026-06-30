@@ -3,6 +3,9 @@ import type { Note, NoteGroup } from './noteTypes';
 export const getNoteId = (note: Partial<Note> | any): string =>
     String(note?.id || note?._id || '');
 
+const toDate = (value: any): Date =>
+    value instanceof Date ? value : new Date(value || Date.now());
+
 export const normalizeNote = (note: any): Note => ({
     ...note,
     id: getNoteId(note),
@@ -12,6 +15,8 @@ export const normalizeNote = (note: any): Note => ({
         typeof note?.groupId === 'object'
             ? note?.groupId?._id || note?.groupId?.id || null
             : note?.groupId || null,
+    createdAt: toDate(note?.createdAt),
+    updatedAt: toDate(note?.updatedAt),
 });
 
 export const getGroupId = (group: Partial<NoteGroup> | any): string =>
