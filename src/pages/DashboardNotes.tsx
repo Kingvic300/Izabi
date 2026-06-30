@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Clock, FileText, FolderOpen, Filter } from 'lucide-react';
 import { useAppToast } from '@/hooks/useAppToast';
 import { formValidation } from '@/lib/formValidation';
@@ -34,6 +35,7 @@ export default function DashboardNotes() {
     const containerRef = useRef<HTMLDivElement>(null);
     const hasLoadedOnceRef = useRef(false);
     const appToast = useAppToast();
+    const navigate = useNavigate();
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAddingNote, setIsAddingNote] = useState(false);
@@ -41,6 +43,7 @@ export default function DashboardNotes() {
     const [editingSnapshot, setEditingSnapshot] = useState<Note | null>(null);
     const [savingId, setSavingId] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+    const [sendingToAIId, setSendingToAIId] = useState<string | null>(null);
     const [readingNote, setReadingNote] = useState<Note | null>(null);
     const [groups, setGroups] = useState<NoteGroup[]>([]);
     const [groupFilter, setGroupFilter] = useState<string>('all');
@@ -176,6 +179,35 @@ export default function DashboardNotes() {
             .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
             .slice(0, 3);
     }, [notes]);
+
+    const handleSendToAI = async (note: Note) => {
+        if (sendingToAIId) return;
+        setSendingToAIId(note.id);
+        try {
+            const plainText = new DOMParser()
+                .parseFromString(note.content, 'text/html')
+                .body.textContent ?? '';
+            const header = `Title: ${note.title}\n${note.subject ? `Subject: ${note.subject}\n` : ''}\n`;
+            const file = new File(
+                [header + plainText],
+                `${note.title}.txt`,
+                { type: 'text/plain' },
+            );
+            const res = await api.uploadFilesForChat([file]);
+            if (res?.success && Array.isArray(res?.data) && res.data[0]) {
+                const { documentId, fileName } = res.data[0];
+                navigate('/dashboard/ai-assistant', {
+                    state: { importedDoc: { documentId, fileName } },
+                });
+            } else {
+                throw new Error('Upload returned no document');
+            }
+        } catch (err: any) {
+            appToast.apiError(err, 'Could not send note to AI');
+        } finally {
+            setSendingToAIId(null);
+        }
+    };
 
     const handleEditNote = (id: string | null) => {
         if (id === null) {
@@ -768,11 +800,13 @@ export default function DashboardNotes() {
                     editingId={editingId}
                     savingId={savingId}
                     deleteConfirm={deleteConfirm}
+                    sendingToAIId={sendingToAIId}
                     onEditNote={handleEditNote}
                     onReadNote={setReadingNote}
                     onDeleteConfirmChange={setDeleteConfirm}
                     onDeleteNote={handleDeleteNote}
                     onSaveNote={handleUpdateNote}
+                    onSendToAI={handleSendToAI}
                     onUpdateDraft={(noteId, updates) =>
                         setNotes((prev) =>
                             prev.map((note) =>
@@ -851,6 +885,12 @@ export default function DashboardNotes() {
                 note={readingNote}
                 groupMap={groupMap}
                 open={Boolean(readingNote)}
+                isSendingToAI={
+                    readingNote ? sendingToAIId === readingNote.id : false
+                }
+                onSendToAI={() => {
+                    if (readingNote) handleSendToAI(readingNote);
+                }}
                 onOpenChange={(open) => {
                     if (!open) setReadingNote(null);
                 }}

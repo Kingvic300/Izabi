@@ -3,7 +3,7 @@
 import type React from 'react';
 
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { api } from '@/lib/apiClient';
 import gsap from 'gsap';
@@ -26,8 +26,12 @@ import type {
 
 const DashboardAIAssistant = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const appToast = useAppToast();
     const containerRef = useRef<HTMLDivElement>(null);
+    const importedDocRef = useRef<ActiveDocument | null>(
+        (location.state as any)?.importedDoc ?? null,
+    );
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const pdfInputRef = useRef<HTMLInputElement>(null);
     const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
@@ -207,7 +211,26 @@ const DashboardAIAssistant = () => {
     };
 
     useEffect(() => {
-        loadSessions();
+        const init = async () => {
+            await loadSessions();
+            const doc = importedDocRef.current;
+            if (doc) {
+                importedDocRef.current = null;
+                setActiveDocuments([doc]);
+                const noteName = doc.fileName.replace(/\.txt$/, '');
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        id: `note-import-${Date.now()}`,
+                        role: 'assistant' as const,
+                        content: `I've loaded your note **"${noteName}"** as context. Ask me anything about it!`,
+                        timestamp: new Date(),
+                    },
+                ]);
+                navigate(location.pathname, { replace: true, state: null });
+            }
+        };
+        init();
     }, []);
 
     useEffect(() => {

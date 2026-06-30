@@ -1,4 +1,4 @@
-import { Clock, Edit2, Eye, FileText, Save, Trash2 } from 'lucide-react';
+import { Bot, Clock, Edit2, Eye, FileText, Loader2, Save, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,12 +27,14 @@ type NotesGridProps = {
     editingId: string | null;
     savingId: string | null;
     deleteConfirm: string | null;
+    sendingToAIId: string | null;
     onEditNote: (id: string | null) => void;
     onReadNote: (note: Note) => void;
     onDeleteConfirmChange: (id: string | null) => void;
     onDeleteNote: (id: string) => void;
     onSaveNote: (id: string, title: string, content: string, groupId?: string | null) => void;
     onUpdateDraft: (id: string, updates: Partial<Note>) => void;
+    onSendToAI: (note: Note) => void;
     onCreateNote: () => void;
 };
 
@@ -45,12 +47,14 @@ export default function NotesGrid({
     editingId,
     savingId,
     deleteConfirm,
+    sendingToAIId,
     onEditNote,
     onReadNote,
     onDeleteConfirmChange,
     onDeleteNote,
     onSaveNote,
     onUpdateDraft,
+    onSendToAI,
     onCreateNote,
 }: NotesGridProps) {
     const editingNote = editingId ? notes.find((n) => n.id === editingId) : null;
@@ -131,6 +135,20 @@ export default function NotesGrid({
                                                 onClick={() => onEditNote(noteId)}
                                             >
                                                 <Edit2 size={14} />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 rounded-lg text-primary/60 hover:text-primary hover:bg-primary/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+                                                disabled={sendingToAIId === noteId}
+                                                onClick={() => onSendToAI(note)}
+                                                title="Send to AI Assistant"
+                                            >
+                                                {sendingToAIId === noteId ? (
+                                                    <Loader2 size={14} className="animate-spin" />
+                                                ) : (
+                                                    <Bot size={14} />
+                                                )}
                                             </Button>
                                             <Button
                                                 variant="ghost"
