@@ -38,6 +38,7 @@ export default function DashboardNotes() {
     const [isLoading, setIsLoading] = useState(true);
     const [isAddingNote, setIsAddingNote] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [editingSnapshot, setEditingSnapshot] = useState<Note | null>(null);
     const [savingId, setSavingId] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [readingNote, setReadingNote] = useState<Note | null>(null);
@@ -175,6 +176,24 @@ export default function DashboardNotes() {
             .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
             .slice(0, 3);
     }, [notes]);
+
+    const handleEditNote = (id: string | null) => {
+        if (id === null) {
+            if (editingSnapshot) {
+                setNotes((prev) =>
+                    prev.map((n) =>
+                        n.id === editingSnapshot.id ? editingSnapshot : n,
+                    ),
+                );
+            }
+            setEditingSnapshot(null);
+            setEditingId(null);
+        } else {
+            const note = notes.find((n) => n.id === id) ?? null;
+            setEditingSnapshot(note);
+            setEditingId(id);
+        }
+    };
 
     const resetImportState = () => {
         setImportFile(null);
@@ -563,6 +582,7 @@ export default function DashboardNotes() {
                 );
             });
             setEditingId(null);
+            setEditingSnapshot(null);
             appToast.success({
                 title: 'Note updated',
                 description: 'Your changes have been saved.',
@@ -748,7 +768,7 @@ export default function DashboardNotes() {
                     editingId={editingId}
                     savingId={savingId}
                     deleteConfirm={deleteConfirm}
-                    onEditNote={setEditingId}
+                    onEditNote={handleEditNote}
                     onReadNote={setReadingNote}
                     onDeleteConfirmChange={setDeleteConfirm}
                     onDeleteNote={handleDeleteNote}
