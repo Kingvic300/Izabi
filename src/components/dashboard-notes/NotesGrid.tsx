@@ -9,6 +9,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import RichTextEditor from '@/components/RichTextEditor';
 import type { Note, NoteGroup } from './noteTypes';
 
@@ -47,6 +53,8 @@ export default function NotesGrid({
     onUpdateDraft,
     onCreateNote,
 }: NotesGridProps) {
+    const editingNote = editingId ? notes.find((n) => n.id === editingId) : null;
+
     if (notes.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-24 glass rounded-2xl border-dashed space-y-6">
@@ -77,97 +85,19 @@ export default function NotesGrid({
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {notes.map((note) => {
-                const noteId = note.id;
-                const groupName = note.groupId
-                    ? groupMap.get(note.groupId)
-                    : null;
-                return (
-                    <Card
-                        key={noteId}
-                        className="note-card glass shadow-lg hover-lift border-foreground/5 flex flex-col group h-[400px] break-words"
-                    >
-                        <CardContent className="p-6 flex flex-col h-full relative">
-                            {editingId === noteId ? (
-                                <div className="space-y-4 flex-1 flex flex-col">
-                                    <Input
-                                        value={note.title}
-                                        className="rounded-2xl bg-card/5 border-foreground/10"
-                                        onChange={(e) =>
-                                            onUpdateDraft(noteId, {
-                                                title: e.target.value,
-                                            })
-                                        }
-                                    />
-                                    <Select
-                                        value={note.groupId || 'none'}
-                                        onValueChange={(value) =>
-                                            onUpdateDraft(noteId, {
-                                                groupId:
-                                                    value === 'none'
-                                                        ? null
-                                                        : value,
-                                            })
-                                        }
-                                    >
-                                        <SelectTrigger className="rounded-2xl bg-card/5 border-foreground/10 h-10">
-                                            <SelectValue placeholder="No Group" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none">
-                                                No Group
-                                            </SelectItem>
-                                            {groups.map((group) => (
-                                                <SelectItem
-                                                    key={group.id}
-                                                    value={group.id}
-                                                >
-                                                    {group.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <div className="flex-1 overflow-y-auto">
-                                        <RichTextEditor
-                                            content={note.content}
-                                            onChange={(val) =>
-                                                onUpdateDraft(noteId, {
-                                                    content: val,
-                                                })
-                                            }
-                                        />
-                                    </div>
-                                    <div className="flex justify-end gap-2 pt-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => onEditNote(null)}
-                                            className="rounded-lg"
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            className="rounded-lg px-4"
-                                            disabled={savingId === noteId}
-                                            onClick={() =>
-                                                onSaveNote(
-                                                    noteId,
-                                                    note.title,
-                                                    note.content,
-                                                    note.groupId,
-                                                )
-                                            }
-                                        >
-                                            <Save size={14} className="mr-2" />
-                                            {savingId === noteId
-                                                ? 'Saving...'
-                                                : 'Save'}
-                                        </Button>
-                                    </div>
-                                </div>
-                            ) : (
+        <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {notes.map((note) => {
+                    const noteId = note.id;
+                    const groupName = note.groupId
+                        ? groupMap.get(note.groupId)
+                        : null;
+                    return (
+                        <Card
+                            key={noteId}
+                            className="note-card glass shadow-lg hover-lift border-foreground/5 flex flex-col group h-[400px] break-words"
+                        >
+                            <CardContent className="p-6 flex flex-col h-full relative">
                                 <div className="flex flex-col h-full">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="space-y-1">
@@ -198,9 +128,7 @@ export default function NotesGrid({
                                                 variant="ghost"
                                                 size="icon"
                                                 className="h-8 w-8 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                                                onClick={() =>
-                                                    onEditNote(noteId)
-                                                }
+                                                onClick={() => onEditNote(noteId)}
                                             >
                                                 <Edit2 size={14} />
                                             </Button>
@@ -208,9 +136,7 @@ export default function NotesGrid({
                                                 variant="ghost"
                                                 size="icon"
                                                 className="h-8 w-8 rounded-lg text-destructive/60 hover:text-destructive hover:bg-destructive/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                                                onClick={() =>
-                                                    onDeleteConfirmChange(noteId)
-                                                }
+                                                onClick={() => onDeleteConfirmChange(noteId)}
                                             >
                                                 <Trash2 size={14} />
                                             </Button>
@@ -242,11 +168,7 @@ export default function NotesGrid({
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
-                                                    onClick={() =>
-                                                        onDeleteConfirmChange(
-                                                            null,
-                                                        )
-                                                    }
+                                                    onClick={() => onDeleteConfirmChange(null)}
                                                     className="flex-1 rounded-2xl bg-card/10 border-foreground/20 text-foreground hover:bg-card/20"
                                                 >
                                                     Cancel
@@ -254,9 +176,7 @@ export default function NotesGrid({
                                                 <Button
                                                     size="sm"
                                                     className="flex-1 rounded-2xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
-                                                    onClick={() =>
-                                                        onDeleteNote(noteId)
-                                                    }
+                                                    onClick={() => onDeleteNote(noteId)}
                                                 >
                                                     Delete
                                                 </Button>
@@ -264,11 +184,95 @@ export default function NotesGrid({
                                         </div>
                                     )}
                                 </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                );
-            })}
-        </div>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
+            </div>
+
+            <Dialog
+                open={Boolean(editingNote)}
+                onOpenChange={(open) => {
+                    if (!open) onEditNote(null);
+                }}
+            >
+                <DialogContent className="glass border-foreground/10 max-w-2xl w-full rounded-3xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
+                    <DialogHeader className="px-6 pt-6 pb-4 border-b border-foreground/10 shrink-0">
+                        <DialogTitle className="text-lg font-bold">
+                            Edit Note
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    {editingNote && (
+                        <div className="flex flex-col gap-4 px-6 py-5 overflow-y-auto flex-1">
+                            <Input
+                                value={editingNote.title}
+                                className="rounded-2xl bg-card/5 border-foreground/10"
+                                placeholder="Note title"
+                                onChange={(e) =>
+                                    onUpdateDraft(editingNote.id, {
+                                        title: e.target.value,
+                                    })
+                                }
+                            />
+                            <Select
+                                value={editingNote.groupId || 'none'}
+                                onValueChange={(value) =>
+                                    onUpdateDraft(editingNote.id, {
+                                        groupId: value === 'none' ? null : value,
+                                    })
+                                }
+                            >
+                                <SelectTrigger className="rounded-2xl bg-card/5 border-foreground/10 h-10">
+                                    <SelectValue placeholder="No Group" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">No Group</SelectItem>
+                                    {groups.map((group) => (
+                                        <SelectItem key={group.id} value={group.id}>
+                                            {group.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <RichTextEditor
+                                content={editingNote.content}
+                                onChange={(val) =>
+                                    onUpdateDraft(editingNote.id, { content: val })
+                                }
+                            />
+                        </div>
+                    )}
+
+                    <div className="flex justify-end gap-2 px-6 py-4 border-t border-foreground/10 shrink-0">
+                        <Button
+                            variant="ghost"
+                            className="rounded-xl"
+                            onClick={() => onEditNote(null)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className="rounded-xl px-6"
+                            disabled={!!editingNote && savingId === editingNote.id}
+                            onClick={() => {
+                                if (!editingNote) return;
+                                onSaveNote(
+                                    editingNote.id,
+                                    editingNote.title,
+                                    editingNote.content,
+                                    editingNote.groupId,
+                                );
+                            }}
+                        >
+                            <Save size={14} className="mr-2" />
+                            {editingNote && savingId === editingNote.id
+                                ? 'Saving...'
+                                : 'Save'}
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }
