@@ -5,7 +5,12 @@ import { PageLoader } from '@/components/PageLoader';
 import { lazyRetry as lazy } from '@/lib/lazyLoad';
 import { TourProvider } from '@/contexts/TourContext';
 import { TourOverlay } from '@/components/common/TourGuide';
-import { PRICING_ENABLED, SUBSCRIPTIONS_ENABLED } from '@/config/featureFlags';
+import {
+    ACCOUNTABILITY_PARTNER_ENABLED,
+    PRICING_ENABLED,
+    SUBSCRIPTIONS_ENABLED,
+} from '@/config/featureFlags';
+import { PENDING_INVITE_CODE_KEY } from '@/components/dashboard-partner/partnerUtils';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('@/pages/Home'), 'Home');
@@ -73,6 +78,10 @@ const DashboardSubscription = lazy(
     () => import('@/pages/DashboardSubscription'),
     'DashboardSubscription',
 );
+const DashboardPartner = lazy(
+    () => import('@/pages/DashboardPartner'),
+    'DashboardPartner',
+);
 
 const withErrorBoundary = (Component: React.ComponentType, text?: string) => (
     <ErrorBoundary>
@@ -94,6 +103,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const userId = localStorage.getItem('userId');
 
     if (!authToken || !userId) {
+        // Preserve a pending partner-invite code across the login redirect,
+        // since it lives in the query string and Navigate drops it.
+        const inviteCode = new URLSearchParams(window.location.search).get(
+            'code',
+        );
+        if (inviteCode && window.location.pathname === '/dashboard/partner') {
+            sessionStorage.setItem(PENDING_INVITE_CODE_KEY, inviteCode);
+        }
         return <Navigate to="/login" replace />;
     }
 
@@ -222,6 +239,16 @@ const routes = () => {
                         <Route
                             path="leaderboard"
                             element={withErrorBoundary(DashboardLeaderboard)}
+                        />
+                        <Route
+                            path="partner"
+                            element={
+                                ACCOUNTABILITY_PARTNER_ENABLED ? (
+                                    withErrorBoundary(DashboardPartner)
+                                ) : (
+                                    <Navigate to="/dashboard" replace />
+                                )
+                            }
                         />
                         <Route
                             path="contact"

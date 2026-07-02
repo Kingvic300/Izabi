@@ -849,6 +849,105 @@ export const api = {
         );
         return response.data;
     },
+
+    // Accountability Partner API
+    async invitePartner(email: string) {
+        const response = await apiClient.post(
+            '/api/accountability/partnerships/invite',
+            { email },
+        );
+        return response.data;
+    },
+
+    async redeemPartnerInvite(code: string) {
+        const response = await apiClient.post(
+            '/api/accountability/partnerships/redeem',
+            { code },
+        );
+        return response.data;
+    },
+
+    async respondToPartnerInvite(partnershipId: string, accept: boolean) {
+        const response = await apiClient.post(
+            `/api/accountability/partnerships/${partnershipId}/respond`,
+            { accept },
+        );
+        return response.data;
+    },
+
+    async endPartnership(partnershipId: string) {
+        const response = await apiClient.post(
+            `/api/accountability/partnerships/${partnershipId}/end`,
+        );
+        return response.data;
+    },
+
+    async getPartnership() {
+        const response = await apiClient.get('/api/accountability/partnerships/me', {
+            headers: { 'x-skip-cache': 'true' },
+        });
+        return response.data;
+    },
+
+    async savePartnerGoal(goal: {
+        title: string;
+        description?: string;
+        cadence?: 'daily' | 'weekly';
+        deadline?: string;
+    }) {
+        const response = await apiClient.post('/api/accountability/goals', goal);
+        return response.data;
+    },
+
+    async getActivePartnerGoal() {
+        const response = await apiClient.get('/api/accountability/goals/active', {
+            headers: { 'x-skip-cache': 'true' },
+        });
+        return response.data;
+    },
+
+    async checkInPartnerGoal(goalId: string, note?: string) {
+        const response = await apiClient.post(
+            `/api/accountability/goals/${goalId}/check-in`,
+            { note },
+        );
+        return response.data;
+    },
+
+    async getPartnerStreak() {
+        const response = await apiClient.get('/api/accountability/streak', {
+            headers: { 'x-skip-cache': 'true' },
+        });
+        return response.data;
+    },
+
+    async getPartnerStudySummary() {
+        const response = await apiClient.get('/api/accountability/study-summary', {
+            headers: { 'x-skip-cache': 'true' },
+        });
+        return response.data;
+    },
+
+    async getPartnerMessages(before?: string) {
+        const response = await apiClient.get('/api/accountability/messages', {
+            params: before ? { before } : undefined,
+            headers: { 'x-skip-cache': 'true' },
+        });
+        return response.data;
+    },
+
+    async sendPartnerMessage(content: string, type: 'message' | 'nudge' = 'message') {
+        const response = await apiClient.post('/api/accountability/messages', {
+            content,
+            type,
+        });
+        return response.data;
+    },
+
+    async markPartnerMessagesRead() {
+        const response = await apiClient.post('/api/accountability/messages/read');
+        return response.data;
+    },
 };
 
 export default apiClient;

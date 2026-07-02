@@ -17,6 +17,7 @@ import {
     Trophy,
     MessageCircle,
     Crown,
+    Users2,
 } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { api, clearApiCache } from '@/lib/apiClient';
@@ -47,7 +48,10 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAppToast } from '@/hooks/useAppToast';
-import { SUBSCRIPTIONS_ENABLED } from '@/config/featureFlags';
+import {
+    ACCOUNTABILITY_PARTNER_ENABLED,
+    SUBSCRIPTIONS_ENABLED,
+} from '@/config/featureFlags';
 
 const navigationItems = [
     {
@@ -92,6 +96,16 @@ const navigationItems = [
         icon: Trophy,
         description: 'See top scholars',
     },
+    ...(ACCOUNTABILITY_PARTNER_ENABLED
+        ? [
+              {
+                  title: 'Accountability Partner',
+                  url: '/dashboard/partner',
+                  icon: Users2,
+                  description: 'Study together, stay consistent',
+              },
+          ]
+        : []),
 ];
 
 const settingsItems = [
