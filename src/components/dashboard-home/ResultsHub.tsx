@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { FlashcardsSection } from './FlashcardsSection';
 import { SummarySection } from './SummarySection';
 import { QuizSection } from './QuizSection';
+import { MaterialLanguageSwitcher } from './MaterialLanguageSwitcher';
 import { Brain, FileText, Flame, Sparkles, Terminal } from 'lucide-react';
 import { useStudy } from '@/contexts/StudyContext';
 import { motion } from 'framer-motion';
@@ -59,16 +60,19 @@ export const ResultsHub = ({
                     </h2>
                 </div>
                 
-                <div className="flex items-center gap-4 bg-foreground/5 p-4 rounded-2xl border border-foreground/5">
-                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-                        <Terminal size={18} />
-                    </div>
-                    <div>
-                        <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                            Protocol
+                <div className="flex items-center gap-4">
+                    <MaterialLanguageSwitcher />
+                    <div className="hidden sm:flex items-center gap-4 bg-foreground/5 p-4 rounded-2xl border border-foreground/5">
+                        <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+                            <Terminal size={18} />
                         </div>
-                        <div className="text-xs font-bold font-mono tracking-tighter">
-                            A-STUDY_v2.0_STABLE
+                        <div>
+                            <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                Protocol
+                            </div>
+                            <div className="text-xs font-bold font-mono tracking-tighter">
+                                A-STUDY_v2.0_STABLE
+                            </div>
                         </div>
                     </div>
                 </div>
