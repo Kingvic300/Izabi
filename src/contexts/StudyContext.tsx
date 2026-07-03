@@ -35,6 +35,13 @@ interface StudySession {
     flashcards: any[];
     studyGuide: string;
     lastJobId?: string;
+    // Track which StudyHistory document backs each currently-displayed
+    // material so we can re-fetch it in a new language on demand instead
+    // of regenerating from scratch. In this backend, the "jobId" returned
+    // on generation IS the StudyHistory document id.
+    summaryHistoryId?: string;
+    questionsHistoryId?: string;
+    flashcardsHistoryId?: string;
 }
 
 interface StudyContextType {
@@ -44,6 +51,10 @@ interface StudyContextType {
     removeJob: (jobId: string) => void;
     updateSession: (updates: Partial<StudySession>) => void;
     clearSession: () => void;
+    // Re-fetches whichever materials are currently loaded in `lang`,
+    // hitting the on-demand translation endpoints. Cheap no-op for any
+    // material that hasn't been generated yet in this session.
+    refreshMaterialsForLanguage: (lang: string) => Promise<void>;
 }
 
 const StudyContext = createContext<StudyContextType | undefined>(undefined);
@@ -93,12 +104,100 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
             questions: [],
             flashcards: [],
             studyGuide: '',
+            summaryHistoryId: undefined,
+            questionsHistoryId: undefined,
+            flashcardsHistoryId: undefined,
         });
     }, []);
 
     const removeJob = useCallback((id: string) => {
         setActiveJobs((prev) => prev.filter((j) => j.id !== id));
     }, []);
+
+    // HOW: For each material currently loaded in this session, calls the
+    //      matching on-demand-translate endpoint for `lang` and swaps the
+    //      displayed content in place.
+    // WHY: This is what makes the language toggle feel instant for content
+    //      that's already on screen, instead of only affecting the *next*
+    //      thing the user generates.
+    const refreshMaterialsForLanguage = useCallback(
+        async (lang: string) => {
+            const tasks: Array<Promise<void>> = [];
+
+            if (session.flashcardsHistoryId) {
+                tasks.push(
+                    api
+                        .getFlashcardsForLanguage(
+                            session.flashcardsHistoryId,
+                            lang,
+                        )
+                        .then((res) => {
+                            const flashcards =
+                                res?.data?.flashcards ?? res?.flashcards;
+                            if (Array.isArray(flashcards)) {
+                                updateSession({ flashcards });
+                            }
+                        })
+                        .catch((err) =>
+                            console.error(
+                                'Failed to translate flashcards',
+                                err,
+                            ),
+                        ),
+                );
+            }
+
+            if (session.questionsHistoryId) {
+                tasks.push(
+                    api
+                        .getQuestionsForLanguage(
+                            session.questionsHistoryId,
+                            lang,
+                        )
+                        .then((res) => {
+                            const questions =
+                                res?.data?.questions ?? res?.questions;
+                            if (Array.isArray(questions)) {
+                                updateSession({ questions });
+                            }
+                        })
+                        .catch((err) =>
+                            console.error(
+                                'Failed to translate questions',
+                                err,
+                            ),
+                        ),
+                );
+            }
+
+            if (session.summaryHistoryId) {
+                tasks.push(
+                    api
+                        .getSummaryForLanguage(session.summaryHistoryId, lang)
+                        .then((res) => {
+                            const summary =
+                                res?.data?.summary ?? res?.summary;
+                            if (summary) {
+                                updateSession({
+                                    summary: normalizeSummaryContent(summary),
+                                });
+                            }
+                        })
+                        .catch((err) =>
+                            console.error('Failed to translate summary', err),
+                        ),
+                );
+            }
+
+            await Promise.all(tasks);
+        },
+        [
+            session.flashcardsHistoryId,
+            session.questionsHistoryId,
+            session.summaryHistoryId,
+            updateSession,
+        ],
+    );
 
     const updateJobStatus = useCallback(
         (id: string, updates: Partial<StudyJob>) => {
@@ -150,6 +249,7 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
                                     summary: normalizeSummaryContent(
                                         jobInfo.result?.summary,
                                     ),
+                                    summaryHistoryId: job.id,
                                 });
                             } else if (job.type === 'study-guide') {
                                 updateSession({
@@ -158,11 +258,13 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
                             } else if (job.type === 'quiz') {
                                 updateSession({
                                     questions: jobInfo.result?.questions || [],
+                                    questionsHistoryId: job.id,
                                 });
                             } else if (job.type === 'flashcards') {
                                 updateSession({
                                     flashcards:
                                         jobInfo.result?.flashcards || [],
+                                    flashcardsHistoryId: job.id,
                                 });
                             }
                         }
@@ -210,6 +312,7 @@ export const StudyProvider: React.FC<{ children: React.ReactNode }> = ({
                 removeJob,
                 updateSession,
                 clearSession,
+                refreshMaterialsForLanguage,
             }}
         >
             {children}

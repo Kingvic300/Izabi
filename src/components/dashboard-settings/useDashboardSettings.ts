@@ -3,6 +3,7 @@ import { useAppToast } from '@/hooks/useAppToast';
 import { useTheme } from '@/components/theme-provider';
 import { api } from '@/lib/apiClient';
 import { useLanguage, type Language } from '@/contexts/LanguageContext';
+import { useContentLanguage } from '@/hooks/useContentLanguage';
 import { languageOptions } from './settingsConstants';
 import type { SettingsState } from './settingsTypes';
 
@@ -16,13 +17,17 @@ const initialSettings = (theme: SettingsState['theme']): SettingsState => ({
 export const useDashboardSettings = () => {
     const appToast = useAppToast();
     const { theme, setTheme: setGlobalTheme } = useTheme();
+    // setLanguage here is used only to hydrate the local toggle from the
+    // saved profile on mount; actual language *changes* go through
+    // useContentLanguage below so they also persist + refresh materials.
     const { language, setLanguage } = useLanguage();
+    const { isChanging: isLanguageSaving, changeLanguage } =
+        useContentLanguage();
 
     const [settings, setSettings] = useState<SettingsState>(() =>
         initialSettings(theme as SettingsState['theme']),
     );
     const [isSaving, setIsSaving] = useState(false);
-    const [isLanguageSaving, setIsLanguageSaving] = useState(false);
 
     useEffect(() => {
         const savedSettings = localStorage.getItem('userSettings');
@@ -126,22 +131,10 @@ export const useDashboardSettings = () => {
     };
 
     const handleLanguageChange = async (value: string) => {
-        if (value === language) return;
-        const previous = language;
-        setLanguage(value as Language);
-        setIsLanguageSaving(true);
         try {
-            await api.updateUserProfile({ preferredLanguage: value });
-            appToast.success({
-                title: 'Language updated',
-                description:
-                    'Izabi will generate and speak content in your selected language.',
-            });
-        } catch (error) {
-            setLanguage(previous);
-            appToast.apiError(error, 'Language Update Failed');
-        } finally {
-            setIsLanguageSaving(false);
+            await changeLanguage(value);
+        } catch {
+            // changeLanguage already reverts state and shows a toast.
         }
     };
 

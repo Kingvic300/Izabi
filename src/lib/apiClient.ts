@@ -115,6 +115,16 @@ apiClient.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Multilingual study content: tell the backend which language the
+    // student wants study materials (flashcards/questions/summary) in.
+    // The backend translates on-demand and caches per-language, so this
+    // header is what powers "instant" language switching for already
+    // generated material. Falls back silently if nothing is set yet.
+    const contentLanguage = localStorage.getItem('izabi-lang');
+    if (contentLanguage && !config.headers['Accept-Language']) {
+        config.headers['Accept-Language'] = contentLanguage;
+    }
+
     const skipCache =
         (config.headers as any)?.['x-skip-cache'] ||
         (config as any).skipCache;
@@ -676,6 +686,47 @@ export const api = {
     // Study History API
     async getStudyHistory() {
         const response = await apiClient.get(`/api/study/history`);
+        return response.data;
+    },
+
+    // --- Multilingual, on-demand study content ---
+    // These hit the per-history-id endpoints added alongside the backend's
+    // multilingual flashcard/quiz/summary work. The `Accept-Language`
+    // header set in the request interceptor above already tells the
+    // backend which language to serve; `lang` here is an explicit override
+    // for callers that want to request a specific language regardless of
+    // the current global toggle (e.g. re-fetching right after the user
+    // flips the toggle, before localStorage-driven state settles).
+    async getFlashcardsForLanguage(historyId: string, lang?: string) {
+        const response = await apiClient.get(
+            `/api/study/${historyId}/flashcards`,
+            {
+                params: lang ? { lang } : undefined,
+                headers: { 'x-skip-cache': 'true' },
+            } as any,
+        );
+        return response.data;
+    },
+
+    async getQuestionsForLanguage(historyId: string, lang?: string) {
+        const response = await apiClient.get(
+            `/api/study/${historyId}/questions`,
+            {
+                params: lang ? { lang } : undefined,
+                headers: { 'x-skip-cache': 'true' },
+            } as any,
+        );
+        return response.data;
+    },
+
+    async getSummaryForLanguage(historyId: string, lang?: string) {
+        const response = await apiClient.get(
+            `/api/study/${historyId}/summary`,
+            {
+                params: lang ? { lang } : undefined,
+                headers: { 'x-skip-cache': 'true' },
+            } as any,
+        );
         return response.data;
     },
 
