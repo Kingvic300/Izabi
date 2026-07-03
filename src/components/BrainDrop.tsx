@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { resolveCorrectOptionText } from '@/lib/quizUtils';
 
 interface BrainDropProps {
     question: {
@@ -30,11 +31,13 @@ const BrainDrop: React.FC<BrainDropProps> = ({
         return null;
     }
 
+    const correctOptionText = resolveCorrectOptionText(question);
+
     const handleAnswerClick = (answer: string) => {
         if (showResult) return;
 
         setSelectedAnswer(answer);
-        const correct = answer === question.answer;
+        const correct = answer === correctOptionText;
         setIsCorrect(correct);
         setShowResult(true);
         onAnswer(answer, correct);
@@ -81,11 +84,11 @@ const BrainDrop: React.FC<BrainDropProps> = ({
                     {question.options.map((option, idx) => {
                         const isSelected = selectedAnswer === option;
                         const isCorrectAnswer =
-                            showResult && option === question.answer;
+                            showResult && option === correctOptionText;
                         const isWrongAnswer =
                             showResult &&
                             isSelected &&
-                            option !== question.answer;
+                            option !== correctOptionText;
 
                         return (
                             <button

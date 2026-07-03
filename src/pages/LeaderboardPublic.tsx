@@ -15,8 +15,10 @@ import { Podium } from '@/components/dashboard-leaderboard/Podium';
 import { LeaderboardTable } from '@/components/dashboard-leaderboard/LeaderboardTable';
 import { useLocation } from 'react-router-dom';
 import { getLeaderboardSocket } from '@/lib/leaderboardSocket';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function LeaderboardPublic() {
+    const { t } = useLanguage();
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardData>({
         topStudents: [],
         topStreaks: [],
@@ -83,14 +85,16 @@ export default function LeaderboardPublic() {
                         variant="outline"
                         className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-[10px] tracking-widest uppercase mb-1"
                     >
-                        Global Rankings
+                        {t('leaderboard.badge')}
                     </Badge>
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter leading-none">
-                        Hall of <span className="text-gradient">Fame</span>
+                        {t('leaderboard.public_title_top')}{' '}
+                        <span className="text-gradient">
+                            {t('leaderboard.public_title_gradient')}
+                        </span>
                     </h1>
                     <p className="text-muted-foreground text-sm sm:text-base font-medium max-w-lg">
-                        See where you stand among the top scholars. Compete for
-                        XP or maintain your daily study consistency.
+                        {t('leaderboard.subtitle')}
                     </p>
                 </div>
             </header>
@@ -106,14 +110,13 @@ export default function LeaderboardPublic() {
                             value="xp"
                             className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
                         >
-                            <Zap size={14} className="sm:w-4 sm:h-4" /> Total XP
+                            <Zap size={14} className="sm:w-4 sm:h-4" /> {t('leaderboard.tab_xp')}
                         </TabsTrigger>
                         <TabsTrigger
                             value="streak"
                             className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-orange-500 data-[state=active]:text-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
                         >
-                            <Flame size={14} className="sm:w-4 sm:h-4" /> Top
-                            Streaks
+                            <Flame size={14} className="sm:w-4 sm:h-4" /> {t('leaderboard.tab_streak')}
                         </TabsTrigger>
                     </TabsList>
                 </div>
@@ -129,7 +132,7 @@ export default function LeaderboardPublic() {
                         users={leaderboardData.topStudents || []}
                         type="xp"
                         currentUserId={sharedUserId}
-                        title="Leaderboard Standings"
+                        title={t('leaderboard.standings_title')}
                         icon={
                             <Trophy
                                 className="text-primary sm:w-5 sm:h-5"
@@ -150,7 +153,7 @@ export default function LeaderboardPublic() {
                         users={leaderboardData.topStreaks || []}
                         type="streak"
                         currentUserId={sharedUserId}
-                        title="Persistence Rankings"
+                        title={t('leaderboard.persistence_title')}
                         icon={
                             <Flame
                                 className="text-orange-500 sm:w-5 sm:h-5"

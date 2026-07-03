@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, CheckCircle2, Sparkles, Target, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type ExamReviewProps = {
     result: any;
@@ -11,6 +12,7 @@ type ExamReviewProps = {
 };
 
 export default function ExamReview({ result, onBack }: ExamReviewProps) {
+    const { t } = useLanguage();
     if (!result) return null;
 
     return (
@@ -24,12 +26,12 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                         className="mb-4 h-10 px-4 rounded-xl font-bold hover:bg-card/50 gap-2"
                     >
                         <ArrowLeft size={16} />
-                        Back to Lobby
+                        {t('exams.back_to_lobby')}
                     </Button>
                     <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tighter mb-2 italic">
-                        Exam{' '}
+                        {t('exams.title_top')}{' '}
                         <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
-                            Review
+                            {t('exams.review_gradient')}
                         </span>
                     </h1>
                     <p className="text-muted-foreground text-lg font-medium">
@@ -53,7 +55,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                         <span className="text-lg opacity-60">%</span>
                     </div>
                     <p className="text-sm font-bold opacity-40 uppercase tracking-widest">
-                        Final Score
+                        {t('exams.final_score')}
                     </p>
                 </div>
             </div>
@@ -70,7 +72,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                                 {result.correctAnswers}
                             </p>
                             <p className="text-xs font-bold opacity-40 uppercase tracking-widest">
-                                Correct
+                                {t('exams.correct_label')}
                             </p>
                         </div>
                     </div>
@@ -85,7 +87,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                                 {result.totalQuestions - result.correctAnswers}
                             </p>
                             <p className="text-xs font-bold opacity-40 uppercase tracking-widest">
-                                Incorrect
+                                {t('exams.incorrect_label')}
                             </p>
                         </div>
                     </div>
@@ -100,7 +102,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                                 {result.totalQuestions}
                             </p>
                             <p className="text-xs font-bold opacity-40 uppercase tracking-widest">
-                                Total Questions
+                                {t('exams.total_questions_label')}
                             </p>
                         </div>
                     </div>
@@ -110,11 +112,10 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
             {/* Question Breakdown */}
             <div className="space-y-4">
                 <h3 className="text-2xl font-black tracking-tighter">
-                    Question Breakdown
+                    {t('exams.question_breakdown')}
                 </h3>
                 <p className="text-sm text-muted-foreground font-medium">
-                    Detailed review is coming soon. Full question-by-question
-                    analysis will be available in the next update.
+                    {t('exams.breakdown_coming_soon')}
                 </p>
 
                 <Card className="p-8 bg-card/40 border-foreground/5 rounded-2xl">
@@ -126,11 +127,10 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                             />
                         </div>
                         <h4 className="text-lg font-black uppercase tracking-widest opacity-20 mb-2">
-                            Feature In Development
+                            {t('exams.feature_in_dev')}
                         </h4>
                         <p className="text-sm opacity-40 max-w-md mx-auto font-medium">
-                            Detailed question-by-question review with
-                            explanations and learning insights is being built.
+                            {t('exams.feature_in_dev_desc')}
                         </p>
                     </div>
                 </Card>
@@ -141,7 +141,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                     onClick={onBack}
                     className="h-14 px-8 rounded-2xl font-black uppercase tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl shadow-primary/20 transition-all active:scale-95"
                 >
-                    Back to Lobby
+                    {t('exams.back_to_lobby')}
                 </Button>
             </div>
         </div>

@@ -54,7 +54,9 @@ export const useDashboardSettings = () => {
                     languageOptions.some((opt) => opt.value === preferred) &&
                     preferred !== language
                 ) {
-                    setLanguage(preferred as Language);
+                    // Just mirrors the already-saved profile value locally;
+                    // no need to write it straight back to the backend.
+                    setLanguage(preferred as Language, false);
                 }
             } catch (error) {
                 console.error('Error loading preferred language:', error);
@@ -128,17 +130,16 @@ export const useDashboardSettings = () => {
     const handleLanguageChange = async (value: string) => {
         if (value === language) return;
         const previous = language;
-        setLanguage(value as Language);
         setIsLanguageSaving(true);
         try {
-            await api.updateUserProfile({ preferredLanguage: value });
+            await setLanguage(value as Language);
             appToast.success({
                 title: 'Language updated',
                 description:
                     'Izabi will generate and speak content in your selected language.',
             });
         } catch (error) {
-            setLanguage(previous);
+            setLanguage(previous, false).catch(() => {});
             appToast.apiError(error, 'Language Update Failed');
         } finally {
             setIsLanguageSaving(false);

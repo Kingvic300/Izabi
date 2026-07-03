@@ -772,12 +772,20 @@ export const api = {
         return response.data;
     },
 
-    async ingestMultiDirect(files: File[], type: string, options?: any) {
+    async ingestMultiDirect(
+        files: File[],
+        type: string,
+        options?: any,
+        lang?: string,
+    ) {
         const formData = new FormData();
         files.forEach((file) => formData.append('files', file));
         formData.append('type', type);
         if (options) {
             formData.append('options', JSON.stringify(options));
+        }
+        if (lang) {
+            formData.append('lang', lang);
         }
 
         const response = await apiClient.post(
@@ -792,6 +800,7 @@ export const api = {
         fileName: string;
         type: string;
         options?: any;
+        lang?: string;
     }) {
         const response = await apiClient.post('/api/study/ingest-text', data);
         return response.data;

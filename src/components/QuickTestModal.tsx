@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/apiClient';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface QuickTestQuestion {
     id: string;
@@ -32,6 +33,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
     onClose,
     onComplete,
 }) => {
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(false);
     const [testData, setTestData] = useState<any>(null);
     const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -75,8 +77,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
             }
         } catch (err: any) {
             setError(
-                err.response?.data?.message ||
-                    'Failed to start test. Upload study materials first!',
+                err.response?.data?.message || t('quiz.failed_to_start'),
             );
         } finally {
             setLoading(false);
@@ -90,13 +91,14 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
         try {
             const res = await api.submitQuickTest(testData.quizId, answers);
             if (res.success) {
-                setResults(res.data);
+                const pointsEarned = res.meta?.pointsEarned || 0;
+                setResults({ ...res.data, pointsEarned });
                 if (onComplete) {
-                    onComplete(res.data.score, res.meta?.pointsEarned || 0);
+                    onComplete(res.data.score, pointsEarned);
                 }
             }
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to submit test');
+            setError(err.response?.data?.message || t('quiz.failed_to_submit'));
         } finally {
             setIsSubmitting(false);
         }
@@ -141,12 +143,12 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                 </div>
                                 <div>
                                     <h2 className="text-2xl font-bold">
-                                        {testData?.title || 'Quick Test'}
+                                        {testData?.title || t('quiz.default_title')}
                                     </h2>
                                     <p className="text-sm text-muted-foreground">
                                         {results
-                                            ? 'Test Complete'
-                                            : 'Answer all questions before time runs out'}
+                                            ? t('quiz.test_complete')
+                                            : t('quiz.answer_before_time')}
                                     </p>
                                 </div>
                             </div>
@@ -180,7 +182,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                             <div className="flex flex-col items-center justify-center py-20 space-y-4">
                                 <Loader2 className="w-12 h-12 animate-spin text-primary" />
                                 <p className="text-lg font-medium text-muted-foreground">
-                                    Generating your personalized test...
+                                    {t('quiz.generating_test')}
                                 </p>
                             </div>
                         )}
@@ -193,7 +195,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                 />
                                 <div>
                                     <p className="font-bold text-red-500">
-                                        Error
+                                        {t('quiz.error_label')}
                                     </p>
                                     <p className="text-sm text-muted-foreground">
                                         {error}
@@ -288,7 +290,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                                         : 'bg-background border-foreground/10 hover:border-primary/30',
                                                                 )}
                                                             >
-                                                                {option}
+                                                                {option === 'True' ? t('quiz.true') : t('quiz.false')}
                                                             </button>
                                                         ),
                                                     )}
@@ -309,7 +311,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                             e.target.value,
                                                         )
                                                     }
-                                                    placeholder="Type your answer..."
+                                                    placeholder={t('quiz.type_answer_ellipsis')}
                                                     className="w-full ml-12 px-4 py-3 rounded-xl border-2 border-foreground/10 bg-background focus:border-primary/50 focus:outline-none transition-colors"
                                                 />
                                             )}
@@ -332,7 +334,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                 className="animate-spin mr-2"
                                                 size={20}
                                             />
-                                            Submitting...
+                                            {t('quiz.submitting')}
                                         </>
                                     ) : (
                                         <>
@@ -340,7 +342,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                 className="mr-2"
                                                 size={20}
                                             />
-                                            Submit Test
+                                            {t('quiz.submit_test')}
                                         </>
                                     )}
                                 </Button>
@@ -359,14 +361,13 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                         {results.score}%
                                     </h3>
                                     <p className="text-lg text-muted-foreground mb-4">
-                                        {results.correctCount} out of{' '}
-                                        {results.totalQuestions} correct
+                                        {results.correctCount} {t('quiz.out_of')}{' '}
+                                        {results.totalQuestions} {t('quiz.correct_suffix')}
                                     </p>
                                     {results.score >= 70 && (
                                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 text-primary font-bold">
                                             <Zap size={16} />+
-                                            {results.pointsEarned || 0} XP
-                                            Earned
+                                            {results.pointsEarned || 0} {t('quiz.xp_earned')}
                                         </div>
                                     )}
                                 </div>
@@ -374,7 +375,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                 {/* Detailed Results */}
                                 <div className="space-y-4">
                                     <h4 className="text-xl font-bold">
-                                        Review Answers
+                                        {t('quiz.review_answers')}
                                     </h4>
                                     {results.results.map(
                                         (result: any, index: number) => (
@@ -405,7 +406,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                         </p>
                                                         <p className="text-sm">
                                                             <span className="opacity-60">
-                                                                Your answer:
+                                                                {t('quiz.your_answer')}
                                                             </span>{' '}
                                                             <span
                                                                 className={
@@ -415,14 +416,13 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                                 }
                                                             >
                                                                 {result.userAnswer ||
-                                                                    'No answer'}
+                                                                    t('quiz.no_answer')}
                                                             </span>
                                                         </p>
                                                         {!result.isCorrect && (
                                                             <p className="text-sm mt-1">
                                                                 <span className="opacity-60">
-                                                                    Correct
-                                                                    answer:
+                                                                    {t('quiz.correct_answer_colon')}
                                                                 </span>{' '}
                                                                 <span className="text-green-500">
                                                                     {
@@ -449,7 +449,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                     onClick={handleClose}
                                     className="w-full h-14 rounded-2xl text-lg font-bold"
                                 >
-                                    Close
+                                    {t('quiz.close')}
                                 </Button>
                             </div>
                         )}

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Flame, Trophy, Zap, Activity } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface GamificationStripProps {
     streak: number;
@@ -9,6 +10,7 @@ interface GamificationStripProps {
 }
 
 export const GamificationStrip = ({ streak, xp }: GamificationStripProps) => {
+    const { t } = useLanguage();
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -22,11 +24,11 @@ export const GamificationStrip = ({ streak, xp }: GamificationStripProps) => {
                     </div>
                     <div className="space-y-0.5">
                         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                            Active Streak
+                            {t('module.active_streak')}
                         </span>
                         <div className="flex items-center gap-2">
                             <span className="text-2xl font-black text-foreground antialiased italic">
-                                {streak} <span className="text-sm not-italic opacity-50">Days</span>
+                                {streak} <span className="text-sm not-italic opacity-50">{t('leaderboard.days_label')}</span>
                             </span>
                         </div>
                     </div>
@@ -40,11 +42,11 @@ export const GamificationStrip = ({ streak, xp }: GamificationStripProps) => {
                     </div>
                     <div className="space-y-0.5">
                         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                            Knowledge XP
+                            {t('module.knowledge_xp')}
                         </span>
                         <div className="flex items-center gap-2">
                             <span className="text-2xl font-black text-foreground antialiased italic">
-                                {xp.toLocaleString()} <span className="text-sm not-italic opacity-50">Pts</span>
+                                {xp.toLocaleString()} <span className="text-sm not-italic opacity-50">{t('module.pts_suffix')}</span>
                             </span>
                         </div>
                     </div>
@@ -58,11 +60,11 @@ export const GamificationStrip = ({ streak, xp }: GamificationStripProps) => {
                     </div>
                     <div className="space-y-0.5">
                         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                            Study Velocity
+                            {t('module.study_velocity')}
                         </span>
                         <div className="flex items-center gap-2">
                             <span className="text-2xl font-black text-foreground antialiased italic">
-                                High <span className="text-sm not-italic opacity-50">Mode</span>
+                                {t('module.high_label')} <span className="text-sm not-italic opacity-50">{t('module.mode_suffix')}</span>
                             </span>
                         </div>
                     </div>
@@ -79,7 +81,7 @@ export const GamificationStrip = ({ streak, xp }: GamificationStripProps) => {
                     />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">
-                    Level 12
+                    {t('module.level_label')} 12
                 </span>
             </div>
         </motion.div>

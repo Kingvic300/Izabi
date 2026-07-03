@@ -3,12 +3,13 @@
 import { cn } from '@/lib/utils';
 import { Loader2, CheckCircle2, XCircle, Zap } from 'lucide-react';
 import { ModuleCardStatus } from '@/components/dashboard-home/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ModuleCardProps {
     id: string;
     icon: any;
-    label: string;
-    desc: string;
+    labelKey: string;
+    descKey: string;
     color: string;
     status: ModuleCardStatus;
     isProcessing: boolean;
@@ -16,24 +17,24 @@ interface ModuleCardProps {
     onClick: () => void;
 }
 
-const statusMeta: Record<ModuleCardStatus, { label: string; className: string; icon: any }> = {
+const statusMeta: Record<ModuleCardStatus, { labelKey: string; className: string; icon: any }> = {
     idle: {
-        label: 'Standby',
+        labelKey: 'module.status_standby',
         className: 'bg-card/20 text-muted-foreground/40',
         icon: null,
     },
     processing: {
-        label: 'Processing',
+        labelKey: 'module.status_processing',
         className: 'bg-primary/20 text-primary border-primary/20',
         icon: <Loader2 size={10} className="animate-spin" />,
     },
     completed: {
-        label: 'Active',
+        labelKey: 'module.status_active',
         className: 'bg-primary/20 text-primary border-primary/20',
         icon: <CheckCircle2 size={10} />,
     },
     failed: {
-        label: 'Error',
+        labelKey: 'module.status_error',
         className: 'bg-destructive/20 text-destructive border-destructive/20',
         icon: <XCircle size={10} />,
     },
@@ -42,14 +43,15 @@ const statusMeta: Record<ModuleCardStatus, { label: string; className: string; i
 export const ModuleCard = ({
     id,
     icon: Icon,
-    label,
-    desc,
+    labelKey,
+    descKey,
     color,
     status,
     isProcessing,
     numberOfQuestions,
     onClick,
 }: ModuleCardProps) => {
+    const { t } = useLanguage();
     const meta = statusMeta[status];
 
     return (
@@ -69,27 +71,27 @@ export const ModuleCard = ({
                     meta.className
                 )}>
                     {meta.icon}
-                    <span>{meta.label}</span>
+                    <span>{t(meta.labelKey)}</span>
                 </div>
             </div>
 
             <div className="relative space-y-2 mt-2">
                 <h4 className="text-xl font-black tracking-tight group-hover:text-primary transition-colors">
-                   {label}
+                   {t(labelKey)}
                 </h4>
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground leading-relaxed">
-                    {desc}
+                    {t(descKey)}
                 </p>
             </div>
 
             <div className="relative mt-8 flex items-center justify-between text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
                 <div className="flex items-center gap-2">
                    <div className="h-1 w-1 rounded-full bg-primary/40" />
-                   <span>{isProcessing ? 'Synthesizing...' : 'Execute Module'}</span>
+                   <span>{isProcessing ? t('module.synthesizing') : t('module.execute')}</span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-foreground/5 border border-foreground/5">
                    <Zap size={10} className="text-primary/60" />
-                   <span>{id === 'quiz' ? `${numberOfQuestions} Units` : 'Standard'}</span>
+                   <span>{id === 'quiz' ? `${numberOfQuestions} ${t('module.units')}` : t('module.standard')}</span>
                 </div>
             </div>
         </button>

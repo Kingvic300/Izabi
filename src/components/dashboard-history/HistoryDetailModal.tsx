@@ -8,6 +8,7 @@ import {
     parseStructuredSummary,
 } from '@/lib/summaryUtils';
 import { StructuredSummaryContent } from '@/components/dashboard-home/StructuredSummaryContent';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type HistoryDetailModalProps = {
     item: any | null;
@@ -20,6 +21,7 @@ export default function HistoryDetailModal({
     onClose,
     onContinue,
 }: HistoryDetailModalProps) {
+    const { t } = useLanguage();
     return (
         <AnimatePresence>
             {item && (
@@ -46,7 +48,7 @@ export default function HistoryDetailModal({
                                     {item.fileName ||
                                         item.title ||
                                         item.subject ||
-                                        'Detailed View'}
+                                        t('history.detailed_view')}
                                 </h2>
                             </div>
                             <Button
@@ -65,7 +67,7 @@ export default function HistoryDetailModal({
                                     <div className="space-y-6">
                                         <div className="bg-primary/5 p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-primary/10">
                                             <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
-                                                <Brain size={14} /> AI Summary
+                                                <Brain size={14} /> {t('history.ai_summary')}
                                             </h4>
                                             {(() => {
                                                 const structured =
@@ -95,7 +97,7 @@ export default function HistoryDetailModal({
                                         {item.keyPoints?.length > 0 && (
                                             <div className="space-y-4">
                                                 <h4 className="text-xs font-black uppercase tracking-widest opacity-40">
-                                                    Key Insights
+                                                    {t('history.key_insights')}
                                                 </h4>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                                                     {item.keyPoints.map(
@@ -142,22 +144,22 @@ export default function HistoryDetailModal({
                                         </div>
                                         <div>
                                             <h3 className="text-2xl font-bold">
-                                                Quiz Performance
+                                                {t('history.quiz_performance')}
                                             </h3>
                                             <p className="text-muted-foreground mt-2">
-                                                You got {item.correctAnswers}{' '}
-                                                out of {item.totalQuestions}{' '}
-                                                questions right.
+                                                {t('history.you_got')} {item.correctAnswers}{' '}
+                                                {t('quiz.out_of')} {item.totalQuestions}{' '}
+                                                {t('history.questions_right')}
                                             </p>
                                         </div>
                                         <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
                                             <div className="px-4 sm:px-6 py-3 bg-green-500/10 rounded-2xl border border-green-500/20 text-green-500 font-bold text-sm sm:text-base">
-                                                {item.correctAnswers} Correct
+                                                {item.correctAnswers} {t('history.correct_suffix')}
                                             </div>
                                             <div className="px-4 sm:px-6 py-3 bg-red-500/10 rounded-2xl border border-red-500/20 text-red-500 font-bold text-sm sm:text-base">
                                                 {item.totalQuestions -
                                                     item.correctAnswers}{' '}
-                                                Wrong
+                                                {t('history.wrong_suffix')}
                                             </div>
                                         </div>
                                     </div>
@@ -167,7 +169,7 @@ export default function HistoryDetailModal({
                                     <div className="space-y-6">
                                         <div className="p-6 bg-card/50 border border-foreground/5 rounded-2xl italic">
                                             <p className="text-muted-foreground text-sm font-bold uppercase mb-2">
-                                                You asked:
+                                                {t('history.you_asked')}
                                             </p>
                                             <p className="text-xl font-medium">
                                                 "{item.message}"
@@ -175,7 +177,7 @@ export default function HistoryDetailModal({
                                         </div>
                                         <div className="p-4 sm:p-6 bg-primary/5 border border-primary/10 rounded-[24px] sm:rounded-[32px]">
                                             <p className="text-primary text-sm font-bold uppercase mb-2">
-                                                Izabi AI replied:
+                                                {t('history.ai_replied')}
                                             </p>
                                             <AIMarkdown
                                                 content={item.response}
@@ -194,13 +196,13 @@ export default function HistoryDetailModal({
                                 onClick={onClose}
                                 className="rounded-xl font-bold w-full sm:w-auto"
                             >
-                                Close View
+                                {t('history.close_view')}
                             </Button>
                             <Button
                                 className="rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 w-full sm:w-auto"
                                 onClick={onContinue}
                             >
-                                Continue Learning
+                                {t('history.continue_learning')}
                             </Button>
                         </div>
                     </motion.div>

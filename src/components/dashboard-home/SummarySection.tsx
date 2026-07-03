@@ -8,7 +8,7 @@ import { SummaryViewer } from '@/components/dashboard-home/SummaryViewer';
 import { countWords } from '@/lib/quizUtils';
 import { cn } from '@/lib/utils';
 import { SummaryContent, getSummaryText } from '@/lib/summaryUtils';
-
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SummarySectionProps {
     content: SummaryContent;
@@ -26,11 +26,13 @@ export const SummarySection = ({
     isOpen,
     onOpenChange,
     onDownload,
-    title = 'Smart Summary',
+    title,
     icon: Icon = Brain,
     iconColor = 'text-blue-400',
     audioLabel,
 }: SummarySectionProps) => {
+    const { t } = useLanguage();
+    const resolvedTitle = title ?? t('module.summarize_label');
     const summaryText = getSummaryText(content);
     const wordCount = countWords(summaryText);
 
@@ -47,14 +49,14 @@ export const SummarySection = ({
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <h3 className="text-xl md:text-2xl font-bold leading-tight">
-                                            {title}
+                                            {resolvedTitle}
                                         </h3>
                                         <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-[9px] font-black uppercase tracking-[0.18em] opacity-60">
-                                            {wordCount} words
+                                            {wordCount} {t('module.words_suffix')}
                                         </div>
                                     </div>
                                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
-                                        Key points distilled from your document
+                                        {t('module.key_points_distilled')}
                                     </p>
                                 </div>
                             </div>

@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Crown } from 'lucide-react';
 import { LeaderboardUser, LeaderboardType } from './types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PodiumProps {
     users: LeaderboardUser[];
@@ -12,6 +13,7 @@ interface PodiumProps {
 }
 
 export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
+    const { t } = useLanguage();
     if (!users || users.length === 0) return null;
 
     const first = users[0];
@@ -42,16 +44,16 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                         <div className="absolute inset-0 bg-gray-300/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                             <h3 className="font-bold text-sm sm:text-lg truncate text-foreground opacity-100 leading-tight">
-                                {second.firstName || ''} {second.lastName || '' || 'Scholar'}
+                                {second.firstName || ''} {second.lastName || '' || t('leaderboard.scholar')}
                             </h3>
                             {second._id === currentUserId && (
                                 <Badge className="bg-primary/20 text-primary border-none text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0">
-                                    You
+                                    {t('leaderboard.you_badge')}
                                 </Badge>
                             )}
                         </div>
                         <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate mb-2 sm:mb-3 font-medium uppercase tracking-wider">
-                            {second.institution || 'Scholar'}
+                            {second.institution || t('leaderboard.scholar')}
                         </p>
                         <Badge
                             variant="outline"
@@ -84,22 +86,22 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                         <div className="absolute inset-0 bg-yellow-400/10 opacity-50" />
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                             <h3 className="font-bold text-xl sm:text-2xl truncate text-foreground leading-tight opacity-100">
-                                {first.firstName || ''} {first.lastName || '' || 'Scholar'}
+                                {first.firstName || ''} {first.lastName || '' || t('leaderboard.scholar')}
                             </h3>
                             {first._id === currentUserId && (
                                 <Badge className="bg-yellow-500/20 text-yellow-600 border-yellow-500/20 text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0">
-                                    You
+                                    {t('leaderboard.you_badge')}
                                 </Badge>
                             )}
                         </div>
                         <p className="text-[10px] sm:text-xs text-foreground/60 dark:text-yellow-500/80 truncate mb-3 sm:mb-4 font-bold tracking-wide uppercase">
-                            {(first.institution || 'Izabi Champion').substring(0, 20)}
+                            {(first.institution || t('leaderboard.champion')).substring(0, 20)}
                         </p>
                         <div className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 drop-shadow-sm">
                             {type === 'xp' ? first.points.toLocaleString() : first.streak}
                         </div>
                         <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mt-1 sm:mt-2">
-                            {type === 'xp' ? 'Experience Points' : 'Consecutive Days'}
+                            {type === 'xp' ? t('leaderboard.experience_points') : t('leaderboard.consecutive_days')}
                         </p>
                     </div>
                 </div>
@@ -123,16 +125,16 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                         <div className="absolute inset-0 bg-amber-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                             <h3 className="font-bold text-sm sm:text-lg truncate text-foreground opacity-100 leading-tight">
-                                {third.firstName || ''} {third.lastName || '' || 'Scholar'}
+                                {third.firstName || ''} {third.lastName || '' || t('leaderboard.scholar')}
                             </h3>
                             {third._id === currentUserId && (
                                 <Badge className="bg-primary/20 text-primary border-none text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0">
-                                    You
+                                    {t('leaderboard.you_badge')}
                                 </Badge>
                             )}
                         </div>
                         <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate mb-2 sm:mb-3 font-medium uppercase tracking-wider">
-                            {third.institution || 'Scholar'}
+                            {third.institution || t('leaderboard.scholar')}
                         </p>
                         <Badge
                             variant="outline"

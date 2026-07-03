@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Question {
     question: string;
@@ -30,6 +31,7 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({
     onClose,
     questions,
 }) => {
+    const { t } = useLanguage();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [isAnswered, setIsAnswered] = useState(false);
@@ -90,10 +92,10 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({
                             </div>
                             <div>
                                 <h2 className="text-xl font-bold">
-                                    Practice Session
+                                    {t('quiz.practice_session')}
                                 </h2>
                                 <p className="text-xs text-muted-foreground">
-                                    Question {currentIndex + 1} of{' '}
+                                    {t('quiz.question_label')} {currentIndex + 1} {t('quiz.of_label')}{' '}
                                     {questions.length}
                                 </p>
                             </div>
@@ -192,7 +194,7 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({
                                         className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-sm"
                                     >
                                         <div className="font-bold text-blue-500 mb-1">
-                                            Explanation:
+                                            {t('quiz.explanation_colon')}
                                         </div>
                                         <div className="text-foreground/80">
                                             {currentQuestion.explanation}
@@ -208,8 +210,8 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({
                                             className="w-full h-12 text-lg font-bold rounded-xl gap-2"
                                         >
                                             {currentIndex < questions.length - 1
-                                                ? 'Next Question'
-                                                : 'Finish Quiz'}
+                                                ? t('quiz.next_question')
+                                                : t('quiz.finish_quiz')}
                                             <ArrowRight size={18} />
                                         </Button>
                                     ) : (
@@ -218,7 +220,7 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({
                                             disabled={!selectedOption}
                                             className="w-full h-12 text-lg font-bold rounded-xl"
                                         >
-                                            Check Answer
+                                            {t('quiz.check_answer')}
                                         </Button>
                                     )}
                                 </div>
@@ -234,20 +236,20 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({
 
                                 <div>
                                     <h3 className="text-3xl font-bold mb-2">
-                                        Practice Complete!
+                                        {t('quiz.practice_complete')}
                                     </h3>
                                     <p className="text-muted-foreground text-lg">
-                                        You scored{' '}
+                                        {t('quiz.you_scored')}{' '}
                                         <span className="text-primary font-bold">
                                             {score}
                                         </span>{' '}
-                                        out of {questions.length}
+                                        {t('quiz.out_of')} {questions.length}
                                     </p>
                                 </div>
 
                                 <div className="p-6 rounded-2xl bg-card/5 border border-foreground/10">
                                     <div className="text-sm font-medium opacity-60 uppercase tracking-widest mb-2">
-                                        Accuracy
+                                        {t('quiz.accuracy')}
                                     </div>
                                     <div className="text-4xl font-black">
                                         {Math.round(
@@ -261,7 +263,7 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({
                                     onClick={handleClose}
                                     className="w-full h-12 text-lg font-bold rounded-xl"
                                 >
-                                    Done
+                                    {t('quiz.done')}
                                 </Button>
                             </div>
                         )}

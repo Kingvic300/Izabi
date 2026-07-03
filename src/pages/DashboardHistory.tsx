@@ -9,8 +9,10 @@ import HistoryList from '@/components/dashboard-history/HistoryList';
 import HistoryDetailModal from '@/components/dashboard-history/HistoryDetailModal';
 import { normalizeHistory } from '@/components/dashboard-history/historyUtils';
 import type { HistoryType } from '@/components/dashboard-history/historyTypes';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DashboardHistory = () => {
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeType, setActiveType] = useState<HistoryType>('all');
@@ -74,19 +76,19 @@ const DashboardHistory = () => {
     const stats = useMemo(
         () => [
             {
-                label: 'Total Sessions',
+                label: t('history.stat_total_sessions'),
                 value: history.length,
                 icon: Clock,
                 color: 'text-blue-400',
             },
             {
-                label: 'AI Mentions',
+                label: t('history.stat_ai_mentions'),
                 value: history.filter((h) => h.hType === 'chat').length,
                 icon: Brain,
                 color: 'text-purple-400',
             },
             {
-                label: 'Quiz Avg',
+                label: t('history.stat_quiz_avg'),
                 value: history.filter((h) => h.score).length
                     ? `${Math.round(history.reduce((acc, h) => acc + (h.score || 0), 0) / history.filter((h) => h.score).length)}%`
                     : '0%',
@@ -94,13 +96,13 @@ const DashboardHistory = () => {
                 color: 'text-yellow-400',
             },
             {
-                label: 'Notes Saved',
+                label: t('history.stat_notes_saved'),
                 value: history.filter((h) => h.hType === 'note').length,
                 icon: FileText,
                 color: 'text-green-400',
             },
         ],
-        [history],
+        [history, t],
     );
 
     if (loading) {
@@ -114,7 +116,7 @@ const DashboardHistory = () => {
                     />
                 </div>
                 <p className="text-muted-foreground font-medium animate-pulse">
-                    Gathering your learning journey...
+                    {t('history.gathering')}
                 </p>
             </div>
         );
@@ -125,17 +127,16 @@ const DashboardHistory = () => {
             <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
-                        History
+                        {t('history.eyebrow')}
                     </span>
                 </div>
                 <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
                     <div className="space-y-2">
                         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                            Learning History
+                            {t('history.title')}
                         </h1>
                         <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
-                            Review your notes, quizzes, and AI sessions in one
-                            searchable feed.
+                            {t('history.subtitle')}
                         </p>
                     </div>
                     <HistoryHeader
@@ -151,7 +152,7 @@ const DashboardHistory = () => {
 
             <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6 space-y-4">
                 <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
-                    Search & Filters
+                    {t('history.search_filters')}
                 </div>
                 <HistorySearchBar
                     searchQuery={searchQuery}

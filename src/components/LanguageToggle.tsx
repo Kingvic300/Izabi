@@ -43,7 +43,9 @@ export function LanguageToggle() {
                 {languages.map((lang) => (
                     <DropdownMenuItem
                         key={lang.code}
-                        onClick={() => setLanguage(lang.code)}
+                        onClick={() => {
+                            setLanguage(lang.code).catch(() => {});
+                        }}
                         className={`font-medium cursor-pointer ${
                             language === lang.code
                                 ? 'bg-primary/10 text-primary'

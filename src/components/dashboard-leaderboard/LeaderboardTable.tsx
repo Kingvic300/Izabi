@@ -6,6 +6,7 @@ import { Flame, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RankTrend } from './RankTrend';
 import { LeaderboardUser, LeaderboardType } from './types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LeaderboardTableProps {
     users: LeaderboardUser[];
@@ -22,6 +23,7 @@ export const LeaderboardTable = ({
     title,
     icon,
 }: LeaderboardTableProps) => {
+    const { t } = useLanguage();
     const getAvatarSrc = (user: LeaderboardUser) => 
         user.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.email}`;
     const getAvatarFallback = (user: LeaderboardUser) => (user.firstName || 'U')[0];
@@ -65,18 +67,18 @@ export const LeaderboardTable = ({
                                 <div className="min-w-0 overflow-hidden">
                                     <div className="flex items-center gap-1.5 sm:gap-2">
                                         <h4 className="font-bold text-sm sm:text-base truncate">
-                                            {user.firstName || 'Anonymous'} {user.lastName || ''}
+                                            {user.firstName || t('leaderboard.anonymous')} {user.lastName || ''}
                                         </h4>
                                         {user._id === currentUserId && (
                                             <Badge className="bg-primary/20 text-primary border-none text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0 shrink-0">
-                                                You
+                                                {t('leaderboard.you_badge')}
                                             </Badge>
                                         )}
                                     </div>
                                     <p className="text-[10px] sm:text-xs text-foreground/70 font-medium truncate">
-                                        {type === 'xp' 
-                                            ? (user.institution || 'Scholar')
-                                            : (user.pet ? `${user.pet.name} (Lvl ${user.pet.level})` : 'Scholar')
+                                        {type === 'xp'
+                                            ? (user.institution || t('leaderboard.scholar'))
+                                            : (user.pet ? `${user.pet.name} (Lvl ${user.pet.level})` : t('leaderboard.scholar'))
                                         }
                                     </p>
                                 </div>
@@ -88,7 +90,7 @@ export const LeaderboardTable = ({
                                             {user.points.toLocaleString()}
                                         </span>
                                         <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest opacity-50 leading-none">
-                                            XP
+                                            {t('leaderboard.xp_label')}
                                         </p>
                                     </>
                                 ) : (
@@ -100,7 +102,7 @@ export const LeaderboardTable = ({
                                             </span>
                                         </div>
                                         <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest opacity-50 leading-none">
-                                            Days
+                                            {t('leaderboard.days_label')}
                                         </p>
                                     </>
                                 )}

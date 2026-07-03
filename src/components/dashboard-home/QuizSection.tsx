@@ -9,6 +9,8 @@ import { QuizProgress } from './QuizProgress';
 import { QuizResults } from './QuizResults';
 import { useQuizState } from '@/hooks/useQuizState';
 import { Question } from '@/components/dashboard-home/types';
+import { isMcqCorrect, isShortAnswerCorrect } from '@/lib/quizUtils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface QuizSectionProps {
     questions: Question[];
@@ -31,6 +33,7 @@ export const QuizSection = ({
     showExplanations,
     onSubmitQuiz,
 }: QuizSectionProps) => {
+    const { t } = useLanguage();
     const {
         selectedAnswers,
         showResults,
@@ -55,9 +58,9 @@ export const QuizSection = ({
     if (displayQuestions.length === 0) {
         return (
             <div className="p-5 rounded-2xl border border-foreground/10 bg-card/5 text-center space-y-3">
-                <div className="text-sm font-bold">No questions match this mode.</div>
+                <div className="text-sm font-bold">{t('quiz.no_match')}</div>
                 <p className="text-xs text-muted-foreground">
-                    Switch to Mixed or generate more questions.
+                    {t('quiz.switch_mixed')}
                 </p>
             </div>
         );
@@ -76,14 +79,14 @@ export const QuizSection = ({
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <h3 className="text-xl md:text-2xl font-bold leading-tight">
-                                            Practice Quiz
+                                            {t('quiz.practice_title')}
                                         </h3>
                                         <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-[9px] font-black uppercase tracking-[0.18em] opacity-60">
-                                            {displayQuestions.length} questions
+                                            {displayQuestions.length} {t('quiz.questions_suffix')}
                                         </div>
                                     </div>
                                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
-                                        Test your understanding
+                                        {t('quiz.test_understanding')}
                                     </p>
                                 </div>
                             </div>
@@ -115,7 +118,11 @@ export const QuizSection = ({
 
                             {displayQuestions.map((q, i) => {
                                 const userAnswer = selectedAnswers[i];
-                                const isCorrect = userAnswer === q.answer;
+                                const isCorrect = userAnswer
+                                    ? q.questionType?.toLowerCase() === 'short_answer'
+                                        ? isShortAnswerCorrect(userAnswer, q.answer || '')
+                                        : isMcqCorrect(q, userAnswer)
+                                    : false;
 
                                 return (
                                     <QuizQuestion

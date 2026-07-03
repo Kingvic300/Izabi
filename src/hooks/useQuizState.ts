@@ -1,40 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Question } from '@/components/dashboard-home/types';
-import { shuffleArray, isShortAnswerCorrect } from '@/lib/quizUtils';
-
-const isMcqCorrect = (question: Question, userAnswer: string) => {
-    const normalizedUser = (userAnswer || '').trim().toLowerCase();
-    const normalizedAnswer = (question.answer || '').trim().toLowerCase();
-
-    // Direct text match (case/whitespace agnostic)
-    if (normalizedUser && normalizedUser === normalizedAnswer) return true;
-
-    // Letter-based answers (e.g., "A", "b")
-    const isLetter = (val: string) => /^[a-d]$/.test(val);
-    if (isLetter(normalizedAnswer) && Array.isArray(question.options)) {
-        const letterIndex = normalizedAnswer.charCodeAt(0) - 97;
-        const targetOption = question.options[letterIndex];
-        if (targetOption) {
-            const normalizedTarget = targetOption.trim().toLowerCase();
-            if (normalizedUser === normalizedTarget) return true;
-        }
-        if (isLetter(normalizedUser)) {
-            return normalizedUser === normalizedAnswer;
-        }
-    }
-
-    // User picked a letter but answer is full text
-    if (isLetter(normalizedUser) && Array.isArray(question.options)) {
-        const letterIndex = normalizedUser.charCodeAt(0) - 97;
-        const pickedOption = question.options[letterIndex];
-        if (pickedOption) {
-            const normalizedPicked = pickedOption.trim().toLowerCase();
-            if (normalizedPicked === normalizedAnswer) return true;
-        }
-    }
-
-    return false;
-};
+import { shuffleArray, isShortAnswerCorrect, isMcqCorrect } from '@/lib/quizUtils';
 
 export const useQuizState = (
     questions: Question[],

@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Download, DownloadCloud, Radio, Shield } from 'lucide-react';
 import SettingRow from './SettingRow';
 import type { SettingsState } from './settingsTypes';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type PrivacySectionProps = {
     settings: SettingsState;
@@ -17,25 +18,26 @@ export default function PrivacySection({
     onToggle,
     onDownloadData,
 }: PrivacySectionProps) {
+    const { t } = useLanguage();
     return (
         <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
             <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
                 <CardTitle className="flex items-center gap-3 text-xl font-bold">
                     <Shield className="text-primary" />
-                    Data & Privacy
+                    {t('settings.privacy_title')}
                 </CardTitle>
                 <CardDescription>
-                    Control your digital footprint visibility
+                    {t('settings.privacy_desc')}
                 </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
                 <SettingRow
-                    title="Public Scholar Profile"
-                    description="Allow other students to view your achievements"
+                    title={t('settings.public_profile_title')}
+                    description={t('settings.public_profile_desc')}
                     isChecked={settings.publicProfile}
                     onToggle={(checked) => onToggle('publicProfile', checked)}
                     icon={<Radio size={20} />}
-                    badge="Beta"
+                    badge={t('settings.beta_badge')}
                 />
 
                 <div className="p-4 sm:p-8 bg-foreground/[0.02]">
@@ -46,10 +48,10 @@ export default function PrivacySection({
                             </div>
                             <div>
                                 <h3 className="font-bold text-lg">
-                                    Export Data Archive
+                                    {t('settings.export_title')}
                                 </h3>
                                 <p className="text-sm opacity-60">
-                                    Download all your notes and history
+                                    {t('settings.export_desc')}
                                 </p>
                             </div>
                         </div>
@@ -61,11 +63,11 @@ export default function PrivacySection({
                             {isSaving ? (
                                 <span className="flex items-center gap-2">
                                     <div className="w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-xl animate-spin" />{' '}
-                                    Packaging...
+                                    {t('settings.packaging')}
                                 </span>
                             ) : (
                                 <span className="flex items-center gap-2">
-                                    Download <Download size={16} />
+                                    {t('settings.download')} <Download size={16} />
                                 </span>
                             )}
                         </Button>

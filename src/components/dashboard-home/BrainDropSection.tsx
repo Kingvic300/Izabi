@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Brain, Sparkles, Upload, Zap } from 'lucide-react';
 import BrainDrop from '@/components/BrainDrop';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BrainDropSectionProps {
     isCompleted: boolean;
@@ -17,6 +18,7 @@ export const BrainDropSection = ({
     onAnswer,
     onUploadClick,
 }: BrainDropSectionProps) => {
+    const { t } = useLanguage();
     if (isCompleted) return null;
 
     return (
@@ -42,20 +44,20 @@ export const BrainDropSection = ({
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">
-                                    Daily Training
+                                    {t('module.daily_training')}
                                 </span>
                                 <h3 className="text-xl font-black tracking-tight">
-                                    Activate Brain Drop
+                                    {t('module.activate_brain_drop')}
                                 </h3>
                             </div>
                         </div>
-                        
+
                         <div className="space-y-3">
                             <p className="text-base text-muted-foreground font-medium leading-relaxed max-w-lg">
-                                Your personalized intellectual gauntlet is waiting. Upload your study material to generate high-yield challenges tailored to your curriculum.
+                                {t('module.brain_drop_desc')}
                             </p>
                             <div className="flex flex-wrap gap-4 pt-2">
-                                {['Smart Synthesis', 'Adaptive Difficulty', 'Knowledge Retention'].map((feat, i) => (
+                                {[t('module.feat_smart_synthesis'), t('module.feat_adaptive_difficulty'), t('module.feat_knowledge_retention')].map((feat, i) => (
                                     <div key={i} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 bg-foreground/5 px-3 py-1.5 rounded-full border border-foreground/5">
                                         <Sparkles size={10} className="text-primary/50" />
                                         {feat}
@@ -72,7 +74,7 @@ export const BrainDropSection = ({
                        >
                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
                            <Upload size={18} />
-                           Ingest Document
+                           {t('module.ingest_document')}
                        </button>
                     </div>
                 </motion.div>

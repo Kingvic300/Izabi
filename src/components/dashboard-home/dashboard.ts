@@ -6,40 +6,40 @@ export const DEFAULT_PRACTICE_QUESTION_COUNT = 2;
 export const MODULE_CARDS: Array<{
     id: ModuleCardId;
     icon: any;
-    label: string;
-    desc: string;
+    labelKey: string;
+    descKey: string;
     color: string;
     endpoint: string;
 }> = [
     {
         id: 'summarize',
         icon: Brain,
-        label: 'Smart Summary',
-        desc: 'Key points distilled',
+        labelKey: 'module.summarize_label',
+        descKey: 'module.summarize_desc',
         color: 'text-blue-400',
         endpoint: 'summarize',
     },
     {
         id: 'quiz',
         icon: Zap,
-        label: 'Practice Quiz',
-        desc: 'Test understanding',
+        labelKey: 'quiz.practice_title',
+        descKey: 'module.quiz_desc',
         color: 'text-yellow-400',
         endpoint: 'generate-questions',
     },
     {
         id: 'guide',
         icon: FileText,
-        label: 'Study Guide',
-        desc: 'Structured notes',
+        labelKey: 'module.guide_label',
+        descKey: 'module.guide_desc',
         color: 'text-primary',
         endpoint: 'generate-study-material',
     },
     {
         id: 'cards',
         icon: Layers,
-        label: 'Flashcards',
-        desc: 'Quick memorization',
+        labelKey: 'flashcards.title',
+        descKey: 'module.cards_desc',
         color: 'text-blue-400',
         endpoint: 'flashcards',
     },

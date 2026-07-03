@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Exam } from '@/types/api';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type ExamViewProps = {
     activeTab: string;
@@ -39,6 +40,7 @@ export default function ExamView({
     onNext,
     onSubmit,
 }: ExamViewProps) {
+    const { t } = useLanguage();
     if (!currentExam) return null;
 
     const totalQuestions = currentExam.questions.length;
@@ -53,7 +55,7 @@ export default function ExamView({
                         {currentExam.subject}
                     </h2>
                     <p className="text-xs font-bold uppercase opacity-60 tracking-widest">
-                        {activeTab} • Question {currentQuestionIndex + 1} of{' '}
+                        {activeTab} • {t('quiz.question_label')} {currentQuestionIndex + 1} {t('quiz.of_label')}{' '}
                         {totalQuestions}
                     </p>
                 </div>
@@ -68,22 +70,22 @@ export default function ExamView({
             <div className="sticky top-[78px] sm:top-[96px] z-40 mb-4 sm:mb-6 rounded-2xl border border-foreground/10 bg-card/80 backdrop-blur-md p-3 sm:p-4 shadow-lg">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                     <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest opacity-80">
-                        Question Navigator
+                        {t('exams.question_navigator')}
                     </p>
                     <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold">
                         <span className="rounded-md bg-foreground/5 px-2 py-1">
-                            Total: {totalQuestions}
+                            {t('exams.total_label')} {totalQuestions}
                         </span>
                         <span className="rounded-md bg-green-500/15 px-2 py-1 text-green-500">
-                            Answered: {Object.keys(answers).length}
+                            {t('exams.answered_label')} {Object.keys(answers).length}
                         </span>
                         <span className="rounded-md bg-foreground/5 px-2 py-1">
-                            Left: {totalQuestions - Object.keys(answers).length}
+                            {t('exams.left_label')} {totalQuestions - Object.keys(answers).length}
                         </span>
                     </div>
                 </div>
                 <div className="mb-2 text-[10px] sm:text-xs font-bold opacity-50">
-                    Tap any number to jump
+                    {t('exams.tap_to_jump')}
                 </div>
                 <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
                     {currentExam.questions.map((_, index) => {
@@ -166,7 +168,7 @@ export default function ExamView({
                         disabled={currentQuestionIndex === 0}
                         className="w-full sm:w-32 h-12 rounded-xl font-bold border border-foreground/5 hover:bg-card"
                     >
-                        Previous
+                        {t('exams.previous')}
                     </Button>
 
                     {currentQuestionIndex === totalQuestions - 1 ? (
@@ -174,14 +176,14 @@ export default function ExamView({
                             onClick={onSubmit}
                             className="w-full sm:w-48 h-14 rounded-2xl font-black uppercase tracking-widest text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-2xl shadow-blue-600/20 active:scale-95 transition-all"
                         >
-                            Final Submission
+                            {t('exams.final_submission')}
                         </Button>
                     ) : (
                         <Button
                             onClick={onNext}
                             className="w-full sm:w-32 h-12 rounded-[14px] font-black uppercase tracking-widest text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all active:scale-95"
                         >
-                            Next
+                            {t('exams.next')}
                         </Button>
                     )}
                 </div>

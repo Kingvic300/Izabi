@@ -45,6 +45,7 @@ import {
 } from '@/components/ui/dialog';
 import PDFPreview from '@/components/pdf/PDFPreview';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { useJobPolling } from '@/hooks/useJobPolling';
 import { usePDFExtraction } from '@/hooks/usePDFExtraction';
@@ -68,6 +69,7 @@ type PendingScroll = {
 
 export default function DashboardHome() {
     const navigate = useNavigate();
+    const { language, t } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const pendingScrollRef = useRef<PendingScroll | null>(null);
     const { session, updateSession, addJob } = useStudy();
@@ -297,6 +299,7 @@ export default function DashboardHome() {
                         fileName: file.name,
                         type,
                         options,
+                        lang: language,
                     });
 
                     addJob(ingestRes.jobId, [file.name], type);
@@ -315,6 +318,7 @@ export default function DashboardHome() {
                 session.pdfFiles,
                 type,
                 options,
+                language,
             );
             addJob(ingestRes.jobId, session.pdfFiles.map(f => f.name), type);
             pendingScrollRef.current = { endpoint };
@@ -595,14 +599,14 @@ export default function DashboardHome() {
                         <div className="space-y-3">
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                                 <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
-                                    Dashboard
+                                    {t('home.eyebrow')}
                                 </span>
                             </div>
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">
-                            Here’s your study cockpit for today
+                            {t('home.title')}
                         </h1>
                             <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
-                                Stay on track with your streaks, progress, and AI study tools in one focused workspace.
+                                {t('home.subtitle')}
                             </p>
                         </div>
                         <div className="flex flex-wrap items-center gap-3">
@@ -614,7 +618,7 @@ export default function DashboardHome() {
                                     disabled={isSharing}
                                 >
                                     <Share2 size={14} />
-                                    {isSharing ? 'Preparing...' : 'Share Profile'}
+                                    {isSharing ? t('home.preparing') : t('home.share_profile')}
                                 </Button>
                             )}
                             <Button
@@ -622,7 +626,7 @@ export default function DashboardHome() {
                                 className="h-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold gap-2 shadow-lg shadow-primary/20"
                             >
                                 <MessageCircle size={14} />
-                                AI Assistant
+                                {t('home.ai_assistant')}
                             </Button>
                         </div>
                     </div>
@@ -631,10 +635,10 @@ export default function DashboardHome() {
                         <WelcomeHeader firstName={userStats?.data?.firstName} />
                         <div className="mt-4 flex flex-wrap items-center gap-3">
                             <Badge className="bg-primary/15 text-primary border-none text-[10px] font-black uppercase tracking-[0.2em]">
-                                Today
+                                {t('home.today_badge')}
                             </Badge>
                             <span className="text-xs font-semibold text-muted-foreground">
-                                Upload a file to unlock your study tools.
+                                {t('home.upload_unlock')}
                             </span>
                         </div>
                     </div>
@@ -665,15 +669,15 @@ export default function DashboardHome() {
                                         <div className="space-y-1 sm:space-y-2">
                                             <div className="flex items-center gap-2">
                                                 <Badge variant="secondary" className="bg-primary/20 text-primary border-none text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-0.5">
-                                                    New v2.0
+                                                    {t('home.new_badge')}
                                                 </Badge>
                                                 <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                                             </div>
                                             <AlertTitle className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
-                                                Advanced Academic AI
+                                                {t('home.advanced_ai_title')}
                                             </AlertTitle>
                                             <AlertDescription className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed">
-                                                Experience the next-gen Izabi AI. Now featuring <span className="text-foreground font-bold">Multi-Document Chat</span> (up to 5 files), 100% Academic Grounding, and support for <span className="text-foreground font-bold">PDF, Images, Word & Excel</span>.
+                                                {t('home.advanced_ai_desc')}
                                             </AlertDescription>
                                         </div>
                                     </div>
@@ -683,7 +687,7 @@ export default function DashboardHome() {
                                             onClick={() => navigate('/dashboard/ai-assistant')}
                                             className="h-11 sm:h-13 px-6 sm:px-8 bg-primary hover:bg-primary/90 text-white rounded-2xl font-bold shadow-xl shadow-primary/20 group/btn transition-all hover:scale-105 active:scale-95"
                                         >
-                                            Try Now
+                                            {t('home.try_now')}
                                             <ChevronRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover/btn:translate-x-1 transition-transform" />
                                         </Button>
                                         <Button
@@ -699,10 +703,10 @@ export default function DashboardHome() {
                                 
                                 <div className="mt-6 pt-6 border-t border-primary/10 grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {[
-                                        { label: 'Multi-File Chat', icon: FileStack },
-                                        { label: 'OCR Image Support', icon: Sparkles },
-                                        { label: 'Deep Synthesis', icon: BrainCircuit },
-                                        { label: 'Source Grounded', icon: CheckCircle2 },
+                                        { label: t('home.feat_multi_file_chat'), icon: FileStack },
+                                        { label: t('home.feat_ocr'), icon: Sparkles },
+                                        { label: t('home.feat_deep_synthesis'), icon: BrainCircuit },
+                                        { label: t('home.feat_source_grounded'), icon: CheckCircle2 },
                                     ].map((feat, i) => (
                                         <div key={i} className="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
                                             <feat.icon className="h-3 w-3 text-primary/50" />
@@ -722,14 +726,14 @@ export default function DashboardHome() {
                                 <BarChart3 size={18} />
                             </div>
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                Progress
+                                {t('progress.eyebrow')}
                             </span>
                         </div>
                         <div className="text-2xl font-black tracking-tight">
                             {totalStudyHours}h
                         </div>
                         <p className="text-xs text-muted-foreground font-medium">
-                            Total study time
+                            {t('home.total_study_time')}
                         </p>
                         <div className="mt-4">
                             <div className="h-2 rounded-full bg-foreground/10 overflow-hidden">
@@ -739,7 +743,7 @@ export default function DashboardHome() {
                                 />
                             </div>
                             <div className="mt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                                {progressPercent}% of weekly goal
+                                {progressPercent}% {t('home.weekly_goal_suffix')}
                             </div>
                         </div>
                     </div>
@@ -750,7 +754,7 @@ export default function DashboardHome() {
                                 <FileText size={18} />
                             </div>
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                Recent Notes
+                                {t('home.recent_notes')}
                             </span>
                         </div>
                         <div className="space-y-2">
@@ -766,7 +770,7 @@ export default function DashboardHome() {
                                 ))
                             ) : (
                                 <p className="text-xs text-muted-foreground font-medium">
-                                    No uploads yet. Add a document to start.
+                                    {t('home.no_uploads')}
                                 </p>
                             )}
                         </div>
@@ -776,7 +780,7 @@ export default function DashboardHome() {
                             className="mt-4 h-9 rounded-xl border-foreground/10 text-primary hover:bg-primary/10 gap-2 text-[10px] uppercase tracking-[0.2em] font-bold"
                         >
                             <Upload size={12} />
-                            Upload Notes
+                            {t('home.upload_notes_btn')}
                         </Button>
                     </div>
 
@@ -786,23 +790,23 @@ export default function DashboardHome() {
                                 <CalendarClock size={18} />
                             </div>
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                Upcoming Exam
+                                {t('home.upcoming_exam')}
                             </span>
                         </div>
                         <div className="text-lg font-bold text-foreground">
-                            {userExamType ? `${userExamType} Prep` : 'No exam selected'}
+                            {userExamType ? `${userExamType} ${t('home.exam_prep_suffix')}` : t('home.no_exam_selected')}
                         </div>
                         <p className="text-xs text-muted-foreground font-medium">
                             {userExamType
-                                ? 'Set milestones and practice daily.'
-                                : 'Choose your exam type to get tailored prep.'}
+                                ? t('home.set_milestones')
+                                : t('home.choose_exam_type')}
                         </p>
                         <Button
                             variant="outline"
                             onClick={() => navigate('/dashboard/profile')}
                             className="mt-4 h-9 rounded-xl border-foreground/10 text-primary hover:bg-primary/10 gap-2 text-[10px] uppercase tracking-[0.2em] font-bold"
                         >
-                            Update Profile
+                            {t('home.update_profile')}
                         </Button>
                     </div>
 
@@ -812,21 +816,21 @@ export default function DashboardHome() {
                                 <BrainCircuit size={18} />
                             </div>
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                Daily XP
+                                {t('home.daily_xp')}
                             </span>
                         </div>
                         <div className="text-2xl font-black tracking-tight">
                             {dailyPoints.toLocaleString()}
                         </div>
                         <p className="text-xs text-muted-foreground font-medium">
-                            Points earned today
+                            {t('home.points_earned_today')}
                         </p>
                         <Button
                             onClick={() => navigate('/dashboard/ai-assistant')}
                             className="mt-4 h-9 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold gap-2"
                         >
                             <MessageCircle size={12} />
-                            Ask AI
+                            {t('home.ask_ai')}
                         </Button>
                     </div>
                 </section>
@@ -835,7 +839,7 @@ export default function DashboardHome() {
                         <div className="flex flex-col h-full">
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
-                                    Daily Pulse
+                                    {t('home.daily_pulse')}
                                 </span>
                             </div>
                             <div className="flex-1 glass p-4 sm:p-6 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl">
@@ -851,7 +855,7 @@ export default function DashboardHome() {
                         <div className="flex flex-col h-full">
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
-                                    Quick Actions
+                                    {t('home.quick_actions')}
                                 </span>
                             </div>
                             <div className="flex-1 glass p-2 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl group">
@@ -881,11 +885,11 @@ export default function DashboardHome() {
                     <div className="flex items-center justify-between gap-4">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                             <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
-                                Study Workspace
+                                {t('home.study_workspace')}
                             </span>
                         </div>
                         <span className="text-xs text-muted-foreground/70">
-                            Upload documents, then choose what to generate.
+                            {t('home.upload_then_generate')}
                         </span>
                     </div>
                     {session.pdfSelections.length > 0 ? (
@@ -988,7 +992,7 @@ export default function DashboardHome() {
                                     {previewFile?.name}
                                 </span>
                                 <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
-                                    Review Document
+                                    {t('home.review_document')}
                                 </span>
                             </div>
                         </DialogTitle>
@@ -1017,9 +1021,9 @@ export default function DashboardHome() {
                                             <FileText size={40} className="text-primary" />
                                         </div>
                                         <div className="space-y-1">
-                                            <h4 className="font-bold text-lg">Document Analysis</h4>
+                                            <h4 className="font-bold text-lg">{t('home.document_analysis')}</h4>
                                             <p className="text-sm text-muted-foreground max-w-xs">
-                                                Direct preview is unavailable for this specialized format, but your academic AI has fully ingested the content.
+                                                {t('home.preview_unavailable')}
                                             </p>
                                         </div>
                                     </div>

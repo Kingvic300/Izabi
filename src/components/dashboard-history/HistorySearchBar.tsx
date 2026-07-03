@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type HistorySearchBarProps = {
     searchQuery: string;
@@ -10,6 +11,7 @@ export default function HistorySearchBar({
     searchQuery,
     onSearchChange,
 }: HistorySearchBarProps) {
+    const { t } = useLanguage();
     return (
         <div className="relative group">
             <Search
@@ -17,7 +19,7 @@ export default function HistorySearchBar({
                 size={20}
             />
             <Input
-                placeholder="Search through notes, quiz titles, or AI summaries..."
+                placeholder={t('history.search_placeholder')}
                 value={searchQuery}
                 onChange={(event) => onSearchChange(event.target.value)}
                 className="h-14 pl-12 bg-card/5 border-foreground/10 rounded-2xl focus-visible:ring-primary/20 text-lg shadow-sm"

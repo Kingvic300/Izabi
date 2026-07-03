@@ -5,6 +5,7 @@ import { ModuleCard } from './ModuleCard';
 import { SettingsPanel } from './SettingsPanel';
 import { MODULE_CARDS } from '@/components/dashboard-home/dashboard';
 import { ModuleStatuses, QuizDifficulty, QuizStyle } from '@/components/dashboard-home/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StudyControlsProps {
     moduleStatuses: ModuleStatuses;
@@ -37,6 +38,7 @@ export const StudyControls = ({
     onShuffleChange,
     onExplanationsChange,
 }: StudyControlsProps) => {
+    const { t } = useLanguage();
     const getModuleHandler = (module: typeof MODULE_CARDS[0]) => {
         const includeQuestions = module.id === 'quiz' || module.id === 'guide';
         return () => onModuleClick(module.endpoint, includeQuestions);
@@ -62,7 +64,7 @@ export const StudyControls = ({
             <Card className="rounded-[32px] border border-foreground/5 bg-card/30 backdrop-blur-xl p-8 shadow-xl">
                 <div className="flex items-center gap-3 mb-8">
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">
-                        Engine Parameters
+                        {t('module.engine_parameters')}
                     </span>
                     <div className="h-px flex-1 bg-foreground/5" />
                 </div>

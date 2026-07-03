@@ -68,6 +68,56 @@ export const buildPracticeQuestionSet = (
         }));
 };
 
+export const isMcqCorrect = (question: Question, userAnswer: string) => {
+    const normalizedUser = (userAnswer || '').trim().toLowerCase();
+    const normalizedAnswer = (question.answer || '').trim().toLowerCase();
+
+    // Direct text match (case/whitespace agnostic)
+    if (normalizedUser && normalizedUser === normalizedAnswer) return true;
+
+    // Letter-based answers (e.g., "A", "b")
+    const isLetter = (val: string) => /^[a-d]$/.test(val);
+    if (isLetter(normalizedAnswer) && Array.isArray(question.options)) {
+        const letterIndex = normalizedAnswer.charCodeAt(0) - 97;
+        const targetOption = question.options[letterIndex];
+        if (targetOption) {
+            const normalizedTarget = targetOption.trim().toLowerCase();
+            if (normalizedUser === normalizedTarget) return true;
+        }
+        if (isLetter(normalizedUser)) {
+            return normalizedUser === normalizedAnswer;
+        }
+    }
+
+    // User picked a letter but answer is full text
+    if (isLetter(normalizedUser) && Array.isArray(question.options)) {
+        const letterIndex = normalizedUser.charCodeAt(0) - 97;
+        const pickedOption = question.options[letterIndex];
+        if (pickedOption) {
+            const normalizedPicked = pickedOption.trim().toLowerCase();
+            if (normalizedPicked === normalizedAnswer) return true;
+        }
+    }
+
+    return false;
+};
+
+// Resolves the question's `answer` field to the actual option text it refers to,
+// since `answer` may be stored as a letter ("A") instead of the option's full text.
+export const resolveCorrectOptionText = (question: Question): string => {
+    const answer = question.answer || '';
+    const normalizedAnswer = answer.trim().toLowerCase();
+    const isLetter = /^[a-d]$/.test(normalizedAnswer);
+
+    if (isLetter && Array.isArray(question.options)) {
+        const letterIndex = normalizedAnswer.charCodeAt(0) - 97;
+        const targetOption = question.options[letterIndex];
+        if (targetOption) return targetOption;
+    }
+
+    return answer;
+};
+
 export const isShortAnswerCorrect = (input: string, correctAnswer: string) =>
     stringSimilarity.compareTwoStrings(
         input.trim().toLowerCase(),

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Copy } from 'lucide-react';
 import { SharePayload } from './types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ShareRankDialogProps {
     open: boolean;
@@ -26,13 +27,14 @@ export const ShareRankDialog = ({
     sharePayload,
     onCopy,
 }: ShareRankDialogProps) => {
+    const { t } = useLanguage();
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Share your rank</DialogTitle>
+                    <DialogTitle>{t('leaderboard.share_dialog_title')}</DialogTitle>
                     <DialogDescription>
-                        Copy and share your leaderboard status anywhere.
+                        {t('leaderboard.share_dialog_desc')}
                     </DialogDescription>
                 </DialogHeader>
                 <Textarea
@@ -47,10 +49,10 @@ export const ShareRankDialog = ({
                         disabled={!sharePayload?.shareText}
                     >
                         <Copy className="h-4 w-4" />
-                        Copy
+                        {t('leaderboard.copy')}
                     </Button>
                     <Button onClick={() => onOpenChange(false)}>
-                        Done
+                        {t('leaderboard.done')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

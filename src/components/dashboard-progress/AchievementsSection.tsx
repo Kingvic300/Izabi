@@ -1,6 +1,7 @@
 import { Calendar } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { ProgressData } from './progressTypes';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type AchievementsSectionProps = {
     progressData: ProgressData;
@@ -8,22 +9,22 @@ type AchievementsSectionProps = {
 
 const achievements = [
     {
-        title: '7-Day Study Streak',
-        desc: 'Bulletproof consistency',
+        titleKey: 'progress.ach_streak_title',
+        descKey: 'progress.ach_streak_desc',
         icon: '🔥',
         color: 'text-primary',
         isUnlocked: (data: ProgressData) => data.studyStreak >= 7,
     },
     {
-        title: 'Quiz Master',
-        desc: 'Completed 50 sessions',
+        titleKey: 'progress.ach_quiz_title',
+        descKey: 'progress.ach_quiz_desc',
         icon: '🎯',
         color: 'text-primary',
         isUnlocked: (data: ProgressData) => data.totalQuizzes >= 50,
     },
     {
-        title: 'Perfect Score',
-        desc: 'Absolute subject mastery',
+        titleKey: 'progress.ach_perfect_title',
+        descKey: 'progress.ach_perfect_desc',
         icon: '⭐',
         color: 'text-primary',
         isUnlocked: (data: ProgressData) => data.perfectScore,
@@ -33,6 +34,7 @@ const achievements = [
 export default function AchievementsSection({
     progressData,
 }: AchievementsSectionProps) {
+    const { t } = useLanguage();
     return (
         <Card className="chart-card glass-card border-foreground/10 shadow-2xl overflow-hidden">
             <CardHeader className="border-b border-foreground/10 bg-card/5">
@@ -40,10 +42,10 @@ export default function AchievementsSection({
                     <div className="p-2 rounded-xl bg-yellow-500/20 text-yellow-500">
                         <Calendar className="h-5 w-5" />
                     </div>
-                    <span>Hall of Fame</span>
+                    <span>{t('progress.hall_of_fame')}</span>
                 </CardTitle>
                 <CardDescription>
-                    Milestones you've conquered in your quest for knowledge
+                    {t('progress.hall_of_fame_desc')}
                 </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -52,7 +54,7 @@ export default function AchievementsSection({
                         const isUnlocked = ach.isUnlocked(progressData);
                         return (
                             <div
-                                key={ach.title}
+                                key={ach.titleKey}
                                 className={`flex items-center gap-4 sm:gap-6 p-4 sm:p-8 transition-colors group ${isUnlocked ? 'hover:bg-card/[0.02]' : 'opacity-30 grayscale'}`}
                             >
                                 <span
@@ -62,12 +64,12 @@ export default function AchievementsSection({
                                 </span>
                                 <div>
                                     <p className="font-bold text-lg">
-                                        {ach.title}
+                                        {t(ach.titleKey)}
                                     </p>
                                     <p className="text-sm text-muted-foreground">
                                         {isUnlocked
-                                            ? ach.desc
-                                            : 'Locked Milestone'}
+                                            ? t(ach.descKey)
+                                            : t('progress.locked_milestone')}
                                     </p>
                                 </div>
                             </div>

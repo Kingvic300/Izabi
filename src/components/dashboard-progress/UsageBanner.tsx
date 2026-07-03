@@ -1,6 +1,7 @@
 import { Zap } from 'lucide-react';
 import { USAGE_LIMITS_ENABLED } from '@/config/featureFlags';
 import type { Subscription, Usage } from './progressTypes';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type UsageBannerProps = {
     usage: Usage;
@@ -8,6 +9,7 @@ type UsageBannerProps = {
 };
 
 export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
+    const { t } = useLanguage();
     return (
         <div className="p-1 rounded-3xl bg-primary/10 border border-primary/10">
             <div className="glass-card rounded-[22px] p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
@@ -19,18 +21,18 @@ export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
                         <h2 className="text-xl font-black uppercase tracking-tight">
                             {USAGE_LIMITS_ENABLED
                                 ? subscription?.status === 'premium'
-                                    ? 'PREMIUM ACCESS ACTIVE'
-                                    : 'FREE TIER LIMITS'
-                                : 'UNLIMITED ACCESS ACTIVE'}
+                                    ? t('progress.premium_active')
+                                    : t('progress.free_tier')
+                                : t('progress.unlimited_active')}
                         </h2>
                         <p className="text-sm opacity-60 font-medium">
                             {USAGE_LIMITS_ENABLED
                                 ? subscription?.status === 'premium'
-                                    ? `Unlimited usage until ${new Date(
+                                    ? `${t('progress.unlimited_until')} ${new Date(
                                           subscription?.expiry || Date.now(),
                                       ).toLocaleDateString()}`
-                                    : 'Upgrade to remove daily processing restrictions.'
-                                : 'Usage limits are disabled while we onboard new scholars.'}
+                                    : t('progress.upgrade_remove_limits')
+                                : t('progress.limits_disabled')}
                         </p>
                     </div>
                 </div>
@@ -38,12 +40,12 @@ export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
                 <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
                     <div className="text-center">
                         <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1">
-                            Uploads
+                            {t('progress.uploads_label')}
                         </p>
                         <div className="text-2xl font-black">
                             {USAGE_LIMITS_ENABLED && usage.limits
                                 ? `${usage.dailyDocs} / ${usage.limits.dailyDocs}`
-                                : `${usage.dailyDocs} / Unlimited`}
+                                : `${usage.dailyDocs} / ${t('progress.unlimited_suffix')}`}
                         </div>
                         {USAGE_LIMITS_ENABLED && usage.limits && (
                             <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden mx-auto">
@@ -58,12 +60,12 @@ export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
                     </div>
                     <div className="text-center">
                         <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1">
-                            AI Chats
+                            {t('progress.ai_chats_label')}
                         </p>
                         <div className="text-2xl font-black">
                             {USAGE_LIMITS_ENABLED && usage.limits
                                 ? `${usage.dailyMessages} / ${usage.limits.dailyMessages}`
-                                : `${usage.dailyMessages} / Unlimited`}
+                                : `${usage.dailyMessages} / ${t('progress.unlimited_suffix')}`}
                         </div>
                         {USAGE_LIMITS_ENABLED && usage.limits && (
                             <div className="w-24 h-1.5 bg-foreground/10 rounded-full mt-2 overflow-hidden mx-auto">

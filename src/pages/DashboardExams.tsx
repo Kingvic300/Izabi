@@ -12,8 +12,10 @@ import ExamLobby from '@/components/dashboard-exams/ExamLobby';
 import ExamView from '@/components/dashboard-exams/ExamView';
 import ExamResult from '@/components/dashboard-exams/ExamResult';
 import ExamReview from '@/components/dashboard-exams/ExamReview';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DashboardExams = () => {
+    const { t } = useLanguage();
     const [view, setView] = useState<'lobby' | 'exam' | 'result' | 'review'>(
         'lobby',
     );
@@ -168,24 +170,23 @@ const DashboardExams = () => {
     const startSimulation = async () => {
         if (activeTab === 'UNIVERSITY' && (!simUniName || !simCourseTitle)) {
             appToast.error({
-                title: 'Details Required',
-                description: 'Please enter University and Course Title.',
+                title: t('exams.toast_details_required_title'),
+                description: t('exams.toast_details_required_desc'),
             });
             return;
         }
         if (activeTab !== 'UNIVERSITY' && !simSubject) {
             appToast.error({
-                title: 'Subject Required',
-                description: 'Please enter a subject to start.',
+                title: t('exams.toast_subject_required_title'),
+                description: t('exams.toast_subject_required_desc_sim'),
             });
             return;
         }
 
         setIsSimulating(true);
         appToast.info({
-            title: 'Preparing Simulation',
-            description:
-                'Generating your standard CBT exam paper. This might take up to 30 seconds.',
+            title: t('exams.toast_preparing_sim_title'),
+            description: t('exams.toast_preparing_sim_desc'),
         });
         try {
             // Use the Simulation endpoint
@@ -205,15 +206,14 @@ const DashboardExams = () => {
             setCurrentQuestionIndex(0);
             setView('exam');
             appToast.success({
-                title: 'Exam Ready',
-                description: 'Your simulation has loaded. Good luck!',
+                title: t('exams.toast_exam_ready_title'),
+                description: t('exams.toast_exam_ready_desc'),
             });
         } catch (err: any) {
             appToast.error({
-                title: 'Simulation Failed',
+                title: t('exams.toast_sim_failed_title'),
                 description:
-                    err.message ||
-                    'Could not generate exam. AI nodes timed out.',
+                    err.message || t('exams.toast_sim_failed_desc_fallback'),
             });
         } finally {
             setIsSimulating(false);
@@ -226,15 +226,15 @@ const DashboardExams = () => {
             (!practiceUniName || !practiceCourseTitle)
         ) {
             appToast.error({
-                title: 'Details Required',
-                description: 'Please enter University and Course Title.',
+                title: t('exams.toast_details_required_title'),
+                description: t('exams.toast_details_required_desc'),
             });
             return;
         }
         if (activeTab !== 'UNIVERSITY' && !practiceSubject) {
             appToast.error({
-                title: 'Subject Required',
-                description: 'Please enter a subject.',
+                title: t('exams.toast_subject_required_title'),
+                description: t('exams.toast_subject_required_desc_practice'),
             });
             return;
         }
@@ -262,8 +262,9 @@ const DashboardExams = () => {
             setView('exam');
         } catch (err: any) {
             appToast.error({
-                title: 'Generation Failed',
-                description: err.message || 'Could not generate exam.',
+                title: t('exams.toast_gen_failed_title'),
+                description:
+                    err.message || t('exams.toast_gen_failed_desc_fallback'),
             });
         } finally {
             setIsPracticing(false);
@@ -277,17 +278,16 @@ const DashboardExams = () => {
     const startNotePractice = async () => {
         if (!selectedFile) {
             appToast.error({
-                title: 'No File',
-                description: 'Please upload your notes (PDF) first.',
+                title: t('exams.toast_no_file_title'),
+                description: t('exams.toast_no_file_desc'),
             });
             return;
         }
 
         setIsNotePracticing(true);
         appToast.info({
-            title: 'Scanning Notes',
-            description:
-                'Our AI is reading your notes to create a custom exam paper.',
+            title: t('exams.toast_scanning_title'),
+            description: t('exams.toast_scanning_desc'),
         });
 
         try {
@@ -321,13 +321,14 @@ const DashboardExams = () => {
             setCurrentQuestionIndex(0);
             setView('exam');
             appToast.success({
-                title: 'Ready!',
-                description: 'Exam generated from your notes. Good luck!',
+                title: t('exams.toast_ready_title'),
+                description: t('exams.toast_ready_desc'),
             });
         } catch (err: any) {
             appToast.error({
-                title: 'Note Practice Failed',
-                description: err.message || 'Could not read notes.',
+                title: t('exams.toast_note_failed_title'),
+                description:
+                    err.message || t('exams.toast_note_failed_desc_fallback'),
             });
         } finally {
             setIsNotePracticing(false);
@@ -398,7 +399,7 @@ const DashboardExams = () => {
                             <div className="space-y-6">
                                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
-                                        Exams
+                                        {t('exams.eyebrow')}
                                     </span>
                                 </div>
                               

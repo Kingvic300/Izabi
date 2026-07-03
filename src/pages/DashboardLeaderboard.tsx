@@ -14,8 +14,10 @@ import { LeaderboardTable } from '@/components/dashboard-leaderboard/Leaderboard
 import { ShareRankDialog } from '@/components/dashboard-leaderboard/ShareRankDialog';
 import { useLeaderboardShare } from '@/components/dashboard-leaderboard/useLeaderboardShare';
 import { getLeaderboardSocket } from '@/lib/leaderboardSocket';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function DashboardLeaderboard() {
+    const { t } = useLanguage();
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardData>({
         topStudents: [],
         topStreaks: []
@@ -94,7 +96,7 @@ export default function DashboardLeaderboard() {
             <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
-                        Leaderboard
+                        {t('leaderboard.eyebrow')}
                     </span>
                 </div>
                 <header className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
@@ -103,14 +105,16 @@ export default function DashboardLeaderboard() {
                             variant="outline"
                             className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-[10px] tracking-widest uppercase mb-1"
                         >
-                            Global Rankings
+                            {t('leaderboard.badge')}
                         </Badge>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter leading-none">
-                            The <span className="text-gradient">scholar spotlight</span>
+                            {t('leaderboard.title_top')}{' '}
+                            <span className="text-gradient">
+                                {t('leaderboard.title_gradient')}
+                            </span>
                         </h1>
                         <p className="text-muted-foreground text-sm sm:text-base font-medium max-w-none">
-                            See where you stand among the top scholars. Compete
-                            for XP or maintain your daily study consistency.
+                            {t('leaderboard.subtitle')}
                         </p>
                     </div>
 
@@ -143,7 +147,7 @@ export default function DashboardLeaderboard() {
                                     size={14}
                                     className="sm:w-4 sm:h-4"
                                 />{' '}
-                                Total XP
+                                {t('leaderboard.tab_xp')}
                             </TabsTrigger>
                             <TabsTrigger
                                 value="streak"
@@ -153,7 +157,7 @@ export default function DashboardLeaderboard() {
                                     size={14}
                                     className="sm:w-4 sm:h-4"
                                 />{' '}
-                                Top Streaks
+                                {t('leaderboard.tab_streak')}
                             </TabsTrigger>
                         </TabsList>
                     </div>
@@ -169,7 +173,7 @@ export default function DashboardLeaderboard() {
                             users={leaderboardData.topStudents || []}
                             type="xp"
                             currentUserId={currentUserId}
-                            title="Leaderboard Standings"
+                            title={t('leaderboard.standings_title')}
                             icon={
                                 <Trophy
                                     className="text-primary sm:w-5 sm:h-5"
@@ -193,7 +197,7 @@ export default function DashboardLeaderboard() {
                             users={leaderboardData.topStreaks || []}
                             type="streak"
                             currentUserId={currentUserId}
-                            title="Persistence Rankings"
+                            title={t('leaderboard.persistence_title')}
                             icon={
                                 <Flame
                                     className="text-orange-500 sm:w-5 sm:h-5"

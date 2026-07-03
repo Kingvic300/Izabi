@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
 import { QUESTION_COUNTS, DIFFICULTY_OPTIONS, QUIZ_STYLE_OPTIONS } from '@/components/dashboard-home/dashboard';
 import { QuizDifficulty, QuizStyle } from '@/components/dashboard-home/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SettingsPanelProps {
     numberOfQuestions: number;
@@ -33,21 +34,22 @@ export const SettingsPanel = ({
     onShuffleChange,
     onExplanationsChange,
 }: SettingsPanelProps) => {
+    const { t } = useLanguage();
     return (
         <div className="p-4 sm:p-6 bg-card/[0.02] border-t border-foreground/5 space-y-4">
             <div className="flex items-center justify-between gap-3">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-                    Session Settings
+                    {t('module.session_settings')}
                 </div>
                 <div className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-30">
-                    Mobile Ready
+                    {t('module.mobile_ready')}
                 </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-3">
                     <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                        Questions
+                        {t('module.questions_label')}
                     </div>
                     <ToggleGroup
                         type="single"
@@ -70,7 +72,7 @@ export const SettingsPanel = ({
 
                 <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-3">
                     <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                        Difficulty
+                        {t('module.difficulty_label')}
                     </div>
                     <ToggleGroup
                         type="single"
@@ -81,7 +83,11 @@ export const SettingsPanel = ({
                     >
                         {DIFFICULTY_OPTIONS.map((opt) => (
                             <ToggleGroupItem key={opt} value={opt} className="h-10 text-xs font-bold">
-                                {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                                {opt === 'easy'
+                                    ? t('module.difficulty_easy')
+                                    : opt === 'hard'
+                                      ? t('module.difficulty_hard')
+                                      : t('module.difficulty_balanced')}
                             </ToggleGroupItem>
                         ))}
                     </ToggleGroup>
@@ -89,7 +95,7 @@ export const SettingsPanel = ({
 
                 <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-3">
                     <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                        Question Type
+                        {t('module.question_type_label')}
                     </div>
                     <ToggleGroup
                         type="single"
@@ -100,7 +106,7 @@ export const SettingsPanel = ({
                     >
                         {QUIZ_STYLE_OPTIONS.map((opt) => (
                             <ToggleGroupItem key={opt} value={opt} className="h-10 text-[11px] font-bold">
-                                {opt === 'mcq' ? 'MCQ' : opt === 'short' ? 'Short' : 'Mixed'}
+                                {opt === 'mcq' ? t('module.style_mcq') : opt === 'short' ? t('module.style_short') : t('module.style_mixed')}
                             </ToggleGroupItem>
                         ))}
                     </ToggleGroup>
@@ -110,10 +116,10 @@ export const SettingsPanel = ({
                     <div className="flex items-center justify-between gap-3">
                         <div className="space-y-1">
                             <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                                Shuffle Questions
+                                {t('module.shuffle_label')}
                             </div>
                             <div className="text-xs font-medium text-muted-foreground">
-                                Keeps the order fresh
+                                {t('module.shuffle_desc')}
                             </div>
                         </div>
                         <Switch
@@ -126,10 +132,10 @@ export const SettingsPanel = ({
                     <div className="flex items-center justify-between gap-3">
                         <div className="space-y-1">
                             <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
-                                Show Explanations
+                                {t('module.explanations_label')}
                             </div>
                             <div className="text-xs font-medium text-muted-foreground">
-                                Reveal why answers are correct
+                                {t('module.explanations_desc')}
                             </div>
                         </div>
                         <Switch
@@ -145,7 +151,7 @@ export const SettingsPanel = ({
                 <div className="flex items-center gap-4 text-primary animate-pulse">
                     <Loader2 className="animate-spin" size={16} />
                     <span className="text-[10px] font-bold uppercase tracking-widest">
-                        Creating your study plan...
+                        {t('module.creating_plan')}
                     </span>
                 </div>
             )}

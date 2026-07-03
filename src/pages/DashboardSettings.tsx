@@ -9,8 +9,10 @@ import AppearanceSection from '@/components/dashboard-settings/AppearanceSection
 import LanguageSection from '@/components/dashboard-settings/LanguageSection';
 import NotificationsSection from '@/components/dashboard-settings/NotificationsSection';
 import PrivacySection from '@/components/dashboard-settings/PrivacySection';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DashboardSettings = () => {
+    const { t } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const {
         settings,
@@ -54,7 +56,7 @@ const DashboardSettings = () => {
             <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
-                        Settings
+                        {t('settings.eyebrow')}
                     </span>
                 </div>
                 <div className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6">

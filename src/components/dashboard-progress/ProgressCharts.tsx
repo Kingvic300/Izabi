@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { ChartPoint, SubjectPoint } from './progressTypes';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type ProgressChartsProps = {
     chartData: ChartPoint[];
@@ -22,6 +23,7 @@ export default function ProgressCharts({
     chartData,
     subjectData,
 }: ProgressChartsProps) {
+    const { t } = useLanguage();
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <Card className="chart-card glass-card border-foreground/10 shadow-2xl overflow-hidden">
@@ -30,10 +32,10 @@ export default function ProgressCharts({
                         <div className="p-2 rounded-xl bg-primary/20 text-primary">
                             <TrendingUp className="h-5 w-5" />
                         </div>
-                        <span>Growth Trend</span>
+                        <span>{t('progress.growth_trend')}</span>
                     </CardTitle>
                     <CardDescription>
-                        Daily mastery score variation
+                        {t('progress.growth_trend_desc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-8">
@@ -93,7 +95,7 @@ export default function ProgressCharts({
                                     stroke: 'hsl(var(--background))',
                                 }}
                                 activeDot={{ r: 8, strokeWidth: 0 }}
-                                name="Score"
+                                name={t('quiz.score_label')}
                             />
                         </LineChart>
                     </ResponsiveContainer>
@@ -106,10 +108,10 @@ export default function ProgressCharts({
                         <div className="p-2 rounded-xl bg-accent/20 text-accent">
                             <BarChart3 className="h-5 w-5" />
                         </div>
-                        <span>Subject Specialization</span>
+                        <span>{t('progress.subject_specialization')}</span>
                     </CardTitle>
                     <CardDescription>
-                        Mastery across different disciplines
+                        {t('progress.subject_specialization_desc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-8">
@@ -152,7 +154,7 @@ export default function ProgressCharts({
                                 dataKey="score"
                                 fill="hsl(var(--primary))"
                                 radius={[8, 8, 0, 0]}
-                                name="Average Score"
+                                name={t('progress.average_score')}
                             />
                         </BarChart>
                     </ResponsiveContainer>

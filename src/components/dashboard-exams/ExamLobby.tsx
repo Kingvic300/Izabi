@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type ExamTab = 'JAMB' | 'WAEC' | 'JUPEB' | 'UNIVERSITY';
 
@@ -67,19 +68,19 @@ export default function ExamLobby({
     recentResults,
     onSelectResult,
 }: ExamLobbyProps) {
+    const { t } = useLanguage();
     return (
         <div className="w-full space-y-8 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
                 <div>
                     <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tighter mb-2 italic">
-                        Exam{' '}
+                        {t('exams.title_top')}{' '}
                         <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
-                            Center
+                            {t('exams.title_gradient')}
                         </span>
                     </h1>
                     <p className="text-muted-foreground text-base sm:text-lg lg:text-xl font-medium">
-                        Select your category and start a professional
-                        simulation.
+                        {t('exams.subtitle')}
                     </p>
                 </div>
 
@@ -98,10 +99,10 @@ export default function ExamLobby({
                             </div>
                             <div>
                                 <p className="font-bold text-sm">
-                                    Ongoing Session
+                                    {t('exams.ongoing_session')}
                                 </p>
                                 <p className="text-[10px] uppercase font-black tracking-widest opacity-40">
-                                    Ready to resume
+                                    {t('exams.ready_to_resume')}
                                 </p>
                             </div>
                         </div>
@@ -109,7 +110,7 @@ export default function ExamLobby({
                             onClick={onResume}
                             className="bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-xs px-8 h-12 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95"
                         >
-                            Resume Now
+                            {t('exams.resume_now')}
                         </Button>
                     </motion.div>
                 )}
@@ -146,10 +147,10 @@ export default function ExamLobby({
                             <div className="p-3 rounded-2xl bg-primary/20 text-primary shadow-inner">
                                 <Zap className="fill-primary" size={24} />
                             </div>
-                            Full <span className="text-primary">Sim</span>
+                            {t('exams.full_sim_top')} <span className="text-primary">{t('exams.full_sim_gradient')}</span>
                         </CardTitle>
                         <CardDescription className="text-base font-medium opacity-70">
-                            Timed, standard exam conditions for final prep.
+                            {t('exams.full_sim_desc')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6 relative z-20 p-5 sm:p-8 pt-0">
@@ -158,10 +159,10 @@ export default function ExamLobby({
                                 <>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
-                                            University
+                                            {t('exams.university_label')}
                                         </label>
                                         <Input
-                                            placeholder="e.g. UNILAG"
+                                            placeholder={t('exams.university_placeholder')}
                                             value={simUniName}
                                             onChange={(e) =>
                                                 onSimUniNameChange(
@@ -173,10 +174,10 @@ export default function ExamLobby({
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
-                                            Course Title
+                                            {t('exams.course_title_label')}
                                         </label>
                                         <Input
-                                            placeholder="e.g. Intro to Computer Science"
+                                            placeholder={t('exams.course_title_placeholder')}
                                             value={simCourseTitle}
                                             onChange={(e) =>
                                                 onSimCourseTitleChange(
@@ -190,12 +191,12 @@ export default function ExamLobby({
                             ) : (
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
-                                        Subject
+                                        {t('exams.subject_label')}
                                     </label>
                                     <Input
                                         id="sim-subject-input"
                                         type="text"
-                                        placeholder="e.g. Use of English, Mathematics"
+                                        placeholder={t('exams.subject_placeholder')}
                                         value={simSubject}
                                         onChange={(e) =>
                                             onSimSubjectChange(e.target.value)
@@ -214,7 +215,7 @@ export default function ExamLobby({
                             {isSimulating ? (
                                 <Loader2 className="animate-spin" />
                             ) : (
-                                'Start Exam'
+                                t('exams.start_exam')
                             )}
                         </Button>
                     </CardContent>
@@ -228,17 +229,17 @@ export default function ExamLobby({
                             <div className="p-3 rounded-2xl bg-blue-600/20 text-blue-600 shadow-inner">
                                 <FileText size={24} />
                             </div>
-                            Notes{' '}
-                            <span className="text-blue-600">Practice</span>
+                            {t('exams.notes_top')}{' '}
+                            <span className="text-blue-600">{t('exams.notes_gradient')}</span>
                         </CardTitle>
                         <CardDescription className="text-base font-medium opacity-70">
-                            Upload PDF notes to practice on your own material.
+                            {t('exams.notes_desc')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6 relative z-20 p-5 sm:p-8 pt-0">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
-                                Upload PDF
+                                {t('exams.upload_pdf_label')}
                             </label>
                             <div className="border-2 border-dashed border-foreground/10 rounded-[20px] p-6 flex flex-col items-center justify-center gap-3 hover:border-blue-600/50 transition-all cursor-pointer relative bg-background/50 group/upload hover:bg-blue-600/5">
                                 <input
@@ -260,7 +261,7 @@ export default function ExamLobby({
                                             {selectedFile.name}
                                         </p>
                                         <p className="text-[10px] uppercase font-black tracking-widest opacity-40 mt-1">
-                                            Click to change
+                                            {t('exams.click_to_change')}
                                         </p>
                                     </div>
                                 ) : (
@@ -272,7 +273,7 @@ export default function ExamLobby({
                                             />
                                         </div>
                                         <p className="text-[10px] font-black opacity-40 uppercase tracking-[0.2em]">
-                                            Select Research Notes
+                                            {t('exams.select_notes')}
                                         </p>
                                     </>
                                 )}
@@ -286,7 +287,7 @@ export default function ExamLobby({
                             {isNotePracticing ? (
                                 <Loader2 className="animate-spin" />
                             ) : (
-                                'Start Note Exam'
+                                t('exams.start_note_exam')
                             )}
                         </Button>
                     </CardContent>
@@ -302,9 +303,9 @@ export default function ExamLobby({
                         <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
                             <Trophy size={28} />
                         </div>
-                        RECENT{' '}
+                        {t('exams.recent_top')}{' '}
                         <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent underline decoration-blue-500/30">
-                            STATS
+                            {t('exams.recent_gradient')}
                         </span>
                     </h3>
                     <Button
@@ -314,7 +315,7 @@ export default function ExamLobby({
                         }
                         className="h-12 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] opacity-40 hover:opacity-100 hover:bg-foreground/5 transition-all"
                     >
-                        Historical Data{' '}
+                        {t('exams.historical_data')}{' '}
                         <ChevronRight size={14} className="ml-2" />
                     </Button>
                 </div>
@@ -378,11 +379,10 @@ export default function ExamLobby({
                                 />
                             </div>
                             <h4 className="text-xl font-black uppercase tracking-widest opacity-20">
-                                Archive Empty
+                                {t('exams.archive_empty')}
                             </h4>
                             <p className="text-sm opacity-40 mt-2 max-w-xs mx-auto font-medium leading-relaxed">
-                                Complete your first simulation to begin tracking
-                                your neural improvement.
+                                {t('exams.archive_empty_desc')}
                             </p>
                         </div>
                     )}

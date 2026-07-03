@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Layers, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { useFlashcards } from '@/hooks/useFlashcards';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FlashcardsSectionProps {
     flashcards: Array<{ front: string; back: string }>;
@@ -14,6 +15,7 @@ interface FlashcardsSectionProps {
 }
 
 export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: FlashcardsSectionProps) => {
+    const { t } = useLanguage();
     const {
         currentCardIndex,
         isFlipped,
@@ -36,20 +38,20 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
                                 <div className="min-w-0 space-y-1">
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <h3 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight break-words">
-                                            Flashcards
+                                            {t('flashcards.title')}
                                         </h3>
                                         <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-[9px] font-black uppercase tracking-[0.18em] opacity-60">
-                                            {flashcards.length} cards
+                                            {flashcards.length} {t('flashcards.cards_suffix')}
                                         </div>
                                     </div>
                                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
-                                        Tap to flip and master quick facts
+                                        {t('flashcards.tap_to_flip')}
                                     </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                                 <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[9px] font-black uppercase tracking-[0.18em]">
-                                    Active
+                                    {t('flashcards.active')}
                                 </div>
                                 <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
                                     {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -61,7 +63,7 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
                         <div className="p-4 sm:p-6 md:p-10 flex flex-col items-center space-y-5 sm:space-y-8">
                             <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl bg-card/5 border border-foreground/5 px-4 py-3">
                                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50">
-                                    Flip to reveal answers
+                                    {t('flashcards.flip_reveal')}
                                 </div>
                                 <div className="text-xs font-bold">
                                     {currentCardIndex + 1} / {flashcards.length} cards
@@ -80,7 +82,7 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
                                 >
                                     <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-5 sm:p-8 rounded-3xl glass bg-card/[0.02] border-2 border-primary/20 shadow-xl overflow-hidden">
                                         <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30">
-                                            Front
+                                            {t('flashcards.front')}
                                         </div>
                                         <p className="text-base sm:text-lg md:text-xl font-bold text-center text-foreground break-words leading-normal whitespace-pre-wrap">
                                             {flashcards[currentCardIndex]?.front}
@@ -88,7 +90,7 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
                                     </div>
                                     <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-5 sm:p-8 rounded-3xl glass bg-primary/10 border-2 border-primary/40 shadow-xl overflow-hidden">
                                         <div className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest opacity-30 text-primary">
-                                            Back
+                                            {t('flashcards.back')}
                                         </div>
                                         <p className="text-sm sm:text-base md:text-lg font-bold text-center text-foreground/90 leading-relaxed break-words whitespace-pre-wrap">
                                             {flashcards[currentCardIndex]?.back}
@@ -108,7 +110,7 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
                                 >
                                     <ChevronDown className="rotate-90" />
                                     <span className="ml-1 text-[10px] font-bold uppercase tracking-widest sm:hidden">
-                                        Prev
+                                        {t('flashcards.prev')}
                                     </span>
                                 </Button>
                                 <span className="text-sm sm:text-lg font-bold tracking-tighter whitespace-nowrap">
@@ -124,7 +126,7 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
                                 >
                                     <ChevronDown className="-rotate-90" />
                                     <span className="ml-1 text-[10px] font-bold uppercase tracking-widest sm:hidden">
-                                        Next
+                                        {t('flashcards.next')}
                                     </span>
                                 </Button>
                             </div>
@@ -138,7 +140,7 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
                                 }}
                             >
                                 <RotateCcw size={14} />
-                                Reset Flashcards
+                                {t('flashcards.reset')}
                             </Button>
                         </div>
                     </CollapsibleContent>

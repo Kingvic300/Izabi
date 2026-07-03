@@ -11,8 +11,10 @@ import ProgressStatCards from '@/components/dashboard-progress/ProgressStatCards
 import ActivityStreaks from '@/components/dashboard-progress/ActivityStreaks';
 import ProgressCharts from '@/components/dashboard-progress/ProgressCharts';
 import AchievementsSection from '@/components/dashboard-progress/AchievementsSection';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DashboardProgress = () => {
+    const { t } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const {
         progressData,
@@ -54,16 +56,15 @@ const DashboardProgress = () => {
         return (
             <div className="space-y-6">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                    Your Performance
+                    {t('progress.title')}
                 </h1>
                 <p className="text-muted-foreground">
-                    Track your learning journey and see your improvement over
-                    time.
+                    {t('progress.loading_subtitle')}
                 </p>
                 <PageLoader
                     variant="skeleton-cards"
                     itemCount={4}
-                    text="Calculating your progress..."
+                    text={t('progress.calculating')}
                 />
             </div>
         );
@@ -77,17 +78,16 @@ const DashboardProgress = () => {
             <div className="prog-header space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
-                        Progress
+                        {t('progress.eyebrow')}
                     </span>
                 </div>
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div className="space-y-2">
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                            Your Performance
+                            {t('progress.title')}
                         </h1>
                         <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
-                            Visualize your study momentum, streaks, and weekly
-                            growth at a glance.
+                            {t('progress.main_subtitle')}
                         </p>
                     </div>
                 </div>
@@ -105,14 +105,14 @@ const DashboardProgress = () => {
 
             <section className="space-y-4">
                 <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
-                    Performance Snapshot
+                    {t('progress.snapshot_label')}
                 </div>
                 <ProgressStatCards progressData={progressData} />
             </section>
 
             <section className="space-y-4">
                 <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
-                    Streaks
+                    {t('progress.streaks_label')}
                 </div>
                 <ActivityStreaks
                     activityStreaks={progressData.activityStreaks}
@@ -121,7 +121,7 @@ const DashboardProgress = () => {
 
             <section className="space-y-4">
                 <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
-                    Insights
+                    {t('progress.insights_label')}
                 </div>
                 <ProgressCharts
                     chartData={chartData}
@@ -131,7 +131,7 @@ const DashboardProgress = () => {
 
             <section className="space-y-4">
                 <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
-                    Achievements
+                    {t('progress.achievements_label')}
                 </div>
                 <AchievementsSection progressData={progressData} />
             </section>

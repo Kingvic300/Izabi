@@ -7,6 +7,7 @@ import { QuizSection } from './QuizSection';
 import { Brain, FileText, Flame, Sparkles, Terminal } from 'lucide-react';
 import { useStudy } from '@/contexts/StudyContext';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ResultsHubProps {
     onDownloadSummary: () => void;
@@ -21,6 +22,7 @@ export const ResultsHub = ({
     onDownloadQuiz,
     onSubmitQuiz,
 }: ResultsHubProps) => {
+    const { t } = useLanguage();
     const { session } = useStudy();
     const [showSummary, setShowSummary] = useState(false);
     const [showStudyGuide, setShowStudyGuide] = useState(false);
@@ -51,11 +53,11 @@ export const ResultsHub = ({
                     >
                         <div className="h-px w-8 bg-primary/40" />
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/60">
-                            Synthesis Complete
+                            {t('module.synthesis_complete')}
                         </span>
                     </motion.div>
                     <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none italic">
-                        Knowledge <span className="text-primary not-italic">Vault</span>
+                        {t('module.knowledge_vault_top')} <span className="text-primary not-italic">{t('module.knowledge_vault_gradient')}</span>
                     </h2>
                 </div>
                 
@@ -65,7 +67,7 @@ export const ResultsHub = ({
                     </div>
                     <div>
                         <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                            Protocol
+                            {t('module.protocol_label')}
                         </div>
                         <div className="text-xs font-bold font-mono tracking-tighter">
                             A-STUDY_v2.0_STABLE
@@ -89,22 +91,22 @@ export const ResultsHub = ({
                         isOpen={showSummary}
                         onOpenChange={setShowSummary}
                         onDownload={onDownloadSummary}
-                        title="Core Synthesis"
+                        title={t('module.core_synthesis')}
                         icon={Brain}
                         iconColor="text-primary"
                     />
                 )}
-    
+
                 {studyGuide && (
                     <SummarySection
                         content={studyGuide}
                         isOpen={showStudyGuide}
                         onOpenChange={setShowStudyGuide}
                         onDownload={onDownloadGuide}
-                        title="Tactical Guide"
+                        title={t('module.tactical_guide')}
                         icon={FileText}
                         iconColor="text-primary"
-                        audioLabel="Vocalize Guide"
+                        audioLabel={t('module.vocalize_guide')}
                     />
                 )}
     

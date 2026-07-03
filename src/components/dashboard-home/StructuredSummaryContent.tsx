@@ -2,6 +2,7 @@
 
 import { StructuredSummary } from '@/lib/summaryUtils';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StructuredSummaryContentProps {
     summary: StructuredSummary;
@@ -14,20 +15,21 @@ export const StructuredSummaryContent = ({
     className,
     showQuiz = true,
 }: StructuredSummaryContentProps) => {
+    const { t } = useLanguage();
     return (
         <div className={cn('space-y-6 text-sm md:text-base', className)}>
             <section className="space-y-2">
                 <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
-                    Summary
+                    {t('module.summary_label')}
                 </h4>
                 <p className="text-foreground/90 leading-relaxed">
-                    {summary.summary || 'No summary provided.'}
+                    {summary.summary || t('module.no_summary')}
                 </p>
             </section>
 
             <section className="space-y-3">
                 <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
-                    Key Concepts
+                    {t('module.key_concepts')}
                 </h4>
                 {summary.keyConcepts?.length ? (
                     <div className="flex flex-wrap gap-2">
@@ -42,14 +44,14 @@ export const StructuredSummaryContent = ({
                     </div>
                 ) : (
                     <p className="text-muted-foreground text-sm">
-                        No key concepts extracted.
+                        {t('module.no_key_concepts')}
                     </p>
                 )}
             </section>
 
             <section className="space-y-3">
                 <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
-                    Definitions
+                    {t('module.definitions_label')}
                 </h4>
                 {summary.definitions?.length ? (
                     <div className="grid gap-3 sm:grid-cols-2">
@@ -69,25 +71,25 @@ export const StructuredSummaryContent = ({
                     </div>
                 ) : (
                     <p className="text-muted-foreground text-sm">
-                        No definitions extracted.
+                        {t('module.no_definitions')}
                     </p>
                 )}
             </section>
 
             <section className="space-y-2">
                 <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
-                    Simplified Explanation
+                    {t('module.simplified_explanation')}
                 </h4>
                 <p className="text-foreground/90 leading-relaxed">
                     {summary.simplifiedExplanation ||
-                        'No simplified explanation provided.'}
+                        t('module.no_simplified_explanation')}
                 </p>
             </section>
 
             {showQuiz && (
                 <section className="space-y-3">
                     <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
-                        Quick Quiz
+                        {t('module.quick_quiz')}
                     </h4>
                     {summary.quiz?.length ? (
                         <div className="space-y-4">
@@ -121,7 +123,7 @@ export const StructuredSummaryContent = ({
                                             </div>
                                         )}
                                     <p className="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                                        Answer
+                                        {t('module.answer_label')}
                                     </p>
                                     <p className="text-sm text-foreground/90">
                                         {question.answer}
@@ -131,7 +133,7 @@ export const StructuredSummaryContent = ({
                         </div>
                     ) : (
                         <p className="text-muted-foreground text-sm">
-                            No quiz questions generated.
+                            {t('module.no_quiz_generated')}
                         </p>
                     )}
                 </section>

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type HistoryListProps = {
     items: any[];
@@ -32,6 +33,7 @@ const getIcon = (type: string) => {
 };
 
 export default function HistoryList({ items, onSelect }: HistoryListProps) {
+    const { t } = useLanguage();
     return (
         <div className="grid grid-cols-1 gap-4">
             <AnimatePresence mode="popLayout">
@@ -64,7 +66,7 @@ export default function HistoryList({ items, onSelect }: HistoryListProps) {
                                             className="text-[10px] font-black uppercase opacity-60"
                                         >
                                             {item.hType === 'generation'
-                                                ? 'AI Material'
+                                                ? t('history.ai_material')
                                                 : item.hType}
                                         </Badge>
                                     </div>
@@ -78,19 +80,19 @@ export default function HistoryList({ items, onSelect }: HistoryListProps) {
                                         {item.hType === 'generation' && (
                                             <span>
                                                 {item.questions?.length || 0}{' '}
-                                                Questions
+                                                {t('history.questions_suffix')}
                                             </span>
                                         )}
                                         {item.hType === 'note' && (
                                             <span>
                                                 {item.content?.length || 0}{' '}
-                                                chars
+                                                {t('history.chars_suffix')}
                                             </span>
                                         )}
                                         {item.hType === 'quiz' && (
                                             <span>
                                                 {item.correctAnswers}/
-                                                {item.totalQuestions} Correct
+                                                {item.totalQuestions} {t('history.correct_suffix')}
                                             </span>
                                         )}
                                     </div>
@@ -102,7 +104,7 @@ export default function HistoryList({ items, onSelect }: HistoryListProps) {
                                             {Math.round(item.score)}%
                                         </div>
                                         <div className="text-[10px] uppercase font-black opacity-40">
-                                            Score
+                                            {t('history.score_label')}
                                         </div>
                                     </div>
                                 )}
@@ -121,9 +123,9 @@ export default function HistoryList({ items, onSelect }: HistoryListProps) {
                     <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Search className="text-muted-foreground" size={32} />
                     </div>
-                    <h3 className="text-xl font-bold">No items found</h3>
+                    <h3 className="text-xl font-bold">{t('history.no_items_found')}</h3>
                     <p className="text-muted-foreground">
-                        Adjust your filters or start a new study session.
+                        {t('history.adjust_filters')}
                     </p>
                 </div>
             )}

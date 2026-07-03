@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type ExamResultProps = {
     score: number;
@@ -15,6 +16,7 @@ export default function ExamResult({
     totalQuestions,
     onReturn,
 }: ExamResultProps) {
+    const { t } = useLanguage();
     const correctCount = Math.round((score / 100) * totalQuestions);
 
     return (
@@ -31,20 +33,20 @@ export default function ExamResult({
 
             <h2 className="text-2xl sm:text-4xl font-bold tracking-tighter">
                 {score >= 70
-                    ? 'Excellent Work! 🎉'
+                    ? t('exams.result_excellent')
                     : score >= 50
-                      ? 'Good Effort! 👍'
-                      : 'Keep Practicing! 💪'}
+                      ? t('exams.result_good')
+                      : t('exams.result_keep_practicing')}
             </h2>
             <p className="text-base sm:text-xl text-muted-foreground">
-                You answered {correctCount} out of {totalQuestions} questions
-                correctly.
+                {t('exams.you_answered')} {correctCount} {t('quiz.out_of')} {totalQuestions}{' '}
+                {t('exams.questions_correctly')}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 <Card className="p-6 sm:p-10 bg-blue-500/5 border-blue-500/20 rounded-[24px] sm:rounded-[32px] shadow-inner group">
                     <div className="font-black text-blue-500 text-sm uppercase tracking-widest mb-2 group-hover:translate-x-1 transition-transform">
-                        Correct Responses
+                        {t('exams.correct_responses')}
                     </div>
                     <div className="text-4xl sm:text-5xl font-black">
                         {correctCount}
@@ -52,7 +54,7 @@ export default function ExamResult({
                 </Card>
                 <Card className="p-6 sm:p-10 bg-destructive/5 border-destructive/20 rounded-[24px] sm:rounded-[32px] shadow-inner group">
                     <div className="font-black text-destructive/60 text-sm uppercase tracking-widest mb-2 group-hover:translate-x-1 transition-transform">
-                        Incorrect Responses
+                        {t('exams.incorrect_responses')}
                     </div>
                     <div className="text-4xl sm:text-5xl font-black">
                         {totalQuestions - correctCount}
@@ -64,7 +66,7 @@ export default function ExamResult({
                 onClick={onReturn}
                 className="h-14 sm:h-16 px-8 sm:px-12 rounded-[20px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xl shadow-primary/20 transition-all active:scale-95"
             >
-                Return to Lobby
+                {t('exams.return_to_lobby')}
             </Button>
         </div>
     );

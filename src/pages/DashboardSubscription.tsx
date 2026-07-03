@@ -30,8 +30,10 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DashboardSubscription = () => {
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(false);
     const [currentTier, setCurrentTier] = useState<'free' | 'pro' | 'premium'>(
         'free',
@@ -64,8 +66,10 @@ const DashboardSubscription = () => {
             }
         } catch (err: any) {
             appToast.error({
-                title: 'Payment Error',
-                description: err.message || 'Could not initialize payment',
+                title: t('subscription.toast_payment_error_title'),
+                description:
+                    err.message ||
+                    t('subscription.toast_payment_error_desc_fallback'),
             });
         } finally {
             setLoading(false);
@@ -77,14 +81,16 @@ const DashboardSubscription = () => {
         try {
             const res = await api.cancelAutoRenew();
             appToast.success({
-                title: 'Auto-renew Cancelled',
+                title: t('subscription.toast_autorenew_cancelled_title'),
                 description: res.message,
             });
             fetchUserStats();
         } catch (err: any) {
             appToast.error({
-                title: 'Error',
-                description: err.message || 'Failed to cancel auto-renewal',
+                title: t('subscription.toast_error_title'),
+                description:
+                    err.message ||
+                    t('subscription.toast_cancel_failed_desc_fallback'),
             });
         } finally {
             setLoading(false);
@@ -94,56 +100,56 @@ const DashboardSubscription = () => {
     const plans = [
         {
             id: 'free',
-            name: 'Free Scholar',
+            name: t('subscription.free_name'),
             price: '0',
-            description: 'Start your learning journey',
+            description: t('subscription.free_desc'),
             icon: Sparkles,
             color: 'text-blue-400',
             features: [
-                '5 Documents per day',
-                '20 AI Messages per day',
-                'Basic Summaries & Quizzes',
-                'Multi-Language Support',
+                t('subscription.free_f1'),
+                t('subscription.free_f2'),
+                t('subscription.free_f3'),
+                t('subscription.free_f4'),
             ],
-            cta: 'Current Plan',
+            cta: t('subscription.free_cta'),
             plan: null,
         },
         {
             id: 'pro',
-            name: 'Pro Scholar',
+            name: t('subscription.pro_name'),
             price: '1,999',
-            description: 'For serious learners',
+            description: t('subscription.pro_desc'),
             icon: Zap,
             color: 'text-primary',
             features: [
-                '15 Documents per day',
-                '30 AI Messages per day',
-                'Advanced Summaries',
-                'Unlimited Quizzes & Flashcards',
-                'Multi-Language Support',
-                'Audio Summaries (TTS)',
-                'Priority Support',
+                t('subscription.pro_f1'),
+                t('subscription.pro_f2'),
+                t('subscription.pro_f3'),
+                t('subscription.pro_f4'),
+                t('subscription.pro_f5'),
+                t('subscription.pro_f6'),
+                t('subscription.pro_f7'),
             ],
-            cta: 'Upgrade to Pro',
+            cta: t('subscription.pro_cta'),
             plan: 'pro_monthly' as const,
         },
         {
             id: 'premium',
-            name: 'Premium Scholar',
+            name: t('subscription.premium_name'),
             price: '2,999',
-            description: 'Maximum productivity',
+            description: t('subscription.premium_desc'),
             icon: Crown,
             color: 'text-yellow-500',
             features: [
-                '30 Documents per day',
-                '45 AI Messages per day',
-                'Everything in Pro',
-                'JAMB/WAEC Simulations',
-                'Performance Analytics',
-                'Cloud Storage (5GB)',
-                'Custom Study Plans',
+                t('subscription.premium_f1'),
+                t('subscription.premium_f2'),
+                t('subscription.premium_f3'),
+                t('subscription.premium_f4'),
+                t('subscription.premium_f5'),
+                t('subscription.premium_f6'),
+                t('subscription.premium_f7'),
             ],
-            cta: 'Upgrade to Premium',
+            cta: t('subscription.premium_cta'),
             plan: 'premium_monthly' as const,
         },
     ];
@@ -156,18 +162,16 @@ const DashboardSubscription = () => {
                     <div className="space-y-6">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                             <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
-                                Subscription
+                                {t('subscription.eyebrow')}
                             </span>
                         </div>
                         <div className="glass-card border-foreground/10 rounded-[28px] p-6 sm:p-8 text-center space-y-2 md:space-y-4">
                             <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-tight">
-                                Pick the plan that{' '}
-                                <span className="text-gradient">fits you</span>
+                                {t('subscription.title_top')}{' '}
+                                <span className="text-gradient">{t('subscription.title_gradient')}</span>
                             </h1>
                             <p className="text-muted-foreground text-sm md:text-lg max-w-none px-4">
-                                Choose the plan that fits your learning needs.
-                                Manage your billing directly from this
-                                workspace.
+                                {t('subscription.subtitle')}
                             </p>
                         </div>
                     </div>
@@ -179,7 +183,7 @@ const DashboardSubscription = () => {
                                 <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 md:p-6 pb-2">
                                     <CardTitle className="flex items-center gap-3 text-lg md:text-xl">
                                         <div className="w-2 h-5 bg-primary rounded-full hidden sm:block" />
-                                        Your Usage
+                                        {t('subscription.your_usage')}
                                     </CardTitle>
                                     {stats.paystackSubscriptionCode && (
                                         <AlertDialog>
@@ -198,30 +202,25 @@ const DashboardSubscription = () => {
                                                             className="mr-2"
                                                         />
                                                     )}
-                                                    Cancel Auto-renew
+                                                    {t('subscription.cancel_autorenew')}
                                                 </Button>
                                             </AlertDialogTrigger>
                                             <AlertDialogContent className="glass border-primary/20 rounded-3xl">
                                                 <AlertDialogHeader>
                                                     <AlertDialogTitle className="text-xl font-black">
-                                                        Cancel Auto-renewal?
+                                                        {t('subscription.cancel_autorenew_dialog_title')}
                                                     </AlertDialogTitle>
                                                     <AlertDialogDescription className="text-sm font-medium opacity-70">
-                                                        Are you sure you want to
-                                                        cancel auto-renewal?
-                                                        Your benefits will
-                                                        remain active until the
-                                                        end of your current
-                                                        billing cycle (
+                                                        {t('subscription.cancel_dialog_prefix')}
                                                         {new Date(
                                                             stats.subscriptionExpiry,
                                                         ).toLocaleDateString()}
-                                                        ).
+                                                        {t('subscription.cancel_dialog_suffix')}
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter className="gap-2">
                                                     <AlertDialogCancel className="rounded-xl border-foreground/10">
-                                                        Keep Subscription
+                                                        {t('subscription.keep_subscription')}
                                                     </AlertDialogCancel>
                                                     <AlertDialogAction
                                                         onClick={
@@ -229,7 +228,7 @@ const DashboardSubscription = () => {
                                                         }
                                                         className="rounded-xl bg-destructive hover:bg-destructive/90 text-white font-bold"
                                                     >
-                                                        Yes, Cancel Auto-renew
+                                                        {t('subscription.yes_cancel_autorenew')}
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
@@ -240,7 +239,7 @@ const DashboardSubscription = () => {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                                         <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 space-y-1">
                                             <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
-                                                Documents
+                                                {t('subscription.documents_label')}
                                             </p>
                                             <div className="flex items-baseline gap-2">
                                                 <span className="text-2xl md:text-3xl font-black">
@@ -257,7 +256,7 @@ const DashboardSubscription = () => {
                                         </div>
                                         <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 space-y-1">
                                             <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
-                                                AI Messages
+                                                {t('subscription.ai_messages_label')}
                                             </p>
                                             <div className="flex items-baseline gap-2">
                                                 <span className="text-2xl md:text-3xl font-black">
@@ -281,7 +280,7 @@ const DashboardSubscription = () => {
                                                         size={14}
                                                         className="opacity-50"
                                                     />
-                                                    Plan expires on:{' '}
+                                                    {t('subscription.plan_expires_on')}{' '}
                                                     <span className="font-bold text-foreground">
                                                         {new Date(
                                                             stats.subscriptionExpiry,
@@ -291,11 +290,11 @@ const DashboardSubscription = () => {
                                                 <div className="flex items-center gap-2">
                                                     {stats.paystackSubscriptionCode ? (
                                                         <Badge className="bg-green-500/10 text-green-500 border-0 text-[10px] font-bold py-0.5 px-2">
-                                                            Auto-renew Active
+                                                            {t('subscription.autorenew_active')}
                                                         </Badge>
                                                     ) : (
                                                         <Badge className="bg-amber-500/10 text-amber-500 border-0 text-[10px] font-bold py-0.5 px-2">
-                                                            Auto-renew Off
+                                                            {t('subscription.autorenew_off')}
                                                         </Badge>
                                                     )}
                                                     <Badge className="bg-primary/10 text-primary border-0 text-[10px] font-bold py-0.5 px-2 uppercase tracking-tighter">
@@ -341,7 +340,7 @@ const DashboardSubscription = () => {
                                     >
                                         {plan.id === 'pro' && (
                                             <div className="absolute top-6 right-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 animate-pulse">
-                                                Popular
+                                                {t('subscription.popular')}
                                             </div>
                                         )}
 
@@ -357,7 +356,7 @@ const DashboardSubscription = () => {
                                                 </div>
                                                 {isCurrent && (
                                                     <Badge className="bg-primary/20 text-primary border-0 font-bold px-3 py-1">
-                                                        Active
+                                                        {t('subscription.active_badge')}
                                                     </Badge>
                                                 )}
                                             </div>
@@ -377,7 +376,7 @@ const DashboardSubscription = () => {
                                                     {plan.price}
                                                 </span>
                                                 <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
-                                                    /month
+                                                    {t('subscription.per_month')}
                                                 </span>
                                             </div>
                                         </CardHeader>
@@ -425,7 +424,7 @@ const DashboardSubscription = () => {
                                                         size={20}
                                                     />
                                                 ) : isCurrent ? (
-                                                    'Current Scholar'
+                                                    t('subscription.current_scholar')
                                                 ) : isUpgrade ? (
                                                     <>
                                                         {plan.cta}
@@ -435,7 +434,7 @@ const DashboardSubscription = () => {
                                                         />
                                                     </>
                                                 ) : (
-                                                    'Master Active'
+                                                    t('subscription.master_active')
                                                 )}
                                             </Button>
                                         </CardContent>
@@ -448,20 +447,13 @@ const DashboardSubscription = () => {
                     {/* Footer Note */}
                     <div className="glass-card border-foreground/10 rounded-[28px] p-6 sm:p-8 text-center text-sm text-muted-foreground max-w-none space-y-4">
                         <p className="font-bold text-foreground">
-                            Terms & Conditions
+                            {t('subscription.terms_title')}
                         </p>
                         <p>
-                            All paid plans automatically renew monthly unless
-                            cancelled. By subscribing, you agree to IZABI's
-                            automatic billing protocol. You can cancel
-                            auto-renewal at any time from this dashboard; your
-                            benefits will remain active until the end of your
-                            current paid period.
+                            {t('subscription.terms_body')}
                         </p>
                         <p className="opacity-60">
-                            Payments are processed securely via Paystack.
-                            Subscription cycles are exactly 30 days from the
-                            moment of activation.
+                            {t('subscription.terms_footer')}
                         </p>
                     </div>
                 </div>

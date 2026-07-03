@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { CheckCircle2, XCircle, Lightbulb } from 'lucide-react';
 import { Question } from '@/components/dashboard-home/types';
 import { cn } from '@/lib/utils';
+import { resolveCorrectOptionText } from '@/lib/quizUtils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 
 interface QuizQuestionProps {
@@ -30,21 +32,23 @@ export const QuizQuestion = ({
     onAnswerSelect,
     onShortAnswerChange,
 }: QuizQuestionProps) => {
+    const { t } = useLanguage();
     const isShort = question.questionType?.toLowerCase() === 'short_answer';
     const [showHint, setShowHint] = useState(false);
 
     const hintText = (() => {
         if (isShort && question.answer) {
             const firstWord = question.answer.split(/\s+/)[0];
-            return `Starts with "${firstWord}"`;
+            return `${t('quiz.starts_with')} "${firstWord}"`;
         }
         if (question.answer && question.options?.length) {
+            const correctOptionText = resolveCorrectOptionText(question);
             const idx = question.options.findIndex(
                 (opt) =>
                     opt.trim().toLowerCase() ===
-                    question.answer!.trim().toLowerCase(),
+                    correctOptionText.trim().toLowerCase(),
             );
-            if (idx >= 0) return `Correct option is near choice ${String.fromCharCode(65 + idx)}`;
+            if (idx >= 0) return `${t('quiz.near_choice')} ${String.fromCharCode(65 + idx)}`;
         }
         return null;
     })();
@@ -54,7 +58,7 @@ export const QuizQuestion = ({
             <div className="flex flex-col md:flex-row justify-between items-start gap-3 md:gap-6">
                 <div className="space-y-2 md:space-y-3">
                     <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
-                        Question {index + 1}
+                        {t('quiz.question_label')} {index + 1}
                     </div>
                     <h4 className="text-base md:text-xl font-bold leading-tight text-foreground break-words">
                         {question.question}
@@ -69,7 +73,7 @@ export const QuizQuestion = ({
                         onClick={() => setShowHint((v) => !v)}
                     >
                         <Lightbulb size={14} />
-                        {showHint ? 'Hide Hint' : 'Hint'}
+                        {showHint ? t('quiz.hide_hint') : t('quiz.hint')}
                     </Button>
                 )}
                 {showResults && (
@@ -82,7 +86,7 @@ export const QuizQuestion = ({
                         )}
                     >
                         {isCorrect ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                        {isCorrect ? 'Correct' : 'Incorrect'}
+                        {isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
                     </div>
                 )}
             </div>
@@ -90,9 +94,10 @@ export const QuizQuestion = ({
             {!isShort ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 w-full">
                     {question.options?.map((opt, idx) => {
+                        const correctOptionText = resolveCorrectOptionText(question);
                         const isSelected = userAnswer === opt;
-                        const isCorrect = showResults && opt === question.answer;
-                        const isWrong = showResults && isSelected && opt !== question.answer;
+                        const isCorrect = showResults && opt === correctOptionText;
+                        const isWrong = showResults && isSelected && opt !== correctOptionText;
 
                         return (
                             <Button
@@ -127,7 +132,7 @@ export const QuizQuestion = ({
                 <div className="space-y-4">
                     <Input
                         value={userAnswer || ''}
-                        placeholder="Type your answer here..."
+                        placeholder={t('quiz.type_answer_placeholder')}
                         onChange={(e) => onShortAnswerChange(e.target.value)}
                         disabled={showResults}
                         className="rounded-2xl md:rounded-3xl h-14 md:h-16 bg-card/5 border-foreground/5 focus:bg-card/10 transition-all font-bold px-4 md:px-8 text-[15px] sm:text-base text-foreground w-full"
@@ -140,7 +145,7 @@ export const QuizQuestion = ({
                     {showResults && !isCorrect && (
                         <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5">
                             <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">
-                                Correct Answer
+                                {t('quiz.correct_answer_label')}
                             </div>
                             <p className="text-sm font-bold opacity-80">
                                 {question.answer}
@@ -158,7 +163,7 @@ export const QuizQuestion = ({
             {showResults && showExplanations && question.explanation && (
                 <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5 mt-4">
                     <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">
-                        Explanation
+                        {t('quiz.explanation_label')}
                     </div>
                     <p className="text-sm font-bold opacity-80 italic">
                         "{question.explanation}"

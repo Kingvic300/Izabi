@@ -4,6 +4,7 @@ import { Target, Loader2, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RankTrend } from './RankTrend';
 import { LeaderboardData, LeaderboardType } from './types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface YourRankCardProps {
     activeTab: LeaderboardType;
@@ -22,6 +23,7 @@ export const YourRankCard = ({
     onShare,
     showShare = true,
 }: YourRankCardProps) => {
+    const { t } = useLanguage();
     const getRank = () => {
         if (isLoading && !userRank) return <span className="animate-pulse">...</span>;
         
@@ -49,7 +51,7 @@ export const YourRankCard = ({
                 </div>
                 <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">
-                        Your Rank
+                        {t('leaderboard.your_rank')}
                     </p>
                     <p className="text-lg sm:text-xl font-black flex items-center gap-2">
                         {getRank()}
@@ -69,7 +71,7 @@ export const YourRankCard = ({
                     ) : (
                         <Share2 className="h-4 w-4" />
                     )}
-                    Share Rank
+                    {t('leaderboard.share_rank')}
                 </Button>
             ) : null}
         </div>
