@@ -3,6 +3,7 @@ import { useAppToast } from '@/hooks/useAppToast';
 import { useTheme } from '@/components/theme-provider';
 import { api } from '@/lib/apiClient';
 import { useLanguage, type Language } from '@/contexts/LanguageContext';
+import { useStudy } from '@/contexts/StudyContext';
 import { languageOptions } from './settingsConstants';
 import type { SettingsState } from './settingsTypes';
 
@@ -17,6 +18,7 @@ export const useDashboardSettings = () => {
     const appToast = useAppToast();
     const { theme, setTheme: setGlobalTheme } = useTheme();
     const { language, setLanguage } = useLanguage();
+    const { refreshMaterialsForLanguage } = useStudy();
 
     const [settings, setSettings] = useState<SettingsState>(() =>
         initialSettings(theme as SettingsState['theme']),
@@ -132,6 +134,12 @@ export const useDashboardSettings = () => {
         setIsLanguageSaving(true);
         try {
             await api.updateUserProfile({ preferredLanguage: value });
+            // Instantly swap any flashcards/questions/summary already on
+            // screen into the new language, translating on-demand via the
+            // backend rather than waiting for the next generation.
+            refreshMaterialsForLanguage(value).catch((error) =>
+                console.error('Failed to refresh materials language', error),
+            );
             appToast.success({
                 title: 'Language updated',
                 description:
