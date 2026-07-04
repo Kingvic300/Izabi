@@ -10,6 +10,7 @@ import {
     Lightbulb,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface IntentCard {
     id: string;
@@ -34,37 +35,38 @@ const IntentCards: React.FC<IntentCardsProps> = ({
     onLearnTricks,
     onUploadDocument,
 }) => {
+    const { t } = useLanguage();
     const cards: IntentCard[] = [
         {
             id: 'practice',
             icon: Brain,
-            label: 'Practice Skills',
-            description: 'Build critical thinking',
+            label: t('intent.practice_label'),
+            description: t('intent.practice_desc'),
             color: 'bg-primary/20 border-primary/50',
             onClick: onPracticeSkills,
         },
         {
             id: 'test',
             icon: Zap,
-            label: 'Quick Test',
-            description: 'Timed challenge',
-            badge: '5 min',
+            label: t('intent.test_label'),
+            description: t('intent.test_desc'),
+            badge: t('intent.test_badge'),
             color: 'bg-accent/20 border-accent/50',
             onClick: onQuickTest,
         },
         {
             id: 'tricks',
             icon: Lightbulb,
-            label: 'Study Tricks',
-            description: 'Learn smarter',
+            label: t('intent.tricks_label'),
+            description: t('intent.tricks_desc'),
             color: 'bg-primary/15 border-primary/40',
             onClick: onLearnTricks,
         },
         {
             id: 'upload',
             icon: Upload,
-            label: 'Help w/ Notes',
-            description: 'Upload document',
+            label: t('intent.upload_label'),
+            description: t('intent.upload_desc'),
             color: 'bg-accent/15 border-accent/40',
             onClick: onUploadDocument,
         },
@@ -75,7 +77,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between px-4 md:px-0">
                 <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-                    What do you want to do?
+                    {t('intent.heading')}
                 </h2>
                 <Target size={24} className="text-primary opacity-30" />
             </div>
