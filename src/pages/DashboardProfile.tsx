@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import apiClient from '@/lib/apiClient';
 import { useAppToast } from '@/hooks/useAppToast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -19,6 +20,7 @@ import {
 const DashboardProfile = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const appToast = useAppToast();
+    const { t } = useLanguage();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [profileData, setProfileData] = useState<ProfileData>({
@@ -131,8 +133,8 @@ const DashboardProfile = () => {
         } catch (err) {
             console.error('Error updating profile:', err);
             appToast.error({
-                title: 'Update Failed',
-                description: 'Could not save your profile changes.',
+                title: t('profile.toast_update_failed_title'),
+                description: t('profile.toast_update_failed_desc'),
             });
         } finally {
             setLoading(false);
@@ -167,8 +169,8 @@ const DashboardProfile = () => {
         setProfileData(updatedData);
         syncAvatarInStorage('', updatedData.email);
         appToast.info({
-            title: 'Photo Removed',
-            description: 'Profile photo removed. Click Save Changes to confirm.',
+            title: t('profile.toast_photo_removed_title'),
+            description: t('profile.toast_photo_removed_desc'),
         });
     };
 

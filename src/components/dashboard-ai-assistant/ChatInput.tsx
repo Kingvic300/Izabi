@@ -13,6 +13,7 @@ import {
     Target,
     Zap,
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { ActiveDocument } from './types';
 
 type ChatInputProps = {
@@ -40,6 +41,7 @@ export default function ChatInput({
     onRemoveDocument,
     onSuggestionClick,
 }: ChatInputProps) {
+    const { t } = useLanguage();
     return (
         <div className="shrink-0 p-0">
             <div className="w-full space-y-2 md:space-y-3">
@@ -73,17 +75,17 @@ export default function ChatInput({
                     <div className="flex gap-2 overflow-x-auto pb-0 animate-in fade-in slide-in-from-bottom-1.5 duration-500">
                         {[
                             {
-                                label: 'Generate Flashcards',
+                                label: t('assistant.suggestion_flashcards'),
                                 icon: <Zap size={12} />,
                                 feature: 'Flashcards',
                             },
                             {
-                                label: 'Study Guide',
+                                label: t('assistant.suggestion_study_guide'),
                                 icon: <BookOpen size={12} />,
                                 feature: 'Study Guide',
                             },
                             {
-                                label: 'Practice Quiz',
+                                label: t('assistant.suggestion_practice_quiz'),
                                 icon: <Target size={12} />,
                                 feature: 'Practice Quiz',
                             },
@@ -107,8 +109,8 @@ export default function ChatInput({
                     <Input
                         placeholder={
                             activeDocuments.length > 0
-                                ? 'Ask questions about your uploaded materials...'
-                                : 'Ask Izabi to generate something or explain a topic...'
+                                ? t('assistant.placeholder_with_docs')
+                                : t('assistant.placeholder_default')
                         }
                         value={inputValue}
                         onChange={(e) => onInputChange(e.target.value)}
@@ -141,7 +143,7 @@ export default function ChatInput({
                     </Button>
                 </div>
                 <p className="text-[9px] md:text-[10px] text-center mt-1 md:mt-2 text-muted-foreground/60 uppercase tracking-[0.15em] font-medium">
-                    Izabi AI may provide inaccurate info. Verify important facts.
+                    {t('assistant.disclaimer')}
                 </p>
             </div>
         </div>

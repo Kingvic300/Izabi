@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/apiClient';
 import { getPartnerSocket } from '@/lib/partnerSocket';
 import { useAppToast } from '@/hooks/useAppToast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type {
     AccountabilityEvent,
     CheckInStatus,
@@ -31,6 +32,7 @@ export const useDashboardPartner = () => {
     const [isActionLoading, setIsActionLoading] = useState(false);
 
     const appToast = useAppToast();
+    const { t } = useLanguage();
     const partnershipRef = useRef<Partnership | null>(null);
     partnershipRef.current = partnership;
 
@@ -77,16 +79,19 @@ export const useDashboardPartner = () => {
 
         try {
             await api.redeemPartnerInvite(code);
-            appToast.success({ title: 'Invite accepted! You have a new accountability partner.' });
+            appToast.success({ title: t('partner.toast_invite_accepted') });
         } catch (error: any) {
             appToast.error({
-                title: 'Could not accept invite',
-                description: getErrorMessage(error, 'That invite link is no longer valid.'),
+                title: t('partner.toast_could_not_accept_invite_title'),
+                description: getErrorMessage(
+                    error,
+                    t('partner.toast_invite_invalid_fallback'),
+                ),
             });
         } finally {
             sessionStorage.removeItem(PENDING_INVITE_CODE_KEY);
         }
-    }, [appToast]);
+    }, [appToast, t]);
 
     useEffect(() => {
         let isMounted = true;
@@ -149,19 +154,25 @@ export const useDashboardPartner = () => {
             try {
                 await api.invitePartner(email);
                 await fetchPartnership();
-                appToast.success({ title: 'Invite sent!', description: `We emailed ${email} an invite.` });
+                appToast.success({
+                    title: t('partner.toast_invite_sent_title'),
+                    description: `${t('partner.toast_invite_sent_desc_prefix')} ${email} ${t('partner.toast_invite_sent_desc_suffix')}`,
+                });
                 return true;
             } catch (error: any) {
                 appToast.error({
-                    title: 'Could not send invite',
-                    description: getErrorMessage(error, 'Please try again.'),
+                    title: t('partner.toast_could_not_send_invite_title'),
+                    description: getErrorMessage(
+                        error,
+                        t('partner.generic_retry_fallback'),
+                    ),
                 });
                 return false;
             } finally {
                 setIsActionLoading(false);
             }
         },
-        [appToast, fetchPartnership],
+        [appToast, fetchPartnership, t],
     );
 
     const respondToInvite = useCallback(
@@ -173,14 +184,17 @@ export const useDashboardPartner = () => {
                 await fetchPartnership();
             } catch (error: any) {
                 appToast.error({
-                    title: 'Could not respond to invite',
-                    description: getErrorMessage(error, 'Please try again.'),
+                    title: t('partner.toast_could_not_respond_title'),
+                    description: getErrorMessage(
+                        error,
+                        t('partner.generic_retry_fallback'),
+                    ),
                 });
             } finally {
                 setIsActionLoading(false);
             }
         },
-        [appToast, fetchPartnership, partnership],
+        [appToast, fetchPartnership, partnership, t],
     );
 
     const endPartnership = useCallback(async () => {
@@ -189,16 +203,19 @@ export const useDashboardPartner = () => {
         try {
             await api.endPartnership(partnership.id);
             await fetchPartnership();
-            appToast.success({ title: 'Partnership ended' });
+            appToast.success({ title: t('partner.toast_partnership_ended') });
         } catch (error: any) {
             appToast.error({
-                title: 'Could not end partnership',
-                description: getErrorMessage(error, 'Please try again.'),
+                title: t('partner.toast_could_not_end_title'),
+                description: getErrorMessage(
+                    error,
+                    t('partner.generic_retry_fallback'),
+                ),
             });
         } finally {
             setIsActionLoading(false);
         }
-    }, [appToast, fetchPartnership, partnership]);
+    }, [appToast, fetchPartnership, partnership, t]);
 
     const saveGoal = useCallback(
         async (dto: {
@@ -211,19 +228,22 @@ export const useDashboardPartner = () => {
             try {
                 await api.savePartnerGoal(dto);
                 await fetchActivity();
-                appToast.success({ title: 'Goal set!' });
+                appToast.success({ title: t('partner.toast_goal_set') });
                 return true;
             } catch (error: any) {
                 appToast.error({
-                    title: 'Could not save goal',
-                    description: getErrorMessage(error, 'Please try again.'),
+                    title: t('partner.toast_could_not_save_goal_title'),
+                    description: getErrorMessage(
+                        error,
+                        t('partner.generic_retry_fallback'),
+                    ),
                 });
                 return false;
             } finally {
                 setIsActionLoading(false);
             }
         },
-        [appToast, fetchActivity],
+        [appToast, fetchActivity, t],
     );
 
     const checkIn = useCallback(
@@ -233,20 +253,20 @@ export const useDashboardPartner = () => {
             try {
                 await api.checkInPartnerGoal(goal.id, note);
                 await fetchActivity();
-                appToast.success({ title: "Checked in! Keep the streak alive." });
+                appToast.success({ title: t('partner.toast_checked_in') });
             } catch (error: any) {
                 appToast.error({
-                    title: 'Could not check in',
+                    title: t('partner.toast_could_not_check_in_title'),
                     description: getErrorMessage(
                         error,
-                        "You've already checked in today.",
+                        t('partner.toast_already_checked_in_fallback'),
                     ),
                 });
             } finally {
                 setIsActionLoading(false);
             }
         },
-        [appToast, fetchActivity, goal],
+        [appToast, fetchActivity, goal, t],
     );
 
     const sendMessage = useCallback(
@@ -258,12 +278,15 @@ export const useDashboardPartner = () => {
                 await fetchActivity();
             } catch (error: any) {
                 appToast.error({
-                    title: 'Could not send message',
-                    description: getErrorMessage(error, 'Please try again.'),
+                    title: t('partner.toast_could_not_send_message_title'),
+                    description: getErrorMessage(
+                        error,
+                        t('partner.generic_retry_fallback'),
+                    ),
                 });
             }
         },
-        [appToast, fetchActivity],
+        [appToast, fetchActivity, t],
     );
 
     const sendNudge = useCallback(

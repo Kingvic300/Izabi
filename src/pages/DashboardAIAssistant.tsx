@@ -9,6 +9,7 @@ import { api } from '@/lib/apiClient';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useAppToast } from '@/hooks/useAppToast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ChatHeader from '@/components/dashboard-ai-assistant/ChatHeader';
 import ChatMessages from '@/components/dashboard-ai-assistant/ChatMessages';
 import ChatInput from '@/components/dashboard-ai-assistant/ChatInput';
@@ -28,6 +29,7 @@ const DashboardAIAssistant = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const appToast = useAppToast();
+    const { t } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const importedDocRef = useRef<ActiveDocument | null>(
         (location.state as any)?.importedDoc ?? null,
@@ -36,7 +38,7 @@ const DashboardAIAssistant = () => {
     const pdfInputRef = useRef<HTMLInputElement>(null);
     const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>(
-        buildWelcomeMessages(),
+        buildWelcomeMessages(t),
     );
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -60,8 +62,8 @@ const DashboardAIAssistant = () => {
             }, 1500);
         } catch (error) {
             appToast.error({
-                title: 'Copy failed',
-                description: 'Unable to copy to clipboard on this device.',
+                title: t('assistant.toast_copy_failed_title'),
+                description: t('assistant.toast_copy_failed_desc'),
             });
         }
     };
@@ -82,8 +84,8 @@ const DashboardAIAssistant = () => {
 
             await copyText(resolved);
             appToast.success({
-                title: 'Copied to clipboard',
-                description: 'Sharing is not supported in this browser.',
+                title: t('assistant.toast_copied_clipboard_title'),
+                description: t('assistant.toast_copied_clipboard_desc'),
             });
         } catch (error: any) {
             const isAbort =
@@ -91,9 +93,8 @@ const DashboardAIAssistant = () => {
                 String(error?.message || '').toLowerCase().includes('abort');
             if (!isAbort) {
                 appToast.error({
-                    title: 'Share failed',
-                    description:
-                        'Unable to share from this device. Try copying instead.',
+                    title: t('assistant.toast_share_failed_title'),
+                    description: t('assistant.toast_share_failed_desc'),
                 });
             }
         }
@@ -101,23 +102,23 @@ const DashboardAIAssistant = () => {
 
     const handleCopyTranscript = async () => {
         try {
-            await copyText(buildTranscript(messages));
+            await copyText(buildTranscript(messages, t));
             appToast.success({
-                title: 'Chat copied',
-                description: 'Your chat transcript is now in the clipboard.',
+                title: t('assistant.toast_chat_copied_title'),
+                description: t('assistant.toast_chat_copied_desc'),
             });
         } catch (error) {
             appToast.error({
-                title: 'Copy failed',
-                description: 'Unable to copy your chat transcript.',
+                title: t('assistant.toast_copy_failed_title'),
+                description: t('assistant.toast_transcript_copy_failed_desc'),
             });
         }
     };
 
     const handleShareTranscript = async () => {
         await handleShareText(
-            buildTranscript(messages),
-            'Izabi chat transcript',
+            buildTranscript(messages, t),
+            t('assistant.transcript_title'),
         );
     };
 
@@ -157,14 +158,14 @@ const DashboardAIAssistant = () => {
                 if (formattedMessages.length) {
                     setMessages(formattedMessages);
                 } else {
-                    setMessages(buildWelcomeMessages());
+                    setMessages(buildWelcomeMessages(t));
                 }
                 return;
             }
-            setMessages(buildWelcomeMessages());
+            setMessages(buildWelcomeMessages(t));
         } catch (error) {
             console.error('Failed to fetch chat history:', error);
-            setMessages(buildWelcomeMessages());
+            setMessages(buildWelcomeMessages(t));
         }
     };
 
@@ -181,7 +182,7 @@ const DashboardAIAssistant = () => {
                         await loadSessionHistory(createdSession.sessionId);
                         return;
                     }
-                    setMessages(buildWelcomeMessages());
+                    setMessages(buildWelcomeMessages(t));
                     return;
                 }
 
@@ -198,10 +199,10 @@ const DashboardAIAssistant = () => {
                 await loadSessionHistory(nextSessionId);
                 return;
             }
-            setMessages(buildWelcomeMessages());
+            setMessages(buildWelcomeMessages(t));
         } catch (error) {
             console.error('Failed to load chat sessions:', error);
-            setMessages(buildWelcomeMessages());
+            setMessages(buildWelcomeMessages(t));
         }
     };
 
@@ -223,7 +224,7 @@ const DashboardAIAssistant = () => {
                     {
                         id: `note-import-${Date.now()}`,
                         role: 'assistant' as const,
-                        content: `I've loaded your note **"${noteName}"** as context. Ask me anything about it!`,
+                        content: `${t('assistant.note_loaded_prefix')}${noteName}${t('assistant.note_loaded_suffix')}`,
                         timestamp: new Date(),
                     },
                 ]);
@@ -257,8 +258,8 @@ const DashboardAIAssistant = () => {
 
         if (!sessionIdToUse) {
             appToast.error({
-                title: 'Chat unavailable',
-                description: 'Unable to start a new chat session.',
+                title: t('assistant.toast_chat_unavailable_title'),
+                description: t('assistant.toast_chat_unavailable_desc'),
             });
             return;
         }
@@ -341,16 +342,15 @@ const DashboardAIAssistant = () => {
                 {
                     id: '1',
                     role: 'assistant',
-                    content:
-                        "Hello! I'm Izabi, your AI learning assistant. New session started. What's on your mind?",
+                    content: t('assistant.new_session_message'),
                     timestamp: new Date(),
                 },
             ]);
         } catch (error) {
             console.error('Failed to start new chat:', error);
             appToast.error({
-                title: 'Could Not Start Chat',
-                description: 'Please try again.',
+                title: t('assistant.toast_could_not_start_title'),
+                description: t('assistant.toast_could_not_start_desc'),
             });
         }
     };
@@ -366,8 +366,8 @@ const DashboardAIAssistant = () => {
         const incomingCount = files.length;
         if (currentCount + incomingCount > 5) {
             appToast.error({
-                title: 'Limit Reached',
-                description: 'You can only have up to 5 documents active at once.',
+                title: t('assistant.toast_limit_reached_title'),
+                description: t('assistant.toast_limit_reached_desc'),
             });
             event.target.value = '';
             return;
@@ -378,8 +378,8 @@ const DashboardAIAssistant = () => {
 
         if (validFiles.length < files.length) {
             appToast.error({
-                title: 'Some Files Too Large',
-                description: 'One or more files exceed the 100MB limit and were skipped.',
+                title: t('assistant.toast_files_too_large_title'),
+                description: t('assistant.toast_files_too_large_desc'),
             });
         }
 
@@ -403,21 +403,21 @@ const DashboardAIAssistant = () => {
                 const systemMessage: Message = {
                     id: `upload-${Date.now()}`,
                     role: 'assistant',
-                    content: `${newDocs.length} file(s) [${fileNames}] uploaded successfully. I will now use them to answer your questions.`,
+                    content: `${newDocs.length} ${t('assistant.upload_message_files_label')} [${fileNames}] ${t('assistant.upload_message_rest')}`,
                     timestamp: new Date(),
                 };
                 setMessages((prev) => [...prev, systemMessage]);
 
                 appToast.success({
-                    title: 'Upload Successful',
-                    description: `${newDocs.length} new materials indexed and ready for chat.`,
+                    title: t('assistant.toast_upload_success_title'),
+                    description: `${newDocs.length} ${t('assistant.toast_upload_success_desc_suffix')}`,
                 });
             }
         } catch (error: any) {
             console.error('File upload failed:', error);
             appToast.error({
-                title: 'Upload Failed',
-                description: getReadableErrorMessage(error),
+                title: t('assistant.toast_upload_failed_title'),
+                description: getReadableErrorMessage(error, t),
             });
         } finally {
             setIsUploadingPdf(false);
@@ -426,12 +426,7 @@ const DashboardAIAssistant = () => {
     };
 
     const handleClearHistory = async () => {
-        if (
-            !confirm(
-                'Are you sure you want to delete all chat history? This cannot be undone.',
-            )
-        )
-            return;
+        if (!confirm(t('assistant.toast_clear_confirm'))) return;
         try {
             const res = await api.clearChatHistory();
             if (res.success) {
@@ -439,25 +434,23 @@ const DashboardAIAssistant = () => {
                 setActiveSessionId(null);
                 await startNewChat();
                 appToast.success({
-                    title: 'History Cleared',
-                    description:
-                        'Your conversation history has been permanently deleted.',
+                    title: t('assistant.toast_history_cleared_title'),
+                    description: t('assistant.toast_history_cleared_desc'),
                 });
             }
         } catch (error) {
             console.error('Failed to clear history:', error);
             appToast.error({
-                title: 'Could Not Clear History',
-                description:
-                    'Please try again. If this keeps happening, check your connection.',
+                title: t('assistant.toast_could_not_clear_title'),
+                description: t('assistant.toast_could_not_clear_desc'),
             });
         }
     };
 
     const redirectToDashboardUpload = (feature: string) => {
         appToast.info({
-            title: `${feature} Requires PDF`,
-            description: 'Please go to dashboard and upload a PDF first.',
+            title: `${feature} ${t('assistant.toast_requires_pdf_title_suffix')}`,
+            description: t('assistant.toast_requires_pdf_desc'),
         });
         navigate('/dashboard');
     };
@@ -496,7 +489,10 @@ const DashboardAIAssistant = () => {
                             copiedMessageId={copiedMessageId}
                             onCopyMessage={handleCopyMessage}
                             onShareMessage={(content) =>
-                                handleShareText(content, 'Izabi message')
+                                handleShareText(
+                                    content,
+                                    t('assistant.message_title'),
+                                )
                             }
                             messagesEndRef={messagesEndRef}
                         />

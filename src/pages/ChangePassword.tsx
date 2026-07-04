@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,13 +12,20 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { useAppToast } from '@/hooks/useAppToast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import apiClient from '@/lib/apiClient';
 import { Lock, Mail, KeyRound, Loader2, ArrowRight } from 'lucide-react';
 
-const ChangePassword = () => {
+interface ChangePasswordProps {
+    trigger?: ReactNode;
+    initialEmail?: string;
+}
+
+const ChangePassword = ({ trigger, initialEmail }: ChangePasswordProps) => {
     const appToast = useAppToast();
+    const { t } = useLanguage();
     const [step, setStep] = useState<1 | 2>(1);
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(initialEmail || '');
     const [otp, setOtp] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -30,18 +38,18 @@ const ChangePassword = () => {
     const sendOtp = async () => {
         if (!email) {
             appToast.error({
-                title: 'Email Required',
-                description: 'Please enter your email address.',
+                title: t('change_password.toast_email_required_title'),
+                description: t('change_password.toast_email_required_desc'),
             });
             return;
         }
         setLoading(true);
         try {
-            await apiClient.post(`/users/send-reset-otp`, { email });
+            await apiClient.post(`/api/user/forgot-password`, { email });
 
             appToast.success({
-                title: 'Code Sent',
-                description: 'Check your inbox for the verification code.',
+                title: t('change_password.toast_code_sent_title'),
+                description: t('change_password.toast_code_sent_desc'),
             });
             setStep(2);
         } catch (err) {
@@ -59,22 +67,22 @@ const ChangePassword = () => {
     const resetPassword = async () => {
         if (!otp || !newPassword) {
             appToast.error({
-                title: 'Missing Fields',
-                description: 'Please fill in all fields.',
+                title: t('change_password.toast_missing_fields_title'),
+                description: t('change_password.toast_missing_fields_desc'),
             });
             return;
         }
         setLoading(true);
         try {
-            await apiClient.post(`/users/reset-password`, {
+            await apiClient.post(`/api/user/reset-password`, {
                 email,
                 otp,
                 newPassword,
             });
 
             appToast.success({
-                title: 'Security Updated',
-                description: 'Your password has been changed successfully.',
+                title: t('change_password.toast_security_updated_title'),
+                description: t('change_password.toast_security_updated_desc'),
             });
             setOpen(false);
             setStep(1);
@@ -91,13 +99,15 @@ const ChangePassword = () => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button
-                    variant="outline"
-                    className="rounded-xl border-primary/20 text-primary hover:bg-primary/10 hover:text-primary h-10 px-6 font-bold"
-                >
-                    <Lock className="w-4 h-4 mr-2" />
-                    Reset Access
-                </Button>
+                {trigger || (
+                    <Button
+                        variant="outline"
+                        className="rounded-xl border-primary/20 text-primary hover:bg-primary/10 hover:text-primary h-10 px-6 font-bold"
+                    >
+                        <Lock className="w-4 h-4 mr-2" />
+                        {t('change_password.reset_access')}
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent className="glass border-foreground/10 rounded-2xl sm:max-w-md">
                 <DialogHeader className="space-y-4">
@@ -105,12 +115,14 @@ const ChangePassword = () => {
                         <KeyRound size={24} />
                     </div>
                     <DialogTitle className="text-2xl font-bold tracking-tight">
-                        {step === 1 ? 'Verify Identity' : 'Set New Password'}
+                        {step === 1
+                            ? t('change_password.verify_identity')
+                            : t('change_password.set_new_password')}
                     </DialogTitle>
                     <DialogDescription className="text-base">
                         {step === 1
-                            ? "We'll send a secure verification code to your email."
-                            : 'Enter the code you received and choose a strong password.'}
+                            ? t('change_password.step1_desc')
+                            : t('change_password.step2_desc')}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -122,7 +134,7 @@ const ChangePassword = () => {
                                     htmlFor="email"
                                     className="text-xs uppercase font-bold tracking-widest opacity-60"
                                 >
-                                    Your Email
+                                    {t('change_password.your_email')}
                                 </Label>
                                 <div className="relative">
                                     <Mail
@@ -149,7 +161,7 @@ const ChangePassword = () => {
                                     <Loader2 className="animate-spin" />
                                 ) : (
                                     <>
-                                        Send Code{' '}
+                                        {t('change_password.send_code')}{' '}
                                         <ArrowRight
                                             size={18}
                                             className="ml-2"
@@ -167,7 +179,7 @@ const ChangePassword = () => {
                                     htmlFor="otp"
                                     className="text-xs uppercase font-bold tracking-widest opacity-60"
                                 >
-                                    Verification Code
+                                    {t('change_password.verification_code')}
                                 </Label>
                                 <Input
                                     id="otp"
@@ -184,7 +196,7 @@ const ChangePassword = () => {
                                     htmlFor="newPass"
                                     className="text-xs uppercase font-bold tracking-widest opacity-60"
                                 >
-                                    New Password
+                                    {t('change_password.new_password')}
                                 </Label>
                                 <Input
                                     id="newPass"
@@ -206,7 +218,7 @@ const ChangePassword = () => {
                                 {loading ? (
                                     <Loader2 className="animate-spin" />
                                 ) : (
-                                    'Confirm Update'
+                                    t('change_password.confirm_update')
                                 )}
                             </Button>
 
@@ -214,7 +226,7 @@ const ChangePassword = () => {
                                 onClick={() => setStep(1)}
                                 className="w-full text-center text-sm font-bold opacity-40 hover:opacity-100 mt-2"
                             >
-                                Back to Email
+                                {t('change_password.back_to_email')}
                             </button>
                         </div>
                     )}

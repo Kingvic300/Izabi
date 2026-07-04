@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, FileText, FolderOpen, Filter } from 'lucide-react';
 import { useAppToast } from '@/hooks/useAppToast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { formValidation } from '@/lib/formValidation';
 import { api } from '@/lib/apiClient';
 import { PageLoader } from '@/components/PageLoader';
@@ -35,6 +36,7 @@ export default function DashboardNotes() {
     const containerRef = useRef<HTMLDivElement>(null);
     const hasLoadedOnceRef = useRef(false);
     const appToast = useAppToast();
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -203,7 +205,7 @@ export default function DashboardNotes() {
                 throw new Error('Upload returned no document');
             }
         } catch (err: any) {
-            appToast.apiError(err, 'Could not send note to AI');
+            appToast.apiError(err, t('notes.toast_could_not_send_to_ai'));
         } finally {
             setSendingToAIId(null);
         }
@@ -249,16 +251,15 @@ export default function DashboardNotes() {
         if (!file) return;
         if (importMode === 'scan' && !isImageFile(file)) {
             appToast.error({
-                title: 'Invalid file',
-                description: 'Scan Note accepts only JPG or PNG images.',
+                title: t('notes.toast_invalid_file_title'),
+                description: t('notes.toast_invalid_scan_desc'),
             });
             return;
         }
         if (importMode === 'import' && !isAllowedImportFile(file)) {
             appToast.error({
-                title: 'Invalid file',
-                description:
-                    'Upload a TXT, PDF, DOCX, JPG, JPEG, or PNG file.',
+                title: t('notes.toast_invalid_file_title'),
+                description: t('notes.toast_invalid_import_desc'),
             });
             return;
         }
@@ -274,8 +275,8 @@ export default function DashboardNotes() {
     const handlePreviewImport = async () => {
         if (!importFile) {
             appToast.error({
-                title: 'No file selected',
-                description: 'Choose a file to preview.',
+                title: t('notes.toast_no_file_title'),
+                description: t('notes.toast_no_file_preview_desc'),
             });
             return;
         }
@@ -309,7 +310,7 @@ export default function DashboardNotes() {
             console.error('Import preview failed:', err);
             setImportStatus('error');
             setImportError('Preview failed. Please try again.');
-            appToast.apiError(err, 'Preview failed');
+            appToast.apiError(err, t('notes.toast_preview_failed'));
         } finally {
             clearTimeout(processingTimer);
         }
@@ -318,8 +319,8 @@ export default function DashboardNotes() {
     const handleImportSave = async () => {
         if (!importFile) {
             appToast.error({
-                title: 'No file selected',
-                description: 'Choose a file to import.',
+                title: t('notes.toast_no_file_title'),
+                description: t('notes.toast_no_file_import_desc'),
             });
             return;
         }
@@ -346,14 +347,14 @@ export default function DashboardNotes() {
             setImportOpen(false);
             resetImportState();
             appToast.success({
-                title: 'Note imported',
-                description: 'Your note is ready for review.',
+                title: t('notes.toast_note_imported_title'),
+                description: t('notes.toast_note_imported_desc'),
             });
         } catch (err: any) {
             console.error('Import failed:', err);
             setImportStatus('error');
             setImportError('Import failed. Please try again.');
-            appToast.apiError(err, 'Could not import note');
+            appToast.apiError(err, t('notes.toast_could_not_import_note'));
         } finally {
             clearTimeout(processingTimer);
         }
@@ -362,8 +363,8 @@ export default function DashboardNotes() {
     const handleSaveFromPreview = async () => {
         if (!previewText.trim()) {
             appToast.error({
-                title: 'Nothing to save',
-                description: 'The preview text is empty.',
+                title: t('notes.toast_nothing_to_save_title'),
+                description: t('notes.toast_nothing_to_save_desc'),
             });
             return;
         }
@@ -394,12 +395,12 @@ export default function DashboardNotes() {
             setImportOpen(false);
             resetImportState();
             appToast.success({
-                title: 'Note saved',
-                description: 'Your imported note is ready!',
+                title: t('notes.toast_note_saved_title'),
+                description: t('notes.toast_imported_note_ready_desc'),
             });
         } catch (err: any) {
             console.error('Saving preview failed:', err);
-            appToast.apiError(err, 'Could not save note');
+            appToast.apiError(err, t('notes.toast_could_not_save_note'));
         } finally {
             setPreviewSaving(false);
         }
@@ -409,8 +410,8 @@ export default function DashboardNotes() {
         const trimmed = groupNameDraft.trim();
         if (!trimmed) {
             appToast.error({
-                title: 'Missing name',
-                description: 'Enter a group name to continue.',
+                title: t('notes.toast_missing_name_title'),
+                description: t('notes.toast_enter_group_name_desc'),
             });
             return;
         }
@@ -425,12 +426,12 @@ export default function DashboardNotes() {
             setGroups((prev) => [normalized, ...prev]);
             setGroupNameDraft('');
             appToast.success({
-                title: 'Group created',
-                description: 'Your group is ready.',
+                title: t('notes.toast_group_created_title'),
+                description: t('notes.toast_group_created_desc'),
             });
         } catch (err: any) {
             console.error('Failed to create group:', err);
-            appToast.apiError(err, 'Could not create group');
+            appToast.apiError(err, t('notes.toast_could_not_create_group'));
         } finally {
             setGroupBusyId(null);
         }
@@ -450,8 +451,8 @@ export default function DashboardNotes() {
         const trimmed = groupEditingName.trim();
         if (!trimmed) {
             appToast.error({
-                title: 'Missing name',
-                description: 'Group name cannot be empty.',
+                title: t('notes.toast_missing_name_title'),
+                description: t('notes.toast_group_name_empty_desc'),
             });
             return;
         }
@@ -467,12 +468,12 @@ export default function DashboardNotes() {
             );
             cancelEditGroup();
             appToast.success({
-                title: 'Group updated',
-                description: 'Group name updated successfully.',
+                title: t('notes.toast_group_updated_title'),
+                description: t('notes.toast_group_updated_desc'),
             });
         } catch (err: any) {
             console.error('Failed to update group:', err);
-            appToast.apiError(err, 'Could not update group');
+            appToast.apiError(err, t('notes.toast_could_not_update_group'));
         } finally {
             setGroupBusyId(null);
         }
@@ -494,12 +495,12 @@ export default function DashboardNotes() {
                 setGroupFilter('all');
             }
             appToast.success({
-                title: 'Group deleted',
-                description: 'Group removed successfully.',
+                title: t('notes.toast_group_deleted_title'),
+                description: t('notes.toast_group_deleted_desc'),
             });
         } catch (err: any) {
             console.error('Failed to delete group:', err);
-            appToast.apiError(err, 'Could not delete group');
+            appToast.apiError(err, t('notes.toast_could_not_delete_group'));
         } finally {
             setGroupBusyId(null);
         }
@@ -523,8 +524,8 @@ export default function DashboardNotes() {
     const handleCreateNote = async () => {
         if (!validateNote()) {
             appToast.error({
-                title: 'Invalid input',
-                description: 'Please check the highlighted fields.',
+                title: t('notes.toast_invalid_input_title'),
+                description: t('notes.toast_invalid_input_desc'),
             });
             return;
         }
@@ -557,12 +558,12 @@ export default function DashboardNotes() {
             setErrors({});
             setIsAddingNote(false);
             appToast.success({
-                title: 'Note saved',
-                description: 'Your new study note is ready!',
+                title: t('notes.toast_note_saved_title'),
+                description: t('notes.toast_new_note_ready_desc'),
             });
         } catch (err: any) {
             console.error('Error creating note:', err);
-            appToast.apiError(err, 'Could not save note');
+            appToast.apiError(err, t('notes.toast_could_not_save_note'));
         }
     };
 
@@ -578,9 +579,8 @@ export default function DashboardNotes() {
     ) => {
         if (!id) {
             appToast.error({
-                title: 'Invalid note',
-                description:
-                    'This note has an invalid identifier. Refresh and try again.',
+                title: t('notes.toast_invalid_note_title'),
+                description: t('notes.toast_invalid_note_desc'),
             });
             return;
         }
@@ -589,7 +589,7 @@ export default function DashboardNotes() {
         const contentCheck = formValidation.noteContent(content);
         if (!titleCheck.isValid || !contentCheck.isValid) {
             appToast.error({
-                title: 'Invalid update',
+                title: t('notes.toast_invalid_update_title'),
                 description: titleCheck.error || contentCheck.error,
             });
             return;
@@ -616,12 +616,12 @@ export default function DashboardNotes() {
             setEditingId(null);
             setEditingSnapshot(null);
             appToast.success({
-                title: 'Note updated',
-                description: 'Your changes have been saved.',
+                title: t('notes.toast_note_updated_title'),
+                description: t('notes.toast_note_updated_desc'),
             });
         } catch (err: any) {
             console.error('Error updating note:', err);
-            appToast.apiError(err, 'Could not update note');
+            appToast.apiError(err, t('notes.toast_could_not_update_note'));
         } finally {
             setSavingId(null);
         }
@@ -634,9 +634,8 @@ export default function DashboardNotes() {
     const handleDeleteNote = async (id: string) => {
         if (!id) {
             appToast.error({
-                title: 'Invalid note',
-                description:
-                    'This note has an invalid identifier. Refresh and try again.',
+                title: t('notes.toast_invalid_note_title'),
+                description: t('notes.toast_invalid_note_desc'),
             });
             return;
         }
@@ -648,12 +647,12 @@ export default function DashboardNotes() {
             );
             setDeleteConfirm(null);
             appToast.success({
-                title: 'Note deleted',
-                description: 'Your note was removed.',
+                title: t('notes.toast_note_deleted_title'),
+                description: t('notes.toast_note_deleted_desc'),
             });
         } catch (err: any) {
             console.error('Error deleting note:', err);
-            appToast.apiError(err, 'Could not delete note');
+            appToast.apiError(err, t('notes.toast_could_not_delete_note'));
         }
     };
 

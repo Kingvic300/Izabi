@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Calendar, History, XCircle } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { ChatSession } from './types';
 
 type ChatHistorySheetProps = {
@@ -27,6 +28,7 @@ export default function ChatHistorySheet({
     onSelectSession,
     onClearHistory,
 }: ChatHistorySheetProps) {
+    const { t } = useLanguage();
     return (
         <Sheet>
             <SheetTrigger asChild>
@@ -36,7 +38,9 @@ export default function ChatHistorySheet({
                     className="flex items-center gap-2 glass-card font-bold hover:bg-card/5"
                 >
                     <History className="h-3 w-3" />
-                    <span className="hidden sm:inline">History</span>
+                    <span className="hidden sm:inline">
+                        {t('assistant.history_title')}
+                    </span>
                 </Button>
             </SheetTrigger>
             <SheetContent
@@ -46,10 +50,10 @@ export default function ChatHistorySheet({
                 <SheetHeader className="p-6 pb-4">
                     <SheetTitle className="text-2xl font-bold flex items-center gap-3">
                         <History className="text-primary" />
-                        <span>Chat History</span>
+                        <span>{t('assistant.history_title')}</span>
                     </SheetTitle>
                     <SheetDescription className="font-medium opacity-60">
-                        Browse your past interactions with Izabi.
+                        {t('assistant.history_desc')}
                     </SheetDescription>
                 </SheetHeader>
                 <Separator className="bg-card/5" />
@@ -59,7 +63,7 @@ export default function ChatHistorySheet({
                             <div className="text-center py-20 opacity-40">
                                 <Calendar className="h-12 w-12 mx-auto mb-4 opacity-20" />
                                 <p className="text-sm font-bold uppercase tracking-widest">
-                                    No history recorded yet
+                                    {t('assistant.history_empty')}
                                 </p>
                             </div>
                         ) : (
@@ -91,7 +95,9 @@ export default function ChatHistorySheet({
                                         <div className="flex flex-col items-start gap-0.5 overflow-hidden flex-1">
                                             <span className="text-[10px] font-bold text-foreground/80 line-clamp-1 text-left">
                                                 {session.title ||
-                                                    'Chat session'}
+                                                    t(
+                                                        'assistant.session_fallback_title',
+                                                    )}
                                             </span>
                                             {session.lastMessage?.content ? (
                                                 <span className="text-[11px] opacity-60 line-clamp-1 text-left">
@@ -118,7 +124,7 @@ export default function ChatHistorySheet({
                         className="w-full rounded-xl font-bold gap-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-foreground transition-all"
                     >
                         <XCircle size={16} />
-                        Clear All History
+                        {t('assistant.clear_all_history')}
                     </Button>
                 </div>
             </SheetContent>

@@ -4,6 +4,7 @@ import type React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Copy, Loader, Paperclip, Plus, Share2, Sparkles } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ChatHistorySheet from './ChatHistorySheet';
 import type { ChatSession } from './types';
 
@@ -34,6 +35,7 @@ export default function ChatHeader({
     activeSessionId,
     onSelectSession,
 }: ChatHeaderProps) {
+    const { t } = useLanguage();
     const handleUploadClick = () => {
         pdfInputRef.current?.click();
     };
@@ -46,7 +48,7 @@ export default function ChatHeader({
                     <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary animate-pulse" />
                 </h1>
                 <p className="text-sm sm:text-base text-muted-foreground font-medium">
-                    Your personal co-pilot for smarter learning.
+                    {t('assistant.subtitle')}
                 </p>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end">
@@ -55,7 +57,7 @@ export default function ChatHeader({
                     size="icon"
                     onClick={onStartNewChat}
                     className="sm:hidden h-9 w-9"
-                    aria-label="Start new chat"
+                    aria-label={t('assistant.new_chat_aria')}
                 >
                     <Plus className="h-3 w-3" />
                 </Button>
@@ -64,7 +66,7 @@ export default function ChatHeader({
                     size="icon"
                     onClick={onCopyTranscript}
                     className="h-9 w-9"
-                    aria-label="Copy chat transcript"
+                    aria-label={t('assistant.copy_transcript_aria')}
                 >
                     <Copy className="h-3 w-3" />
                 </Button>
@@ -73,7 +75,7 @@ export default function ChatHeader({
                     size="icon"
                     onClick={onShareTranscript}
                     className="h-9 w-9"
-                    aria-label="Share chat transcript"
+                    aria-label={t('assistant.share_transcript_aria')}
                 >
                     <Share2 className="h-3 w-3" />
                 </Button>
@@ -84,7 +86,7 @@ export default function ChatHeader({
                     className="hidden sm:flex items-center gap-2 glass border-primary/20 hover:bg-primary/10 text-primary font-bold transition-all"
                 >
                     <Plus className="h-3 w-3" />
-                    New Chat
+                    {t('assistant.new_chat')}
                 </Button>
                 <Button
                     variant="outline"
@@ -92,7 +94,7 @@ export default function ChatHeader({
                     onClick={handleUploadClick}
                     disabled={isUploadingPdf || isLoading}
                     className="sm:hidden h-9 w-9"
-                    aria-label="Upload Files"
+                    aria-label={t('assistant.upload_files_aria')}
                 >
                     {isUploadingPdf ? (
                         <Loader className="h-4 w-4 animate-spin" />
@@ -112,7 +114,7 @@ export default function ChatHeader({
                     ) : (
                         <Paperclip className="h-3 w-3" />
                     )}
-                    Upload Materials
+                    {t('assistant.upload_materials')}
                 </Button>
                 <input
                     ref={pdfInputRef}

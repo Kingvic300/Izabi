@@ -6,6 +6,7 @@ import React from 'react';
 import { useMemo } from 'react';
 import { getReadableError } from '@/lib/readableErrors';
 import { getToastDedupe } from '@/lib/toastDedupe';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export type ToastVariant =
     | 'default'
@@ -21,11 +22,13 @@ interface ToastOptions {
 }
 
 export const useAppToast = () => {
+    const { t } = useLanguage();
+
     return useMemo(
         () => ({
             // Success messages - rewarding and contextual
             success: (options: ToastOptions) => {
-                toast.success(options.title || 'Success!', {
+                toast.success(options.title || t('toast.success_default'), {
                     description: options.description,
                     duration: options.duration ?? 5000,
                     icon: React.createElement(CheckCircle2, {
@@ -36,10 +39,9 @@ export const useAppToast = () => {
 
             // Error messages - specific and actionable
             error: (options: ToastOptions) => {
-                const title = options.title || 'Something went wrong';
+                const title = options.title || t('toast.error_default_title');
                 const description =
-                    options.description ||
-                    'Please try again. If the issue persists, contact support.';
+                    options.description || t('toast.error_default_desc');
                 const duration = options.duration ?? 5000;
                 const { id, suppressed } = getToastDedupe(
                     'error',
@@ -60,7 +62,7 @@ export const useAppToast = () => {
 
             // Warning messages - explain the risk
             warning: (options: ToastOptions) => {
-                const title = options.title || 'Warning';
+                const title = options.title || t('toast.warning_default');
                 const description = options.description;
                 const duration = options.duration ?? 5000;
                 const { id, suppressed } = getToastDedupe(
@@ -82,7 +84,7 @@ export const useAppToast = () => {
 
             // Info messages - helpful guidance
             info: (options: ToastOptions) => {
-                toast.info(options.title || 'Info', {
+                toast.info(options.title || t('toast.info_default'), {
                     description: options.description,
                     duration: options.duration ?? 5000,
                     icon: React.createElement(Info, {
@@ -113,8 +115,8 @@ export const useAppToast = () => {
 
             // Specific action messages
             noteSaved: () => {
-                toast.success('Note saved!', {
-                    description: 'Your note has been saved successfully.',
+                toast.success(t('toast.note_saved_title'), {
+                    description: t('toast.note_saved_desc'),
                     icon: React.createElement(CheckCircle2, {
                         className: 'h-5 w-5 text-green-500',
                     }),
@@ -122,8 +124,8 @@ export const useAppToast = () => {
             },
 
             noteDeleted: () => {
-                toast.success('Note deleted', {
-                    description: 'Your note has been permanently removed.',
+                toast.success(t('toast.note_deleted_title'), {
+                    description: t('toast.note_deleted_desc'),
                     icon: React.createElement(CheckCircle2, {
                         className: 'h-5 w-5 text-green-500',
                     }),
@@ -131,8 +133,8 @@ export const useAppToast = () => {
             },
 
             profileUpdated: () => {
-                toast.success('Profile updated!', {
-                    description: 'Your profile changes have been saved.',
+                toast.success(t('toast.profile_updated_title'), {
+                    description: t('toast.profile_updated_desc'),
                     icon: React.createElement(CheckCircle2, {
                         className: 'h-5 w-5 text-green-500',
                     }),
@@ -140,8 +142,8 @@ export const useAppToast = () => {
             },
 
             settingChanged: (settingName: string) => {
-                toast.success('Setting updated', {
-                    description: `${settingName} has been updated successfully.`,
+                toast.success(t('toast.setting_updated_title'), {
+                    description: `${settingName} ${t('toast.setting_updated_desc_suffix')}`,
                     icon: React.createElement(CheckCircle2, {
                         className: 'h-5 w-5 text-green-500',
                     }),
@@ -149,10 +151,9 @@ export const useAppToast = () => {
             },
 
             loginFailed: (reason: string) => {
-                const title = 'Login failed';
+                const title = t('toast.login_failed_title');
                 const description =
-                    reason ||
-                    'Please check your email and password and try again.';
+                    reason || t('toast.login_failed_default_desc');
                 const { id, suppressed } = getToastDedupe(
                     'error',
                     title,
@@ -170,9 +171,9 @@ export const useAppToast = () => {
             },
 
             signupFailed: (reason: string) => {
-                const title = 'Signup failed';
+                const title = t('toast.signup_failed_title');
                 const description =
-                    reason || 'Please check your information and try again.';
+                    reason || t('toast.signup_failed_default_desc');
                 const { id, suppressed } = getToastDedupe(
                     'error',
                     title,
@@ -209,7 +210,7 @@ export const useAppToast = () => {
             },
 
             validationError: (fieldName: string, reason: string) => {
-                const title = `Invalid ${fieldName}`;
+                const title = `${t('toast.invalid_prefix')} ${fieldName}`;
                 const description = reason;
                 const { id, suppressed } = getToastDedupe(
                     'error',
@@ -227,6 +228,6 @@ export const useAppToast = () => {
                 });
             },
         }),
-        [],
+        [t],
     );
 };

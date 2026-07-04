@@ -16,7 +16,7 @@ const initialSettings = (theme: SettingsState['theme']): SettingsState => ({
 export const useDashboardSettings = () => {
     const appToast = useAppToast();
     const { theme, setTheme: setGlobalTheme } = useTheme();
-    const { language, setLanguage } = useLanguage();
+    const { language, setLanguage, t } = useLanguage();
 
     const [settings, setSettings] = useState<SettingsState>(() =>
         initialSettings(theme as SettingsState['theme']),
@@ -82,17 +82,19 @@ export const useDashboardSettings = () => {
         localStorage.setItem('userSettings', JSON.stringify(updatedSettings));
 
         const settingNames: Record<string, string> = {
-            emailNotifications: 'Email notifications',
-            studyReminders: 'Study reminders',
-            publicProfile: 'Profile visibility',
+            emailNotifications: t('settings.name_email_notifications'),
+            studyReminders: t('settings.name_study_reminders'),
+            publicProfile: t('settings.name_profile_visibility'),
         };
 
         const settingName = settingNames[key] || key;
-        const status = resolvedValue ? 'enabled' : 'disabled';
+        const status = resolvedValue
+            ? t('settings.status_enabled')
+            : t('settings.status_disabled');
 
         appToast.success({
             title: `${settingName} ${status}`,
-            description: 'Your preference has been saved successfully.',
+            description: t('settings.toast_preference_saved_desc'),
         });
 
         if (key === 'studyReminders' && resolvedValue) {
@@ -101,9 +103,10 @@ export const useDashboardSettings = () => {
                     Notification.requestPermission().then((permission) => {
                         if (permission === 'granted') {
                             appToast.info({
-                                title: 'Reminders Enabled',
-                                description:
-                                    'Browser reminders are now allowed on this device.',
+                                title: t('settings.toast_reminders_enabled_title'),
+                                description: t(
+                                    'settings.toast_reminders_enabled_desc',
+                                ),
                             });
                         }
                     });
@@ -122,8 +125,8 @@ export const useDashboardSettings = () => {
         }));
 
         appToast.success({
-            title: 'Theme updated',
-            description: `Your theme has been changed to ${value} mode.`,
+            title: t('settings.toast_theme_updated_title'),
+            description: `${t('settings.toast_theme_updated_desc_prefix')} ${value} ${t('settings.toast_theme_updated_desc_suffix')}`,
         });
     };
 
@@ -134,13 +137,12 @@ export const useDashboardSettings = () => {
         try {
             await setLanguage(value as Language);
             appToast.success({
-                title: 'Language updated',
-                description:
-                    'Izabi will generate and speak content in your selected language.',
+                title: t('settings.toast_language_updated_title'),
+                description: t('settings.toast_language_updated_desc'),
             });
         } catch (error) {
             setLanguage(previous, false).catch(() => {});
-            appToast.apiError(error, 'Language Update Failed');
+            appToast.apiError(error, t('settings.toast_language_update_failed'));
         } finally {
             setIsLanguageSaving(false);
         }
@@ -149,8 +151,8 @@ export const useDashboardSettings = () => {
     const handleDownloadData = async () => {
         setIsSaving(true);
         appToast.info({
-            title: 'Preparing Data Export',
-            description: 'Collecting your profile, notes, and study history...',
+            title: t('settings.toast_preparing_export_title'),
+            description: t('settings.toast_preparing_export_desc'),
         });
 
         try {
@@ -208,11 +210,11 @@ export const useDashboardSettings = () => {
             URL.revokeObjectURL(url);
 
             appToast.success({
-                title: 'Download Ready',
-                description: 'Your data export was downloaded successfully.',
+                title: t('settings.toast_download_ready_title'),
+                description: t('settings.toast_download_ready_desc'),
             });
         } catch (error) {
-            appToast.apiError(error, 'Export Failed');
+            appToast.apiError(error, t('settings.toast_export_failed'));
         } finally {
             setIsSaving(false);
         }

@@ -27,6 +27,7 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import GoogleAuthButton from '@/components/GoogleAuthButton';
+import ChangePassword from '@/pages/ChangePassword';
 
 const Login = () => {
     const normalizeRole = (role?: string) =>
@@ -85,10 +86,10 @@ const Login = () => {
         if (!emailValidation.isValid) {
             setEmailError(emailValidation.error || null);
             appToast.error({
-                title: 'Invalid Email',
+                title: t('login.toast_invalid_email_title'),
                 description:
                     emailValidation.error ||
-                    'Please check your email formatting.',
+                    t('login.toast_invalid_email_fallback'),
             });
             return;
         }
@@ -133,26 +134,27 @@ const Login = () => {
             const redirectPath = isAdmin ? '/dashboard/admin' : '/dashboard';
 
             appToast.success({
-                title: 'Login Successful',
+                title: t('login.toast_success_title'),
                 description: isAdmin
-                    ? 'Welcome Admin! Redirecting to admin dashboard...'
-                    : 'Welcome back! Redirecting to your dashboard...',
+                    ? t('login.toast_welcome_admin')
+                    : t('login.toast_welcome_back'),
             });
 
             navigate(redirectPath);
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || 'Login failed';
+            const errorMessage =
+                err.response?.data?.message || t('login.toast_generic_failed');
 
             if (err.response?.status === 401) {
                 appToast.error({
-                    title: 'Login Failed',
-                    description: 'Invalid email or password. Please try again.',
+                    title: t('login.toast_failed_title'),
+                    description: t('login.toast_invalid_credentials'),
                 });
             } else if (!navigator.onLine) {
                 appToast.networkError();
             } else {
                 appToast.error({
-                    title: 'Connection Error',
+                    title: t('login.toast_connection_error_title'),
                     description: errorMessage,
                 });
             }
@@ -192,29 +194,27 @@ const Login = () => {
             const isAdmin = role === 'ADMIN';
             const redirectPath = isAdmin ? '/dashboard/admin' : '/dashboard';
             appToast.success({
-                title: 'Google Login Successful',
+                title: t('login.toast_google_success_title'),
                 description: isAdmin
-                    ? 'Welcome Admin! Redirecting to admin dashboard...'
-                    : 'Welcome! Redirecting to your dashboard...',
+                    ? t('login.toast_welcome_admin')
+                    : t('login.toast_welcome_google'),
             });
 
             navigate(redirectPath);
         } catch (err: any) {
             const status = err.response?.status;
-            let description =
-                'Something went wrong during Google authentication.';
+            let description = t('login.toast_google_generic_error');
 
             if (status === 404) {
-                description =
-                    'Authentication service is currently unavailable. Please contact support.';
+                description = t('login.toast_google_service_unavailable');
             } else if (err.response?.data?.message) {
                 description = err.response.data.message;
             } else if (!navigator.onLine) {
-                description = 'Check your internet connection and try again.';
+                description = t('login.toast_check_connection');
             }
 
             appToast.error({
-                title: 'Google Sign-In Failed',
+                title: t('login.toast_google_failed_title'),
                 description,
             });
         } finally {
@@ -293,13 +293,24 @@ const Login = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <div className="flex justify-between px-1">
+                                <div className="flex justify-between items-center px-1">
                                     <Label
                                         htmlFor="login-password"
                                         className="text-[10px] uppercase font-bold tracking-widest opacity-40"
                                     >
                                         {t('auth.password')}
                                     </Label>
+                                    <ChangePassword
+                                        initialEmail={email}
+                                        trigger={
+                                            <button
+                                                type="button"
+                                                className="text-[10px] uppercase font-bold tracking-widest text-primary hover:underline"
+                                            >
+                                                {t('auth.forgot_password')}
+                                            </button>
+                                        }
+                                    />
                                 </div>
                                 <div className="relative">
                                     <Lock
@@ -377,9 +388,12 @@ const Login = () => {
                                     onSuccess={handleGoogleSuccess}
                                     onError={() => {
                                         appToast.error({
-                                            title: 'Google Sign-In Error',
-                                            description:
-                                                'Google sign-in failed. Please try again or use your email and password.',
+                                            title: t(
+                                                'login.toast_google_error_title',
+                                            ),
+                                            description: t(
+                                                'login.toast_google_error_desc',
+                                            ),
                                         });
                                     }}
                                     label="Sign in with Google"

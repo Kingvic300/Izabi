@@ -6,6 +6,7 @@ import { api } from '@/lib/apiClient';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useAppToast } from '@/hooks/useAppToast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Loader2 } from 'lucide-react';
 import AdminDashboardHeader from '@/components/admin-dashboard/AdminDashboardHeader';
 import AdminQuickStats from '@/components/admin-dashboard/AdminQuickStats';
@@ -32,6 +33,7 @@ const INITIAL_STATS: AdminStats = {
 export default function AdminDashboard() {
     const containerRef = useRef<HTMLDivElement>(null);
     const appToast = useAppToast();
+    const { t } = useLanguage();
     const [stats, setStats] = useState(INITIAL_STATS);
     const [users, setUsers] = useState<any[]>([]);
     const [chartData, setChartData] = useState<any[]>([]);
@@ -136,7 +138,7 @@ export default function AdminDashboard() {
                 return true;
             } catch (error) {
                 console.error('Failed to fetch admin data', error);
-                appToast.apiError(error, 'Could not refresh admin data');
+                appToast.apiError(error, t('admin.toast_could_not_refresh'));
                 return false;
             } finally {
                 if (setPageLoading) {
@@ -173,15 +175,15 @@ export default function AdminDashboard() {
         if (isSyncingRegistry) return;
         setIsSyncingRegistry(true);
         appToast.info({
-            title: 'Sync in progress',
-            description: 'Refreshing user, stats, and key data...',
+            title: t('admin.toast_sync_in_progress_title'),
+            description: t('admin.toast_sync_in_progress_desc'),
         });
 
         const ok = await fetchAdminData(false);
         if (ok) {
             appToast.success({
-                title: 'Registry Synced',
-                description: 'System data has been refreshed.',
+                title: t('admin.toast_registry_synced_title'),
+                description: t('admin.toast_registry_synced_desc'),
             });
         }
         setIsSyncingRegistry(false);
@@ -216,11 +218,11 @@ export default function AdminDashboard() {
             URL.revokeObjectURL(url);
 
             appToast.success({
-                title: 'System Report Downloaded',
-                description: 'The latest admin report is now on your device.',
+                title: t('admin.toast_report_downloaded_title'),
+                description: t('admin.toast_report_downloaded_desc'),
             });
         } catch (error) {
-            appToast.apiError(error, 'System Report Failed');
+            appToast.apiError(error, t('admin.toast_report_failed'));
         } finally {
             setIsExportingReport(false);
         }
@@ -233,19 +235,19 @@ export default function AdminDashboard() {
             const result = await api.sendLiveAnnouncement();
             if (result?.success) {
                 appToast.success({
-                    title: 'Announcement Sent',
-                    description: `Sent to ${result.sent || 0} of ${result.total || 0} users.`,
+                    title: t('admin.toast_announcement_sent_title'),
+                    description: `${t('admin.toast_announcement_sent_desc_prefix')} ${result.sent || 0} ${t('admin.toast_announcement_sent_desc_middle')} ${result.total || 0} ${t('admin.toast_announcement_sent_desc_suffix')}`,
                 });
             } else {
                 appToast.error({
-                    title: 'Announcement Failed',
+                    title: t('admin.toast_announcement_failed_title'),
                     description:
                         result?.message ||
-                        'Could not send the live announcement.',
+                        t('admin.toast_announcement_failed_fallback'),
                 });
             }
         } catch (error) {
-            appToast.apiError(error, 'Announcement Failed');
+            appToast.apiError(error, t('admin.toast_announcement_failed_title'));
         } finally {
             setIsSendingAnnouncement(false);
             setIsAnnouncementDialogOpen(false);
@@ -258,16 +260,16 @@ export default function AdminDashboard() {
             setSearchQuery('');
             setShowActiveOnly(false);
             appToast.info({
-                title: 'Filters Cleared',
-                description: 'Showing all users again.',
+                title: t('admin.toast_filters_cleared_title'),
+                description: t('admin.toast_filters_cleared_desc'),
             });
             return;
         }
 
         setShowActiveOnly(true);
         appToast.info({
-            title: 'Filter Applied',
-            description: 'Now showing active users only.',
+            title: t('admin.toast_filter_applied_title'),
+            description: t('admin.toast_filter_applied_desc'),
         });
     };
 
@@ -281,15 +283,15 @@ export default function AdminDashboard() {
                 prevUsers.filter((user) => user.id !== userToTerminate.id),
             );
             appToast.success({
-                title: 'Success',
-                description: 'User access terminated successfully',
+                title: t('admin.toast_terminate_success_title'),
+                description: t('admin.toast_terminate_success_desc'),
             });
             setIsTerminateDialogOpen(false);
             setUserToTerminate(null);
         } catch (error) {
             appToast.error({
-                title: 'Failed',
-                description: 'Could not delete user',
+                title: t('admin.toast_terminate_failed_title'),
+                description: t('admin.toast_terminate_failed_desc'),
             });
         } finally {
             setIsTerminatingAccess(false);
@@ -309,15 +311,14 @@ export default function AdminDashboard() {
             const status = (error as any)?.response?.status;
             if (status === 404) {
                 appToast.info({
-                    title: 'User not found',
-                    description:
-                        'This user may have been removed. Refreshing the registry.',
+                    title: t('admin.toast_user_not_found_title'),
+                    description: t('admin.toast_user_not_found_desc'),
                 });
                 void fetchAdminData(false);
             } else {
                 appToast.error({
-                    title: 'Error',
-                    description: 'Failed to load user details',
+                    title: t('admin.toast_error_title'),
+                    description: t('admin.toast_load_user_failed_desc'),
                 });
             }
         } finally {
@@ -367,8 +368,8 @@ export default function AdminDashboard() {
                     setIsImpersonating(false);
                     setImpersonationTargetId(null);
                     appToast.success({
-                        title: 'Impersonation Ended',
-                        description: 'You are now viewing as yourself.',
+                        title: t('admin.toast_impersonation_ended_title'),
+                        description: t('admin.toast_impersonation_ended_desc'),
                     });
                     // Refresh the page to get fresh data
                     window.location.reload();
@@ -379,8 +380,8 @@ export default function AdminDashboard() {
                 if (result.success) {
                     if (!result.data?.token) {
                         appToast.error({
-                            title: 'Impersonation Failed',
-                            description: 'Missing impersonation token.',
+                            title: t('admin.toast_impersonation_failed_title'),
+                            description: t('admin.toast_missing_token_desc'),
                         });
                         return;
                     }
@@ -394,14 +395,20 @@ export default function AdminDashboard() {
                     setIsImpersonating(true);
                     setImpersonationTargetId(userIdOrStop);
                     appToast.success({
-                        title: 'Impersonation Started',
-                        description: 'You are now viewing as this user.',
+                        title: t('admin.toast_impersonation_started_title'),
+                        description: t(
+                            'admin.toast_impersonation_started_desc',
+                        ),
                     });
                     window.location.href = '/dashboard';
                 } else {
                     appToast.error({
-                        title: 'Impersonation Failed',
-                        description: result.message || 'Could not start impersonation.',
+                        title: t('admin.toast_impersonation_failed_title'),
+                        description:
+                            result.message ||
+                            t(
+                                'admin.toast_impersonation_start_failed_fallback',
+                            ),
                     });
                 }
             }
@@ -409,16 +416,19 @@ export default function AdminDashboard() {
             const status = error?.response?.status;
             if (status === 403) {
                 appToast.error({
-                    title: 'Access Denied',
-                    description: 'You do not have permission to impersonate users.',
+                    title: t('admin.toast_access_denied_title'),
+                    description: t('admin.toast_access_denied_desc'),
                 });
             } else if (status === 404) {
                 appToast.error({
-                    title: 'User Not Found',
-                    description: 'The user may have been deleted.',
+                    title: t('admin.toast_user_not_found_title2'),
+                    description: t('admin.toast_user_deleted_desc'),
                 });
             } else {
-                appToast.apiError(error, 'Impersonation Failed');
+                appToast.apiError(
+                    error,
+                    t('admin.toast_impersonation_failed_title'),
+                );
             }
         } finally {
             setIsImpersonationLoading(false);

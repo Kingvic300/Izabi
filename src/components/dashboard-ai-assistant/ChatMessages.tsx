@@ -5,6 +5,7 @@ import type React from 'react';
 import { AIMarkdown } from '@/components/ui/ai-markdown';
 import { Button } from '@/components/ui/button';
 import { Brain, Check, Copy, Loader, Share2, User } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { Message } from './types';
 
 type ChatMessagesProps = {
@@ -24,6 +25,7 @@ export default function ChatMessages({
     onShareMessage,
     messagesEndRef,
 }: ChatMessagesProps) {
+    const { t } = useLanguage();
     return (
         <div className="flex-1 min-h-0 overflow-y-auto space-y-4 md:space-y-6 p-4 md:p-6 scrollbar-thin scrollbar-thumb-primary/10">
             <div className="mx-auto w-full max-w-[1500px] space-y-4 md:space-y-6">
@@ -99,7 +101,9 @@ export default function ChatMessages({
                                                     )
                                                 }
                                                 className="h-6 w-6 rounded-md hover:bg-foreground/5"
-                                                aria-label="Copy message"
+                                                aria-label={t(
+                                                    'assistant.copy_message_aria',
+                                                )}
                                             >
                                                 {copiedMessageId ===
                                                 message.id ? (
@@ -117,7 +121,9 @@ export default function ChatMessages({
                                                     )
                                                 }
                                                 className="h-6 w-6 rounded-md hover:bg-foreground/5"
-                                                aria-label="Share message"
+                                                aria-label={t(
+                                                    'assistant.share_message_aria',
+                                                )}
                                             >
                                                 <Share2 className="h-3 w-3" />
                                             </Button>

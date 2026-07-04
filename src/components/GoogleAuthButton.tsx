@@ -34,7 +34,10 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
         const updateWidth = () => {
             const rect = el.getBoundingClientRect();
             if (rect.width > 0) {
-                setButtonWidth(`${Math.round(rect.width)}px`);
+                // Google's GSI button width must be a bare pixel number
+                // (no "px" suffix) and is clamped to its supported 200-400 range.
+                const clamped = Math.min(400, Math.max(200, Math.round(rect.width)));
+                setButtonWidth(String(clamped));
             }
         };
 
@@ -53,7 +56,10 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
     return (
         <div
             ref={containerRef}
-            className={cn('relative group w-full', className)}
+            className={cn(
+                'relative group w-full max-w-[400px] mx-auto',
+                className,
+            )}
         >
             <div className="pointer-events-none w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-card/50 border border-foreground/10 shadow-2xl flex items-center justify-center gap-3 px-4 transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-glow group-hover:bg-card/70">
                 <span className="h-8 w-8 rounded-full bg-white text-black flex items-center justify-center shadow-lg">
@@ -87,11 +93,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
             <div className="absolute inset-0 z-10 opacity-0 [&_div]:w-full [&_div]:h-full [&_iframe]:w-full [&_iframe]:h-full">
                 <GoogleLogin
                     onSuccess={onSuccess}
-                    onError={(err) => {
-                        // FedCM AbortError is noisy but expected when user dismisses the prompt.
-                        if ((err as any)?.type === 'popup_closed_by_user') return;
-                        onError();
-                    }}
+                    onError={onError}
                     useOneTap={useOneTap}
                     theme="outline"
                     size="large"

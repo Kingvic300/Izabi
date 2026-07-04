@@ -48,6 +48,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAppToast } from '@/hooks/useAppToast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
     ACCOUNTABILITY_PARTNER_ENABLED,
     SUBSCRIPTIONS_ENABLED,
@@ -144,6 +145,7 @@ export function AppSidebar() {
     const location = useLocation();
     const navigate = useNavigate();
     const appToast = useAppToast();
+    const { t } = useLanguage();
     const currentPath = location.pathname;
     const collapsed = state === 'collapsed';
     const getDefaultAvatar = (email: string) =>
@@ -200,9 +202,8 @@ export function AppSidebar() {
             await api.logout();
         } catch (error) {
             appToast.error({
-                title: 'Logout issue',
-                description:
-                    'We could not reach the server, but you have been signed out on this device.',
+                title: t('sidebar.toast_logout_issue_title'),
+                description: t('sidebar.toast_logout_issue_desc'),
             });
         } finally {
             clearApiCache();
@@ -231,18 +232,23 @@ export function AppSidebar() {
             if (result?.success) {
                 endImpersonationSession();
                 appToast.success({
-                    title: 'Impersonation Ended',
-                    description: 'You are now viewing as yourself.',
+                    title: t('sidebar.toast_impersonation_ended_title'),
+                    description: t('sidebar.toast_impersonation_ended_desc'),
                 });
                 window.location.href = '/dashboard/admin';
                 return;
             }
             appToast.error({
-                title: 'Could not stop',
-                description: result?.message || 'Failed to end impersonation.',
+                title: t('sidebar.toast_could_not_stop_title'),
+                description:
+                    result?.message ||
+                    t('sidebar.toast_failed_end_impersonation'),
             });
         } catch (error) {
-            appToast.apiError(error, 'Failed to end impersonation');
+            appToast.apiError(
+                error,
+                t('sidebar.toast_failed_end_impersonation'),
+            );
         }
     };
 

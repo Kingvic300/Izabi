@@ -121,8 +121,8 @@ const Signup = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             appToast.error({
-                title: 'Validation Error',
-                description: 'Please check the form for errors and try again.',
+                title: t('signup.toast_validation_error_title'),
+                description: t('signup.toast_validation_error_desc'),
             });
             return;
         }
@@ -142,9 +142,8 @@ const Signup = () => {
             localStorage.setItem('pendingOtpEmail', normalizedEmail);
 
             appToast.success({
-                title: 'Verification Code Sent',
-                description:
-                    'Please check your email for the verification code.',
+                title: t('signup.toast_otp_sent_title'),
+                description: t('signup.toast_otp_sent_desc'),
             });
 
             navigate('/otp', {
@@ -156,19 +155,18 @@ const Signup = () => {
         } catch (err: any) {
             const errorMessage =
                 err.response?.data?.message ||
-                'Failed to send verification code';
+                t('signup.toast_otp_send_failed_fallback');
 
             if (err.response?.status === 409) {
                 appToast.error({
-                    title: 'Account Already Exists',
-                    description:
-                        'This email is already registered. Please sign in instead.',
+                    title: t('signup.toast_account_exists_title'),
+                    description: t('signup.toast_account_exists_desc'),
                 });
             } else if (!navigator.onLine) {
                 appToast.networkError();
             } else {
                 appToast.error({
-                    title: 'Registration Failed',
+                    title: t('signup.toast_registration_failed_title'),
                     description: errorMessage,
                 });
             }
@@ -208,29 +206,27 @@ const Signup = () => {
             const isAdmin = role === 'ADMIN';
             const redirectPath = isAdmin ? '/dashboard/admin' : '/dashboard';
             appToast.success({
-                title: 'Google Sign-Up Successful',
+                title: t('signup.toast_google_success_title'),
                 description: isAdmin
-                    ? 'Welcome Admin! Redirecting to admin dashboard...'
-                    : 'Your account is ready. Redirecting...',
+                    ? t('login.toast_welcome_admin')
+                    : t('signup.toast_account_ready'),
             });
 
             setTimeout(() => navigate(redirectPath), 1000);
         } catch (err: any) {
             const status = err.response?.status;
-            let description =
-                'Something went wrong during Google sign-up.';
+            let description = t('signup.toast_google_generic_error');
 
             if (status === 404) {
-                description =
-                    'Registration service is currently unavailable. Please contact support.';
+                description = t('signup.toast_google_service_unavailable');
             } else if (err.response?.data?.message) {
                 description = err.response.data.message;
             } else if (!navigator.onLine) {
-                description = 'Check your internet connection and try again.';
+                description = t('login.toast_check_connection');
             }
 
             appToast.error({
-                title: 'Google Sign-Up Failed',
+                title: t('signup.toast_google_failed_title'),
                 description,
             });
         } finally {
@@ -494,9 +490,12 @@ const Signup = () => {
                                     onSuccess={handleGoogleSuccess}
                                     onError={() => {
                                         appToast.error({
-                                            title: 'Google Sign-Up Error',
-                                            description:
-                                                'Google sign-up failed. Please try again or use the signup form.',
+                                            title: t(
+                                                'signup.toast_google_error_title',
+                                            ),
+                                            description: t(
+                                                'signup.toast_google_error_desc',
+                                            ),
                                         });
                                     }}
                                     label="Sign up with Google"

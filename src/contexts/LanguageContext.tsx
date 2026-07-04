@@ -47,6 +47,7 @@ const translations: Record<Language, Record<string, string>> = {
         'auth.signup': 'Create Account',
         'auth.email': 'Email Address',
         'auth.password': 'Password',
+        'auth.forgot_password': 'Forgot password?',
         'auth.initialize': 'Sign In',
         'auth.join': 'Apply for access',
         'footer.copyright': '© 2026 Izabi. All rights reserved.',
@@ -633,6 +634,339 @@ const translations: Record<Language, Record<string, string>> = {
         'pricing.cta_title': 'Not sure which architecture to deploy?',
         'pricing.compare_modules': 'Compare Modules',
         'pricing.contact_support': 'Contact Support',
+        'assistant.subtitle': 'Your personal co-pilot for smarter learning.',
+        'assistant.new_chat': 'New Chat',
+        'assistant.new_chat_aria': 'Start new chat',
+        'assistant.upload_materials': 'Upload Materials',
+        'assistant.upload_files_aria': 'Upload Files',
+        'assistant.copy_transcript_aria': 'Copy chat transcript',
+        'assistant.share_transcript_aria': 'Share chat transcript',
+        'assistant.copy_message_aria': 'Copy message',
+        'assistant.share_message_aria': 'Share message',
+        'assistant.disclaimer':
+            'Izabi AI may provide inaccurate info. Verify important facts.',
+        'assistant.placeholder_with_docs':
+            'Ask questions about your uploaded materials...',
+        'assistant.placeholder_default':
+            'Ask Izabi to generate something or explain a topic...',
+        'assistant.suggestion_flashcards': 'Generate Flashcards',
+        'assistant.suggestion_study_guide': 'Study Guide',
+        'assistant.suggestion_practice_quiz': 'Practice Quiz',
+        'assistant.history_title': 'Chat History',
+        'assistant.history_desc':
+            'Browse your past interactions with Izabi.',
+        'assistant.history_empty': 'No history recorded yet',
+        'assistant.session_fallback_title': 'Chat session',
+        'assistant.clear_all_history': 'Clear All History',
+        'assistant.welcome_message':
+            "Hello! I'm Izabi, your AI learning assistant. I'm here to help you understand complex concepts, answer questions, and guide your learning journey. What would you like to learn about today?",
+        'assistant.new_session_message':
+            "Hello! I'm Izabi, your AI learning assistant. New session started. What's on your mind?",
+        'assistant.transcript_you': 'You',
+        'assistant.transcript_izabi': 'Izabi',
+        'assistant.transcript_title': 'Izabi chat transcript',
+        'assistant.message_title': 'Izabi message',
+        'assistant.note_loaded_prefix': 'I\'ve loaded your note **"',
+        'assistant.note_loaded_suffix':
+            '"** as context. Ask me anything about it!',
+        'assistant.upload_message_files_label': 'file(s)',
+        'assistant.upload_message_rest':
+            'uploaded successfully. I will now use them to answer your questions.',
+        'assistant.toast_copy_failed_title': 'Copy failed',
+        'assistant.toast_copy_failed_desc':
+            'Unable to copy to clipboard on this device.',
+        'assistant.toast_copied_clipboard_title': 'Copied to clipboard',
+        'assistant.toast_copied_clipboard_desc':
+            'Sharing is not supported in this browser.',
+        'assistant.toast_share_failed_title': 'Share failed',
+        'assistant.toast_share_failed_desc':
+            'Unable to share from this device. Try copying instead.',
+        'assistant.toast_chat_copied_title': 'Chat copied',
+        'assistant.toast_chat_copied_desc':
+            'Your chat transcript is now in the clipboard.',
+        'assistant.toast_transcript_copy_failed_desc':
+            'Unable to copy your chat transcript.',
+        'assistant.toast_chat_unavailable_title': 'Chat unavailable',
+        'assistant.toast_chat_unavailable_desc':
+            'Unable to start a new chat session.',
+        'assistant.toast_could_not_start_title': 'Could Not Start Chat',
+        'assistant.toast_could_not_start_desc': 'Please try again.',
+        'assistant.toast_limit_reached_title': 'Limit Reached',
+        'assistant.toast_limit_reached_desc':
+            'You can only have up to 5 documents active at once.',
+        'assistant.toast_files_too_large_title': 'Some Files Too Large',
+        'assistant.toast_files_too_large_desc':
+            'One or more files exceed the 100MB limit and were skipped.',
+        'assistant.toast_upload_success_title': 'Upload Successful',
+        'assistant.toast_upload_success_desc_suffix':
+            'new materials indexed and ready for chat.',
+        'assistant.toast_upload_failed_title': 'Upload Failed',
+        'assistant.error_upload_fallback': 'Failed to upload and process PDF.',
+        'assistant.toast_clear_confirm':
+            'Are you sure you want to delete all chat history? This cannot be undone.',
+        'assistant.toast_history_cleared_title': 'History Cleared',
+        'assistant.toast_history_cleared_desc':
+            'Your conversation history has been permanently deleted.',
+        'assistant.toast_could_not_clear_title': 'Could Not Clear History',
+        'assistant.toast_could_not_clear_desc':
+            'Please try again. If this keeps happening, check your connection.',
+        'assistant.toast_requires_pdf_title_suffix': 'Requires PDF',
+        'assistant.toast_requires_pdf_desc':
+            'Please go to dashboard and upload a PDF first.',
+        'toast.success_default': 'Success!',
+        'toast.error_default_title': 'Something went wrong',
+        'toast.error_default_desc':
+            'Please try again. If the issue persists, contact support.',
+        'toast.warning_default': 'Warning',
+        'toast.info_default': 'Info',
+        'toast.note_saved_title': 'Note saved!',
+        'toast.note_saved_desc': 'Your note has been saved successfully.',
+        'toast.note_deleted_title': 'Note deleted',
+        'toast.note_deleted_desc':
+            'Your note has been permanently removed.',
+        'toast.profile_updated_title': 'Profile updated!',
+        'toast.profile_updated_desc':
+            'Your profile changes have been saved.',
+        'toast.setting_updated_title': 'Setting updated',
+        'toast.setting_updated_desc_suffix':
+            'has been updated successfully.',
+        'toast.login_failed_title': 'Login failed',
+        'toast.login_failed_default_desc':
+            'Please check your email and password and try again.',
+        'toast.signup_failed_title': 'Signup failed',
+        'toast.signup_failed_default_desc':
+            'Please check your information and try again.',
+        'toast.invalid_prefix': 'Invalid',
+        'profile.toast_update_failed_title': 'Update Failed',
+        'profile.toast_update_failed_desc':
+            'Could not save your profile changes.',
+        'profile.toast_photo_removed_title': 'Photo Removed',
+        'profile.toast_photo_removed_desc':
+            'Profile photo removed. Click Save Changes to confirm.',
+        'notes.toast_invalid_file_title': 'Invalid file',
+        'notes.toast_invalid_scan_desc':
+            'Scan Note accepts only JPG or PNG images.',
+        'notes.toast_invalid_import_desc':
+            'Upload a TXT, PDF, DOCX, JPG, JPEG, or PNG file.',
+        'notes.toast_no_file_title': 'No file selected',
+        'notes.toast_no_file_preview_desc': 'Choose a file to preview.',
+        'notes.toast_no_file_import_desc': 'Choose a file to import.',
+        'notes.toast_preview_failed': 'Preview failed',
+        'notes.toast_note_imported_title': 'Note imported',
+        'notes.toast_note_imported_desc': 'Your note is ready for review.',
+        'notes.toast_could_not_import_note': 'Could not import note',
+        'notes.toast_nothing_to_save_title': 'Nothing to save',
+        'notes.toast_nothing_to_save_desc': 'The preview text is empty.',
+        'notes.toast_note_saved_title': 'Note saved',
+        'notes.toast_imported_note_ready_desc':
+            'Your imported note is ready!',
+        'notes.toast_could_not_save_note': 'Could not save note',
+        'notes.toast_missing_name_title': 'Missing name',
+        'notes.toast_enter_group_name_desc':
+            'Enter a group name to continue.',
+        'notes.toast_group_created_title': 'Group created',
+        'notes.toast_group_created_desc': 'Your group is ready.',
+        'notes.toast_could_not_create_group': 'Could not create group',
+        'notes.toast_group_name_empty_desc': 'Group name cannot be empty.',
+        'notes.toast_group_updated_title': 'Group updated',
+        'notes.toast_group_updated_desc':
+            'Group name updated successfully.',
+        'notes.toast_could_not_update_group': 'Could not update group',
+        'notes.toast_group_deleted_title': 'Group deleted',
+        'notes.toast_group_deleted_desc': 'Group removed successfully.',
+        'notes.toast_could_not_delete_group': 'Could not delete group',
+        'notes.toast_invalid_input_title': 'Invalid input',
+        'notes.toast_invalid_input_desc':
+            'Please check the highlighted fields.',
+        'notes.toast_new_note_ready_desc': 'Your new study note is ready!',
+        'notes.toast_invalid_note_title': 'Invalid note',
+        'notes.toast_invalid_note_desc':
+            'This note has an invalid identifier. Refresh and try again.',
+        'notes.toast_invalid_update_title': 'Invalid update',
+        'notes.toast_note_updated_title': 'Note updated',
+        'notes.toast_note_updated_desc': 'Your changes have been saved.',
+        'notes.toast_could_not_update_note': 'Could not update note',
+        'notes.toast_note_deleted_title': 'Note deleted',
+        'notes.toast_note_deleted_desc': 'Your note was removed.',
+        'notes.toast_could_not_delete_note': 'Could not delete note',
+        'notes.toast_could_not_send_to_ai': 'Could not send note to AI',
+        'sidebar.toast_logout_issue_title': 'Logout issue',
+        'sidebar.toast_logout_issue_desc':
+            'We could not reach the server, but you have been signed out on this device.',
+        'sidebar.toast_impersonation_ended_title': 'Impersonation Ended',
+        'sidebar.toast_impersonation_ended_desc':
+            'You are now viewing as yourself.',
+        'sidebar.toast_could_not_stop_title': 'Could not stop',
+        'sidebar.toast_failed_end_impersonation':
+            'Failed to end impersonation.',
+        'partner.toast_invite_accepted':
+            'Invite accepted! You have a new accountability partner.',
+        'partner.toast_could_not_accept_invite_title':
+            'Could not accept invite',
+        'partner.toast_invite_invalid_fallback':
+            'That invite link is no longer valid.',
+        'partner.toast_invite_sent_title': 'Invite sent!',
+        'partner.toast_invite_sent_desc_prefix': 'We emailed',
+        'partner.toast_invite_sent_desc_suffix': 'an invite.',
+        'partner.toast_could_not_send_invite_title': 'Could not send invite',
+        'partner.generic_retry_fallback': 'Please try again.',
+        'partner.toast_could_not_respond_title':
+            'Could not respond to invite',
+        'partner.toast_partnership_ended': 'Partnership ended',
+        'partner.toast_could_not_end_title': 'Could not end partnership',
+        'partner.toast_goal_set': 'Goal set!',
+        'partner.toast_could_not_save_goal_title': 'Could not save goal',
+        'partner.toast_checked_in': 'Checked in! Keep the streak alive.',
+        'partner.toast_could_not_check_in_title': 'Could not check in',
+        'partner.toast_already_checked_in_fallback':
+            "You've already checked in today.",
+        'partner.toast_could_not_send_message_title': 'Could not send message',
+        'settings.name_email_notifications': 'Email notifications',
+        'settings.name_study_reminders': 'Study reminders',
+        'settings.name_profile_visibility': 'Profile visibility',
+        'settings.status_enabled': 'enabled',
+        'settings.status_disabled': 'disabled',
+        'settings.toast_preference_saved_desc':
+            'Your preference has been saved successfully.',
+        'settings.toast_reminders_enabled_title': 'Reminders Enabled',
+        'settings.toast_reminders_enabled_desc':
+            'Browser reminders are now allowed on this device.',
+        'settings.toast_theme_updated_title': 'Theme updated',
+        'settings.toast_theme_updated_desc_prefix':
+            'Your theme has been changed to',
+        'settings.toast_theme_updated_desc_suffix': 'mode.',
+        'settings.toast_language_updated_title': 'Language updated',
+        'settings.toast_language_updated_desc':
+            'Izabi will generate and speak content in your selected language.',
+        'settings.toast_language_update_failed': 'Language Update Failed',
+        'settings.toast_preparing_export_title': 'Preparing Data Export',
+        'settings.toast_preparing_export_desc':
+            'Collecting your profile, notes, and study history...',
+        'settings.toast_download_ready_title': 'Download Ready',
+        'settings.toast_download_ready_desc':
+            'Your data export was downloaded successfully.',
+        'settings.toast_export_failed': 'Export Failed',
+        'login.toast_invalid_email_title': 'Invalid Email',
+        'login.toast_invalid_email_fallback':
+            'Please check your email formatting.',
+        'login.toast_success_title': 'Login Successful',
+        'login.toast_welcome_admin':
+            'Welcome Admin! Redirecting to admin dashboard...',
+        'login.toast_welcome_back':
+            'Welcome back! Redirecting to your dashboard...',
+        'login.toast_generic_failed': 'Login failed',
+        'login.toast_failed_title': 'Login Failed',
+        'login.toast_invalid_credentials':
+            'Invalid email or password. Please try again.',
+        'login.toast_connection_error_title': 'Connection Error',
+        'login.toast_google_success_title': 'Google Login Successful',
+        'login.toast_welcome_google':
+            'Welcome! Redirecting to your dashboard...',
+        'login.toast_google_generic_error':
+            'Something went wrong during Google authentication.',
+        'login.toast_google_service_unavailable':
+            'Authentication service is currently unavailable. Please contact support.',
+        'login.toast_check_connection':
+            'Check your internet connection and try again.',
+        'login.toast_google_failed_title': 'Google Sign-In Failed',
+        'login.toast_google_error_title': 'Google Sign-In Error',
+        'login.toast_google_error_desc':
+            'Google sign-in failed. Please try again or use your email and password.',
+        'signup.toast_validation_error_title': 'Validation Error',
+        'signup.toast_validation_error_desc':
+            'Please check the form for errors and try again.',
+        'signup.toast_otp_sent_title': 'Verification Code Sent',
+        'signup.toast_otp_sent_desc':
+            'Please check your email for the verification code.',
+        'signup.toast_otp_send_failed_fallback':
+            'Failed to send verification code',
+        'signup.toast_account_exists_title': 'Account Already Exists',
+        'signup.toast_account_exists_desc':
+            'This email is already registered. Please sign in instead.',
+        'signup.toast_registration_failed_title': 'Registration Failed',
+        'signup.toast_google_success_title': 'Google Sign-Up Successful',
+        'signup.toast_account_ready':
+            'Your account is ready. Redirecting...',
+        'signup.toast_google_generic_error':
+            'Something went wrong during Google sign-up.',
+        'signup.toast_google_service_unavailable':
+            'Registration service is currently unavailable. Please contact support.',
+        'signup.toast_google_failed_title': 'Google Sign-Up Failed',
+        'signup.toast_google_error_title': 'Google Sign-Up Error',
+        'signup.toast_google_error_desc':
+            'Google sign-up failed. Please try again or use the signup form.',
+        'change_password.toast_email_required_title': 'Email Required',
+        'change_password.toast_email_required_desc':
+            'Please enter your email address.',
+        'change_password.toast_code_sent_title': 'Code Sent',
+        'change_password.toast_code_sent_desc':
+            'Check your inbox for the verification code.',
+        'change_password.toast_missing_fields_title': 'Missing Fields',
+        'change_password.toast_missing_fields_desc':
+            'Please fill in all fields.',
+        'change_password.toast_security_updated_title': 'Security Updated',
+        'change_password.toast_security_updated_desc':
+            'Your password has been changed successfully.',
+        'change_password.reset_access': 'Reset Access',
+        'change_password.verify_identity': 'Verify Identity',
+        'change_password.set_new_password': 'Set New Password',
+        'change_password.step1_desc':
+            "We'll send a secure verification code to your email.",
+        'change_password.step2_desc':
+            'Enter the code you received and choose a strong password.',
+        'change_password.your_email': 'Your Email',
+        'change_password.send_code': 'Send Code',
+        'change_password.verification_code': 'Verification Code',
+        'change_password.new_password': 'New Password',
+        'change_password.confirm_update': 'Confirm Update',
+        'change_password.back_to_email': 'Back to Email',
+        'admin.toast_could_not_refresh': 'Could not refresh admin data',
+        'admin.toast_sync_in_progress_title': 'Sync in progress',
+        'admin.toast_sync_in_progress_desc':
+            'Refreshing user, stats, and key data...',
+        'admin.toast_registry_synced_title': 'Registry Synced',
+        'admin.toast_registry_synced_desc':
+            'System data has been refreshed.',
+        'admin.toast_report_downloaded_title': 'System Report Downloaded',
+        'admin.toast_report_downloaded_desc':
+            'The latest admin report is now on your device.',
+        'admin.toast_report_failed': 'System Report Failed',
+        'admin.toast_announcement_sent_title': 'Announcement Sent',
+        'admin.toast_announcement_sent_desc_prefix': 'Sent to',
+        'admin.toast_announcement_sent_desc_middle': 'of',
+        'admin.toast_announcement_sent_desc_suffix': 'users.',
+        'admin.toast_announcement_failed_title': 'Announcement Failed',
+        'admin.toast_announcement_failed_fallback':
+            'Could not send the live announcement.',
+        'admin.toast_filters_cleared_title': 'Filters Cleared',
+        'admin.toast_filters_cleared_desc': 'Showing all users again.',
+        'admin.toast_filter_applied_title': 'Filter Applied',
+        'admin.toast_filter_applied_desc': 'Now showing active users only.',
+        'admin.toast_terminate_success_title': 'Success',
+        'admin.toast_terminate_success_desc':
+            'User access terminated successfully',
+        'admin.toast_terminate_failed_title': 'Failed',
+        'admin.toast_terminate_failed_desc': 'Could not delete user',
+        'admin.toast_user_not_found_title': 'User not found',
+        'admin.toast_user_not_found_desc':
+            'This user may have been removed. Refreshing the registry.',
+        'admin.toast_error_title': 'Error',
+        'admin.toast_load_user_failed_desc': 'Failed to load user details',
+        'admin.toast_impersonation_ended_title': 'Impersonation Ended',
+        'admin.toast_impersonation_ended_desc':
+            'You are now viewing as yourself.',
+        'admin.toast_impersonation_failed_title': 'Impersonation Failed',
+        'admin.toast_missing_token_desc': 'Missing impersonation token.',
+        'admin.toast_impersonation_started_title': 'Impersonation Started',
+        'admin.toast_impersonation_started_desc':
+            'You are now viewing as this user.',
+        'admin.toast_impersonation_start_failed_fallback':
+            'Could not start impersonation.',
+        'admin.toast_access_denied_title': 'Access Denied',
+        'admin.toast_access_denied_desc':
+            'You do not have permission to impersonate users.',
+        'admin.toast_user_not_found_title2': 'User Not Found',
+        'admin.toast_user_deleted_desc': 'The user may have been deleted.',
     },
     pidgin: {
         'nav.features': 'Wetin We Get',
@@ -673,6 +1007,7 @@ const translations: Record<Language, Record<string, string>> = {
         'auth.signup': 'Join Us',
         'auth.email': 'Email Terminal',
         'auth.password': 'Password',
+        'auth.forgot_password': 'You forget password?',
         'auth.initialize': 'Open Portal',
         'auth.join': 'Sign Up Here',
         'footer.copyright': '© 2026 Izabi. No shaking.',
@@ -1226,9 +1561,6 @@ const translations: Record<Language, Record<string, string>> = {
             'We no fit preview this format one time, but your academic AI don read everything finish.',
         'pricing.eyebrow': 'Invest for Your Brain',
         'pricing.title_top': 'No Hidden Fee',
-        'pricing.title_gradient': 'Scholar Price',
-        'pricing.subtitle':
-            'Choose the plan wey match how you wan learn.',
         'pricing.free_desc': 'Start your learning journey.',
         'pricing.pro_desc': 'For those wey serious.',
         'pricing.premium_desc': 'Maximum power unlock.',
@@ -1253,6 +1585,338 @@ const translations: Record<Language, Record<string, string>> = {
         'pricing.cta_title': 'You no sure wetin plan go suit you?',
         'pricing.compare_modules': 'Compare Modules',
         'pricing.contact_support': 'Contact Support',
+        'assistant.subtitle': 'Your personal padi for smarter learning.',
+        'assistant.new_chat': 'New Chat',
+        'assistant.new_chat_aria': 'Start new chat',
+        'assistant.upload_materials': 'Upload Materials',
+        'assistant.upload_files_aria': 'Upload Files',
+        'assistant.copy_transcript_aria': 'Copy chat transcript',
+        'assistant.share_transcript_aria': 'Share chat transcript',
+        'assistant.copy_message_aria': 'Copy message',
+        'assistant.share_message_aria': 'Share message',
+        'assistant.disclaimer':
+            'Izabi AI fit give inaccurate info sometimes. Confam important facts well well.',
+        'assistant.placeholder_with_docs':
+            'Ask questions about the materials wey you upload...',
+        'assistant.placeholder_default':
+            'Ask Izabi make e generate something or explain topic...',
+        'assistant.suggestion_flashcards': 'Generate Flashcards',
+        'assistant.suggestion_study_guide': 'Study Guide',
+        'assistant.suggestion_practice_quiz': 'Practice Quiz',
+        'assistant.history_title': 'Chat History',
+        'assistant.history_desc':
+            'Browse the gist wey you don yarn with Izabi before.',
+        'assistant.history_empty': 'No history dey record yet',
+        'assistant.session_fallback_title': 'Chat session',
+        'assistant.clear_all_history': 'Clear All History',
+        'assistant.welcome_message':
+            "How far! Na me be Izabi, your AI learning assistant. I dey here to help you understand hard hard concepts, answer question, and guide your learning journey. Wetin you wan learn today?",
+        'assistant.new_session_message':
+            "How far! Na me be Izabi, your AI learning assistant. New session don start. Wetin dey your mind?",
+        'assistant.transcript_you': 'You',
+        'assistant.transcript_izabi': 'Izabi',
+        'assistant.transcript_title': 'Izabi chat transcript',
+        'assistant.message_title': 'Izabi message',
+        'assistant.note_loaded_prefix': 'I don load your note **"',
+        'assistant.note_loaded_suffix':
+            '"** as context. Ask me anything about am!',
+        'assistant.upload_message_files_label': 'file(s)',
+        'assistant.upload_message_rest':
+            'don upload successfully. I go use dem answer your questions now.',
+        'assistant.toast_copy_failed_title': 'Copy Failed',
+        'assistant.toast_copy_failed_desc':
+            'E no fit copy go clipboard on this device.',
+        'assistant.toast_copied_clipboard_title': 'E Don Copy Go Clipboard',
+        'assistant.toast_copied_clipboard_desc':
+            'This browser no support sharing.',
+        'assistant.toast_share_failed_title': 'Share Failed',
+        'assistant.toast_share_failed_desc':
+            'E no fit share from this device. Try copy am instead.',
+        'assistant.toast_chat_copied_title': 'Chat Don Copy',
+        'assistant.toast_chat_copied_desc':
+            'Your chat transcript dey your clipboard now.',
+        'assistant.toast_transcript_copy_failed_desc':
+            'E no fit copy your chat transcript.',
+        'assistant.toast_chat_unavailable_title': 'Chat No Dey Available',
+        'assistant.toast_chat_unavailable_desc':
+            'E no fit start new chat session.',
+        'assistant.toast_could_not_start_title': 'E No Fit Start Chat',
+        'assistant.toast_could_not_start_desc': 'Abeg try again.',
+        'assistant.toast_limit_reached_title': 'Limit Reach',
+        'assistant.toast_limit_reached_desc':
+            'You fit only get up to 5 documents active for once.',
+        'assistant.toast_files_too_large_title': 'Some Files Too Big',
+        'assistant.toast_files_too_large_desc':
+            'One or two files pass the 100MB limit, we skip dem.',
+        'assistant.toast_upload_success_title': 'Upload Successful',
+        'assistant.toast_upload_success_desc_suffix':
+            'new materials don index and dey ready for chat.',
+        'assistant.toast_upload_failed_title': 'Upload Fail',
+        'assistant.error_upload_fallback': 'E fail to upload and process PDF.',
+        'assistant.toast_clear_confirm':
+            'You sure say you wan delete all chat history? This one no fit undo.',
+        'assistant.toast_history_cleared_title': 'History Don Clear',
+        'assistant.toast_history_cleared_desc':
+            'Your conversation history don delete forever.',
+        'assistant.toast_could_not_clear_title': 'E No Fit Clear History',
+        'assistant.toast_could_not_clear_desc':
+            'Abeg try again. If e still dey happen, check your connection.',
+        'assistant.toast_requires_pdf_title_suffix': 'Need PDF',
+        'assistant.toast_requires_pdf_desc':
+            'Abeg go dashboard first go upload PDF.',
+        'toast.success_default': 'E Successful!',
+        'toast.error_default_title': 'Something Go Wrong',
+        'toast.error_default_desc':
+            'Abeg try again. If e still dey happen, contact support.',
+        'toast.warning_default': 'Warning',
+        'toast.info_default': 'Info',
+        'toast.note_saved_title': 'Note Don Save!',
+        'toast.note_saved_desc': 'Your note don save well well.',
+        'toast.note_deleted_title': 'Note Don Delete',
+        'toast.note_deleted_desc': 'Your note don comot forever.',
+        'toast.profile_updated_title': 'Profile Don Update!',
+        'toast.profile_updated_desc': 'Your profile changes don save.',
+        'toast.setting_updated_title': 'Setting Don Update',
+        'toast.setting_updated_desc_suffix': 'don update successfully.',
+        'toast.login_failed_title': 'Login No Work',
+        'toast.login_failed_default_desc':
+            'Abeg check your email and password try again.',
+        'toast.signup_failed_title': 'Signup No Work',
+        'toast.signup_failed_default_desc':
+            'Abeg check your information try again.',
+        'toast.invalid_prefix': 'E No Correct For',
+        'profile.toast_update_failed_title': 'Update No Work',
+        'profile.toast_update_failed_desc':
+            'E no fit save your profile changes.',
+        'profile.toast_photo_removed_title': 'Photo Don Comot',
+        'profile.toast_photo_removed_desc':
+            'Profile photo don comot. Click Save Changes make e confam.',
+        'notes.toast_invalid_file_title': 'File No Correct',
+        'notes.toast_invalid_scan_desc':
+            'Scan Note dey accept only JPG or PNG images.',
+        'notes.toast_invalid_import_desc':
+            'Upload TXT, PDF, DOCX, JPG, JPEG, or PNG file.',
+        'notes.toast_no_file_title': 'No File Select',
+        'notes.toast_no_file_preview_desc': 'Choose file make you preview am.',
+        'notes.toast_no_file_import_desc': 'Choose file make you import am.',
+        'notes.toast_preview_failed': 'Preview No Work',
+        'notes.toast_note_imported_title': 'Note Don Import',
+        'notes.toast_note_imported_desc': 'Your note dey ready for review.',
+        'notes.toast_could_not_import_note': 'E No Fit Import Note',
+        'notes.toast_nothing_to_save_title': 'Nothing To Save',
+        'notes.toast_nothing_to_save_desc': 'The preview text empty.',
+        'notes.toast_note_saved_title': 'Note Don Save',
+        'notes.toast_imported_note_ready_desc':
+            'Your imported note don ready!',
+        'notes.toast_could_not_save_note': 'E No Fit Save Note',
+        'notes.toast_missing_name_title': 'Name Dey Miss',
+        'notes.toast_enter_group_name_desc':
+            'Enter group name make you continue.',
+        'notes.toast_group_created_title': 'Group Don Create',
+        'notes.toast_group_created_desc': 'Your group don ready.',
+        'notes.toast_could_not_create_group': 'E No Fit Create Group',
+        'notes.toast_group_name_empty_desc': 'Group name no fit empty.',
+        'notes.toast_group_updated_title': 'Group Don Update',
+        'notes.toast_group_updated_desc':
+            'Group name don update successfully.',
+        'notes.toast_could_not_update_group': 'E No Fit Update Group',
+        'notes.toast_group_deleted_title': 'Group Don Delete',
+        'notes.toast_group_deleted_desc': 'Group don comot successfully.',
+        'notes.toast_could_not_delete_group': 'E No Fit Delete Group',
+        'notes.toast_invalid_input_title': 'Input No Correct',
+        'notes.toast_invalid_input_desc':
+            'Abeg check the fields wey dey highlight.',
+        'notes.toast_new_note_ready_desc': 'Your new study note don ready!',
+        'notes.toast_invalid_note_title': 'Note No Correct',
+        'notes.toast_invalid_note_desc':
+            'This note get identifier wey no correct. Refresh try again.',
+        'notes.toast_invalid_update_title': 'Update No Correct',
+        'notes.toast_note_updated_title': 'Note Don Update',
+        'notes.toast_note_updated_desc': 'Your changes don save.',
+        'notes.toast_could_not_update_note': 'E No Fit Update Note',
+        'notes.toast_note_deleted_title': 'Note Don Delete',
+        'notes.toast_note_deleted_desc': 'Your note don comot.',
+        'notes.toast_could_not_delete_note': 'E No Fit Delete Note',
+        'notes.toast_could_not_send_to_ai': 'E No Fit Send Note Go AI',
+        'sidebar.toast_logout_issue_title': 'Logout Issue',
+        'sidebar.toast_logout_issue_desc':
+            'We no fit reach the server, but we don sign you out for this device.',
+        'sidebar.toast_impersonation_ended_title': 'Impersonation Don End',
+        'sidebar.toast_impersonation_ended_desc':
+            'You dey view as yourself now.',
+        'sidebar.toast_could_not_stop_title': 'E No Fit Stop',
+        'sidebar.toast_failed_end_impersonation':
+            'E fail to end impersonation.',
+        'partner.toast_invite_accepted':
+            'Invite don accept! You get new accountability partner.',
+        'partner.toast_could_not_accept_invite_title':
+            'E No Fit Accept Invite',
+        'partner.toast_invite_invalid_fallback':
+            'That invite link no correct again.',
+        'partner.toast_invite_sent_title': 'Invite Don Send!',
+        'partner.toast_invite_sent_desc_prefix': 'We don email',
+        'partner.toast_invite_sent_desc_suffix': 'invite.',
+        'partner.toast_could_not_send_invite_title': 'E No Fit Send Invite',
+        'partner.generic_retry_fallback': 'Abeg try again.',
+        'partner.toast_could_not_respond_title':
+            'E No Fit Respond To Invite',
+        'partner.toast_partnership_ended': 'Partnership Don End',
+        'partner.toast_could_not_end_title': 'E No Fit End Partnership',
+        'partner.toast_goal_set': 'Goal Don Set!',
+        'partner.toast_could_not_save_goal_title': 'E No Fit Save Goal',
+        'partner.toast_checked_in':
+            'You don check in! Make the streak continue.',
+        'partner.toast_could_not_check_in_title': 'E No Fit Check In',
+        'partner.toast_already_checked_in_fallback':
+            'You don already check in today.',
+        'partner.toast_could_not_send_message_title': 'E No Fit Send Message',
+        'settings.name_email_notifications': 'Email notifications',
+        'settings.name_study_reminders': 'Study reminders',
+        'settings.name_profile_visibility': 'Profile visibility',
+        'settings.status_enabled': 'don enable',
+        'settings.status_disabled': 'don disable',
+        'settings.toast_preference_saved_desc':
+            'Your preference don save well well.',
+        'settings.toast_reminders_enabled_title': 'Reminders Don Enable',
+        'settings.toast_reminders_enabled_desc':
+            'Browser reminders dey allowed for this device now.',
+        'settings.toast_theme_updated_title': 'Theme Don Update',
+        'settings.toast_theme_updated_desc_prefix':
+            'Your theme don change to',
+        'settings.toast_theme_updated_desc_suffix': 'mode.',
+        'settings.toast_language_updated_title': 'Language Don Update',
+        'settings.toast_language_updated_desc':
+            'Izabi go generate and talk content for the language wey you select.',
+        'settings.toast_language_update_failed': 'Language Update No Work',
+        'settings.toast_preparing_export_title': 'We Dey Prepare Data Export',
+        'settings.toast_preparing_export_desc':
+            'We dey gather your profile, notes, and study history...',
+        'settings.toast_download_ready_title': 'Download Don Ready',
+        'settings.toast_download_ready_desc':
+            'Your data export don download successfully.',
+        'settings.toast_export_failed': 'Export No Work',
+        'login.toast_invalid_email_title': 'Email No Correct',
+        'login.toast_invalid_email_fallback':
+            'Abeg check your email well well.',
+        'login.toast_success_title': 'Login Successful',
+        'login.toast_welcome_admin':
+            'Welcome Admin! We dey redirect you go admin dashboard...',
+        'login.toast_welcome_back':
+            'Welcome back! We dey redirect you go your dashboard...',
+        'login.toast_generic_failed': 'Login no work',
+        'login.toast_failed_title': 'Login No Work',
+        'login.toast_invalid_credentials':
+            'Email or password no correct. Abeg try again.',
+        'login.toast_connection_error_title': 'Connection Error',
+        'login.toast_google_success_title': 'Google Login Successful',
+        'login.toast_welcome_google':
+            'Welcome! We dey redirect you go your dashboard...',
+        'login.toast_google_generic_error':
+            'Something go wrong during Google authentication.',
+        'login.toast_google_service_unavailable':
+            'Authentication service no dey available now. Abeg contact support.',
+        'login.toast_check_connection':
+            'Check your internet connection try again.',
+        'login.toast_google_failed_title': 'Google Sign-In No Work',
+        'login.toast_google_error_title': 'Google Sign-In Error',
+        'login.toast_google_error_desc':
+            'Google sign-in no work. Try again or use your email and password.',
+        'signup.toast_validation_error_title': 'Validation Error',
+        'signup.toast_validation_error_desc':
+            'Abeg check the form for errors try again.',
+        'signup.toast_otp_sent_title': 'Verification Code Don Send',
+        'signup.toast_otp_sent_desc':
+            'Abeg check your email for the verification code.',
+        'signup.toast_otp_send_failed_fallback':
+            'E fail to send verification code',
+        'signup.toast_account_exists_title': 'Account Don Already Exist',
+        'signup.toast_account_exists_desc':
+            'This email don already register. Abeg sign in instead.',
+        'signup.toast_registration_failed_title': 'Registration No Work',
+        'signup.toast_google_success_title': 'Google Sign-Up Successful',
+        'signup.toast_account_ready':
+            'Your account dey ready. We dey redirect you...',
+        'signup.toast_google_generic_error':
+            'Something go wrong during Google sign-up.',
+        'signup.toast_google_service_unavailable':
+            'Registration service no dey available now. Abeg contact support.',
+        'signup.toast_google_failed_title': 'Google Sign-Up No Work',
+        'signup.toast_google_error_title': 'Google Sign-Up Error',
+        'signup.toast_google_error_desc':
+            'Google sign-up no work. Try again or use the signup form.',
+        'change_password.toast_email_required_title': 'Email Dey Required',
+        'change_password.toast_email_required_desc':
+            'Abeg enter your email address.',
+        'change_password.toast_code_sent_title': 'Code Don Send',
+        'change_password.toast_code_sent_desc':
+            'Check your inbox for the verification code.',
+        'change_password.toast_missing_fields_title': 'Fields Dey Miss',
+        'change_password.toast_missing_fields_desc':
+            'Abeg fill all fields.',
+        'change_password.toast_security_updated_title': 'Security Don Update',
+        'change_password.toast_security_updated_desc':
+            'Your password don change successfully.',
+        'change_password.reset_access': 'Reset Access',
+        'change_password.verify_identity': 'Verify Who You Be',
+        'change_password.set_new_password': 'Set New Password',
+        'change_password.step1_desc':
+            'We go send secure verification code go your email.',
+        'change_password.step2_desc':
+            'Enter the code wey you receive and choose strong password.',
+        'change_password.your_email': 'Your Email',
+        'change_password.send_code': 'Send Code',
+        'change_password.verification_code': 'Verification Code',
+        'change_password.new_password': 'New Password',
+        'change_password.confirm_update': 'Confirm Update',
+        'change_password.back_to_email': 'Go Back To Email',
+        'admin.toast_could_not_refresh': 'E no fit refresh admin data',
+        'admin.toast_sync_in_progress_title': 'Sync Dey Go',
+        'admin.toast_sync_in_progress_desc':
+            'We dey refresh user, stats, and key data...',
+        'admin.toast_registry_synced_title': 'Registry Don Sync',
+        'admin.toast_registry_synced_desc': 'System data don refresh.',
+        'admin.toast_report_downloaded_title':
+            'System Report Don Download',
+        'admin.toast_report_downloaded_desc':
+            'The latest admin report dey your device now.',
+        'admin.toast_report_failed': 'System Report No Work',
+        'admin.toast_announcement_sent_title': 'Announcement Don Send',
+        'admin.toast_announcement_sent_desc_prefix': 'E don send go',
+        'admin.toast_announcement_sent_desc_middle': 'out of',
+        'admin.toast_announcement_sent_desc_suffix': 'users.',
+        'admin.toast_announcement_failed_title': 'Announcement No Work',
+        'admin.toast_announcement_failed_fallback':
+            'E no fit send the live announcement.',
+        'admin.toast_filters_cleared_title': 'Filters Don Clear',
+        'admin.toast_filters_cleared_desc': 'We dey show all users again.',
+        'admin.toast_filter_applied_title': 'Filter Don Apply',
+        'admin.toast_filter_applied_desc':
+            'We dey show active users only now.',
+        'admin.toast_terminate_success_title': 'Successful',
+        'admin.toast_terminate_success_desc':
+            'User access don terminate successfully',
+        'admin.toast_terminate_failed_title': 'E No Work',
+        'admin.toast_terminate_failed_desc': 'E no fit delete user',
+        'admin.toast_user_not_found_title': 'User No Dey Found',
+        'admin.toast_user_not_found_desc':
+            'This user fit don comot. We dey refresh the registry.',
+        'admin.toast_error_title': 'Error',
+        'admin.toast_load_user_failed_desc': 'E fail to load user details',
+        'admin.toast_impersonation_ended_title': 'Impersonation Don End',
+        'admin.toast_impersonation_ended_desc':
+            'You dey view as yourself now.',
+        'admin.toast_impersonation_failed_title': 'Impersonation No Work',
+        'admin.toast_missing_token_desc': 'Impersonation token dey miss.',
+        'admin.toast_impersonation_started_title': 'Impersonation Don Start',
+        'admin.toast_impersonation_started_desc':
+            'You dey view as this user now.',
+        'admin.toast_impersonation_start_failed_fallback':
+            'E no fit start impersonation.',
+        'admin.toast_access_denied_title': 'Access Deny',
+        'admin.toast_access_denied_desc':
+            'You no get permission to impersonate users.',
+        'admin.toast_user_not_found_title2': 'User No Dey Found',
+        'admin.toast_user_deleted_desc': 'The user fit don delete.',
     },
     igbo: {
         'nav.features': 'Atụmatụ',
@@ -1291,6 +1955,7 @@ const translations: Record<Language, Record<string, string>> = {
         'auth.signup': 'Debanye Aha',
         'auth.email': 'Adreesị Email',
         'auth.password': 'Okwuntughe',
+        'auth.forgot_password': "Chefuru okwuntughe gị?",
         'auth.initialize': 'Banye',
         'auth.join': 'Debanye Aha',
         'footer.copyright': '© 2026 Izabi. Ikike niile echekwabara.',
@@ -1846,9 +2511,6 @@ const translations: Record<Language, Record<string, string>> = {
             'Enweghị ike ilele ụdị a ozugbo, mana AI agụmakwụkwọ gị amatala ọdịnaya ya niile.',
         'pricing.eyebrow': 'Ịtinye Ego Na Ọgụgụ Isi',
         'pricing.title_top': 'Ọnụ Ahịa Doro Anya',
-        'pricing.title_gradient': 'Maka Ndị Mmụta',
-        'pricing.subtitle':
-            'Họrọ atụmatụ dabara na ebumnuche agụmakwụkwọ gị.',
         'pricing.free_desc': 'Malite njem mmụta gị.',
         'pricing.pro_desc': 'Maka ndị na-amụ ihe n\'ezi uche.',
         'pricing.premium_desc': 'Emeghere ọrụ kacha elu.',
@@ -1873,6 +2535,334 @@ const translations: Record<Language, Record<string, string>> = {
         'pricing.cta_title': 'Ị ejighị n\'aka atụmatụ ị ga-eji?',
         'pricing.compare_modules': 'Tụnyere Ngalaba',
         'pricing.contact_support': 'Kpọtụrụ Nkwado',
+        'assistant.subtitle': 'Onye enyemaka gị nkeiche maka mmụta kacha mma.',
+        'assistant.new_chat': 'Mkparịta Ọhụrụ',
+        'assistant.new_chat_aria': 'Malite mkparịta ọhụrụ',
+        'assistant.upload_materials': 'Bulite Ihe Ọmụmụ',
+        'assistant.upload_files_aria': 'Bulite Faịlụ',
+        'assistant.copy_transcript_aria': 'Detu mkparịta ọka',
+        'assistant.share_transcript_aria': 'Kesaa mkparịta ọka',
+        'assistant.copy_message_aria': 'Detu ozi',
+        'assistant.share_message_aria': 'Kesaa ozi',
+        'assistant.disclaimer':
+            'Izabi AI nwere ike inye ozi na-ezighi ezi mgbe ụfọdụ. Chọpụta eziokwu dị mkpa.',
+        'assistant.placeholder_with_docs':
+            "Jụọ ajụjụ gbasara ihe ọmụmụ ị bulitere...",
+        'assistant.placeholder_default':
+            'Gwa Izabi ka o mepụta ihe ma ọ bụ kọwaa isiokwu...',
+        'assistant.suggestion_flashcards': 'Mepụta Flashcards',
+        'assistant.suggestion_study_guide': 'Nduzi Ọmụmụ',
+        'assistant.suggestion_practice_quiz': 'Ule Omume',
+        'assistant.history_title': 'Akụkọ Mkparịta',
+        'assistant.history_desc':
+            "Nyochaa mkparịta gị na Izabi n'oge gara aga.",
+        'assistant.history_empty': 'Ọ dịbeghị akụkọ edekọrọ',
+        'assistant.session_fallback_title': 'Oge Mkparịta',
+        'assistant.clear_all_history': 'Hichapụ Akụkọ Niile',
+        'assistant.welcome_message':
+            'Ndewo! Abụ m Izabi, onye enyemaka mmụta AI gị. Adị m ebe a inyere gị aka ịghọta echiche siri ike, ịza ajụjụ, na iduzi njem mmụta gị. Kedu ihe ị chọrọ ịmụ taa?',
+        'assistant.new_session_message':
+            'Ndewo! Abụ m Izabi, onye enyemaka mmụta AI gị. Oge ọhụrụ amalitela. Kedu ihe dị n\'obi gị?',
+        'assistant.transcript_you': 'Gị',
+        'assistant.transcript_izabi': 'Izabi',
+        'assistant.transcript_title': 'Mkparịta Izabi',
+        'assistant.message_title': 'Ozi Izabi',
+        'assistant.note_loaded_prefix': 'Ebuliela m ndetu gị **"',
+        'assistant.note_loaded_suffix':
+            '"** dị ka ihe ndabere. Jụọ m ihe ọ bụla gbasara ya!',
+        'assistant.upload_message_files_label': 'faịlụ',
+        'assistant.upload_message_rest':
+            'ebulitela nke ọma. Aga m eji ha zaa ajụjụ gị ugbu a.',
+        'assistant.toast_copy_failed_title': 'Idetu Adaghị',
+        'assistant.toast_copy_failed_desc':
+            'Enweghị ike idetu na clipboard na ngwaọrụ a.',
+        'assistant.toast_copied_clipboard_title': 'Edetuola na Clipboard',
+        'assistant.toast_copied_clipboard_desc':
+            'Ihuenyo a akwadoghị ikesa.',
+        'assistant.toast_share_failed_title': 'Ikesa Adaghị',
+        'assistant.toast_share_failed_desc':
+            'Enweghị ike ikesa site na ngwaọrụ a. Nwaa idetu kama.',
+        'assistant.toast_chat_copied_title': 'Edetuola Mkparịta',
+        'assistant.toast_chat_copied_desc':
+            'Mkparịta gị dị na clipboard ugbu a.',
+        'assistant.toast_transcript_copy_failed_desc':
+            'Enweghị ike idetu mkparịta gị.',
+        'assistant.toast_chat_unavailable_title': 'Mkparịta Adịghị',
+        'assistant.toast_chat_unavailable_desc':
+            'Enweghị ike ịmalite oge mkparịta ọhụrụ.',
+        'assistant.toast_could_not_start_title': 'Enweghị Ike Ịmalite Mkparịta',
+        'assistant.toast_could_not_start_desc': 'Biko nwaa ọzọ.',
+        'assistant.toast_limit_reached_title': 'Eruola Oke',
+        'assistant.toast_limit_reached_desc':
+            "Ị nwere ike inwe naanị faịlụ 5 na-arụ ọrụ n'otu oge.",
+        'assistant.toast_files_too_large_title':
+            'Ụfọdụ Faịlụ Buru Ibu Nke Ukwuu',
+        'assistant.toast_files_too_large_desc':
+            'Otu ma ọ bụ faịlụ karịrị 100MB, anyị wapụrụ ha.',
+        'assistant.toast_upload_success_title': 'Ibulite Gara Nke Ọma',
+        'assistant.toast_upload_success_desc_suffix':
+            'ihe ọmụmụ ọhụrụ ka edobere ma dịla njikere maka mkparịta.',
+        'assistant.toast_upload_failed_title': 'Ibulite Adaghị',
+        'assistant.error_upload_fallback': 'Ibulite na inyocha PDF adaghị.',
+        'assistant.toast_clear_confirm':
+            'Ị ji n\'aka na ị chọrọ ihichapụ akụkọ mkparịta niile? Enweghị ike imegharị nke a.',
+        'assistant.toast_history_cleared_title': 'Ehichapụla Akụkọ',
+        'assistant.toast_history_cleared_desc':
+            'Ehichapụla akụkọ mkparịta gị kpamkpam.',
+        'assistant.toast_could_not_clear_title': 'Enweghị Ike Ihichapụ Akụkọ',
+        'assistant.toast_could_not_clear_desc':
+            "Biko nwaa ọzọ. Ọ bụrụ na ọ na-aga n'ihu ime, lelee njikọ gị.",
+        'assistant.toast_requires_pdf_title_suffix': 'Chọrọ PDF',
+        'assistant.toast_requires_pdf_desc':
+            'Biko gaa na dashboard buliteda PDF mbụ.',
+        'toast.success_default': 'Ọ gara nke ọma!',
+        'toast.error_default_title': 'Ihe adaghị mma',
+        'toast.error_default_desc':
+            "Biko nwaa ọzọ. Ọ bụrụ na nsogbu na-aga n'ihu, kpọtụrụ nkwado.",
+        'toast.warning_default': 'Ịdọ Aka Ná Ntị',
+        'toast.info_default': 'Ozi',
+        'toast.note_saved_title': 'Edebeela Ndetu!',
+        'toast.note_saved_desc': 'Edebeela ndetu gị nke ọma.',
+        'toast.note_deleted_title': 'Ehichapụla Ndetu',
+        'toast.note_deleted_desc': 'Ewepụla ndetu gị kpamkpam.',
+        'toast.profile_updated_title': 'Emelitela Profaịlụ!',
+        'toast.profile_updated_desc': 'Edebeela mgbanwe profaịlụ gị.',
+        'toast.setting_updated_title': 'Emelitela Ntọala',
+        'toast.setting_updated_desc_suffix': 'emelitela nke ọma.',
+        'toast.login_failed_title': 'Mbanye Adaghị',
+        'toast.login_failed_default_desc':
+            'Biko lelee email na paswọdụ gị wee nwaa ọzọ.',
+        'toast.signup_failed_title': 'Ndebanye Aha Adaghị',
+        'toast.signup_failed_default_desc':
+            'Biko lelee ozi gị wee nwaa ọzọ.',
+        'toast.invalid_prefix': 'Ezighi Ezi',
+        'profile.toast_update_failed_title': 'Emelite Adaghị',
+        'profile.toast_update_failed_desc':
+            'Enweghị ike ichekwa mgbanwe profaịlụ gị.',
+        'profile.toast_photo_removed_title': 'Ewepụla Foto',
+        'profile.toast_photo_removed_desc':
+            'Ewepụla foto profaịlụ. Pịa Chekwaa Mgbanwe iji kwado.',
+        'notes.toast_invalid_file_title': 'Faịlụ Adịghị',
+        'notes.toast_invalid_scan_desc':
+            'Scan Note na-anabata naanị foto JPG ma ọ bụ PNG.',
+        'notes.toast_invalid_import_desc':
+            'Bulite faịlụ TXT, PDF, DOCX, JPG, JPEG, ma ọ bụ PNG.',
+        'notes.toast_no_file_title': 'Ahọpụtaghị Faịlụ',
+        'notes.toast_no_file_preview_desc': 'Họrọ faịlụ iji lelee ya.',
+        'notes.toast_no_file_import_desc': 'Họrọ faịlụ iji bulite ya.',
+        'notes.toast_preview_failed': 'Ilele Adaghị',
+        'notes.toast_note_imported_title': 'Ebulitela Ndetu',
+        'notes.toast_note_imported_desc': 'Ndetu gị dị njikere maka nlele.',
+        'notes.toast_could_not_import_note': 'Enweghị Ike Ibulite Ndetu',
+        'notes.toast_nothing_to_save_title': 'Ọ Dịghị Ihe Ị Ga-Echekwa',
+        'notes.toast_nothing_to_save_desc': 'Ederede nlele ahụ efu.',
+        'notes.toast_note_saved_title': 'Echekwala Ndetu',
+        'notes.toast_imported_note_ready_desc': 'Ndetu ị bulitere dị njikere!',
+        'notes.toast_could_not_save_note': 'Enweghị Ike Ichekwa Ndetu',
+        'notes.toast_missing_name_title': 'Aha Na-Efu',
+        'notes.toast_enter_group_name_desc':
+            "Tinye aha otu iji gaa n'ihu.",
+        'notes.toast_group_created_title': 'Emepụtala Otu',
+        'notes.toast_group_created_desc': 'Otu gị dị njikere.',
+        'notes.toast_could_not_create_group': 'Enweghị Ike Imepụta Otu',
+        'notes.toast_group_name_empty_desc': 'Aha otu enweghị ike ịbụ efu.',
+        'notes.toast_group_updated_title': 'Emelitela Otu',
+        'notes.toast_group_updated_desc': 'Emelitela aha otu nke ọma.',
+        'notes.toast_could_not_update_group': 'Enweghị Ike Imelite Otu',
+        'notes.toast_group_deleted_title': 'Ehichapụla Otu',
+        'notes.toast_group_deleted_desc': 'Ewepụla otu nke ọma.',
+        'notes.toast_could_not_delete_group': 'Enweghị Ike Ihichapụ Otu',
+        'notes.toast_invalid_input_title': 'Ntinye Adaghị',
+        'notes.toast_invalid_input_desc':
+            'Biko lelee ngalaba ndị a mara ọkụ.',
+        'notes.toast_new_note_ready_desc': 'Ndetu ọmụmụ ọhụrụ gị dị njikere!',
+        'notes.toast_invalid_note_title': 'Ndetu Adaghị',
+        'notes.toast_invalid_note_desc':
+            'Ndetu a nwere njirimara na-ezighi ezi. Megharịa wee nwaa ọzọ.',
+        'notes.toast_invalid_update_title': 'Emelite Adaghị',
+        'notes.toast_note_updated_title': 'Emelitela Ndetu',
+        'notes.toast_note_updated_desc': 'Echekwala mgbanwe gị.',
+        'notes.toast_could_not_update_note': 'Enweghị Ike Imelite Ndetu',
+        'notes.toast_note_deleted_title': 'Ehichapụla Ndetu',
+        'notes.toast_note_deleted_desc': 'Ewepụla ndetu gị.',
+        'notes.toast_could_not_delete_note': 'Enweghị Ike Ihichapụ Ndetu',
+        'notes.toast_could_not_send_to_ai': 'Enweghị Ike Izipu Ndetu Na AI',
+        'sidebar.toast_logout_issue_title': 'Nsogbu Mbanye Ọpụpụ',
+        'sidebar.toast_logout_issue_desc':
+            'Anyị enweghị ike iru ihe nkesa, mana anyị agbanyụọla gị na ngwaọrụ a.',
+        'sidebar.toast_impersonation_ended_title': 'Ngosipụta Akwụsịla',
+        'sidebar.toast_impersonation_ended_desc':
+            'Ị na-ele ka onwe gị ugbu a.',
+        'sidebar.toast_could_not_stop_title': 'Enweghị Ike Ịkwụsị',
+        'sidebar.toast_failed_end_impersonation':
+            'Ọ daghị ikwụsị ngosipụta.',
+        'partner.toast_invite_accepted':
+            'Anabatala ọkpụkpọ! Ị nwetala onye mmekọ nlekọta ọhụrụ.',
+        'partner.toast_could_not_accept_invite_title':
+            'Enweghị Ike Ịnabata Ọkpụkpọ',
+        'partner.toast_invite_invalid_fallback':
+            'Njikọ ọkpụkpọ ahụ adịghịzi irè.',
+        'partner.toast_invite_sent_title': 'Ezipụla Ọkpụkpọ!',
+        'partner.toast_invite_sent_desc_prefix': 'Anyị ezipụla email na',
+        'partner.toast_invite_sent_desc_suffix': 'ọkpụkpọ.',
+        'partner.toast_could_not_send_invite_title':
+            'Enweghị Ike Izipu Ọkpụkpọ',
+        'partner.generic_retry_fallback': 'Biko nwaa ọzọ.',
+        'partner.toast_could_not_respond_title': 'Enweghị Ike Ịza Ọkpụkpọ',
+        'partner.toast_partnership_ended': 'Mmekọrịta Akwụsịla',
+        'partner.toast_could_not_end_title': 'Enweghị Ike Ikwụsị Mmekọrịta',
+        'partner.toast_goal_set': 'Emebela Ebumnobi!',
+        'partner.toast_could_not_save_goal_title':
+            'Enweghị Ike Ichekwa Ebumnobi',
+        'partner.toast_checked_in':
+            "Ị banyela! Debe ntule gị ka ọ na-aga n'ihu.",
+        'partner.toast_could_not_check_in_title': 'Enweghị Ike Ịbanye',
+        'partner.toast_already_checked_in_fallback': 'Ị abanyelarị taa.',
+        'partner.toast_could_not_send_message_title':
+            'Enweghị Ike Izipu Ozi',
+        'settings.name_email_notifications': 'Ọkwa email',
+        'settings.name_study_reminders': 'Ncheta ọmụmụ ihe',
+        'settings.name_profile_visibility': 'Ihu profaịlụ',
+        'settings.status_enabled': 'emeela ka ọ rụọ ọrụ',
+        'settings.status_disabled': 'akwụsịla',
+        'settings.toast_preference_saved_desc':
+            'Echekwala mmasị gị nke ọma.',
+        'settings.toast_reminders_enabled_title':
+            'Emeela Ka Ncheta Rụọ Ọrụ',
+        'settings.toast_reminders_enabled_desc':
+            'Ncheta ihuenyo ka a na-anabata na ngwaọrụ a ugbu a.',
+        'settings.toast_theme_updated_title': 'Emelitela Ọdịdị',
+        'settings.toast_theme_updated_desc_prefix':
+            "Agbanwela ọdịdị gị gaa na",
+        'settings.toast_theme_updated_desc_suffix': 'ụdị.',
+        'settings.toast_language_updated_title': 'Emelitela Asụsụ',
+        'settings.toast_language_updated_desc':
+            "Izabi ga-emepụta ma kwuo okwu n'asụsụ ị họpụtara.",
+        'settings.toast_language_update_failed': 'Imelite Asụsụ Adaghị',
+        'settings.toast_preparing_export_title': 'Na-akwadebe Mbupụ Data',
+        'settings.toast_preparing_export_desc':
+            'Na-anakọta profaịlụ gị, ndetu, na akụkọ ọmụmụ ihe gị...',
+        'settings.toast_download_ready_title': 'Nbudata Dị Njikere',
+        'settings.toast_download_ready_desc':
+            'Ebudatala mbupụ data gị nke ọma.',
+        'settings.toast_export_failed': 'Mbupụ Adaghị',
+        'login.toast_invalid_email_title': 'Email Adịghị',
+        'login.toast_invalid_email_fallback': 'Biko lelee ụdị email gị.',
+        'login.toast_success_title': 'Mbanye Gara Nke Ọma',
+        'login.toast_welcome_admin':
+            'Nnọọ Admin! Na-eduga gị na dashboard admin...',
+        'login.toast_welcome_back': 'Nnọọ ọzọ! Na-eduga gị na dashboard gị...',
+        'login.toast_generic_failed': 'Mbanye adaghị',
+        'login.toast_failed_title': 'Mbanye Adaghị',
+        'login.toast_invalid_credentials':
+            'Email ma ọ bụ paswọdụ ezighi ezi. Biko nwaa ọzọ.',
+        'login.toast_connection_error_title': 'Nsogbu Njikọ',
+        'login.toast_google_success_title': 'Mbanye Google Gara Nke Ọma',
+        'login.toast_welcome_google': 'Nnọọ! Na-eduga gị na dashboard gị...',
+        'login.toast_google_generic_error':
+            "Ihe adịghị mma mere n'oge nyocha Google.",
+        'login.toast_google_service_unavailable':
+            'Ọrụ nyocha adịghị ugbu a. Biko kpọtụrụ nkwado.',
+        'login.toast_check_connection':
+            'Lelee njikọ ịntanetị gị wee nwaa ọzọ.',
+        'login.toast_google_failed_title': 'Mbanye Google Adaghị',
+        'login.toast_google_error_title': 'Nsogbu Mbanye Google',
+        'login.toast_google_error_desc':
+            'Mbanye Google adaghị. Nwaa ọzọ ma ọ bụ jiri email na paswọdụ gị.',
+        'signup.toast_validation_error_title': 'Nyocha Adaghị',
+        'signup.toast_validation_error_desc':
+            'Biko lelee ndenye ahụ maka nchọpụta wee nwaa ọzọ.',
+        'signup.toast_otp_sent_title': 'Ezipụla Koodu Nkwenye',
+        'signup.toast_otp_sent_desc':
+            'Biko lelee email gị maka koodu nkwenye.',
+        'signup.toast_otp_send_failed_fallback':
+            'Izipu koodu nkwenye adaghị',
+        'signup.toast_account_exists_title': 'Akaụntụ Adịlarị',
+        'signup.toast_account_exists_desc':
+            'Edebanyela email a. Biko banye kama.',
+        'signup.toast_registration_failed_title': 'Ndebanye Aha Adaghị',
+        'signup.toast_google_success_title': 'Ndebanye Google Gara Nke Ọma',
+        'signup.toast_account_ready': 'Akaụntụ gị dị njikere. Na-eduga gị...',
+        'signup.toast_google_generic_error':
+            "Ihe adịghị mma mere n'oge ndebanye Google.",
+        'signup.toast_google_service_unavailable':
+            'Ọrụ ndebanye adịghị ugbu a. Biko kpọtụrụ nkwado.',
+        'signup.toast_google_failed_title': 'Ndebanye Google Adaghị',
+        'signup.toast_google_error_title': 'Nsogbu Ndebanye Google',
+        'signup.toast_google_error_desc':
+            'Ndebanye Google adaghị. Nwaa ọzọ ma ọ bụ jiri ndenye ndebanye.',
+        'change_password.toast_email_required_title': 'Achọrọ Email',
+        'change_password.toast_email_required_desc':
+            'Biko tinye adreesị email gị.',
+        'change_password.toast_code_sent_title': 'Ezipụla Koodu',
+        'change_password.toast_code_sent_desc':
+            'Lelee igbe email gị maka koodu nkwenye.',
+        'change_password.toast_missing_fields_title': 'Ngalaba Na-Efu',
+        'change_password.toast_missing_fields_desc':
+            'Biko dejupụta ngalaba niile.',
+        'change_password.toast_security_updated_title': 'Emelitela Nchekwa',
+        'change_password.toast_security_updated_desc':
+            'Agbanwela paswọdụ gị nke ọma.',
+        'change_password.reset_access': 'Tọgharịa Ohere',
+        'change_password.verify_identity': 'Kwenye Onye Ị Bụ',
+        'change_password.set_new_password': 'Tọọ Paswọdụ Ọhụrụ',
+        'change_password.step1_desc':
+            'Anyị ga-ezipu koodu nkwenye zuru oke gaa na email gị.',
+        'change_password.step2_desc':
+            'Tinye koodu ị nwetara wee họrọ paswọdụ siri ike.',
+        'change_password.your_email': 'Email Gị',
+        'change_password.send_code': 'Zipu Koodu',
+        'change_password.verification_code': 'Koodu Nkwenye',
+        'change_password.new_password': 'Paswọdụ Ọhụrụ',
+        'change_password.confirm_update': 'Kwado Mmelite',
+        'change_password.back_to_email': 'Laghachi Na Email',
+        'admin.toast_could_not_refresh': 'Enweghị ike imegharị data admin',
+        'admin.toast_sync_in_progress_title': "Njikọta Na-aga N'ihu",
+        'admin.toast_sync_in_progress_desc':
+            'Na-emegharị ọnụọgụ ndị ọrụ, ọnụọgụgụ, na data dị mkpa...',
+        'admin.toast_registry_synced_title': 'Emegharịla Ndekọ',
+        'admin.toast_registry_synced_desc': 'Emegharịla data sistemụ.',
+        'admin.toast_report_downloaded_title': 'Ebudatala Akụkọ Sistemụ',
+        'admin.toast_report_downloaded_desc':
+            'Akụkọ admin kacha ọhụrụ dị na ngwaọrụ gị ugbu a.',
+        'admin.toast_report_failed': 'Akụkọ Sistemụ Adaghị',
+        'admin.toast_announcement_sent_title': 'Ezipụla Ọkwa',
+        'admin.toast_announcement_sent_desc_prefix': 'Ezipụla ya na',
+        'admin.toast_announcement_sent_desc_middle': "n'ime",
+        'admin.toast_announcement_sent_desc_suffix': 'ndị ọrụ.',
+        'admin.toast_announcement_failed_title': 'Ọkwa Adaghị',
+        'admin.toast_announcement_failed_fallback':
+            'Enweghị ike izipu ọkwa ndụ.',
+        'admin.toast_filters_cleared_title': 'Ihicha Nzacha',
+        'admin.toast_filters_cleared_desc': 'Na-egosi ndị ọrụ niile ọzọ.',
+        'admin.toast_filter_applied_title': 'Etinyela Nzacha',
+        'admin.toast_filter_applied_desc':
+            'Ugbu a na-egosi naanị ndị ọrụ na-arụ ọrụ.',
+        'admin.toast_terminate_success_title': 'Ọ Gara Nke Ọma',
+        'admin.toast_terminate_success_desc':
+            'Ikike ọrụ onye ahụ akwụsịla nke ọma',
+        'admin.toast_terminate_failed_title': 'Ọ Daghị',
+        'admin.toast_terminate_failed_desc': 'Enweghị ike ihichapụ onye ọrụ',
+        'admin.toast_user_not_found_title': 'Ahụghị Onye Ọrụ',
+        'admin.toast_user_not_found_desc':
+            'Onye a nwere ike ka ewepụla ya. Na-emegharị ndekọ.',
+        'admin.toast_error_title': 'Njehie',
+        'admin.toast_load_user_failed_desc': 'Ọ daghị ibu nkọwa onye ọrụ',
+        'admin.toast_impersonation_ended_title': 'Ngosipụta Akwụsịla',
+        'admin.toast_impersonation_ended_desc':
+            'Ị na-ele ka onwe gị ugbu a.',
+        'admin.toast_impersonation_failed_title': 'Ngosipụta Adaghị',
+        'admin.toast_missing_token_desc': 'Tokin ngosipụta na-efu.',
+        'admin.toast_impersonation_started_title': 'Amalitela Ngosipụta',
+        'admin.toast_impersonation_started_desc':
+            'Ị na-ele ka onye a ugbu a.',
+        'admin.toast_impersonation_start_failed_fallback':
+            'Enweghị ike ịmalite ngosipụta.',
+        'admin.toast_access_denied_title': 'Ajụrụ Ọnụ Ụzọ',
+        'admin.toast_access_denied_desc':
+            'Ị nweghị ikike ịgosipụta ndị ọrụ.',
+        'admin.toast_user_not_found_title2': 'Ahụghị Onye Ọrụ',
+        'admin.toast_user_deleted_desc': 'Onye ahụ nwere ike ka ehichapụla ya.',
     },
     yoruba: {
         'nav.features': 'Awọn Ẹya',
@@ -1912,6 +2902,7 @@ const translations: Record<Language, Record<string, string>> = {
         'auth.signup': 'Ṣẹda Akọọlẹ',
         'auth.email': 'Adirẹsi Imeeli',
         'auth.password': 'Ọrọ igbaniwọle',
+        'auth.forgot_password': 'Ṣe o gbagbe ọrọigbaniwọle rẹ?',
         'auth.initialize': 'Wọle',
         'auth.join': 'Waye fun iraye si',
         'footer.copyright': '© 2026 Izabi. Gbogbo ẹtọ wa ni ipamọ.',
@@ -2470,6 +3461,338 @@ const translations: Record<Language, Record<string, string>> = {
         'home.document_analysis': 'Ìtúpalẹ̀ Ìwé',
         'home.preview_unavailable':
             'Àwòye tààrà kò sí fún ẹ̀dà àkànṣe yìí, ṣùgbọ́n AI ẹ̀kọ́ rẹ ti gba gbogbo àkóónú náà.',
+        'assistant.subtitle':
+            'Alábàáṣiṣẹ́ ẹ̀kọ́ rẹ fún ẹ̀kọ́ tó pọ́n dandan.',
+        'assistant.new_chat': 'Ìjíròrò Tuntun',
+        'assistant.new_chat_aria': 'Bẹ̀rẹ̀ ìjíròrò tuntun',
+        'assistant.upload_materials': 'Gbé Àwọn Ohun Èlò Ẹ̀kọ́ Wọlé',
+        'assistant.upload_files_aria': 'Gbé Fáìlì Wọlé',
+        'assistant.copy_transcript_aria': 'Dà ìjíròrò kọ',
+        'assistant.share_transcript_aria': 'Pín ìjíròrò',
+        'assistant.copy_message_aria': 'Dà ìránṣẹ́ kọ',
+        'assistant.share_message_aria': 'Pín ìránṣẹ́',
+        'assistant.disclaimer':
+            'Izabi AI le fún ọ ní ìsọfúnni tí kò pé nígbà mìíràn. Ṣayẹ̀wò àwọn òtítọ́ pàtàkì dáadáa.',
+        'assistant.placeholder_with_docs':
+            'Béèrè ìbéèrè nípa àwọn ohun èlò tí o ti gbé wọlé...',
+        'assistant.placeholder_default':
+            'Sọ fún Izabi kó mú ohun kan jáde tàbí kó ṣàlàyé kókó-ọ̀rọ̀ kan...',
+        'assistant.suggestion_flashcards': 'Ṣẹ̀dá Flashcards',
+        'assistant.suggestion_study_guide': 'Ìtọ́sọ́nà Ẹ̀kọ́',
+        'assistant.suggestion_practice_quiz': 'Àdánwò Ìṣàdánwò',
+        'assistant.history_title': 'Ìtàn Ìjíròrò',
+        'assistant.history_desc':
+            'Wo àwọn ìjíròrò rẹ tẹ́lẹ̀ pẹ̀lú Izabi.',
+        'assistant.history_empty': 'Kò sí ìtàn tí a kọ sílẹ̀ síbẹ̀',
+        'assistant.session_fallback_title': 'Àkókò Ìjíròrò',
+        'assistant.clear_all_history': 'Nu Gbogbo Ìtàn Kúrò',
+        'assistant.welcome_message':
+            'Ẹ nlẹ́! Èmi ni Izabi, olùrànlọ́wọ́ ẹ̀kọ́ AI rẹ. Mo wà níbí láti ràn ọ́ lọ́wọ́ láti lóye àwọn ọ̀rọ̀ tó le, dá ìdáhùn àwọn ìbéèrè, kí n sì ṣe amọ̀nà ìrìn-àjò ẹ̀kọ́ rẹ. Kín ni o fẹ́ kọ́ẹ̀kọ́ lónìí?',
+        'assistant.new_session_message':
+            'Ẹ nlẹ́! Èmi ni Izabi, olùrànlọ́wọ́ ẹ̀kọ́ AI rẹ. Àkókò tuntun ti bẹ̀rẹ̀. Kín ló wà lọ́kàn rẹ?',
+        'assistant.transcript_you': 'Ìwọ',
+        'assistant.transcript_izabi': 'Izabi',
+        'assistant.transcript_title': 'Ìjíròrò Izabi',
+        'assistant.message_title': 'Ìránṣẹ́ Izabi',
+        'assistant.note_loaded_prefix': 'Mo ti gbé àkọsílẹ̀ rẹ **"',
+        'assistant.note_loaded_suffix':
+            '"** wọlé gẹ́gẹ́ bí ọ̀rọ̀ ìtọ́kasí. Béèrè ohunkóhun lọ́wọ́ mi nípa rẹ̀!',
+        'assistant.upload_message_files_label': 'fáìlì',
+        'assistant.upload_message_rest':
+            'ti gbé wọlé ní àṣeyọrí. Màá lo wọn báyìí láti dáhùn àwọn ìbéèrè rẹ.',
+        'assistant.toast_copy_failed_title': 'Dídàkọ Kùnà',
+        'assistant.toast_copy_failed_desc':
+            'Kò le dà kọ sí clipboard lórí ẹ̀rọ yìí.',
+        'assistant.toast_copied_clipboard_title': 'Ó Ti Dà Kọ Sí Clipboard',
+        'assistant.toast_copied_clipboard_desc':
+            'Ẹ̀rọ awò yìí kò ṣètìlẹ́yìn fún pínpín.',
+        'assistant.toast_share_failed_title': 'Pínpín Kùnà',
+        'assistant.toast_share_failed_desc':
+            'Kò le pín láti ẹ̀rọ yìí. Gbìyànjú dídàkọ dípò.',
+        'assistant.toast_chat_copied_title': 'Ìjíròrò Ti Dà Kọ',
+        'assistant.toast_chat_copied_desc':
+            'Ìjíròrò rẹ wà nínú clipboard rẹ báyìí.',
+        'assistant.toast_transcript_copy_failed_desc':
+            'Kò le dà ìjíròrò rẹ kọ.',
+        'assistant.toast_chat_unavailable_title': 'Ìjíròrò Kò Sí',
+        'assistant.toast_chat_unavailable_desc':
+            'Kò le bẹ̀rẹ̀ àkókò ìjíròrò tuntun.',
+        'assistant.toast_could_not_start_title': 'Kò Le Bẹ̀rẹ̀ Ìjíròrò',
+        'assistant.toast_could_not_start_desc': 'Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kansí.',
+        'assistant.toast_limit_reached_title': 'Ààlà Ti Dé',
+        'assistant.toast_limit_reached_desc':
+            'O lè ní ìwé tó pọ̀ jù márùn-ún lọ ní ìgbà kan náà.',
+        'assistant.toast_files_too_large_title': 'Àwọn Fáìlì Kan Tóbi Jù',
+        'assistant.toast_files_too_large_desc':
+            'Ọ̀kan tàbí jù bẹ́ẹ̀ lọ nínú àwọn fáìlì kọjá 100MB, a fò wọ́n dá.',
+        'assistant.toast_upload_success_title': 'Gbígbé Wọlé Ṣàṣeyọrí',
+        'assistant.toast_upload_success_desc_suffix':
+            'àwọn ohun èlò tuntun ti wà ní àtòjọ tí ó sì ti ṣetán fún ìjíròrò.',
+        'assistant.toast_upload_failed_title': 'Gbígbé Wọlé Kùnà',
+        'assistant.error_upload_fallback': 'Gbígbé àti ṣíṣe PDF kùnà.',
+        'assistant.toast_clear_confirm':
+            'Ṣé o dájú pé o fẹ́ pa gbogbo ìtàn ìjíròrò rẹ? A kò lè dá èyí padà.',
+        'assistant.toast_history_cleared_title': 'Ìtàn Ti Parẹ́',
+        'assistant.toast_history_cleared_desc':
+            'Ìtàn ìjíròrò rẹ ti parẹ́ pátápátá.',
+        'assistant.toast_could_not_clear_title': 'Kò Le Pa Ìtàn Rẹ́',
+        'assistant.toast_could_not_clear_desc':
+            'Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kansí. Tí èyí bá ń ṣẹlẹ̀ síi, ṣayẹ̀wò ìsopọ̀ rẹ.',
+        'assistant.toast_requires_pdf_title_suffix': 'Nílò PDF',
+        'assistant.toast_requires_pdf_desc':
+            'Jọ̀wọ́ lọ sí dashboard kí o kọ́kọ́ gbé PDF wọlé.',
+        'toast.success_default': 'Ó Ṣàṣeyọrí!',
+        'toast.error_default_title': 'Àṣìṣe Ṣẹlẹ̀',
+        'toast.error_default_desc':
+            'Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kansí. Tí ìṣòro bá ń bá a lọ, kàn sí ìtìlẹ́yìn.',
+        'toast.warning_default': 'Ìkìlọ̀',
+        'toast.info_default': 'Ìsọfúnni',
+        'toast.note_saved_title': 'Àkọsílẹ̀ Ti Fipamọ́!',
+        'toast.note_saved_desc': 'A ti fi àkọsílẹ̀ rẹ pamọ́ dáadáa.',
+        'toast.note_deleted_title': 'Àkọsílẹ̀ Ti Parẹ́',
+        'toast.note_deleted_desc':
+            'A ti yọ àkọsílẹ̀ rẹ kúrò pátápátá.',
+        'toast.profile_updated_title': 'Àkọọ́lẹ̀ Ìsọfúnni Ti Ṣàtúnkọ!',
+        'toast.profile_updated_desc': 'A ti fi àwọn àyípadà rẹ pamọ́.',
+        'toast.setting_updated_title': 'Ètò Ti Ṣàtúnkọ',
+        'toast.setting_updated_desc_suffix': 'ti ṣàtúnkọ ní àṣeyọrí.',
+        'toast.login_failed_title': 'Ìwọlé Kùnà',
+        'toast.login_failed_default_desc':
+            'Jọ̀wọ́ ṣayẹ̀wò ímeèlì àti ọ̀rọ̀ìgbaniwọlé rẹ kí o sì gbìyànjú lẹ́ẹ̀kansí.',
+        'toast.signup_failed_title': 'Forukọsilẹ̀ Kùnà',
+        'toast.signup_failed_default_desc':
+            'Jọ̀wọ́ ṣayẹ̀wò àlàyé rẹ kí o sì gbìyànjú lẹ́ẹ̀kansí.',
+        'toast.invalid_prefix': 'Kò Tọ́',
+        'profile.toast_update_failed_title': 'Ìsọdọ̀tun Kùnà',
+        'profile.toast_update_failed_desc':
+            'A ò lè fi àwọn àyípadà àkọọ́lẹ̀ ìsọfúnni rẹ pamọ́.',
+        'profile.toast_photo_removed_title': 'Fọ́tò Ti Yọ Kúrò',
+        'profile.toast_photo_removed_desc':
+            'Fọ́tò àkọọ́lẹ̀ ìsọfúnni ti yọ kúrò. Tẹ Fi Àyípadà Pamọ́ láti jẹ́rìí sí i.',
+        'notes.toast_invalid_file_title': 'Fáìlì Kò Tọ́',
+        'notes.toast_invalid_scan_desc':
+            'Scan Note gba àwòrán JPG tàbí PNG nìkan.',
+        'notes.toast_invalid_import_desc':
+            'Gbé fáìlì TXT, PDF, DOCX, JPG, JPEG, tàbí PNG wọlé.',
+        'notes.toast_no_file_title': 'Kò Sí Fáìlì Tí A Yàn',
+        'notes.toast_no_file_preview_desc': "Yan fáìlì láti wo àwòye rẹ̀.",
+        'notes.toast_no_file_import_desc': 'Yan fáìlì láti gbé wọlé.',
+        'notes.toast_preview_failed': 'Àwòye Kùnà',
+        'notes.toast_note_imported_title': 'Àkọsílẹ̀ Ti Wọlé',
+        'notes.toast_note_imported_desc': 'Àkọsílẹ̀ rẹ ti ṣetán fún àyẹ̀wò.',
+        'notes.toast_could_not_import_note': 'Kò Le Gbé Àkọsílẹ̀ Wọlé',
+        'notes.toast_nothing_to_save_title': 'Kò Sí Ohun Tí A Óò Fi Pamọ́',
+        'notes.toast_nothing_to_save_desc': 'Ọ̀rọ̀ àwòye náà ṣófo.',
+        'notes.toast_note_saved_title': 'Àkọsílẹ̀ Ti Fipamọ́',
+        'notes.toast_imported_note_ready_desc':
+            'Àkọsílẹ̀ tí o gbé wọlé ti ṣetán!',
+        'notes.toast_could_not_save_note': 'Kò Le Fi Àkọsílẹ̀ Pamọ́',
+        'notes.toast_missing_name_title': 'Orúkọ Ń Kù',
+        'notes.toast_enter_group_name_desc':
+            'Tẹ orúkọ ẹgbẹ́ kí o tẹ̀síwájú.',
+        'notes.toast_group_created_title': 'Ẹgbẹ́ Ti Dá',
+        'notes.toast_group_created_desc': 'Ẹgbẹ́ rẹ ti ṣetán.',
+        'notes.toast_could_not_create_group': 'Kò Le Dá Ẹgbẹ́',
+        'notes.toast_group_name_empty_desc': 'Orúkọ ẹgbẹ́ kò le ṣófo.',
+        'notes.toast_group_updated_title': 'Ẹgbẹ́ Ti Ṣàtúnkọ',
+        'notes.toast_group_updated_desc':
+            'Orúkọ ẹgbẹ́ ti ṣàtúnkọ ní àṣeyọrí.',
+        'notes.toast_could_not_update_group': 'Kò Le Ṣàtúnkọ Ẹgbẹ́',
+        'notes.toast_group_deleted_title': 'Ẹgbẹ́ Ti Parẹ́',
+        'notes.toast_group_deleted_desc': 'A ti yọ ẹgbẹ́ kúrò ní àṣeyọrí.',
+        'notes.toast_could_not_delete_group': 'Kò Le Pa Ẹgbẹ́ Rẹ́',
+        'notes.toast_invalid_input_title': 'Ìsọ̀rọ̀ Kò Tọ́',
+        'notes.toast_invalid_input_desc':
+            'Jọ̀wọ́ ṣayẹ̀wò àwọn ẹ̀ka tí a sàmì sí.',
+        'notes.toast_new_note_ready_desc': 'Àkọsílẹ̀ ẹ̀kọ́ tuntun rẹ ti ṣetán!',
+        'notes.toast_invalid_note_title': 'Àkọsílẹ̀ Kò Tọ́',
+        'notes.toast_invalid_note_desc':
+            'Àkọsílẹ̀ yìí ní ìdámọ̀ tí kò tọ́. Tún un ṣe kí o sì gbìyànjú lẹ́ẹ̀kansí.',
+        'notes.toast_invalid_update_title': 'Ìsọdọ̀tun Kò Tọ́',
+        'notes.toast_note_updated_title': 'Àkọsílẹ̀ Ti Ṣàtúnkọ',
+        'notes.toast_note_updated_desc': 'A ti fi àwọn àyípadà rẹ pamọ́.',
+        'notes.toast_could_not_update_note': 'Kò Le Ṣàtúnkọ Àkọsílẹ̀',
+        'notes.toast_note_deleted_title': 'Àkọsílẹ̀ Ti Parẹ́',
+        'notes.toast_note_deleted_desc': 'A ti yọ àkọsílẹ̀ rẹ kúrò.',
+        'notes.toast_could_not_delete_note': 'Kò Le Pa Àkọsílẹ̀ Rẹ́',
+        'notes.toast_could_not_send_to_ai': 'Kò Le Fi Àkọsílẹ̀ Ránṣẹ́ Sí AI',
+        'sidebar.toast_logout_issue_title': 'Ìṣòro Ìjáde',
+        'sidebar.toast_logout_issue_desc':
+            'A kò le dé olupin, ṣùgbọ́n a ti fi ọ́ jáde lórí ẹ̀rọ yìí.',
+        'sidebar.toast_impersonation_ended_title': 'Ìdíra Ti Parí',
+        'sidebar.toast_impersonation_ended_desc':
+            'O ń wo gẹ́gẹ́ bí ara rẹ báyìí.',
+        'sidebar.toast_could_not_stop_title': 'Kò Le Dá Dúró',
+        'sidebar.toast_failed_end_impersonation': 'Kùnà láti parí ìdíra.',
+        'partner.toast_invite_accepted':
+            'A ti gba ìpè! O ní alábàáṣepọ̀ ìṣirotiraro tuntun.',
+        'partner.toast_could_not_accept_invite_title': 'Kò Le Gba Ìpè',
+        'partner.toast_invite_invalid_fallback':
+            'Ọ̀nà ìpè yẹn kò tíì wúlò mọ́.',
+        'partner.toast_invite_sent_title': 'Ìpè Ti Rán!',
+        'partner.toast_invite_sent_desc_prefix':
+            'A ti fi ímeèlì ránṣẹ́ sí',
+        'partner.toast_invite_sent_desc_suffix': 'ìpè kan.',
+        'partner.toast_could_not_send_invite_title': 'Kò Le Fi Ìpè Ránṣẹ́',
+        'partner.generic_retry_fallback': 'Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kansí.',
+        'partner.toast_could_not_respond_title': 'Kò Le Dáhùn Sí Ìpè',
+        'partner.toast_partnership_ended': 'Àjọṣepọ̀ Ti Parí',
+        'partner.toast_could_not_end_title': 'Kò Le Parí Àjọṣepọ̀',
+        'partner.toast_goal_set': 'Góòlù Ti Dá!',
+        'partner.toast_could_not_save_goal_title': 'Kò Le Fi Góòlù Pamọ́',
+        'partner.toast_checked_in':
+            'O ti wọlé! Jẹ́ kí ìsapá náà tẹ̀síwájú.',
+        'partner.toast_could_not_check_in_title': 'Kò Le Wọlé',
+        'partner.toast_already_checked_in_fallback': 'O ti wọlé tẹ́lẹ̀ lónìí.',
+        'partner.toast_could_not_send_message_title':
+            'Kò Le Fi Ìsọfúnni Ránṣẹ́',
+        'settings.name_email_notifications': 'Ìtẹnumọ́ ímeèlì',
+        'settings.name_study_reminders': 'Ìránnilétí ẹ̀kọ́',
+        'settings.name_profile_visibility': 'Hihàn àkọọ́lẹ̀ ìsọfúnni',
+        'settings.status_enabled': 'ti mú ṣiṣẹ́',
+        'settings.status_disabled': 'ti dá dúró',
+        'settings.toast_preference_saved_desc':
+            'A ti fi ààyò rẹ pamọ́ dáadáa.',
+        'settings.toast_reminders_enabled_title':
+            'Àwọn Ìránnilétí Ti Mú Ṣiṣẹ́',
+        'settings.toast_reminders_enabled_desc':
+            'Àwọn ìránnilétí awò-orí ti wà láàyè lórí ẹ̀rọ yìí báyìí.',
+        'settings.toast_theme_updated_title': 'Ọ̀ṣọ́ Ti Ṣàtúnkọ',
+        'settings.toast_theme_updated_desc_prefix':
+            'A ti yí ọ̀ṣọ́ rẹ padà sí ipò',
+        'settings.toast_theme_updated_desc_suffix': '.',
+        'settings.toast_language_updated_title': 'Èdè Ti Ṣàtúnkọ',
+        'settings.toast_language_updated_desc':
+            'Izabi yóò ṣẹ̀dá kí ó sì sọ̀rọ̀ ní èdè tí o yàn.',
+        'settings.toast_language_update_failed': 'Ìsọdọ̀tun Èdè Kùnà',
+        'settings.toast_preparing_export_title':
+            'Ń Múra Sílẹ̀ Fún Gbígbé Dátà Jáde',
+        'settings.toast_preparing_export_desc':
+            'Ń kójọ àkọọ́lẹ̀ ìsọfúnni rẹ, àwọn àkọsílẹ̀, àti ìtàn ẹ̀kọ́ rẹ...',
+        'settings.toast_download_ready_title': 'Gbígbà Ti Ṣetán',
+        'settings.toast_download_ready_desc':
+            'A ti gba dátà rẹ jáde ní àṣeyọrí.',
+        'settings.toast_export_failed': 'Gbígbé Jáde Kùnà',
+        'login.toast_invalid_email_title': 'Ímeèlì Kò Tọ́',
+        'login.toast_invalid_email_fallback':
+            'Jọ̀wọ́ ṣayẹ̀wò bí ímeèlì rẹ ṣe wà.',
+        'login.toast_success_title': 'Ìwọlé Ṣàṣeyọrí',
+        'login.toast_welcome_admin':
+            'Káàbọ̀ Admin! À ń darí ọ lọ sí dashboard admin...',
+        'login.toast_welcome_back':
+            'Káàbọ̀ padà! À ń darí ọ lọ sí dashboard rẹ...',
+        'login.toast_generic_failed': 'Ìwọlé kùnà',
+        'login.toast_failed_title': 'Ìwọlé Kùnà',
+        'login.toast_invalid_credentials':
+            'Ímeèlì tàbí ọ̀rọ̀ìgbaniwọlé kò tọ́. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kansí.',
+        'login.toast_connection_error_title': 'Àṣìṣe Ìsopọ̀',
+        'login.toast_google_success_title': 'Ìwọlé Google Ṣàṣeyọrí',
+        'login.toast_welcome_google': 'Káàbọ̀! À ń darí ọ lọ sí dashboard rẹ...',
+        'login.toast_google_generic_error':
+            'Àṣìṣe ṣẹlẹ̀ nígbà ìjẹ́rìísí Google.',
+        'login.toast_google_service_unavailable':
+            'Iṣẹ́ ìjẹ́rìísí kò sí lọ́wọ́lọ́wọ́. Jọ̀wọ́ kàn sí ìtìlẹ́yìn.',
+        'login.toast_check_connection':
+            'Ṣayẹ̀wò ìsopọ̀ ẹ̀rọ ayélujára rẹ kí o sì gbìyànjú lẹ́ẹ̀kansí.',
+        'login.toast_google_failed_title': 'Ìwọlé Google Kùnà',
+        'login.toast_google_error_title': 'Àṣìṣe Ìwọlé Google',
+        'login.toast_google_error_desc':
+            'Ìwọlé Google kùnà. Gbìyànjú lẹ́ẹ̀kansí tàbí lo ímeèlì àti ọ̀rọ̀ìgbaniwọlé rẹ.',
+        'signup.toast_validation_error_title': 'Àṣìṣe Ìfọwọ́sí',
+        'signup.toast_validation_error_desc':
+            'Jọ̀wọ́ ṣayẹ̀wò fọ́ọ̀mù náà fún àṣìṣe kí o sì gbìyànjú lẹ́ẹ̀kansí.',
+        'signup.toast_otp_sent_title': 'Kóòdù Ìfẹsẹ̀múlẹ̀ Ti Rán',
+        'signup.toast_otp_sent_desc':
+            'Jọ̀wọ́ ṣayẹ̀wò ímeèlì rẹ fún kóòdù ìfẹsẹ̀múlẹ̀.',
+        'signup.toast_otp_send_failed_fallback':
+            'Kò le fi kóòdù ìfẹsẹ̀múlẹ̀ ránṣẹ́',
+        'signup.toast_account_exists_title': 'Àkọọ́lẹ̀ Ti Wà Tẹ́lẹ̀',
+        'signup.toast_account_exists_desc':
+            'A ti forúkọsílẹ̀ ímeèlì yìí tẹ́lẹ̀. Jọ̀wọ́ wọlé dípò.',
+        'signup.toast_registration_failed_title': 'Forukọsilẹ̀ Kùnà',
+        'signup.toast_google_success_title': 'Forukọsilẹ̀ Google Ṣàṣeyọrí',
+        'signup.toast_account_ready': 'Àkọọ́lẹ̀ rẹ ti ṣetán. À ń darí ọ...',
+        'signup.toast_google_generic_error':
+            'Àṣìṣe ṣẹlẹ̀ nígbà forukọsilẹ̀ Google.',
+        'signup.toast_google_service_unavailable':
+            'Iṣẹ́ forukọsilẹ̀ kò sí lọ́wọ́lọ́wọ́. Jọ̀wọ́ kàn sí ìtìlẹ́yìn.',
+        'signup.toast_google_failed_title': 'Forukọsilẹ̀ Google Kùnà',
+        'signup.toast_google_error_title': 'Àṣìṣe Forukọsilẹ̀ Google',
+        'signup.toast_google_error_desc':
+            'Forukọsilẹ̀ Google kùnà. Gbìyànjú lẹ́ẹ̀kansí tàbí lo fọ́ọ̀mù forukọsilẹ̀.',
+        'change_password.toast_email_required_title': 'A Nílò Ímeèlì',
+        'change_password.toast_email_required_desc':
+            'Jọ̀wọ́ tẹ àdírẹ́sì ímeèlì rẹ sí i.',
+        'change_password.toast_code_sent_title': 'Kóòdù Ti Rán',
+        'change_password.toast_code_sent_desc':
+            'Ṣayẹ̀wò àpótí ímeèlì rẹ fún kóòdù ìfẹsẹ̀múlẹ̀.',
+        'change_password.toast_missing_fields_title': 'Àwọn Ẹ̀ka Ń Kù',
+        'change_password.toast_missing_fields_desc':
+            'Jọ̀wọ́ kún gbogbo ẹ̀ka.',
+        'change_password.toast_security_updated_title': 'Ààbò Ti Ṣàtúnkọ',
+        'change_password.toast_security_updated_desc':
+            'Ọ̀rọ̀ìgbaniwọlé rẹ ti yí padà ní àṣeyọrí.',
+        'change_password.reset_access': 'Tún Ààyè Ṣe',
+        'change_password.verify_identity': 'Fẹsẹ̀múlẹ̀ Ìdánimọ̀',
+        'change_password.set_new_password': 'Ṣètò Ọ̀rọ̀ìgbaniwọlé Tuntun',
+        'change_password.step1_desc':
+            'A óò fi kóòdù ìfẹsẹ̀múlẹ̀ tó ní ààbò ránṣẹ́ sí ímeèlì rẹ.',
+        'change_password.step2_desc':
+            'Tẹ kóòdù tí o gbà sí i kí o sì yan ọ̀rọ̀ìgbaniwọlé tó lágbára.',
+        'change_password.your_email': 'Ímeèlì Rẹ',
+        'change_password.send_code': 'Fi Kóòdù Ránṣẹ́',
+        'change_password.verification_code': 'Kóòdù Ìfẹsẹ̀múlẹ̀',
+        'change_password.new_password': 'Ọ̀rọ̀ìgbaniwọlé Tuntun',
+        'change_password.confirm_update': 'Jẹ́rìí Ìsọdọ̀tun',
+        'change_password.back_to_email': 'Padà Sí Ímeèlì',
+        'admin.toast_could_not_refresh': 'Kò le tún dátà alábòójútó ṣe',
+        'admin.toast_sync_in_progress_title': 'Ìṣọ̀kan Ń Lọ Lọ́wọ́',
+        'admin.toast_sync_in_progress_desc':
+            'Ń tún àwọn olùmúlò, iye, àti dátà pàtàkì ṣe...',
+        'admin.toast_registry_synced_title': 'Àkọsílẹ̀ Ti Ṣọ̀kan',
+        'admin.toast_registry_synced_desc': 'A ti tún dátà ètò náà ṣe.',
+        'admin.toast_report_downloaded_title': 'Ìròyìn Ètò Ti Gbà Jáde',
+        'admin.toast_report_downloaded_desc':
+            'Ìròyìn alábòójútó tuntun wà lórí ẹ̀rọ rẹ báyìí.',
+        'admin.toast_report_failed': 'Ìròyìn Ètò Kùnà',
+        'admin.toast_announcement_sent_title': 'Ìkéde Ti Rán',
+        'admin.toast_announcement_sent_desc_prefix': 'A rán an sí',
+        'admin.toast_announcement_sent_desc_middle': 'nínú',
+        'admin.toast_announcement_sent_desc_suffix': 'olùmúlò.',
+        'admin.toast_announcement_failed_title': 'Ìkéde Kùnà',
+        'admin.toast_announcement_failed_fallback':
+            'Kò le fi ìkéde ààyè ránṣẹ́.',
+        'admin.toast_filters_cleared_title': 'Ìṣọ̀tọ́ Ti Kúrò',
+        'admin.toast_filters_cleared_desc': 'Ń fi gbogbo olùmúlò hàn padà.',
+        'admin.toast_filter_applied_title': 'Ìṣọ̀tọ́ Ti Lò',
+        'admin.toast_filter_applied_desc':
+            'Ń fi àwọn olùmúlò tí ń ṣiṣẹ́ nìkan hàn báyìí.',
+        'admin.toast_terminate_success_title': 'Àṣeyọrí',
+        'admin.toast_terminate_success_desc':
+            'Ìwọlé olùmúlò ti parí ní àṣeyọrí',
+        'admin.toast_terminate_failed_title': 'Kùnà',
+        'admin.toast_terminate_failed_desc': 'Kò le pa olùmúlò rẹ́',
+        'admin.toast_user_not_found_title': 'A Kò Rí Olùmúlò',
+        'admin.toast_user_not_found_desc':
+            'Ó ṣeé ṣe kí a ti yọ olùmúlò yìí kúrò. Ń tún àkọsílẹ̀ ṣe.',
+        'admin.toast_error_title': 'Àṣìṣe',
+        'admin.toast_load_user_failed_desc': 'Kò le gba àlàyé olùmúlò jáde',
+        'admin.toast_impersonation_ended_title': 'Ìdíra Ti Parí',
+        'admin.toast_impersonation_ended_desc':
+            'O ń wo gẹ́gẹ́ bí ara rẹ báyìí.',
+        'admin.toast_impersonation_failed_title': 'Ìdíra Kùnà',
+        'admin.toast_missing_token_desc': 'Àmì ìdíra ń kù.',
+        'admin.toast_impersonation_started_title': 'Ìdíra Ti Bẹ̀rẹ̀',
+        'admin.toast_impersonation_started_desc':
+            'O ń wo gẹ́gẹ́ bí olùmúlò yìí báyìí.',
+        'admin.toast_impersonation_start_failed_fallback':
+            'Kò le bẹ̀rẹ̀ ìdíra.',
+        'admin.toast_access_denied_title': 'A Kọ Ààyè',
+        'admin.toast_access_denied_desc':
+            'O kò ní ẹ̀tọ́ láti díra àwọn olùmúlò.',
+        'admin.toast_user_not_found_title2': 'A Kò Rí Olùmúlò',
+        'admin.toast_user_deleted_desc':
+            'Ó ṣeé ṣe kí a ti pa olùmúlò náà rẹ́.',
     },
     hausa: {
         'nav.features': 'Siffofi',
@@ -2508,6 +3831,7 @@ const translations: Record<Language, Record<string, string>> = {
         'auth.signup': 'Bude Asusun',
         'auth.email': 'Adireshin Imel',
         'auth.password': 'Kalmar Sirri',
+        'auth.forgot_password': 'Ka manta kalmar sirri?',
         'auth.initialize': 'Shiga',
         'auth.join': 'Nemi dama',
         'footer.copyright': '© 2026 Izabi. An kiyaye duk haƙƙoƙi.',
@@ -3061,6 +4385,341 @@ const translations: Record<Language, Record<string, string>> = {
         'home.document_analysis': 'Nazarin Takarda',
         'home.preview_unavailable':
             "Duba kai tsaye ba ya samuwa don wannan nau'i na musamman, amma AI ilimi ɗinka ya riga ya karanta abin da ke ciki.",
+        'assistant.subtitle': 'Abokin tafiyarka na koyo mai wayo.',
+        'assistant.new_chat': 'Sabon Taɗi',
+        'assistant.new_chat_aria': 'Fara sabon taɗi',
+        'assistant.upload_materials': 'Loda Kayan Karatu',
+        'assistant.upload_files_aria': 'Loda Fayiloli',
+        'assistant.copy_transcript_aria': 'Kwafi tattaunawar',
+        'assistant.share_transcript_aria': 'Raba tattaunawar',
+        'assistant.copy_message_aria': 'Kwafi saƙo',
+        'assistant.share_message_aria': 'Raba saƙo',
+        'assistant.disclaimer':
+            'Izabi AI na iya bayar da bayanan da ba daidai ba wani lokaci. Tabbatar da muhimman bayanai da kanka.',
+        'assistant.placeholder_with_docs':
+            'Yi tambayoyi game da kayan da ka loda...',
+        'assistant.placeholder_default':
+            'Ce wa Izabi ya ƙirƙiri wani abu ko ya bayyana wani batu...',
+        'assistant.suggestion_flashcards': 'Ƙirƙiri Flashcards',
+        'assistant.suggestion_study_guide': 'Jagorar Karatu',
+        'assistant.suggestion_practice_quiz': 'Jarrabawar Atisaye',
+        'assistant.history_title': 'Tarihin Taɗi',
+        'assistant.history_desc': 'Duba tattaunawoyinka na baya da Izabi.',
+        'assistant.history_empty': 'Babu tarihin da aka rubuta tukuna',
+        'assistant.session_fallback_title': 'Zaman Taɗi',
+        'assistant.clear_all_history': 'Share Duk Tarihi',
+        'assistant.welcome_message':
+            'Sannu! Ni ne Izabi, mataimakinka na koyo na AI. Ina nan don taimaka maka fahimtar batutuwa masu wuya, amsa tambayoyi, da jagorantar tafiyarka ta koyo. Me kake son koya yau?',
+        'assistant.new_session_message':
+            'Sannu! Ni ne Izabi, mataimakinka na koyo na AI. Sabon zama ya fara. Me ke cikin zuciyarka?',
+        'assistant.transcript_you': 'Kai',
+        'assistant.transcript_izabi': 'Izabi',
+        'assistant.transcript_title': 'Tattaunawar Izabi',
+        'assistant.message_title': 'Saƙon Izabi',
+        'assistant.note_loaded_prefix': 'Na loda bayanin ka **"',
+        'assistant.note_loaded_suffix':
+            '"** a matsayin mahallin magana. Tambaye ni komai game da shi!',
+        'assistant.upload_message_files_label': 'fayil(oli)',
+        'assistant.upload_message_rest':
+            'an loda su cikin nasara. Zan yi amfani da su yanzu don amsa tambayoyinka.',
+        'assistant.toast_copy_failed_title': 'Kwafi Ya Kasa',
+        'assistant.toast_copy_failed_desc':
+            "Ba a iya kwafi zuwa clipboard a kan wannan na'ura ba.",
+        'assistant.toast_copied_clipboard_title': 'An Kwafa Zuwa Clipboard',
+        'assistant.toast_copied_clipboard_desc':
+            'Wannan burauza ba ta goyon bayan rabawa ba.',
+        'assistant.toast_share_failed_title': 'Rabawa Ya Kasa',
+        'assistant.toast_share_failed_desc':
+            "Ba a iya rabawa daga wannan na'ura ba. Gwada kwafi maimakon.",
+        'assistant.toast_chat_copied_title': 'An Kwafi Taɗin',
+        'assistant.toast_chat_copied_desc':
+            'Tattaunawarka tana cikin clipboard yanzu.',
+        'assistant.toast_transcript_copy_failed_desc':
+            'Ba a iya kwafi tattaunawarka ba.',
+        'assistant.toast_chat_unavailable_title': 'Taɗi Ba Ya Samuwa',
+        'assistant.toast_chat_unavailable_desc':
+            'Ba a iya fara sabon zaman taɗi ba.',
+        'assistant.toast_could_not_start_title': 'Ba A Iya Fara Taɗi Ba',
+        'assistant.toast_could_not_start_desc':
+            'Da fatan za a sake gwadawa.',
+        'assistant.toast_limit_reached_title': 'An Kai Iyaka',
+        'assistant.toast_limit_reached_desc':
+            'Za ka iya samun har zuwa fayiloli 5 kacal a lokaci guda.',
+        'assistant.toast_files_too_large_title': 'Wasu Fayiloli Sun Yi Girma',
+        'assistant.toast_files_too_large_desc':
+            "Fayil ɗaya ko fiye sun wuce iyakar 100MB, an tsallake su.",
+        'assistant.toast_upload_success_title': 'Lodawa Ta Yi Nasara',
+        'assistant.toast_upload_success_desc_suffix':
+            'sabbin kayan karatu an tattara su kuma sun shirya don taɗi.',
+        'assistant.toast_upload_failed_title': 'Lodawa Ta Kasa',
+        'assistant.error_upload_fallback': 'Lodawa da sarrafa PDF ya kasa.',
+        'assistant.toast_clear_confirm':
+            'Ka tabbata kana son share duk tarihin taɗi? Ba za a iya mayarwa ba.',
+        'assistant.toast_history_cleared_title': 'An Share Tarihi',
+        'assistant.toast_history_cleared_desc':
+            'An share tarihin tattaunawarka har abada.',
+        'assistant.toast_could_not_clear_title': 'Ba A Iya Share Tarihi Ba',
+        'assistant.toast_could_not_clear_desc':
+            'Da fatan za a sake gwadawa. Idan wannan ya ci gaba da faruwa, duba haɗin ka.',
+        'assistant.toast_requires_pdf_title_suffix': 'Ana Bukatar PDF',
+        'assistant.toast_requires_pdf_desc':
+            'Da fatan za a je dashboard kana loda PDF tukuna.',
+        'toast.success_default': 'Nasara!',
+        'toast.error_default_title': 'Wani Abu Ya Yi Kuskure',
+        'toast.error_default_desc':
+            'Da fatan za a sake gwadawa. Idan matsalar ta ci gaba, tuntuɓi tallafi.',
+        'toast.warning_default': 'Gargaɗi',
+        'toast.info_default': 'Bayani',
+        'toast.note_saved_title': 'An Adana Bayani!',
+        'toast.note_saved_desc': 'An adana bayaninka cikin nasara.',
+        'toast.note_deleted_title': 'An Share Bayani',
+        'toast.note_deleted_desc': 'An cire bayaninka har abada.',
+        'toast.profile_updated_title': 'An Sabunta Bayanan Martaba!',
+        'toast.profile_updated_desc':
+            'An adana canje-canjen bayanan martabarka.',
+        'toast.setting_updated_title': 'An Sabunta Saiti',
+        'toast.setting_updated_desc_suffix': 'an sabunta cikin nasara.',
+        'toast.login_failed_title': 'Shiga Ya Kasa',
+        'toast.login_failed_default_desc':
+            'Da fatan za a duba imel da kalmar sirri sannan a sake gwadawa.',
+        'toast.signup_failed_title': 'Rijista Ya Kasa',
+        'toast.signup_failed_default_desc':
+            'Da fatan za a duba bayananka sannan a sake gwadawa.',
+        'toast.invalid_prefix': 'Ba Daidai Ba Ne Don',
+        'profile.toast_update_failed_title': 'Sabuntawa Ta Kasa',
+        'profile.toast_update_failed_desc':
+            'Ba a iya adana canje-canjen bayanan martabarka ba.',
+        'profile.toast_photo_removed_title': 'An Cire Hoto',
+        'profile.toast_photo_removed_desc':
+            'An cire hoton bayanan martaba. Danna Adana Canje-canje don tabbatarwa.',
+        'notes.toast_invalid_file_title': 'Fayil Ba Daidai Ba',
+        'notes.toast_invalid_scan_desc':
+            'Scan Note na karɓar hotunan JPG ko PNG kaɗai.',
+        'notes.toast_invalid_import_desc':
+            'Loda fayil na TXT, PDF, DOCX, JPG, JPEG, ko PNG.',
+        'notes.toast_no_file_title': 'Ba A Zaɓi Fayil Ba',
+        'notes.toast_no_file_preview_desc': 'Zaɓi fayil don dubawa.',
+        'notes.toast_no_file_import_desc': 'Zaɓi fayil don lodawa.',
+        'notes.toast_preview_failed': 'Dubawa Ya Kasa',
+        'notes.toast_note_imported_title': 'An Loda Bayani',
+        'notes.toast_note_imported_desc': 'Bayaninka ya shirya don dubawa.',
+        'notes.toast_could_not_import_note': 'Ba A Iya Loda Bayani Ba',
+        'notes.toast_nothing_to_save_title': 'Babu Abin Adanawa',
+        'notes.toast_nothing_to_save_desc': 'Rubutun dubawa babu kome.',
+        'notes.toast_note_saved_title': 'An Adana Bayani',
+        'notes.toast_imported_note_ready_desc':
+            'Bayaninka da aka loda ya shirya!',
+        'notes.toast_could_not_save_note': 'Ba A Iya Adana Bayani Ba',
+        'notes.toast_missing_name_title': 'Suna Ya Ɓace',
+        'notes.toast_enter_group_name_desc':
+            'Shigar da sunan ƙungiya don ci gaba.',
+        'notes.toast_group_created_title': 'An Ƙirƙiri Ƙungiya',
+        'notes.toast_group_created_desc': 'Ƙungiyarka ta shirya.',
+        'notes.toast_could_not_create_group': 'Ba A Iya Ƙirƙiri Ƙungiya Ba',
+        'notes.toast_group_name_empty_desc':
+            'Sunan ƙungiya ba zai iya zama babu kome ba.',
+        'notes.toast_group_updated_title': 'An Sabunta Ƙungiya',
+        'notes.toast_group_updated_desc':
+            'An sabunta sunan ƙungiya cikin nasara.',
+        'notes.toast_could_not_update_group': 'Ba A Iya Sabunta Ƙungiya Ba',
+        'notes.toast_group_deleted_title': 'An Share Ƙungiya',
+        'notes.toast_group_deleted_desc': 'An cire ƙungiya cikin nasara.',
+        'notes.toast_could_not_delete_group': 'Ba A Iya Share Ƙungiya Ba',
+        'notes.toast_invalid_input_title': 'Shigarwa Ba Daidai Ba',
+        'notes.toast_invalid_input_desc':
+            'Da fatan za a duba filayen da aka yiwa alama.',
+        'notes.toast_new_note_ready_desc': 'Sabon bayanin karatunka ya shirya!',
+        'notes.toast_invalid_note_title': 'Bayani Ba Daidai Ba',
+        'notes.toast_invalid_note_desc':
+            'Wannan bayani yana da ID mara kyau. Sabunta shafi sannan a sake gwadawa.',
+        'notes.toast_invalid_update_title': 'Sabuntawa Ba Daidai Ba',
+        'notes.toast_note_updated_title': 'An Sabunta Bayani',
+        'notes.toast_note_updated_desc': 'An adana canje-canjenka.',
+        'notes.toast_could_not_update_note': 'Ba A Iya Sabunta Bayani Ba',
+        'notes.toast_note_deleted_title': 'An Share Bayani',
+        'notes.toast_note_deleted_desc': 'An cire bayaninka.',
+        'notes.toast_could_not_delete_note': 'Ba A Iya Share Bayani Ba',
+        'notes.toast_could_not_send_to_ai': 'Ba A Iya Aika Bayani Zuwa AI Ba',
+        'sidebar.toast_logout_issue_title': 'Matsalar Fita',
+        'sidebar.toast_logout_issue_desc':
+            "Ba mu iya kaiwa uwar garken ba, amma an fitar da kai a wannan na'ura.",
+        'sidebar.toast_impersonation_ended_title': 'An Dakatar Da Kwaikwayo',
+        'sidebar.toast_impersonation_ended_desc':
+            'Yanzu kana kallo a matsayin kanka.',
+        'sidebar.toast_could_not_stop_title': 'Ba A Iya Dakatarwa Ba',
+        'sidebar.toast_failed_end_impersonation':
+            'Ya kasa dakatar da kwaikwayo.',
+        'partner.toast_invite_accepted':
+            'An karɓi gayyata! Kana da sabon abokin tarayya na lissafi.',
+        'partner.toast_could_not_accept_invite_title':
+            'Ba A Iya Karɓar Gayyata Ba',
+        'partner.toast_invite_invalid_fallback':
+            'Wannan hanyar gayyata ba ta aiki kuma.',
+        'partner.toast_invite_sent_title': 'An Aika Gayyata!',
+        'partner.toast_invite_sent_desc_prefix': 'Mun aika imel zuwa',
+        'partner.toast_invite_sent_desc_suffix': 'gayyata.',
+        'partner.toast_could_not_send_invite_title':
+            'Ba A Iya Aika Gayyata Ba',
+        'partner.generic_retry_fallback': 'Da fatan za a sake gwadawa.',
+        'partner.toast_could_not_respond_title':
+            'Ba A Iya Amsa Gayyata Ba',
+        'partner.toast_partnership_ended': 'An Kawo Ƙarshen Haɗin Gwiwa',
+        'partner.toast_could_not_end_title':
+            'Ba A Iya Kawo Ƙarshen Haɗin Gwiwa Ba',
+        'partner.toast_goal_set': 'An Saita Manufa!',
+        'partner.toast_could_not_save_goal_title':
+            'Ba A Iya Adana Manufa Ba',
+        'partner.toast_checked_in': 'Ka shiga! Ci gaba da jerin kwanaki.',
+        'partner.toast_could_not_check_in_title': 'Ba A Iya Shiga Ba',
+        'partner.toast_already_checked_in_fallback': 'Ka riga ka shiga yau.',
+        'partner.toast_could_not_send_message_title':
+            'Ba A Iya Aika Saƙo Ba',
+        'settings.name_email_notifications': 'Sanarwar imel',
+        'settings.name_study_reminders': 'Tunatarwar karatu',
+        'settings.name_profile_visibility': 'Ganin bayanan martaba',
+        'settings.status_enabled': 'an kunna',
+        'settings.status_disabled': 'an kashe',
+        'settings.toast_preference_saved_desc':
+            'An adana zaɓinka cikin nasara.',
+        'settings.toast_reminders_enabled_title': 'An Kunna Tunatarwa',
+        'settings.toast_reminders_enabled_desc':
+            "Ana yarda da tunatarwar burauza a wannan na'ura yanzu.",
+        'settings.toast_theme_updated_title': 'An Sabunta Jigo',
+        'settings.toast_theme_updated_desc_prefix':
+            'An canza jigonka zuwa yanayin',
+        'settings.toast_theme_updated_desc_suffix': '.',
+        'settings.toast_language_updated_title': 'An Sabunta Harshe',
+        'settings.toast_language_updated_desc':
+            'Izabi za ta ƙirƙira kuma ta yi magana da harshen da ka zaɓa.',
+        'settings.toast_language_update_failed': 'Sabunta Harshe Ya Kasa',
+        'settings.toast_preparing_export_title': 'Ana Shirya Fitar Da Bayanai',
+        'settings.toast_preparing_export_desc':
+            'Ana tattara bayananka, rubuce-rubuce, da tarihin karatunka...',
+        'settings.toast_download_ready_title': 'Zazzagewa Ta Shirya',
+        'settings.toast_download_ready_desc':
+            'An zazzage bayananka cikin nasara.',
+        'settings.toast_export_failed': 'Fitarwa Ta Kasa',
+        'login.toast_invalid_email_title': 'Imel Ba Daidai Ba',
+        'login.toast_invalid_email_fallback':
+            'Da fatan za a duba tsarin imel ɗinka.',
+        'login.toast_success_title': 'Shiga Ya Yi Nasara',
+        'login.toast_welcome_admin':
+            'Barka Admin! Ana tura ka zuwa dashboard na admin...',
+        'login.toast_welcome_back':
+            'Barka da dawowa! Ana tura ka zuwa dashboard ɗinka...',
+        'login.toast_generic_failed': 'Shiga ya kasa',
+        'login.toast_failed_title': 'Shiga Ya Kasa',
+        'login.toast_invalid_credentials':
+            'Imel ko kalmar sirri ba daidai ba. Da fatan za a sake gwadawa.',
+        'login.toast_connection_error_title': 'Kuskuren Haɗi',
+        'login.toast_google_success_title': 'Shigar Google Ta Yi Nasara',
+        'login.toast_welcome_google':
+            'Barka! Ana tura ka zuwa dashboard ɗinka...',
+        'login.toast_google_generic_error':
+            'Wani abu ya yi kuskure yayin tantance Google.',
+        'login.toast_google_service_unavailable':
+            'Sabis ɗin tantancewa ba ya samuwa yanzu. Da fatan za a tuntuɓi tallafi.',
+        'login.toast_check_connection':
+            'Duba haɗin intanetinka sannan a sake gwadawa.',
+        'login.toast_google_failed_title': 'Shigar Google Ta Kasa',
+        'login.toast_google_error_title': 'Kuskuren Shigar Google',
+        'login.toast_google_error_desc':
+            'Shigar Google ta kasa. Sake gwadawa ko yi amfani da imel da kalmar sirrinka.',
+        'signup.toast_validation_error_title': 'Kuskuren Tabbatarwa',
+        'signup.toast_validation_error_desc':
+            'Da fatan za a duba fam ɗin don kurakurai sannan a sake gwadawa.',
+        'signup.toast_otp_sent_title': 'An Aika Lambar Tantancewa',
+        'signup.toast_otp_sent_desc':
+            'Da fatan za a duba imel ɗinka don lambar tantancewa.',
+        'signup.toast_otp_send_failed_fallback':
+            'Aika lambar tantancewa ya kasa',
+        'signup.toast_account_exists_title': 'Asusun Ya Riga Ya Kasance',
+        'signup.toast_account_exists_desc':
+            'An riga an yi rijistar wannan imel. Da fatan za a shiga maimakon.',
+        'signup.toast_registration_failed_title': 'Rijista Ta Kasa',
+        'signup.toast_google_success_title': 'Rijistar Google Ta Yi Nasara',
+        'signup.toast_account_ready': 'Asusunka ya shirya. Ana tura ka...',
+        'signup.toast_google_generic_error':
+            'Wani abu ya yi kuskure yayin rijistar Google.',
+        'signup.toast_google_service_unavailable':
+            'Sabis ɗin rijista ba ya samuwa yanzu. Da fatan za a tuntuɓi tallafi.',
+        'signup.toast_google_failed_title': 'Rijistar Google Ta Kasa',
+        'signup.toast_google_error_title': 'Kuskuren Rijistar Google',
+        'signup.toast_google_error_desc':
+            'Rijistar Google ta kasa. Sake gwadawa ko yi amfani da fam ɗin rijista.',
+        'change_password.toast_email_required_title': 'Ana Bukatar Imel',
+        'change_password.toast_email_required_desc':
+            'Da fatan za a shigar da adireshin imel ɗinka.',
+        'change_password.toast_code_sent_title': 'An Aika Lamba',
+        'change_password.toast_code_sent_desc':
+            'Duba akwatin imel ɗinka don lambar tantancewa.',
+        'change_password.toast_missing_fields_title': 'Filaye Sun Ɓace',
+        'change_password.toast_missing_fields_desc':
+            'Da fatan za a cika dukkan filaye.',
+        'change_password.toast_security_updated_title': 'An Sabunta Tsaro',
+        'change_password.toast_security_updated_desc':
+            'An canza kalmar sirrinka cikin nasara.',
+        'change_password.reset_access': 'Sabunta Shiga',
+        'change_password.verify_identity': 'Tabbatar Da Ainihinka',
+        'change_password.set_new_password': 'Saita Sabuwar Kalmar Sirri',
+        'change_password.step1_desc':
+            'Za mu aika lambar tantancewa mai aminci zuwa imel ɗinka.',
+        'change_password.step2_desc':
+            'Shigar da lambar da ka samu sannan ka zaɓi kalmar sirri mai ƙarfi.',
+        'change_password.your_email': 'Imel Ɗinka',
+        'change_password.send_code': 'Aika Lamba',
+        'change_password.verification_code': 'Lambar Tantancewa',
+        'change_password.new_password': 'Sabuwar Kalmar Sirri',
+        'change_password.confirm_update': 'Tabbatar Da Sabuntawa',
+        'change_password.back_to_email': 'Koma Zuwa Imel',
+        'admin.toast_could_not_refresh':
+            'Ba a iya sabunta bayanan admin ba',
+        'admin.toast_sync_in_progress_title': 'Daidaitawa Na Ci Gaba',
+        'admin.toast_sync_in_progress_desc':
+            'Ana sabunta masu amfani, ƙididdiga, da muhimman bayanai...',
+        'admin.toast_registry_synced_title': 'An Daidaita Rijista',
+        'admin.toast_registry_synced_desc': 'An sabunta bayanan tsarin.',
+        'admin.toast_report_downloaded_title': 'An Zazzage Rahoton Tsarin',
+        'admin.toast_report_downloaded_desc':
+            "Sabon rahoton admin yana na'urarka yanzu.",
+        'admin.toast_report_failed': 'Rahoton Tsarin Ya Kasa',
+        'admin.toast_announcement_sent_title': 'An Aika Sanarwa',
+        'admin.toast_announcement_sent_desc_prefix': 'An aika zuwa',
+        'admin.toast_announcement_sent_desc_middle': 'daga cikin',
+        'admin.toast_announcement_sent_desc_suffix': 'masu amfani.',
+        'admin.toast_announcement_failed_title': 'Sanarwa Ta Kasa',
+        'admin.toast_announcement_failed_fallback':
+            'Ba a iya aika sanarwar kai tsaye ba.',
+        'admin.toast_filters_cleared_title': 'An Share Tacewa',
+        'admin.toast_filters_cleared_desc': 'Ana nuna duk masu amfani kuma.',
+        'admin.toast_filter_applied_title': 'An Yi Amfani Da Tacewa',
+        'admin.toast_filter_applied_desc':
+            'Yanzu ana nuna masu amfani masu aiki kawai.',
+        'admin.toast_terminate_success_title': 'Nasara',
+        'admin.toast_terminate_success_desc':
+            'An dakatar da shigar mai amfani cikin nasara',
+        'admin.toast_terminate_failed_title': 'Ya Kasa',
+        'admin.toast_terminate_failed_desc': 'Ba a iya share mai amfani ba',
+        'admin.toast_user_not_found_title': 'Ba A Sami Mai Amfani Ba',
+        'admin.toast_user_not_found_desc':
+            'Wataƙila an cire wannan mai amfani. Ana sabunta rijista.',
+        'admin.toast_error_title': 'Kuskure',
+        'admin.toast_load_user_failed_desc': 'Ya kasa loda bayanan mai amfani',
+        'admin.toast_impersonation_ended_title': 'An Dakatar Da Kwaikwayo',
+        'admin.toast_impersonation_ended_desc':
+            'Yanzu kana kallo a matsayin kanka.',
+        'admin.toast_impersonation_failed_title': 'Kwaikwayo Ya Kasa',
+        'admin.toast_missing_token_desc': 'Alamar kwaikwayo ta ɓace.',
+        'admin.toast_impersonation_started_title': 'An Fara Kwaikwayo',
+        'admin.toast_impersonation_started_desc':
+            'Yanzu kana kallo a matsayin wannan mai amfani.',
+        'admin.toast_impersonation_start_failed_fallback':
+            'Ba a iya fara kwaikwayo ba.',
+        'admin.toast_access_denied_title': 'An Hana Shiga',
+        'admin.toast_access_denied_desc':
+            'Ba ka da izinin yin kwaikwayon masu amfani ba.',
+        'admin.toast_user_not_found_title2': 'Ba A Sami Mai Amfani Ba',
+        'admin.toast_user_deleted_desc': 'Wataƙila an share mai amfani.',
     },
 };
 
