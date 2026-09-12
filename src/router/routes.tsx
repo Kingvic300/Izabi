@@ -137,7 +137,9 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
 const routes = () => {
     return (
-        <BrowserRouter>
+        <BrowserRouter
+            future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        >
             <TourProvider>
                 <TourOverlay />
                 <Routes>

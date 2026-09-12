@@ -323,7 +323,11 @@ export default function ExamLobby({
                 <div className="relative z-10">
                     {recentResults.length > 0 ? (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {recentResults.map((res, i) => (
+                            {recentResults.map((res, i) => {
+                                const resultDate = new Date(
+                                    res.date || res.createdAt,
+                                );
+                                return (
                                 <button
                                     key={i}
                                     onClick={() => onSelectResult(res)}
@@ -347,19 +351,25 @@ export default function ExamLobby({
                                         </div>
                                         <div>
                                             <p className="font-black text-base sm:text-lg uppercase tracking-tight truncate max-w-[170px] sm:max-w-[200px] mb-1">
-                                                {res.subject}
+                                                {res.subject || res.quizTitle}
                                             </p>
                                             <div className="flex items-center gap-3">
                                                 <div className="flex items-center gap-1 text-[10px] font-black opacity-30 uppercase tracking-widest bg-foreground/5 px-2 py-1 rounded-md">
                                                     <Calendar size={10} />{' '}
-                                                    {new Date(
-                                                        res.date,
-                                                    ).toLocaleDateString()}
+                                                    {Number.isNaN(
+                                                        resultDate.getTime(),
+                                                    )
+                                                        ? '—'
+                                                        : resultDate.toLocaleDateString()}
                                                 </div>
                                                 <div className="flex items-center gap-1 text-[10px] font-black opacity-30 uppercase tracking-widest bg-blue-500/5 text-blue-500/60 px-2 py-1 rounded-md">
                                                     <CheckCircle2 size={10} />{' '}
-                                                    {res.correctAnswers}/
-                                                    {res.totalQuestions}
+                                                    {res.correctAnswers ??
+                                                        Math.round(
+                                                            (res.score / 100) *
+                                                                res.totalQuestions,
+                                                        )}
+                                                    /{res.totalQuestions}
                                                 </div>
                                             </div>
                                         </div>
@@ -368,7 +378,8 @@ export default function ExamLobby({
                                         <ChevronRight size={20} />
                                     </div>
                                 </button>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="text-center py-20 bg-background/40 rounded-[32px] border border-dashed border-foreground/10">

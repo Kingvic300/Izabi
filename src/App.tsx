@@ -21,7 +21,14 @@ const GOOGLE_CLIENT_ID =
     DEFAULT_GOOGLE_CLIENT_ID;
 
 const App = () => (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider
+        clientId={GOOGLE_CLIENT_ID}
+        onScriptLoadError={() =>
+            console.error(
+                '[GoogleOAuthProvider] Failed to load Google Identity Services script',
+            )
+        }
+    >
         <ErrorBoundary>
             <ThemeProvider defaultTheme="dark" storageKey="izabi-theme-v3">
                 <LanguageProvider>

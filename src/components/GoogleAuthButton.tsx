@@ -92,9 +92,16 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
             </div>
             <div className="absolute inset-0 z-10 opacity-0 [&_div]:w-full [&_div]:h-full [&_iframe]:w-full [&_iframe]:h-full">
                 <GoogleLogin
-                    onSuccess={onSuccess}
+                    onSuccess={(credentialResponse) => {
+                        if (!credentialResponse.credential) {
+                            onError();
+                            return;
+                        }
+                        onSuccess(credentialResponse);
+                    }}
                     onError={onError}
                     useOneTap={useOneTap}
+                    use_fedcm_for_prompt
                     theme="outline"
                     size="large"
                     shape="pill"

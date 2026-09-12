@@ -16,8 +16,11 @@ import {
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const HowItWorks = () => {
     const containerRef = useRef<HTMLDivElement>(null);
