@@ -649,75 +649,80 @@ export default function DashboardHome() {
                 </header>
 
 
-                <AnimatePresence>
-                    {showAIUpdate && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, height: 'auto', scale: 1 }}
-                            exit={{ opacity: 0, height: 0, scale: 0.95 }}
-                            className="stagger-card overflow-hidden"
-                        >
-                            <Alert className="relative border-foreground/10 bg-card/50 p-4 sm:p-6 rounded-3xl overflow-hidden group">
-                                {/* Decorative Gradient */}
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-primary/20 transition-all duration-700" />
-                                
-                                <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                    <div className="flex gap-4 sm:gap-6">
-                                        <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 rotate-3 group-hover:rotate-0 transition-transform duration-500">
-                                            <BrainCircuit className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-                                        </div>
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <div className="flex items-center gap-2">
-                                                <Badge variant="secondary" className="bg-primary/20 text-primary border-none text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-0.5">
-                                                    {t('home.new_badge')}
-                                                </Badge>
-                                                <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                                            </div>
-                                            <AlertTitle className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
-                                                {t('home.advanced_ai_title')}
-                                            </AlertTitle>
-                                            <AlertDescription className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed">
-                                                {t('home.advanced_ai_desc')}
-                                            </AlertDescription>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="flex items-center gap-3">
-                                        <Button 
-                                            onClick={() => navigate('/dashboard/ai-assistant')}
-                                            className="h-11 sm:h-13 px-6 sm:px-8 bg-primary hover:bg-primary/90 text-white rounded-2xl font-bold shadow-xl shadow-primary/20 group/btn transition-all hover:scale-105 active:scale-95"
-                                        >
-                                            {t('home.try_now')}
-                                            <ChevronRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover/btn:translate-x-1 transition-transform" />
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={dismissAIUpdate}
-                                            className="h-11 w-11 sm:h-13 sm:w-13 rounded-2xl border-foreground/10 hover:bg-foreground/5 shadow-sm"
-                                        >
-                                            <X className="h-4 w-4 sm:h-5 sm:w-5" />
-                                        </Button>
-                                    </div>
+                <section className="workspace-area space-y-6">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                                {t('home.study_workspace')}
+                            </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground/70">
+                            {t('home.upload_then_generate')}
+                        </span>
+                    </div>
+                    {session.pdfSelections.length > 0 ? (
+                        <>
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-10 stagger-card">
+                                <div className="lg:col-span-4 xl:col-span-3 space-y-6">
+                                    <DocumentInfo
+                                        fileNames={session.fileNames}
+                                        userStats={userStats}
+                                        onReset={handleUploadDocument}
+                                        onAddMore={handleAddMore}
+                                        onPreview={handlePreviewFile}
+                                    />
                                 </div>
-                                
-                                <div className="mt-6 pt-6 border-t border-primary/10 grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {[
-                                        { label: t('home.feat_multi_file_chat'), icon: FileStack },
-                                        { label: t('home.feat_ocr'), icon: Sparkles },
-                                        { label: t('home.feat_deep_synthesis'), icon: BrainCircuit },
-                                        { label: t('home.feat_source_grounded'), icon: CheckCircle2 },
-                                    ].map((feat, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                                            <feat.icon className="h-3 w-3 text-primary/50" />
-                                            {feat.label}
-                                        </div>
-                                    ))}
+                                <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+                                    <StudyControls
+                                        moduleStatuses={moduleStatuses}
+                                        isProcessing={isProcessing}
+                                        numberOfQuestions={session.numberOfQuestions}
+                                        quizDifficulty={session.quizDifficulty}
+                                        quizStyle={session.quizStyle}
+                                        shuffleQuestions={session.shuffleQuestions}
+                                        showExplanations={session.showExplanations}
+                                        onModuleClick={handleModuleRequest}
+                                        onQuestionsChange={(value) =>
+                                            updateSession({
+                                                numberOfQuestions: value,
+                                            })
+                                        }
+                                        onDifficultyChange={(value) =>
+                                            updateSession({ quizDifficulty: value })
+                                        }
+                                        onStyleChange={(value) =>
+                                            updateSession({ quizStyle: value })
+                                        }
+                                        onShuffleChange={(checked) =>
+                                            updateSession({
+                                                shuffleQuestions: checked,
+                                            })
+                                        }
+                                        onExplanationsChange={(checked) =>
+                                            updateSession({
+                                                showExplanations: checked,
+                                            })
+                                        }
+                                    />
                                 </div>
-                            </Alert>
-                        </motion.div>
+                            </div>
+
+                            <ResultsHub
+                                onDownloadSummary={downloadSummary}
+                                onDownloadGuide={downloadStudyGuide}
+                                onDownloadQuiz={downloadQuiz}
+                                onSubmitQuiz={handleQuizSubmit}
+                            />
+                        </>
+                    ) : (
+                        <div className="stagger-card">
+                            <UploadPrompt
+                                onSelectionComplete={handleSelectionComplete}
+                                onReadyToLearn={handleReadyToLearn}
+                            />
+                        </div>
                     )}
-                </AnimatePresence>
+                </section>
 
                 <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
                     <div className="glass-card p-5 sm:p-6 border border-foreground/10 rounded-[24px]">
@@ -835,40 +840,39 @@ export default function DashboardHome() {
                     </div>
                 </section>
 
-                    <section className="grid grid-cols-1 xl:grid-cols-2 gap-8 md:gap-12 items-stretch">
-                        <div className="flex flex-col h-full">
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
-                                    {t('home.daily_pulse')}
-                                </span>
-                            </div>
-                            <div className="flex-1 glass p-4 sm:p-6 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl">
-                                <BrainDropSection
-                                    isCompleted={isBrainDropCompleted}
-                                    question={brainDropQuestion}
-                                    onAnswer={handleBrainDropSubmission}
-                                    onUploadClick={handleReadyToLearn}
-                                />
-                            </div>
+                <section className="grid grid-cols-1 xl:grid-cols-2 gap-8 md:gap-12 items-stretch">
+                    <div className="flex flex-col h-full">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
+                                {t('home.daily_pulse')}
+                            </span>
                         </div>
-                        
-                        <div className="flex flex-col h-full">
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
-                                    {t('home.quick_actions')}
-                                </span>
-                            </div>
-                            <div className="flex-1 glass p-2 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl group">
-                                <IntentCards
-                                    onPracticeSkills={handlePracticeSkills}
-                                    onQuickTest={handleQuickTest}
-                                    onLearnTricks={handleLearnTricks}
-                                    onUploadDocument={handleUploadDocument}
-                                />
-                            </div>
+                        <div className="flex-1 glass p-4 sm:p-6 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl">
+                            <BrainDropSection
+                                isCompleted={isBrainDropCompleted}
+                                question={brainDropQuestion}
+                                onAnswer={handleBrainDropSubmission}
+                                onUploadClick={handleReadyToLearn}
+                            />
                         </div>
-                    </section>
+                    </div>
 
+                    <div className="flex flex-col h-full">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
+                                {t('home.quick_actions')}
+                            </span>
+                        </div>
+                        <div className="flex-1 glass p-2 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl group">
+                            <IntentCards
+                                onPracticeSkills={handlePracticeSkills}
+                                onQuickTest={handleQuickTest}
+                                onLearnTricks={handleLearnTricks}
+                                onUploadDocument={handleUploadDocument}
+                            />
+                        </div>
+                    </div>
+                </section>
 
                 <AnimatePresence>
                     {showContextCard && (
@@ -881,80 +885,75 @@ export default function DashboardHome() {
                     )}
                 </AnimatePresence>
 
-                <section className="workspace-area space-y-6">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
-                                {t('home.study_workspace')}
-                            </span>
-                        </div>
-                        <span className="text-xs text-muted-foreground/70">
-                            {t('home.upload_then_generate')}
-                        </span>
-                    </div>
-                    {session.pdfSelections.length > 0 ? (
-                        <>
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-10 stagger-card">
-                                <div className="lg:col-span-4 xl:col-span-3 space-y-6">
-                                    <DocumentInfo
-                                        fileNames={session.fileNames}
-                                        userStats={userStats}
-                                        onReset={handleUploadDocument}
-                                        onAddMore={handleAddMore}
-                                        onPreview={handlePreviewFile}
-                                    />
-                                </div>
-                                <div className="lg:col-span-8 xl:col-span-9 space-y-6">
-                                    <StudyControls
-                                        moduleStatuses={moduleStatuses}
-                                        isProcessing={isProcessing}
-                                        numberOfQuestions={session.numberOfQuestions}
-                                        quizDifficulty={session.quizDifficulty}
-                                        quizStyle={session.quizStyle}
-                                        shuffleQuestions={session.shuffleQuestions}
-                                        showExplanations={session.showExplanations}
-                                        onModuleClick={handleModuleRequest}
-                                        onQuestionsChange={(value) =>
-                                            updateSession({
-                                                numberOfQuestions: value,
-                                            })
-                                        }
-                                        onDifficultyChange={(value) =>
-                                            updateSession({ quizDifficulty: value })
-                                        }
-                                        onStyleChange={(value) =>
-                                            updateSession({ quizStyle: value })
-                                        }
-                                        onShuffleChange={(checked) =>
-                                            updateSession({
-                                                shuffleQuestions: checked,
-                                            })
-                                        }
-                                        onExplanationsChange={(checked) =>
-                                            updateSession({
-                                                showExplanations: checked,
-                                            })
-                                        }
-                                    />
-                                </div>
-                            </div>
+                <AnimatePresence>
+                    {showAIUpdate && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                            exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                            className="stagger-card overflow-hidden"
+                        >
+                            <Alert className="relative border-foreground/10 bg-card/50 p-4 sm:p-6 rounded-3xl overflow-hidden group">
+                                {/* Decorative Gradient */}
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-primary/20 transition-all duration-700" />
 
-                            <ResultsHub
-                                onDownloadSummary={downloadSummary}
-                                onDownloadGuide={downloadStudyGuide}
-                                onDownloadQuiz={downloadQuiz}
-                                onSubmitQuiz={handleQuizSubmit}
-                            />
-                        </>
-                    ) : (
-                        <div className="stagger-card">
-                            <UploadPrompt
-                                onSelectionComplete={handleSelectionComplete}
-                                onReadyToLearn={handleReadyToLearn}
-                            />
-                        </div>
+                                <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                    <div className="flex gap-4 sm:gap-6">
+                                        <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                                            <BrainCircuit className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                                        </div>
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                <Badge variant="secondary" className="bg-primary/20 text-primary border-none text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-0.5">
+                                                    {t('home.new_badge')}
+                                                </Badge>
+                                                <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                                            </div>
+                                            <AlertTitle className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
+                                                {t('home.advanced_ai_title')}
+                                            </AlertTitle>
+                                            <AlertDescription className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed">
+                                                {t('home.advanced_ai_desc')}
+                                            </AlertDescription>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3">
+                                        <Button
+                                            onClick={() => navigate('/dashboard/ai-assistant')}
+                                            className="h-11 sm:h-13 px-6 sm:px-8 bg-primary hover:bg-primary/90 text-white rounded-2xl font-bold shadow-xl shadow-primary/20 group/btn transition-all hover:scale-105 active:scale-95"
+                                        >
+                                            {t('home.try_now')}
+                                            <ChevronRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover/btn:translate-x-1 transition-transform" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={dismissAIUpdate}
+                                            className="h-11 w-11 sm:h-13 sm:w-13 rounded-2xl border-foreground/10 hover:bg-foreground/5 shadow-sm"
+                                        >
+                                            <X className="h-4 w-4 sm:h-5 sm:w-5" />
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 pt-6 border-t border-primary/10 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {[
+                                        { label: t('home.feat_multi_file_chat'), icon: FileStack },
+                                        { label: t('home.feat_ocr'), icon: Sparkles },
+                                        { label: t('home.feat_deep_synthesis'), icon: BrainCircuit },
+                                        { label: t('home.feat_source_grounded'), icon: CheckCircle2 },
+                                    ].map((feat, i) => (
+                                        <div key={i} className="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                                            <feat.icon className="h-3 w-3 text-primary/50" />
+                                            {feat.label}
+                                        </div>
+                                    ))}
+                                </div>
+                            </Alert>
+                        </motion.div>
                     )}
-                </section>
+                </AnimatePresence>
             </div>
 
             <QuickTestModal
