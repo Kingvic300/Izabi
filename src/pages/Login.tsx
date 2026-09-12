@@ -29,8 +29,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import GoogleAuthButton from '@/components/GoogleAuthButton';
 import ChangePassword from '@/pages/ChangePassword';
+import GoogleAuthButton from '@/components/GoogleAuthButton';
 
 const Login = () => {
     const normalizeRole = (role?: string) =>
@@ -224,6 +224,7 @@ const Login = () => {
             setLoading(false);
         }
     };
+
     return (
         <div className="min-h-screen bg-background relative overflow-hidden flex">
             <Link
@@ -451,7 +452,7 @@ const Login = () => {
                                             ),
                                         });
                                     }}
-                                    label="Sign in with Google"
+                                    label="signin_with"
                                 />
                             </div>
                         </form>

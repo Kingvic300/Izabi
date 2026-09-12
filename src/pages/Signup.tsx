@@ -498,7 +498,7 @@ const Signup = () => {
                                             ),
                                         });
                                     }}
-                                    label="Sign up with Google"
+                                    label="signup_with"
                                 />
                             </div>
                         </form>
