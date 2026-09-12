@@ -12,6 +12,9 @@ import {
     Loader2,
     Eye,
     EyeOff,
+    Brain,
+    Trophy,
+    Flame,
 } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Link, useNavigate } from 'react-router-dom';
@@ -222,7 +225,7 @@ const Login = () => {
         }
     };
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6">
+        <div className="min-h-screen bg-background relative overflow-hidden flex">
             <Link
                 to="/"
                 className="absolute top-4 left-4 sm:top-8 sm:left-8 group z-20"
@@ -237,21 +240,73 @@ const Login = () => {
                 </div>
             </Link>
 
+            {/* Branding panel */}
+            <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-center px-16 overflow-hidden bg-card/20 border-r border-foreground/5">
+                <div
+                    aria-hidden="true"
+                    className="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-primary/20 blur-3xl"
+                />
+                <div
+                    aria-hidden="true"
+                    className="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-primary-glow/10 blur-3xl"
+                />
+
+                <div className="relative z-10 max-w-md">
+                    <Logo size={72} />
+                    <h2 className="mt-10 text-4xl font-bold tracking-tighter text-foreground leading-tight">
+                        Pick up right where you left off.
+                    </h2>
+                    <p className="mt-4 text-base text-muted-foreground font-medium">
+                        Your streak, your notes, and your AI study buddy are
+                        exactly where you left them.
+                    </p>
+
+                    <div className="mt-10 space-y-5">
+                        <div className="flex items-center gap-4">
+                            <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                <Brain size={20} />
+                            </div>
+                            <span className="text-sm font-semibold text-foreground/80">
+                                AI-generated summaries &amp; practice quizzes
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                <Flame size={20} />
+                            </div>
+                            <span className="text-sm font-semibold text-foreground/80">
+                                Daily streaks that keep you accountable
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                <Trophy size={20} />
+                            </div>
+                            <span className="text-sm font-semibold text-foreground/80">
+                                Leaderboards to keep you motivated
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Form panel */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 py-20 lg:py-6">
             <div
                 ref={cardRef}
                 className="w-full max-w-full sm:max-w-[480px] space-y-6 sm:space-y-8 relative z-10 px-1"
             >
-                {/* Branding */}
-                <div className="text-center space-y-3 sm:space-y-4">
+                {/* Branding (mobile only) */}
+                <div className="text-center space-y-3 sm:space-y-4 lg:hidden">
                     <Logo size={200} className="justify-center mx-auto" />
-                    <div>
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
-                            {t('auth.login')}
-                        </h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">
-                            Welcome back! Please sign in to your account.
-                        </p>
-                    </div>
+                </div>
+                <div className="text-center lg:text-left">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
+                        {t('auth.login')}
+                    </h1>
+                    <p className="text-sm sm:text-base text-muted-foreground font-medium px-2 lg:px-0">
+                        Welcome back! Please sign in to your account.
+                    </p>
                 </div>
 
                 <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
@@ -414,6 +469,7 @@ const Login = () => {
                         </div>
                     </CardContent>
                 </Card>
+            </div>
             </div>
         </div>
     );
