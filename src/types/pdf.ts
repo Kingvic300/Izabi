@@ -1,3 +1,6 @@
+/** Max number of pages a user may select from a single PDF. */
+export const MAX_SELECTED_PAGES = 100;
+
 export interface PDFSelection {
     selectedPages: number[];
     selectedText: Array<{

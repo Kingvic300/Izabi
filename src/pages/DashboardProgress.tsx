@@ -77,7 +77,7 @@ const DashboardProgress = () => {
         >
             <div className="prog-header space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                    <span className="text-xs sm:text-xs font-semibold text-primary">
                         {t('progress.eyebrow')}
                     </span>
                 </div>
@@ -91,27 +91,27 @@ const DashboardProgress = () => {
                         </p>
                     </div>
                 </div>
-                <div className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6">
+                <div className="glass-card border-foreground/10 rounded-xl p-5 sm:p-6">
                     <ProgressHeader studyStreak={progressData.studyStreak} />
                 </div>
             </div>
 
             {/* Usage & Subscription Banner */}
             {usage && (
-                <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+                <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
                     <UsageBanner usage={usage} subscription={subscription} />
                 </div>
             )}
 
             <section className="space-y-4">
-                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                     {t('progress.snapshot_label')}
                 </div>
                 <ProgressStatCards progressData={progressData} />
             </section>
 
             <section className="space-y-4">
-                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                     {t('progress.streaks_label')}
                 </div>
                 <ActivityStreaks
@@ -120,7 +120,7 @@ const DashboardProgress = () => {
             </section>
 
             <section className="space-y-4">
-                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                     {t('progress.insights_label')}
                 </div>
                 <ProgressCharts
@@ -130,7 +130,7 @@ const DashboardProgress = () => {
             </section>
 
             <section className="space-y-4">
-                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                     {t('progress.achievements_label')}
                 </div>
                 <AchievementsSection progressData={progressData} />

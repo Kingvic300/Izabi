@@ -13,7 +13,7 @@ export const RankTrend = ({ change }: RankTrendProps) => {
     return (
         <div
             className={cn(
-                'flex items-center gap-0.5 text-[10px] font-bold',
+                'flex items-center gap-0.5 text-xs font-bold',
                 isPositive ? 'text-blue-500' : 'text-destructive',
             )}
         >

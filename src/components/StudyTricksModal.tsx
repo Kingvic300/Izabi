@@ -99,15 +99,15 @@ const StudyTricksModal: React.FC<StudyTricksModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 ">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-background rounded-[32px] shadow-2xl border border-primary/20"
+                className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-background rounded-xl shadow-sm border border-primary/20"
             >
                 {/* Header */}
-                <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-xl border-b border-foreground/10 p-6">
+                <div className="sticky top-0 z-10 bg-background/95 border-b border-foreground/10 p-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center">
@@ -147,7 +147,7 @@ const StudyTricksModal: React.FC<StudyTricksModalProps> = ({
                                 >
                                     <div className="flex items-start gap-4">
                                         <div
-                                            className={`w-12 h-12 rounded-xl bg-background/50 backdrop-blur-sm flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform ${trick.iconColor}`}
+                                            className={`w-12 h-12 rounded-xl bg-background/50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform ${trick.iconColor}`}
                                         >
                                             <Icon size={24} />
                                         </div>

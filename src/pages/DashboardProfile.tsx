@@ -185,11 +185,11 @@ const DashboardProfile = () => {
         >
             <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                    <span className="text-xs sm:text-xs font-semibold text-primary">
                         Profile
                     </span>
                 </div>
-                <div className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6">
+                <div className="glass-card border-foreground/10 rounded-xl p-5 sm:p-6">
                     <ProfileHeader
                         isEditing={isEditing}
                         isSaving={loading}

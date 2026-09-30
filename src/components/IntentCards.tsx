@@ -1,15 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import {
-    Brain,
-    Zap,
-    BookOpen,
-    Upload,
-    Clock,
-    Target,
-    Lightbulb,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Brain, Zap, Upload, Lightbulb } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface IntentCard {
@@ -73,62 +63,35 @@ const IntentCards: React.FC<IntentCardsProps> = ({
     ];
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 md:px-0">
-                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-                    {t('intent.heading')}
-                </h2>
-                <Target size={24} className="text-primary opacity-30" />
-            </div>
-
-            {/* Cards Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {cards.map((card, index) => {
-                    const Icon = card.icon;
-                    return (
-                        <motion.button
-                            key={card.id}
-                            id={`intent-card-${card.id}`}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            onClick={card.onClick}
-                            className={cn(
-                                'group relative overflow-hidden rounded-3xl p-6 text-left transition-all duration-300',
-                                'border-2 hover:scale-[1.02] active:scale-[0.98]',
-                                'shadow-lg hover:shadow-2xl backdrop-blur-sm',
-                                card.color,
-                            )}
-                        >
-                            {/* Icon */}
-                            <div className="mb-4 relative">
-                                <div className="w-14 h-14 rounded-2xl bg-primary/30 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform border border-primary/20">
-                                    <Icon size={28} className="text-primary" />
-                                </div>
+        <div className="grid grid-cols-2 gap-2">
+            {cards.map((card) => {
+                const Icon = card.icon;
+                return (
+                    <button
+                        key={card.id}
+                        id={`intent-card-${card.id}`}
+                        onClick={card.onClick}
+                        className="flex items-start gap-3 rounded-lg p-3 text-left transition-colors hover:bg-muted"
+                    >
+                        <div className="h-9 w-9 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                            <Icon size={18} />
+                        </div>
+                        <div className="min-w-0">
+                            <p className="text-sm font-medium flex items-center gap-2">
+                                {card.label}
                                 {card.badge && (
-                                    <div className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full bg-primary/20 backdrop-blur-sm text-[9px] font-bold uppercase tracking-wider text-primary border border-primary/30">
+                                    <span className="text-[11px] font-normal text-muted-foreground">
                                         {card.badge}
-                                    </div>
+                                    </span>
                                 )}
-                            </div>
-
-                            {/* Content */}
-                            <div className="space-y-1">
-                                <h3 className="text-base md:text-lg font-bold text-foreground leading-tight">
-                                    {card.label}
-                                </h3>
-                                <p className="text-xs md:text-sm font-medium text-muted-foreground">
-                                    {card.description}
-                                </p>
-                            </div>
-
-                            {/* Hover accent */}
-                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                        </motion.button>
-                    );
-                })}
-            </div>
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                {card.description}
+                            </p>
+                        </div>
+                    </button>
+                );
+            })}
         </div>
     );
 };

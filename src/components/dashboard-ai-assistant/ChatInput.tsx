@@ -52,7 +52,7 @@ export default function ChatInput({
                                 key={doc.documentId}
                                 className="flex items-center justify-between gap-2 rounded-xl border border-primary/20 bg-primary/5 px-2 py-1"
                             >
-                                <div className="flex items-center gap-2 text-[10px] text-primary font-medium min-w-0">
+                                <div className="flex items-center gap-2 text-xs text-primary font-medium min-w-0">
                                     <FileText className="h-3 w-3" />
                                     <span className="truncate max-w-[120px] sm:max-w-[180px]">
                                         {doc.fileName}
@@ -97,7 +97,7 @@ export default function ChatInput({
                                 onClick={() =>
                                     onSuggestionClick(s.feature)
                                 }
-                                className="h-8 shrink-0 rounded-full bg-primary/5 border-primary/20 text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-wider gap-2 transition-all hover:scale-105"
+                                className="h-8 shrink-0 rounded-full bg-primary/5 border-primary/20 text-primary hover:bg-primary/10 text-xs font-bold gap-2 transition-all hover:scale-105"
                             >
                                 {s.icon} {s.label}
                             </Button>
@@ -105,7 +105,7 @@ export default function ChatInput({
                     </div>
                 )}
 
-                <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-card/5 backdrop-blur-xl">
+                <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-card/5 ">
                     <Input
                         placeholder={
                             activeDocuments.length > 0
@@ -142,7 +142,7 @@ export default function ChatInput({
                         <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:animate-shimmer" />
                     </Button>
                 </div>
-                <p className="text-[9px] md:text-[10px] text-center mt-1 md:mt-2 text-muted-foreground/60 uppercase tracking-[0.15em] font-medium">
+                <p className="text-xs md:text-[10px] text-center mt-1 md:mt-2 text-muted-foreground/60 font-medium">
                     {t('assistant.disclaimer')}
                 </p>
             </div>

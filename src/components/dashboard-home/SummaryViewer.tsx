@@ -237,7 +237,7 @@ export const SummaryViewer = ({ content, audioLabel = 'Listen to Summary' }: Sum
                             </Select>
                         </div>
                         <div className="flex-1 min-w-[180px] rounded-2xl border border-foreground/10 bg-background/60 px-3 py-2">
-                            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                            <div className="flex items-center justify-between text-xs font-bold text-muted-foreground">
                                 <span>Speed</span>
                                 <span>{playbackRate.toFixed(2)}x</span>
                             </div>
@@ -254,7 +254,7 @@ export const SummaryViewer = ({ content, audioLabel = 'Listen to Summary' }: Sum
                         </div>
                     </div>
                 </div>
-                <p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                     Change voice and speed for better listening comfort.
                 </p>
             </div>

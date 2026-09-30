@@ -45,15 +45,15 @@ export const YourRankCard = ({
 
     return (
         <div className="flex flex-col gap-3 w-full md:w-auto md:min-w-[200px]">
-            <div className="p-3 sm:p-4 rounded-2xl bg-card/5 border border-foreground/10 backdrop-blur-md flex items-center gap-3 sm:gap-4 w-full">
+            <div className="p-3 sm:p-4 rounded-2xl bg-card/5 border border-foreground/10 flex items-center gap-3 sm:gap-4 w-full">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0">
                     <Target size={20} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">
+                    <p className="text-xs font-bold opacity-50">
                         {t('leaderboard.your_rank')}
                     </p>
-                    <p className="text-lg sm:text-xl font-black flex items-center gap-2">
+                    <p className="text-lg sm:text-xl font-semibold flex items-center gap-2">
                         {getRank()}
                     </p>
                 </div>

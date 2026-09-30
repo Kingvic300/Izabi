@@ -166,7 +166,7 @@ export const ShareProfileDialog = ({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         Share Profile
-                        <Badge variant="outline" className="ml-2 text-[10px] font-bold uppercase tracking-widest">
+                        <Badge variant="outline" className="ml-2 text-xs font-bold ">
                             {profileData.firstName || 'Scholar'}
                         </Badge>
                     </DialogTitle>
@@ -228,7 +228,7 @@ export const ShareProfileDialog = ({
 
                     <TabsContent value="link" className="space-y-4">
                         <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                            <label className="text-xs font-bold text-muted-foreground">
                                 Profile Link
                             </label>
                             <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export const ShareProfileDialog = ({
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                            <label className="text-xs font-bold text-muted-foreground">
                                 Share Text
                             </label>
                             <Textarea

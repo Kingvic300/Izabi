@@ -45,7 +45,7 @@ export default function GroupManagerDialog({
 }: GroupManagerDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-3xl sm:max-w-xl w-[95vw] p-0 overflow-hidden">
+            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-xl sm:max-w-xl w-[95vw] p-0 overflow-hidden">
                 <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
                     <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
                         Manage Groups

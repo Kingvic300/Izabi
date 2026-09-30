@@ -1,22 +1,29 @@
 import { useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Set worker path locally to bypass CORS and MIME issues from CDNs
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+// Same worker as PDFPreview (react-pdf shares this global) so versions never mismatch
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.mjs',
+    import.meta.url,
+).toString();
 
 export const usePDFExtraction = () => {
     const [isExtracting, setIsExtracting] = useState(false);
 
-    const extractTextFromPDF = async (file: File) => {
+    const extractTextFromPDF = async (file: File, pages?: number[]) => {
         setIsExtracting(true);
         try {
             const arrayBuffer = await file.arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
             const pdf = await loadingTask.promise;
             let text = '';
-            const maxPages = Math.min(pdf.numPages, 300); // Support up to 300 pages for textbooks
+            // Only the pages the user picked; whole document when none given
+            const pageNumbers =
+                pages && pages.length > 0
+                    ? pages.filter((n) => n >= 1 && n <= pdf.numPages)
+                    : Array.from({ length: pdf.numPages }, (_, i) => i + 1);
 
-            for (let i = 1; i <= maxPages; i++) {
+            for (const i of pageNumbers) {
                 const page = await pdf.getPage(i);
                 const content = await page.getTextContent();
                 const pageText = content.items

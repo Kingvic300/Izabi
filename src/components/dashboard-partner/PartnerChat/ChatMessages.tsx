@@ -51,14 +51,14 @@ export default function ChatMessages({ messages, currentUserId }: ChatMessagesPr
                             } ${isNudge ? 'font-semibold' : ''}`}
                         >
                             {isNudge && (
-                                <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest opacity-70 mb-0.5">
+                                <span className="inline-flex items-center gap-1 text-xs opacity-70 mb-0.5">
                                     <Sparkles className="h-3 w-3" /> Nudge
                                 </span>
                             )}
                             <p className="whitespace-pre-wrap break-words">
                                 {message.content}
                             </p>
-                            <span className="block text-[9px] mt-1 opacity-50 uppercase tracking-widest font-bold">
+                            <span className="block text-xs mt-1 opacity-50 font-bold">
                                 {new Date(message.createdAt).toLocaleTimeString([], {
                                     hour: '2-digit',
                                     minute: '2-digit',

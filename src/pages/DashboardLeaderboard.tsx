@@ -95,19 +95,19 @@ export default function DashboardLeaderboard() {
 
             <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                    <span className="text-xs sm:text-xs font-semibold text-primary">
                         {t('leaderboard.eyebrow')}
                     </span>
                 </div>
-                <header className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
+                <header className="glass-card border-foreground/10 rounded-xl p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                     <div className="space-y-2">
                         <Badge
                             variant="outline"
-                            className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-[10px] tracking-widest uppercase mb-1"
+                            className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-xs mb-1"
                         >
                             {t('leaderboard.badge')}
                         </Badge>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter leading-none">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-none">
                             {t('leaderboard.title_top')}{' '}
                             <span className="text-gradient">
                                 {t('leaderboard.title_gradient')}
@@ -129,7 +129,7 @@ export default function DashboardLeaderboard() {
                 </header>
             </div>
 
-            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
                 <Tabs
                     defaultValue="xp"
                     className="w-full"
@@ -141,7 +141,7 @@ export default function DashboardLeaderboard() {
                         <TabsList className="bg-card/5 border border-foreground/10 p-1 rounded-full h-12 sm:h-14">
                             <TabsTrigger
                                 value="xp"
-                                className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
+                                className="rounded-full px-4 sm:px-8 h-full font-bold text-xs sm:text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
                             >
                                 <Zap
                                     size={14}
@@ -151,7 +151,7 @@ export default function DashboardLeaderboard() {
                             </TabsTrigger>
                             <TabsTrigger
                                 value="streak"
-                                className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-orange-500 data-[state=active]:text-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
+                                className="rounded-full px-4 sm:px-8 h-full font-bold text-xs sm:text-xs data-[state=active]:bg-orange-500 data-[state=active]:text-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
                             >
                                 <Flame
                                     size={14}

@@ -28,17 +28,17 @@ export function LanguageToggle() {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="rounded-xl px-3 h-10 glass border border-foreground/10 flex items-center gap-2 font-bold transition-all"
+                    className="h-9 px-2.5 gap-1.5"
                 >
-                    <Globe size={16} className="text-primary" />
-                    <span className="text-xs uppercase tracking-widest hidden sm:inline">
+                    <Globe size={16} />
+                    <span className="text-sm hidden xl:inline">
                         {currentLabel}
                     </span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 align="end"
-                className="glass border-foreground/10"
+               
             >
                 {languages.map((lang) => (
                     <DropdownMenuItem

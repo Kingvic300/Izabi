@@ -20,7 +20,7 @@ export default function PartnerChat({
     onEndPartnership,
 }: PartnerChatProps) {
     return (
-        <Card className="glass-card border-foreground/10 rounded-[28px] overflow-hidden flex flex-col h-[500px]">
+        <Card className="glass-card border-foreground/10 rounded-xl overflow-hidden flex flex-col h-[500px]">
             <ChatHeader partner={partner} onEndPartnership={onEndPartnership} />
             <ChatMessages messages={messages} currentUserId={currentUserId} />
             <ChatInput onSend={onSend} />

@@ -11,7 +11,7 @@ export default function PartnerStatCards({ streaks }: PartnerStatCardsProps) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <Card className="stat-card glass-card group hover-lift relative overflow-hidden">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60 flex items-center gap-2">
+                    <CardTitle className="text-xs font-bold opacity-60 flex items-center gap-2">
                         <Zap size={14} className="text-primary" />
                         Your Streak
                     </CardTitle>
@@ -20,7 +20,7 @@ export default function PartnerStatCards({ streaks }: PartnerStatCardsProps) {
                     <div className="text-4xl font-bold">
                         {streaks?.yourStreak ?? 0} Days
                     </div>
-                    <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter">
+                    <p className="text-xs text-muted-foreground mt-1 font-bold ">
                         Consistency
                     </p>
                 </CardContent>
@@ -28,7 +28,7 @@ export default function PartnerStatCards({ streaks }: PartnerStatCardsProps) {
 
             <Card className="stat-card glass-card group hover-lift relative overflow-hidden">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60 flex items-center gap-2">
+                    <CardTitle className="text-xs font-bold opacity-60 flex items-center gap-2">
                         <Users size={14} className="text-blue-500" />
                         Partner Streak
                     </CardTitle>
@@ -37,7 +37,7 @@ export default function PartnerStatCards({ streaks }: PartnerStatCardsProps) {
                     <div className="text-4xl font-bold text-blue-400">
                         {streaks?.partnerStreak ?? 0} Days
                     </div>
-                    <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter">
+                    <p className="text-xs text-muted-foreground mt-1 font-bold ">
                         Their Consistency
                     </p>
                 </CardContent>
@@ -45,7 +45,7 @@ export default function PartnerStatCards({ streaks }: PartnerStatCardsProps) {
 
             <Card className="stat-card glass-card group hover-lift relative overflow-hidden border-primary/30">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-primary">
+                    <CardTitle className="text-xs font-bold flex items-center gap-2 text-primary">
                         <Flame size={14} className="fill-current" />
                         Shared Streak
                     </CardTitle>
@@ -54,7 +54,7 @@ export default function PartnerStatCards({ streaks }: PartnerStatCardsProps) {
                     <div className="text-4xl font-bold text-gradient">
                         {streaks?.sharedStreak ?? 0} Days
                     </div>
-                    <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter">
+                    <p className="text-xs text-muted-foreground mt-1 font-bold ">
                         Together, Consistently
                     </p>
                 </CardContent>

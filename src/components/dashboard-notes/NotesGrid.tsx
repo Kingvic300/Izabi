@@ -106,11 +106,11 @@ export default function NotesGrid({
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">
+                                                <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">
                                                     {note.subject || 'General'}
                                                 </span>
                                                 {groupName && (
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70 bg-foreground/10 px-2 py-0.5 rounded">
+                                                    <span className="text-xs font-bold text-foreground/70 bg-foreground/10 px-2 py-0.5 rounded">
                                                         {groupName}
                                                     </span>
                                                 )}
@@ -168,7 +168,7 @@ export default function NotesGrid({
                                         }}
                                     />
 
-                                    <div className="mt-4 pt-4 border-t border-foreground/5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-40">
+                                    <div className="mt-4 pt-4 border-t border-foreground/5 flex items-center gap-2 text-xs font-bold opacity-40">
                                         <Clock size={10} />
                                         <span>
                                             {new Date(
@@ -178,8 +178,8 @@ export default function NotesGrid({
                                     </div>
 
                                     {deleteConfirm === noteId && (
-                                        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 space-y-4 z-20">
-                                            <p className="text-xs font-bold uppercase tracking-wider text-center">
+                                        <div className="absolute inset-0 bg-background/95 flex flex-col items-center justify-center p-6 space-y-4 z-20">
+                                            <p className="text-xs font-bold text-center">
                                                 Permanently remove this note?
                                             </p>
                                             <div className="flex gap-2 w-full">
@@ -214,7 +214,7 @@ export default function NotesGrid({
                     if (!open) onEditNote(null);
                 }}
             >
-                <DialogContent className="glass border-foreground/10 max-w-2xl w-full rounded-3xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
+                <DialogContent className="glass border-foreground/10 max-w-2xl w-full rounded-xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
                     <DialogHeader className="px-6 pt-6 pb-4 border-b border-foreground/10 shrink-0">
                         <DialogTitle className="text-lg font-bold">
                             Edit Note

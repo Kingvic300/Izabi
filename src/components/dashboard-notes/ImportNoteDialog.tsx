@@ -53,7 +53,7 @@ export default function ImportNoteDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-3xl sm:max-w-2xl w-[95vw] p-0 overflow-hidden">
+            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-xl sm:max-w-2xl w-[95vw] p-0 overflow-hidden">
                 <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
                     <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
                         {importMode === 'scan'
@@ -68,11 +68,11 @@ export default function ImportNoteDialog({
                 </DialogHeader>
                 <div className="p-5 sm:p-6 space-y-5">
                     <div className="space-y-2">
-                        <Label className="text-xs uppercase tracking-widest font-bold opacity-60">
+                        <Label className="text-xs font-bold opacity-60">
                             File Upload
                         </Label>
                         <div
-                            className="border-2 border-dashed border-foreground/10 rounded-[20px] p-6 flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-all cursor-pointer relative bg-background/50"
+                            className="border-2 border-dashed border-foreground/10 rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-all cursor-pointer relative bg-background/50"
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={(e) => {
                                 e.preventDefault();
@@ -101,7 +101,7 @@ export default function ImportNoteDialog({
                                     <p className="text-xs font-bold text-primary truncate max-w-[220px]">
                                         {importFile.name}
                                     </p>
-                                    <p className="text-[10px] uppercase font-black tracking-widest opacity-40 mt-1">
+                                    <p className="text-xs font-semibold opacity-40 mt-1">
                                         Click to change
                                     </p>
                                 </div>
@@ -113,10 +113,10 @@ export default function ImportNoteDialog({
                                             className="text-muted-foreground"
                                         />
                                     </div>
-                                    <p className="text-[10px] font-black opacity-40 uppercase tracking-[0.2em] text-center">
+                                    <p className="text-xs font-semibold opacity-40 text-center">
                                         Drag & drop or browse
                                     </p>
-                                    <p className="text-[10px] uppercase tracking-widest opacity-40 text-center">
+                                    <p className="text-xs opacity-40 text-center">
                                         {importMode === 'scan'
                                             ? 'JPG, JPEG, PNG'
                                             : 'TXT, PDF, DOCX, JPG, JPEG, PNG'}
@@ -130,7 +130,7 @@ export default function ImportNoteDialog({
                         <div className="space-y-2">
                             <Label
                                 htmlFor="import-title"
-                                className="text-xs uppercase tracking-widest font-bold opacity-60"
+                                className="text-xs font-bold opacity-60"
                             >
                                 Title (optional)
                             </Label>
@@ -145,7 +145,7 @@ export default function ImportNoteDialog({
                         <div className="space-y-2">
                             <Label
                                 htmlFor="import-subject"
-                                className="text-xs uppercase tracking-widest font-bold opacity-60"
+                                className="text-xs font-bold opacity-60"
                             >
                                 Subject (optional)
                             </Label>

@@ -36,19 +36,12 @@ export const SettingsPanel = ({
 }: SettingsPanelProps) => {
     const { t } = useLanguage();
     return (
-        <div className="p-4 sm:p-6 bg-card/[0.02] border-t border-foreground/5 space-y-4">
-            <div className="flex items-center justify-between gap-3">
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-                    {t('module.session_settings')}
-                </div>
-                <div className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-30">
-                    {t('module.mobile_ready')}
-                </div>
-            </div>
+        <div className="p-4 sm:p-5 space-y-4">
+            <h4 className="font-medium">{t('module.session_settings')}</h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-3">
-                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
+                <div className="rounded-lg bg-muted/40 p-3 space-y-3">
+                    <div className="text-sm font-medium">
                         {t('module.questions_label')}
                     </div>
                     <ToggleGroup
@@ -62,7 +55,7 @@ export const SettingsPanel = ({
                             <ToggleGroupItem
                                 key={num}
                                 value={String(num)}
-                                className="h-10 text-xs font-bold"
+                                className="h-9 text-sm"
                             >
                                 {num}
                             </ToggleGroupItem>
@@ -70,8 +63,8 @@ export const SettingsPanel = ({
                     </ToggleGroup>
                 </div>
 
-                <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-3">
-                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
+                <div className="rounded-lg bg-muted/40 p-3 space-y-3">
+                    <div className="text-sm font-medium">
                         {t('module.difficulty_label')}
                     </div>
                     <ToggleGroup
@@ -82,7 +75,7 @@ export const SettingsPanel = ({
                         className="grid grid-cols-3 gap-2"
                     >
                         {DIFFICULTY_OPTIONS.map((opt) => (
-                            <ToggleGroupItem key={opt} value={opt} className="h-10 text-xs font-bold">
+                            <ToggleGroupItem key={opt} value={opt} className="h-9 text-sm">
                                 {opt === 'easy'
                                     ? t('module.difficulty_easy')
                                     : opt === 'hard'
@@ -93,8 +86,8 @@ export const SettingsPanel = ({
                     </ToggleGroup>
                 </div>
 
-                <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-3">
-                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
+                <div className="rounded-lg bg-muted/40 p-3 space-y-3">
+                    <div className="text-sm font-medium">
                         {t('module.question_type_label')}
                     </div>
                     <ToggleGroup
@@ -105,20 +98,20 @@ export const SettingsPanel = ({
                         className="grid grid-cols-3 gap-2"
                     >
                         {QUIZ_STYLE_OPTIONS.map((opt) => (
-                            <ToggleGroupItem key={opt} value={opt} className="h-10 text-[11px] font-bold">
+                            <ToggleGroupItem key={opt} value={opt} className="h-9 text-sm">
                                 {opt === 'mcq' ? t('module.style_mcq') : opt === 'short' ? t('module.style_short') : t('module.style_mixed')}
                             </ToggleGroupItem>
                         ))}
                     </ToggleGroup>
                 </div>
 
-                <div className="rounded-2xl border border-foreground/5 bg-card/5 p-4 space-y-4">
+                <div className="rounded-lg bg-muted/40 p-3 space-y-4">
                     <div className="flex items-center justify-between gap-3">
                         <div className="space-y-1">
-                            <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
+                            <div className="text-sm font-medium">
                                 {t('module.shuffle_label')}
                             </div>
-                            <div className="text-xs font-medium text-muted-foreground">
+                            <div className="text-xs text-muted-foreground">
                                 {t('module.shuffle_desc')}
                             </div>
                         </div>
@@ -131,10 +124,10 @@ export const SettingsPanel = ({
 
                     <div className="flex items-center justify-between gap-3">
                         <div className="space-y-1">
-                            <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
+                            <div className="text-sm font-medium">
                                 {t('module.explanations_label')}
                             </div>
-                            <div className="text-xs font-medium text-muted-foreground">
+                            <div className="text-xs text-muted-foreground">
                                 {t('module.explanations_desc')}
                             </div>
                         </div>
@@ -148,9 +141,9 @@ export const SettingsPanel = ({
             </div>
 
             {isProcessing && (
-                <div className="flex items-center gap-4 text-primary animate-pulse">
+                <div className="flex items-center gap-2 text-sm text-primary">
                     <Loader2 className="animate-spin" size={16} />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">
+                    <span>
                         {t('module.creating_plan')}
                     </span>
                 </div>

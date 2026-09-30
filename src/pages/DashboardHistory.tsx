@@ -126,7 +126,7 @@ const DashboardHistory = () => {
         <div className="w-full space-y-8 sm:space-y-12 pb-24 sm:pb-32 px-4 sm:px-6 md:px-8 xl:px-10 pt-6 md:pt-12">
             <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                    <span className="text-xs sm:text-xs font-semibold text-primary">
                         {t('history.eyebrow')}
                     </span>
                 </div>
@@ -146,12 +146,12 @@ const DashboardHistory = () => {
                 </div>
             </div>
 
-            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
                 <HistoryStatsRow stats={stats} />
             </div>
 
-            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6 space-y-4">
-                <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6 space-y-4">
+                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                     {t('history.search_filters')}
                 </div>
                 <HistorySearchBar
@@ -160,7 +160,7 @@ const DashboardHistory = () => {
                 />
             </div>
 
-            <div className="glass-card border-foreground/10 rounded-[28px] p-2 sm:p-4">
+            <div className="glass-card border-foreground/10 rounded-xl p-2 sm:p-4">
                 <HistoryList
                     items={filteredHistory}
                     onSelect={setSelectedItem}

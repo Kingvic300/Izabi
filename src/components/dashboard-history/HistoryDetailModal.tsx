@@ -31,20 +31,20 @@ export default function HistoryDetailModal({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-background/80 backdrop-blur-md"
+                        className="absolute inset-0 bg-background/80 "
                     />
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="bg-card glass border border-foreground/10 w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-[24px] sm:rounded-[40px] shadow-2xl relative z-10 flex flex-col"
+                        className="bg-card glass border border-foreground/10 w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-xl sm:rounded-xl shadow-sm relative z-10 flex flex-col"
                     >
                         <div className="p-4 sm:p-8 border-b border-foreground/5 flex justify-between items-start sm:items-center gap-3 sm:gap-4 bg-primary/5">
                             <div className="min-w-0">
-                                <Badge className="mb-2 bg-primary text-primary-foreground font-black uppercase tracking-tighter">
+                                <Badge className="mb-2 bg-primary text-primary-foreground font-semibold ">
                                     {item.hType}
                                 </Badge>
-                                <h2 className="text-lg sm:text-2xl font-black uppercase tracking-tight break-words pr-2">
+                                <h2 className="text-lg sm:text-2xl font-semibold tracking-tight break-words pr-2">
                                     {item.fileName ||
                                         item.title ||
                                         item.subject ||
@@ -65,8 +65,8 @@ export default function HistoryDetailModal({
                             <div className="space-y-8">
                                 {item.hType === 'generation' && (
                                     <div className="space-y-6">
-                                        <div className="bg-primary/5 p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-primary/10">
-                                            <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary mb-3">
+                                        <div className="bg-primary/5 p-4 sm:p-6 rounded-xl sm:rounded-xl border border-primary/10">
+                                            <h4 className="flex items-center gap-2 text-xs font-semibold text-primary mb-3">
                                                 <Brain size={14} /> {t('history.ai_summary')}
                                             </h4>
                                             {(() => {
@@ -96,7 +96,7 @@ export default function HistoryDetailModal({
 
                                         {item.keyPoints?.length > 0 && (
                                             <div className="space-y-4">
-                                                <h4 className="text-xs font-black uppercase tracking-widest opacity-40">
+                                                <h4 className="text-xs font-semibold opacity-40">
                                                     {t('history.key_insights')}
                                                 </h4>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
@@ -107,7 +107,7 @@ export default function HistoryDetailModal({
                                                         ) => (
                                                             <div
                                                                 key={i}
-                                                                className="p-4 bg-card/50 border border-foreground/5 rounded-2xl flex gap-3 italic"
+                                                                className="p-4 bg-card/50 border border-foreground/5 rounded-2xl flex gap-3 "
                                                             >
                                                                 <Zap
                                                                     size={16}
@@ -127,7 +127,7 @@ export default function HistoryDetailModal({
 
                                 {item.hType === 'note' && (
                                     <div className="prose prose-invert max-w-none">
-                                        <div className="p-4 sm:p-8 bg-card/50 border border-foreground/5 rounded-[24px] sm:rounded-[32px]">
+                                        <div className="p-4 sm:p-8 bg-card/50 border border-foreground/5 rounded-xl sm:rounded-xl">
                                             <p className="whitespace-pre-wrap text-lg leading-relaxed font-medium">
                                                 {item.content}
                                             </p>
@@ -138,7 +138,7 @@ export default function HistoryDetailModal({
                                 {item.hType === 'quiz' && (
                                     <div className="space-y-6 text-center py-10">
                                         <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-primary/10 flex items-center justify-center mx-auto border border-primary/20 shadow-glow mb-4">
-                                            <span className="text-3xl sm:text-4xl font-black text-primary">
+                                            <span className="text-3xl sm:text-4xl font-semibold text-primary">
                                                 {Math.round(item.score)}%
                                             </span>
                                         </div>
@@ -167,16 +167,16 @@ export default function HistoryDetailModal({
 
                                 {item.hType === 'chat' && (
                                     <div className="space-y-6">
-                                        <div className="p-6 bg-card/50 border border-foreground/5 rounded-2xl italic">
-                                            <p className="text-muted-foreground text-sm font-bold uppercase mb-2">
+                                        <div className="p-6 bg-card/50 border border-foreground/5 rounded-2xl ">
+                                            <p className="text-muted-foreground text-sm font-bold mb-2">
                                                 {t('history.you_asked')}
                                             </p>
                                             <p className="text-xl font-medium">
                                                 "{item.message}"
                                             </p>
                                         </div>
-                                        <div className="p-4 sm:p-6 bg-primary/5 border border-primary/10 rounded-[24px] sm:rounded-[32px]">
-                                            <p className="text-primary text-sm font-bold uppercase mb-2">
+                                        <div className="p-4 sm:p-6 bg-primary/5 border border-primary/10 rounded-xl sm:rounded-xl">
+                                            <p className="text-primary text-sm font-bold mb-2">
                                                 {t('history.ai_replied')}
                                             </p>
                                             <AIMarkdown

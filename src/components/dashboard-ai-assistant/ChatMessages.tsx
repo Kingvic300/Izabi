@@ -53,7 +53,7 @@ export default function ChatMessages({
                                         ${
                                             message.role === 'user'
                                                 ? 'bg-primary text-primary-foreground rounded-tr-none'
-                                                : 'bg-muted/50 backdrop-blur-sm border border-foreground/5 rounded-tl-none'
+                                                : 'bg-muted/50 border border-foreground/5 rounded-tl-none'
                                         }`}
                         >
                             <div className="text-sm md:text-base max-w-none break-words">
@@ -75,7 +75,7 @@ export default function ChatMessages({
                                 )}
                             </div>
                             <div
-                                className={`text-[10px] mt-2 opacity-40 uppercase tracking-widest font-bold 
+                                className={`text-xs mt-2 opacity-40 font-bold 
                                             ${message.role === 'user' ? 'text-right' : 'text-left'}`}
                             >
                                 {message.timestamp.toLocaleTimeString([], {
@@ -85,11 +85,11 @@ export default function ChatMessages({
                                 {message.content &&
                                     String(message.content).trim() && (
                                         <div
-                                            className={`absolute  ${
+                                            className={`absolute ${
                                                 message.role === 'user'
                                                     ? 'left-2 '
                                                     : 'right-2'
-                                            } bottom-0.02 flex items-center gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-[10px]`}
+                                            } bottom-0.02 flex items-center gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-xs`}
                                         >
                                             <Button
                                                 type="button"
@@ -138,7 +138,7 @@ export default function ChatMessages({
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-accent/20 border border-accent/30 text-accent">
                             <Brain className="h-5 w-5" />
                         </div>
-                        <div className="bg-muted/50 backdrop-blur-sm border border-foreground/5 px-5 py-4 rounded-2xl rounded-tl-none">
+                        <div className="bg-muted/50 border border-foreground/5 px-5 py-4 rounded-2xl rounded-tl-none">
                             <Loader className="h-4 w-4 animate-spin text-accent" />
                         </div>
                     </div>

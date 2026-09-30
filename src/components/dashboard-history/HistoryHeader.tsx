@@ -31,7 +31,7 @@ export default function HistoryHeader({
                 </p>
             </div>
 
-            <div className="flex bg-card/5 backdrop-blur-xl border border-foreground/5 p-1 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar">
+            <div className="flex bg-card/5 border border-foreground/5 p-1 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar">
                 {HISTORY_TYPES.map(({ type, labelKey }) => (
                     <button
                         key={type}

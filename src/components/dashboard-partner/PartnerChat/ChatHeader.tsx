@@ -29,7 +29,7 @@ export default function ChatHeader({ partner, onEndPartnership }: ChatHeaderProp
                     <p className="text-sm font-bold truncate">
                         {getPartnerDisplayName(partner)}
                     </p>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
+                    <p className="text-xs text-muted-foreground font-bold ">
                         Accountability Partner
                     </p>
                 </div>

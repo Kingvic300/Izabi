@@ -58,19 +58,19 @@ export default function HistoryList({ items, onSelect }: HistoryListProps) {
 
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-3 mb-1">
-                                        <h3 className="font-bold text-lg truncate uppercase tracking-tight">
+                                        <h3 className="font-bold text-lg truncate tracking-tight">
                                             {item.title}
                                         </h3>
                                         <Badge
                                             variant="outline"
-                                            className="text-[10px] font-black uppercase opacity-60"
+                                            className="text-xs font-semibold opacity-60"
                                         >
                                             {item.hType === 'generation'
                                                 ? t('history.ai_material')
                                                 : item.hType}
                                         </Badge>
                                     </div>
-                                    <div className="flex items-center gap-4 text-xs font-bold opacity-40 uppercase tracking-widest">
+                                    <div className="flex items-center gap-4 text-xs font-bold opacity-40 ">
                                         <span className="flex items-center gap-1.5">
                                             <Clock size={12} />{' '}
                                             {new Date(
@@ -100,10 +100,10 @@ export default function HistoryList({ items, onSelect }: HistoryListProps) {
 
                                 {item.score !== undefined && (
                                     <div className="px-3 sm:px-6 py-2 rounded-2xl bg-primary/5 border border-primary/10 text-center">
-                                        <div className="text-xl font-black text-primary">
+                                        <div className="text-xl font-semibold text-primary">
                                             {Math.round(item.score)}%
                                         </div>
-                                        <div className="text-[10px] uppercase font-black opacity-40">
+                                        <div className="text-xs font-semibold opacity-40">
                                             {t('history.score_label')}
                                         </div>
                                     </div>
@@ -119,7 +119,7 @@ export default function HistoryList({ items, onSelect }: HistoryListProps) {
             </AnimatePresence>
 
             {items.length === 0 && (
-                <div className="text-center py-20 bg-card/5 rounded-[32px] border-2 border-dashed border-foreground/5">
+                <div className="text-center py-20 bg-card/5 rounded-xl border-2 border-dashed border-foreground/5">
                     <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Search className="text-muted-foreground" size={32} />
                     </div>

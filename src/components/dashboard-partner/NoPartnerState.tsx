@@ -24,7 +24,7 @@ export default function NoPartnerState({
     };
 
     return (
-        <Card className="glass-card border-foreground/10 rounded-[28px]">
+        <Card className="glass-card border-foreground/10 rounded-xl">
             <CardContent className="p-6 sm:p-10 text-center space-y-6">
                 <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                     <Handshake className="h-8 w-8 text-primary" />

@@ -28,7 +28,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                         <ArrowLeft size={16} />
                         {t('exams.back_to_lobby')}
                     </Button>
-                    <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tighter mb-2 italic">
+                    <h1 className="text-3xl sm:text-5xl font-extrabold mb-2 ">
                         {t('exams.title_top')}{' '}
                         <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
                             {t('exams.review_gradient')}
@@ -43,7 +43,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                 <div className="text-center shrink-0">
                     <div
                         className={cn(
-                            'w-24 h-24 sm:w-32 sm:h-32 rounded-[20px] sm:rounded-[28px] flex items-center justify-center font-black text-3xl sm:text-4xl shadow-2xl mb-2',
+                            'w-24 h-24 sm:w-32 sm:h-32 rounded-xl sm:rounded-xl flex items-center justify-center font-semibold text-3xl sm:text-4xl shadow-sm mb-2',
                             result.score >= 70
                                 ? 'bg-blue-500/10 text-blue-500 border-2 border-blue-500/20'
                                 : result.score >= 45
@@ -54,7 +54,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                         {Math.round(result.score)}
                         <span className="text-lg opacity-60">%</span>
                     </div>
-                    <p className="text-sm font-bold opacity-40 uppercase tracking-widest">
+                    <p className="text-sm font-bold opacity-40 ">
                         {t('exams.final_score')}
                     </p>
                 </div>
@@ -68,10 +68,10 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                             <CheckCircle2 size={24} />
                         </div>
                         <div>
-                            <p className="text-2xl font-black">
+                            <p className="text-2xl font-semibold">
                                 {result.correctAnswers}
                             </p>
-                            <p className="text-xs font-bold opacity-40 uppercase tracking-widest">
+                            <p className="text-xs font-bold opacity-40 ">
                                 {t('exams.correct_label')}
                             </p>
                         </div>
@@ -83,10 +83,10 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                             <XCircle size={24} />
                         </div>
                         <div>
-                            <p className="text-2xl font-black">
+                            <p className="text-2xl font-semibold">
                                 {result.totalQuestions - result.correctAnswers}
                             </p>
-                            <p className="text-xs font-bold opacity-40 uppercase tracking-widest">
+                            <p className="text-xs font-bold opacity-40 ">
                                 {t('exams.incorrect_label')}
                             </p>
                         </div>
@@ -98,10 +98,10 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                             <Target size={24} />
                         </div>
                         <div>
-                            <p className="text-2xl font-black">
+                            <p className="text-2xl font-semibold">
                                 {result.totalQuestions}
                             </p>
-                            <p className="text-xs font-bold opacity-40 uppercase tracking-widest">
+                            <p className="text-xs font-bold opacity-40 ">
                                 {t('exams.total_questions_label')}
                             </p>
                         </div>
@@ -111,7 +111,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
 
             {/* Question Breakdown */}
             <div className="space-y-4">
-                <h3 className="text-2xl font-black tracking-tighter">
+                <h3 className="text-2xl font-semibold ">
                     {t('exams.question_breakdown')}
                 </h3>
                 <p className="text-sm text-muted-foreground font-medium">
@@ -126,7 +126,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                                 className="text-muted-foreground opacity-30"
                             />
                         </div>
-                        <h4 className="text-lg font-black uppercase tracking-widest opacity-20 mb-2">
+                        <h4 className="text-lg font-semibold opacity-20 mb-2">
                             {t('exams.feature_in_dev')}
                         </h4>
                         <p className="text-sm opacity-40 max-w-md mx-auto font-medium">
@@ -139,7 +139,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
             <div className="flex gap-4 justify-center pt-8">
                 <Button
                     onClick={onBack}
-                    className="h-14 px-8 rounded-2xl font-black uppercase tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl shadow-primary/20 transition-all active:scale-95"
+                    className="h-14 px-8 rounded-2xl font-semibold text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/20 transition-all active:scale-95"
                 >
                     {t('exams.back_to_lobby')}
                 </Button>

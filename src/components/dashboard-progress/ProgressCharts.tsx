@@ -26,7 +26,7 @@ export default function ProgressCharts({
     const { t } = useLanguage();
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="chart-card glass-card border-foreground/10 shadow-2xl overflow-hidden">
+            <Card className="chart-card glass-card border-foreground/10 shadow-sm overflow-hidden">
                 <CardHeader className="border-b border-foreground/10 bg-card/5">
                     <CardTitle className="flex items-center gap-3">
                         <div className="p-2 rounded-xl bg-primary/20 text-primary">
@@ -102,7 +102,7 @@ export default function ProgressCharts({
                 </CardContent>
             </Card>
 
-            <Card className="chart-card glass-card border-foreground/10 shadow-2xl overflow-hidden">
+            <Card className="chart-card glass-card border-foreground/10 shadow-sm overflow-hidden">
                 <CardHeader className="border-b border-foreground/10 bg-card/5">
                     <CardTitle className="flex items-center gap-3">
                         <div className="p-2 rounded-xl bg-accent/20 text-accent">

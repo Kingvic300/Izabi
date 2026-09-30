@@ -43,7 +43,7 @@ export default function GoalPanel({
 
     if (!goal) {
         return (
-            <Card className="glass-card border-foreground/10 rounded-[28px]">
+            <Card className="glass-card border-foreground/10 rounded-xl">
                 <CardContent className="p-6 sm:p-8 space-y-4">
                     <div className="flex items-center gap-2">
                         <Target className="h-5 w-5 text-primary" />
@@ -83,11 +83,11 @@ export default function GoalPanel({
     }
 
     return (
-        <Card className="glass-card border-foreground/10 rounded-[28px]">
+        <Card className="glass-card border-foreground/10 rounded-xl">
             <CardContent className="p-6 sm:p-8 space-y-6">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="space-y-1">
-                        <Badge variant="outline" className="uppercase text-[10px] tracking-widest">
+                        <Badge variant="outline" className="text-xs ">
                             {goal.cadence} goal
                         </Badge>
                         <h3 className="text-xl font-bold">{goal.title}</h3>

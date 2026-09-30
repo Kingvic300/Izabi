@@ -151,13 +151,13 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full max-w-4xl max-h-[90vh] overflow-y-auto"
             >
-                <Card className="glass border-primary/20 shadow-2xl">
+                <Card className="glass border-primary/20 shadow-sm">
                     <CardHeader className="border-b border-foreground/5 pb-6">
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-4">
@@ -458,7 +458,7 @@ const SuggestionCard: React.FC<{
                             {suggestion.label}
                         </h4>
                         {suggestion.detectedTitle && (
-                            <Badge className="bg-green-500/20 text-green-400 border-none text-[10px]">
+                            <Badge className="bg-green-500/20 text-green-400 border-none text-xs">
                                 Auto-detected
                             </Badge>
                         )}
@@ -479,7 +479,7 @@ const SuggestionCard: React.FC<{
                     </div>
 
                     {suggestion.recommendedFor && (
-                        <p className="text-xs text-muted-foreground italic">
+                        <p className="text-xs text-muted-foreground ">
                             {suggestion.recommendedFor}
                         </p>
                     )}

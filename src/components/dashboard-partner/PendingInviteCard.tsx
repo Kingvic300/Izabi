@@ -19,7 +19,7 @@ export default function PendingInviteCard({
     const name = getPartnerDisplayName(partnership.partner);
 
     return (
-        <Card className="glass-card border-primary/30 rounded-[28px]">
+        <Card className="glass-card border-primary/30 rounded-xl">
             <CardContent className="p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
                 <Avatar className="h-16 w-16 border border-primary/20">
                     <AvatarImage src={partnership.partner?.profilePicturePath} />

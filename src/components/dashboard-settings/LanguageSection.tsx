@@ -25,7 +25,7 @@ export default function LanguageSection({
 }: LanguageSectionProps) {
     const { t } = useLanguage();
     return (
-        <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
+        <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-sm overflow-hidden">
             <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
                 <CardTitle className="flex items-center gap-3 text-xl font-bold">
                     <Globe className="text-primary" />
@@ -38,7 +38,7 @@ export default function LanguageSection({
             <CardContent className="p-6 md:p-8">
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                        <Label className="text-sm font-semibold uppercase tracking-wide">
+                        <Label className="text-sm font-semibold tracking-wide">
                             {t('settings.preferred_language')}
                         </Label>
                         {isLanguageSaving && (

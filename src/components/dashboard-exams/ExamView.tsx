@@ -49,30 +49,30 @@ export default function ExamView({
     return (
         <div className="w-full min-h-screen flex flex-col pb-16 sm:pb-20">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6 sm:mb-8 sticky top-2 sm:top-4 z-50 bg-background/80 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-foreground/10 shadow-xl">
+            <div className="flex items-center justify-between mb-6 sm:mb-8 sticky top-2 sm:top-4 z-50 bg-background/80 p-3 sm:p-4 rounded-2xl border border-foreground/10 shadow-sm">
                 <div className="min-w-0">
                     <h2 className="text-base sm:text-xl font-bold truncate max-w-[140px] sm:max-w-[200px] md:max-w-md">
                         {currentExam.subject}
                     </h2>
-                    <p className="text-xs font-bold uppercase opacity-60 tracking-widest">
+                    <p className="text-xs font-bold opacity-60 ">
                         {activeTab} • {t('quiz.question_label')} {currentQuestionIndex + 1} {t('quiz.of_label')}{' '}
                         {totalQuestions}
                     </p>
                 </div>
                 <div
-                    className={`px-3 sm:px-4 py-2 rounded-xl font-mono font-black text-lg sm:text-2xl ${timeLeft < 60 ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-blue-500/10 text-blue-500'}`}
+                    className={`px-3 sm:px-4 py-2 rounded-xl font-mono font-semibold text-lg sm:text-2xl ${timeLeft < 60 ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-blue-500/10 text-blue-500'}`}
                 >
                     {formatTime(timeLeft)}
                 </div>
             </div>
 
             {/* CBT Question Navigator */}
-            <div className="sticky top-[78px] sm:top-[96px] z-40 mb-4 sm:mb-6 rounded-2xl border border-foreground/10 bg-card/80 backdrop-blur-md p-3 sm:p-4 shadow-lg">
+            <div className="sticky top-[78px] sm:top-[96px] z-40 mb-4 sm:mb-6 rounded-2xl border border-foreground/10 bg-card/80 p-3 sm:p-4 shadow-lg">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest opacity-80">
+                    <p className="text-xs sm:text-xs font-semibold opacity-80">
                         {t('exams.question_navigator')}
                     </p>
-                    <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold">
+                    <div className="flex items-center gap-2 text-xs sm:text-xs font-bold">
                         <span className="rounded-md bg-foreground/5 px-2 py-1">
                             {t('exams.total_label')} {totalQuestions}
                         </span>
@@ -84,7 +84,7 @@ export default function ExamView({
                         </span>
                     </div>
                 </div>
-                <div className="mb-2 text-[10px] sm:text-xs font-bold opacity-50">
+                <div className="mb-2 text-xs sm:text-xs font-bold opacity-50">
                     {t('exams.tap_to_jump')}
                 </div>
                 <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
@@ -100,7 +100,7 @@ export default function ExamView({
                                 onClick={() => onNavigate(index)}
                                 aria-label={`Go to question ${index + 1}`}
                                 className={cn(
-                                    'h-9 sm:h-10 rounded-lg border text-xs sm:text-sm font-black transition-all',
+                                    'h-9 sm:h-10 rounded-lg border text-xs sm:text-sm font-semibold transition-all',
                                     isAnswered
                                         ? 'border-green-500 bg-green-500 text-white shadow-lg shadow-green-500/20'
                                         : isCurrent
@@ -125,7 +125,7 @@ export default function ExamView({
                 exit={{ opacity: 0, x: -20 }}
                 className="flex-1"
             >
-                <Card className="glass border-foreground/10 shadow-2xl p-6 md:p-10 rounded-[32px]">
+                <Card className="glass border-foreground/10 shadow-sm p-6 md:p-10 rounded-xl">
                     <div className="mb-8">
                         <p className="text-lg md:text-2xl font-medium leading-relaxed">
                             {currentQuestion.question}
@@ -174,14 +174,14 @@ export default function ExamView({
                     {currentQuestionIndex === totalQuestions - 1 ? (
                         <Button
                             onClick={onSubmit}
-                            className="w-full sm:w-48 h-14 rounded-2xl font-black uppercase tracking-widest text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-2xl shadow-blue-600/20 active:scale-95 transition-all"
+                            className="w-full sm:w-48 h-14 rounded-2xl font-semibold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-600/20 active:scale-95 transition-all"
                         >
                             {t('exams.final_submission')}
                         </Button>
                     ) : (
                         <Button
                             onClick={onNext}
-                            className="w-full sm:w-32 h-12 rounded-[14px] font-black uppercase tracking-widest text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all active:scale-95"
+                            className="w-full sm:w-32 h-12 rounded-[14px] font-semibold text-xs bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm shadow-primary/20 transition-all active:scale-95"
                         >
                             {t('exams.next')}
                         </Button>

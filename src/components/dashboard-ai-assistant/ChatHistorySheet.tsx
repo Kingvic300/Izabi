@@ -62,7 +62,7 @@ export default function ChatHistorySheet({
                         {chatSessions.length === 0 ? (
                             <div className="text-center py-20 opacity-40">
                                 <Calendar className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                                <p className="text-sm font-bold uppercase tracking-widest">
+                                <p className="text-sm font-bold ">
                                     {t('assistant.history_empty')}
                                 </p>
                             </div>
@@ -93,22 +93,22 @@ export default function ChatHistorySheet({
                                         }`}
                                     >
                                         <div className="flex flex-col items-start gap-0.5 overflow-hidden flex-1">
-                                            <span className="text-[10px] font-bold text-foreground/80 line-clamp-1 text-left">
+                                            <span className="text-xs font-bold text-foreground/80 line-clamp-1 text-left">
                                                 {session.title ||
                                                     t(
                                                         'assistant.session_fallback_title',
                                                     )}
                                             </span>
                                             {session.lastMessage?.content ? (
-                                                <span className="text-[11px] opacity-60 line-clamp-1 text-left">
+                                                <span className="text-xs opacity-60 line-clamp-1 text-left">
                                                     {session.lastMessage.content}
                                                 </span>
                                             ) : null}
-                                            <span className="text-[9px] opacity-40 font-bold uppercase tracking-widest">
+                                            <span className="text-xs opacity-40 font-bold ">
                                                 {timestamp}
                                             </span>
                                         </div>
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-primary/80">
+                                        <span className="text-xs font-bold text-primary/80">
                                             {(session.promptCount ?? 0) + '/100'}
                                         </span>
                                     </Button>

@@ -53,7 +53,7 @@ export default function ChatInput({ onSend }: ChatInputProps) {
                         size="sm"
                         onClick={() => handleNudge(preset)}
                         disabled={isSending}
-                        className="h-8 shrink-0 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                        className="h-8 shrink-0 rounded-full text-xs font-bold "
                     >
                         {preset}
                     </Button>

@@ -40,7 +40,7 @@ export default function NewNoteForm({
     onOpenGroupModal,
 }: NewNoteFormProps) {
     return (
-        <Card className="glass shadow-2xl border-foreground/10 overflow-hidden stagger-card">
+        <Card className="glass shadow-sm border-foreground/10 overflow-hidden stagger-card">
             <CardHeader className="bg-card/5 border-b border-foreground/5">
                 <CardTitle className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-primary" />
@@ -52,7 +52,7 @@ export default function NewNoteForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="title"
-                            className="text-xs uppercase tracking-widest font-bold opacity-60"
+                            className="text-xs font-bold opacity-60"
                         >
                             Title
                         </Label>
@@ -75,7 +75,7 @@ export default function NewNoteForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="subject"
-                            className="text-xs uppercase tracking-widest font-bold opacity-60"
+                            className="text-xs font-bold opacity-60"
                         >
                             Subject
                         </Label>
@@ -90,7 +90,7 @@ export default function NewNoteForm({
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs uppercase tracking-widest font-bold opacity-60">
+                        <Label className="text-xs font-bold opacity-60">
                             Group
                         </Label>
                         <Select
@@ -125,7 +125,7 @@ export default function NewNoteForm({
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label className="text-xs uppercase tracking-widest font-bold opacity-60">
+                    <Label className="text-xs font-bold opacity-60">
                         Content
                     </Label>
                     <RichTextEditor

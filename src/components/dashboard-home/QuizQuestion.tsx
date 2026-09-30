@@ -54,10 +54,10 @@ export const QuizQuestion = ({
     })();
 
     return (
-        <Card className="bg-card/[0.02] border-foreground/5 rounded-2xl md:rounded-3xl p-4 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group">
+        <Card className="bg-card/[0.02] border-foreground/5 rounded-2xl md:rounded-xl p-4 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group">
             <div className="flex flex-col md:flex-row justify-between items-start gap-3 md:gap-6">
                 <div className="space-y-2 md:space-y-3">
-                    <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
+                    <div className="text-xs font-bold text-primary">
                         {t('quiz.question_label')} {index + 1}
                     </div>
                     <h4 className="text-base md:text-xl font-bold leading-tight text-foreground break-words">
@@ -79,7 +79,7 @@ export const QuizQuestion = ({
                 {showResults && (
                     <div
                         className={cn(
-                            "w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-3xl text-[10px] font-bold tracking-widest uppercase flex items-center gap-2 shadow-2xl transition-all",
+                            "w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all",
                             isCorrect
                                 ? 'bg-primary text-foreground shadow-primary/20'
                                 : 'bg-destructive text-primary-foreground shadow-destructive/20'
@@ -105,7 +105,7 @@ export const QuizQuestion = ({
                                 onClick={() => onAnswerSelect(opt)}
                                 disabled={showResults}
                                 className={cn(
-                                    "h-auto min-h-[72px] py-4 md:py-6 px-4 md:px-6 justify-start text-left rounded-2xl md:rounded-3xl transition-all duration-300 font-bold border border-foreground/5 w-full touch-manipulation",
+                                    "h-auto min-h-[72px] py-4 md:py-6 px-4 md:px-6 justify-start text-left rounded-2xl md:rounded-xl transition-all duration-300 font-bold border border-foreground/5 w-full touch-manipulation",
                                     "whitespace-normal break-words",
                                     isSelected && 'bg-primary text-primary-foreground shadow-glow',
                                     !isSelected && 'bg-card/5 hover:bg-card/10 text-primary-foreground/70',
@@ -115,7 +115,7 @@ export const QuizQuestion = ({
                             >
                                 <div className="flex items-start gap-3 md:gap-4 w-full">
                                     <div className={cn(
-                                        "w-7 h-7 md:w-8 md:h-8 rounded-2xl md:rounded-3xl flex items-center justify-center font-bold text-xs transition-opacity flex-shrink-0",
+                                        "w-7 h-7 md:w-8 md:h-8 rounded-2xl md:rounded-xl flex items-center justify-center font-bold text-xs transition-opacity flex-shrink-0",
                                         isSelected ? 'bg-background/10' : 'bg-card/10 opacity-30'
                                     )}>
                                         {String.fromCharCode(65 + idx)}
@@ -135,7 +135,7 @@ export const QuizQuestion = ({
                         placeholder={t('quiz.type_answer_placeholder')}
                         onChange={(e) => onShortAnswerChange(e.target.value)}
                         disabled={showResults}
-                        className="rounded-2xl md:rounded-3xl h-14 md:h-16 bg-card/5 border-foreground/5 focus:bg-card/10 transition-all font-bold px-4 md:px-8 text-[15px] sm:text-base text-foreground w-full"
+                        className="rounded-2xl md:rounded-xl h-14 md:h-16 bg-card/5 border-foreground/5 focus:bg-card/10 transition-all font-bold px-4 md:px-8 text-[15px] sm:text-base text-foreground w-full"
                     />
                     {showHint && hintText && !showResults && (
                         <div className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-2xl px-4 py-3">
@@ -143,8 +143,8 @@ export const QuizQuestion = ({
                         </div>
                     )}
                     {showResults && !isCorrect && (
-                        <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5">
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">
+                        <div className="p-6 rounded-xl glass border-primary/20 bg-primary/5">
+                            <div className="text-xs font-bold text-primary mb-2">
                                 {t('quiz.correct_answer_label')}
                             </div>
                             <p className="text-sm font-bold opacity-80">
@@ -161,11 +161,11 @@ export const QuizQuestion = ({
             )}
             
             {showResults && showExplanations && question.explanation && (
-                <div className="p-6 rounded-3xl glass border-primary/20 bg-primary/5 mt-4">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">
+                <div className="p-6 rounded-xl glass border-primary/20 bg-primary/5 mt-4">
+                    <div className="text-xs font-bold text-primary mb-2">
                         {t('quiz.explanation_label')}
                     </div>
-                    <p className="text-sm font-bold opacity-80 italic">
+                    <p className="text-sm font-bold opacity-80 ">
                         "{question.explanation}"
                     </p>
                 </div>

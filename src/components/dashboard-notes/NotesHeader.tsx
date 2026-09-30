@@ -17,7 +17,7 @@ export default function NotesHeader({
     return (
         <header className="notes-header flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-24">
             <div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter mb-2 text-gradient">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-2 text-gradient">
                     My Notes
                 </h1>
                 <p className="text-muted-foreground text-base sm:text-lg">

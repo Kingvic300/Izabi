@@ -23,7 +23,7 @@ export default function ProfileSidebar({
     onRemoveAvatar,
 }: ProfileSidebarProps) {
     return (
-        <Card className="profile-card glass border-foreground/5 rounded-2xl overflow-hidden shadow-2xl h-full">
+        <Card className="profile-card glass border-foreground/5 rounded-2xl overflow-hidden shadow-sm h-full">
             <div className="h-32 bg-primary/10 relative">
                 <div className="absolute top-4 right-4">
                     <Badge
@@ -36,7 +36,7 @@ export default function ProfileSidebar({
             </div>
             <div className="px-5 sm:px-8 pb-8 -mt-16 flex flex-col items-center text-center">
                 <div className="relative mb-6 group">
-                    <Avatar className="w-32 h-32 border-4 border-background relative z-10 shadow-xl">
+                    <Avatar className="w-32 h-32 border-4 border-background relative z-10 shadow-sm">
                         <AvatarImage
                             src={
                                 profileData.profilePicturePath ||
@@ -89,7 +89,7 @@ export default function ProfileSidebar({
                             <Shield size={20} />
                         </div>
                         <div className="text-left">
-                            <p className="text-xs uppercase tracking-widest font-bold opacity-40">
+                            <p className="text-xs font-bold opacity-40">
                                 Role
                             </p>
                             <p className="font-bold">Standard User</p>
@@ -100,7 +100,7 @@ export default function ProfileSidebar({
                             <MapPin size={20} />
                         </div>
                         <div className="text-left">
-                            <p className="text-xs uppercase tracking-widest font-bold opacity-40">
+                            <p className="text-xs font-bold opacity-40">
                                 Location
                             </p>
                             <p className="font-bold">

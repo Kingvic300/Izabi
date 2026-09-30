@@ -37,7 +37,7 @@ export default function ActivityStreaks({
     const { t } = useLanguage();
     return (
         <div className="space-y-4">
-            <h2 className="text-xl font-bold uppercase tracking-widest opacity-40 flex items-center gap-2">
+            <h2 className="text-xl font-bold opacity-40 flex items-center gap-2">
                 <Activity size={18} className="text-primary" />
                 {t('progress.multi_track')}
             </h2>
@@ -49,7 +49,7 @@ export default function ActivityStreaks({
                     return (
                         <div
                             key={track.labelKey}
-                            className="glass p-4 sm:p-6 rounded-3xl border-foreground/5 bg-card/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:bg-card/[0.04] transition-all"
+                            className="glass p-4 sm:p-6 rounded-xl border-foreground/5 bg-card/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:bg-card/[0.04] transition-all"
                         >
                             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                                 <div
@@ -64,7 +64,7 @@ export default function ActivityStreaks({
                                     <p className="font-bold text-base sm:text-lg leading-tight">
                                         {t(track.labelKey)}
                                     </p>
-                                    <p className="text-[10px] font-medium opacity-40 uppercase tracking-widest">
+                                    <p className="text-xs font-medium opacity-40 ">
                                         {t(track.descKey)}
                                     </p>
                                 </div>
@@ -72,13 +72,13 @@ export default function ActivityStreaks({
                             <div className="text-left sm:text-right w-full sm:w-auto">
                                 <div
                                     className={cn(
-                                        'text-xl sm:text-2xl font-black',
+                                        'text-xl sm:text-2xl font-semibold',
                                         track.color,
                                     )}
                                 >
                                     {streak}
                                 </div>
-                                <p className="text-[8px] font-bold opacity-30 uppercase tracking-tighter">
+                                <p className="text-[8px] font-bold opacity-30 ">
                                     {t('progress.days_suffix')}
                                 </p>
                             </div>

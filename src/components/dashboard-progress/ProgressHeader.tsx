@@ -10,7 +10,7 @@ export default function ProgressHeader({ studyStreak }: ProgressHeaderProps) {
     return (
         <div className="prog-header flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter mb-2 italic">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-2 ">
                     {t('progress.header_title_top')}{' '}
                     <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent">
                         {t('progress.header_title_gradient')}

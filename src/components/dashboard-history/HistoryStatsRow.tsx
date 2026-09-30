@@ -31,7 +31,7 @@ export default function HistoryStatsRow({ stats }: HistoryStatsRowProps) {
                             <stat.icon size={20} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase opacity-40 tracking-widest">
+                            <p className="text-xs font-semibold opacity-40 ">
                                 {stat.label}
                             </p>
                             <p className="text-xl font-bold">

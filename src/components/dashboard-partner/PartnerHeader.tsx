@@ -2,7 +2,7 @@ export default function PartnerHeader() {
     return (
         <div className="prog-header space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                <span className="text-xs sm:text-xs font-semibold text-primary">
                     Accountability Partner
                 </span>
             </div>

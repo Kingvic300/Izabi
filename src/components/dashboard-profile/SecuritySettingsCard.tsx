@@ -4,7 +4,7 @@ import ChangePassword from '@/pages/ChangePassword.tsx';
 
 export default function SecuritySettingsCard() {
     return (
-        <Card className="profile-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
+        <Card className="profile-card glass border-foreground/5 rounded-2xl shadow-sm overflow-hidden">
             <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
                 <CardTitle className="flex items-center gap-3 text-xl font-bold">
                     <Lock className="text-primary" />

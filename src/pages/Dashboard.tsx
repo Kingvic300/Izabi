@@ -1,5 +1,9 @@
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/AppSidebar';
+import {
+    AppSidebar,
+    navigationItems,
+    settingsItems,
+} from '@/components/AppSidebar';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -22,6 +26,11 @@ const Dashboard = () => {
     );
     const hasActiveJobs = activeProcessingJobs.length > 0;
     const isAIAssistantRoute = location.pathname === '/dashboard/ai-assistant';
+    const pageTitle =
+        [...navigationItems, ...settingsItems].find(
+            (item) => item.url === location.pathname,
+        )?.title ??
+        (location.pathname.startsWith('/dashboard/admin') ? 'Admin' : '');
 
     const fetchStats = async () => {
         if (!userId) return;
@@ -61,15 +70,15 @@ const Dashboard = () => {
         <ErrorBoundary>
             <SidebarProvider>
                 <div className="min-h-screen flex w-full bg-background relative overflow-hidden text-foreground">
-                    {/* Background Accent */}
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
                     <AppSidebar />
                     <div className="flex-1 min-w-0 flex flex-col relative z-10">
-                        {/* Modern Header */}
-                        <header className="h-20 border-b border-foreground/5 bg-background/50 backdrop-blur-xl px-4 sm:px-8 md:px-12 flex items-center justify-between shrink-0 relative z-20">
-                            <SidebarTrigger className="text-muted-foreground hover:text-primary transition-colors scale-125" />
-                            <div />
+                        <header className="h-14 border-b border-border bg-background px-4 sm:px-6 flex items-center gap-3 shrink-0 relative z-20">
+                            <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+                            <Separator orientation="vertical" className="h-5" />
+                            <h1 className="text-sm font-medium truncate">
+                                {pageTitle}
+                            </h1>
                         </header>
 
 
@@ -79,7 +88,7 @@ const Dashboard = () => {
                                 'flex-1 min-w-0',
                                 isAIAssistantRoute
                                     ? 'overflow-hidden p-0'
-                                    : 'overflow-y-auto p-0 md:px-6 md:py-8 xl:px-8 xl:py-10',
+                                    : 'overflow-y-auto px-4 py-6 sm:px-6 lg:px-8',
                             )}
                         >
                             <div className="w-full h-full min-w-0">
@@ -89,7 +98,7 @@ const Dashboard = () => {
                     </div>
 
                     {/* Background Jobs Progress Container - Moved to Top Right below header */}
-                    <div className="fixed top-20 sm:top-24 left-3 right-3 sm:left-auto sm:right-6 z-[100] flex flex-col gap-3 sm:gap-4 pointer-events-none">
+                    <div className="fixed top-16 sm:top-20 left-3 right-3 sm:left-auto sm:right-6 z-[100] flex flex-col gap-3 sm:gap-4 pointer-events-none">
                         <AnimatePresence mode="popLayout">
                             {activeJobs.map((job) => (
                                 <div

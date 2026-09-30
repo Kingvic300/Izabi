@@ -685,7 +685,7 @@ export default function DashboardNotes() {
             <div className="notes-header space-y-6">
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-2">
-                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                        <span className="text-xs sm:text-xs font-semibold text-primary">
                             Notes
                         </span>
                     </div>
@@ -703,11 +703,11 @@ export default function DashboardNotes() {
                             <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                 <FileText size={18} />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                            <span className="text-xs font-semibold text-muted-foreground/60">
                                 Total Notes
                             </span>
                         </div>
-                        <div className="mt-4 text-2xl font-black tracking-tight">
+                        <div className="mt-4 text-2xl font-semibold tracking-tight">
                             {totalNotes}
                         </div>
                         <p className="text-xs text-muted-foreground font-medium">
@@ -720,11 +720,11 @@ export default function DashboardNotes() {
                             <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                 <FolderOpen size={18} />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                            <span className="text-xs font-semibold text-muted-foreground/60">
                                 Folders
                             </span>
                         </div>
-                        <div className="mt-4 text-2xl font-black tracking-tight">
+                        <div className="mt-4 text-2xl font-semibold tracking-tight">
                             {totalGroups}
                         </div>
                         <p className="text-xs text-muted-foreground font-medium">
@@ -737,7 +737,7 @@ export default function DashboardNotes() {
                             <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                 <Clock size={18} />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                            <span className="text-xs font-semibold text-muted-foreground/60">
                                 Recent Updates
                             </span>
                         </div>
@@ -761,9 +761,9 @@ export default function DashboardNotes() {
                 </div>
             </div>
 
-            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6 space-y-6">
+            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6 space-y-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground">
+                    <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground">
                         <Filter size={12} className="text-primary" />
                         {activeGroupLabel}
                     </div>

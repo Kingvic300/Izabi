@@ -17,7 +17,7 @@ export default function ProfileHeader({
     return (
         <div className="profile-header flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter leading-none mb-2">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-none mb-2">
                     Your <span className="text-gradient">scholar profile</span>
                 </h1>
                 <p className="text-muted-foreground font-medium text-base sm:text-lg">
@@ -40,7 +40,7 @@ export default function ProfileHeader({
                     <Button
                         onClick={onSave}
                         disabled={isSaving}
-                        className="h-11 sm:h-12 rounded-2xl bg-primary  hover:bg-primary-glow font-bold px-4 sm:px-8 shadow-glow w-full sm:w-auto"
+                        className="h-11 sm:h-12 rounded-2xl bg-primary hover:bg-primary-glow font-bold px-4 sm:px-8 shadow-glow w-full sm:w-auto"
                     >
                         {isSaving ? (
                             <Loader2 className="animate-spin" />

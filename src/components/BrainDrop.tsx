@@ -47,7 +47,7 @@ const BrainDrop: React.FC<BrainDropProps> = ({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative overflow-hidden rounded-[32px] bg-primary/10 border border-primary/20 shadow-2xl"
+            className="relative overflow-hidden rounded-xl bg-primary/10 border border-primary/20 shadow-sm"
         >
             {/* Background decoration */}
             <div className="absolute top-0 right-0 p-8 opacity-5 dark:opacity-10">
@@ -58,11 +58,11 @@ const BrainDrop: React.FC<BrainDropProps> = ({
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                        <div className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest shadow-glow flex items-center gap-2">
+                        <div className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold shadow-glow flex items-center gap-2">
                             <Zap size={12} fill="currentColor" />
                             Brain Drop
                         </div>
-                        <span className="text-xs font-bold text-foreground/60 dark:text-foreground/70 uppercase tracking-widest">
+                        <span className="text-xs font-bold text-foreground/60 dark:text-foreground/70 ">
                             +{question.points} XP
                         </span>
                     </div>

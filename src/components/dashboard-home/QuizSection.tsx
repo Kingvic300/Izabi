@@ -69,11 +69,11 @@ export const QuizSection = ({
     return (
         <div id="questions-result-section">
             <Collapsible open={isOpen} onOpenChange={onOpenChange}>
-                <Card className="relative glass border-foreground/5 rounded-2xl md:rounded-[32px] overflow-hidden shadow-2xl bg-gradient-to-br from-card/70 via-card/40 to-background/90">
+                <Card className="relative glass border-foreground/5 rounded-2xl md:rounded-xl overflow-hidden shadow-sm bg-gradient-to-br from-card/70 via-card/40 to-background/90">
                     <CollapsibleTrigger asChild>
                         <button className="w-full text-left p-4 sm:p-6 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
                             <div className="flex items-center gap-4 md:gap-6">
-                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-3xl bg-amber-500/15 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <Zap className="h-5 w-5 md:h-6 md:w-6" />
                                 </div>
                                 <div className="space-y-1">
@@ -81,11 +81,11 @@ export const QuizSection = ({
                                         <h3 className="text-xl md:text-2xl font-bold leading-tight">
                                             {t('quiz.practice_title')}
                                         </h3>
-                                        <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-[9px] font-black uppercase tracking-[0.18em] opacity-60">
+                                        <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-xs font-semibold opacity-60">
                                             {displayQuestions.length} {t('quiz.questions_suffix')}
                                         </div>
                                     </div>
-                                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-40">
+                                    <p className="text-xs font-bold opacity-40">
                                         {t('quiz.test_understanding')}
                                     </p>
                                 </div>
@@ -94,7 +94,7 @@ export const QuizSection = ({
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-10 w-10 rounded-3xl glass hover:bg-primary/20 text-primary"
+                                    className="h-10 w-10 rounded-xl glass hover:bg-primary/20 text-primary"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         onDownload();
@@ -102,7 +102,7 @@ export const QuizSection = ({
                                 >
                                     <Download size={18} />
                                 </Button>
-                                <div className="w-10 h-10 rounded-3xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
+                                <div className="w-10 h-10 rounded-xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
                                     {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                 </div>
                             </div>

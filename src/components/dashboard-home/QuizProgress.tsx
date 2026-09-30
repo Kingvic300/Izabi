@@ -15,7 +15,7 @@ export const QuizProgress = ({ answered, total, showResults }: QuizProgressProps
     return (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-card/5 border border-foreground/5 px-4 py-3">
             <div className="space-y-1">
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50">
+                <div className="text-xs font-bold opacity-50">
                     {t('quiz.progress_label')}
                 </div>
                 <div className="text-sm font-bold">
@@ -28,7 +28,7 @@ export const QuizProgress = ({ answered, total, showResults }: QuizProgressProps
                     style={{ width: `${percentage}%` }}
                 />
             </div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-50">
+            <div className="text-xs font-bold opacity-50">
                 {showResults ? t('quiz.results_locked') : t('quiz.select_answers')}
             </div>
         </div>

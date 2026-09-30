@@ -7,25 +7,12 @@ import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { useGSAP } from '@gsap/react';
 import {
-    Sparkles,
-    FileStack,
-    CheckCircle2,
-    ChevronRight,
-    X,
     Share2,
-    BrainCircuit,
     FileText,
-    CalendarClock,
-    BarChart3,
     MessageCircle,
-    Upload,
 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { WelcomeHeader } from '@/components/dashboard-home/WelcomeHeader';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
-import { GamificationStrip } from '@/components/dashboard-home/GamificationStrip';
+import { StatsRow } from '@/components/dashboard-home/StatsRow';
 import { BrainDropSection } from '@/components/dashboard-home/BrainDropSection';
 import IntentCards from '@/components/IntentCards';
 import ContextCard from '@/components/ContextCard';
@@ -97,7 +84,6 @@ export default function DashboardHome() {
     const [showContextCard, setShowContextCard] = useState(false);
     const [practiceQuestions, setPracticeQuestions] = useState<any[]>([]);
     const [userExamType, setUserExamType] = useState<string | null>(null);
-    const [showAIUpdate, setShowAIUpdate] = useState(false);
     const [previewFile, setPreviewFile] = useState<File | null>(null);
     const streakValue =
         userStats?.data?.streakData?.academicStreak ??
@@ -107,22 +93,12 @@ export default function DashboardHome() {
     const dailyPoints = userStats?.data?.dailyPoints ?? 0;
     const totalStudyMinutes = userStats?.data?.totalStudyMinutes ?? 0;
     const totalStudyHours = Math.round((totalStudyMinutes / 60) * 10) / 10;
-    const progressPercent = Math.min(
-        100,
-        Math.round((totalStudyMinutes / 300) * 100),
-    );
-    const recentFiles = session.fileNames?.slice(0, 3) ?? [];
-    const hasRecentFiles = recentFiles.length > 0;
+    const todayLabel = new Date().toLocaleDateString(undefined, {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+    });
 
-    useEffect(() => {
-        const dismissed = localStorage.getItem('ai_update_dismissed');
-        if (!dismissed) setShowAIUpdate(true);
-    }, []);
-
-    const dismissAIUpdate = () => {
-        setShowAIUpdate(false);
-        localStorage.setItem('ai_update_dismissed', 'true');
-    };
 
     const {
         isSharing,
@@ -136,23 +112,13 @@ export default function DashboardHome() {
 
     useGSAP(
         () => {
-            const tl = gsap.timeline();
-            tl.from('.welcome-text', {
+            gsap.from('.stagger-card', {
                 opacity: 0,
-                y: -20,
-                duration: 0.8,
-                ease: 'expo.out',
-            }).from(
-                '.stagger-card',
-                {
-                    opacity: 0,
-                    y: 30,
-                    stagger: 0.1,
-                    duration: 1,
-                    ease: 'expo.out',
-                },
-                '-=0.4',
-            );
+                y: 16,
+                stagger: 0.06,
+                duration: 0.5,
+                ease: 'power2.out',
+            });
         },
         { scope: containerRef },
     );
@@ -284,10 +250,25 @@ export default function DashboardHome() {
                 });
             }
 
-            if (session.pdfFiles.length === 1 && session.pdfFiles[0].size > 10 * 1024 * 1024) {
-                const file = session.pdfFiles[0];
+            const firstFile = session.pdfFiles[0];
+            const pickedPages: number[] | undefined =
+                session.pdfSelections?.[0]?.selectedPages;
+            const isPartialSelection =
+                !!pickedPages &&
+                pickedPages.length > 0 &&
+                pickedPages.length < (session.pdfSelections[0].metadata?.totalPages ?? 0);
+
+            if (
+                session.pdfFiles.length === 1 &&
+                firstFile.type === 'application/pdf' &&
+                (firstFile.size > 10 * 1024 * 1024 || isPartialSelection)
+            ) {
+                const file = firstFile;
                 try {
-                    const localText = await extractTextFromPDF(file);
+                    const localText = await extractTextFromPDF(
+                        file,
+                        isPartialSelection ? pickedPages : undefined,
+                    );
                     if (localText.trim().length < 30) {
                         throw new Error(
                             'Local extraction produced insufficient text.',
@@ -307,6 +288,11 @@ export default function DashboardHome() {
                     pollJobStatus(ingestRes.jobId, endpoint);
                     return;
                 } catch (localError) {
+                    if (isPartialSelection) {
+                        throw new Error(
+                            'Could not read text from the selected pages. The PDF may be scanned; select all pages to process it whole.',
+                        );
+                    }
                     console.warn(
                         'Local extraction failed, using direct ingestion.',
                         localError,
@@ -506,7 +492,7 @@ export default function DashboardHome() {
     };
 
     const handleDownload = (content: string, filename: string) => {
-        const header = `----------------------------------------\nIZABI STUDY ASSISTANT: STUDY MATERIAL\nTIMESTAMP: ${new Date().toLocaleString()}\nPROTOCOL: STANDARD_V2\n----------------------------------------\n\n`;
+        const header = `Izabi study material\nCreated: ${new Date().toLocaleString()}\n\n`;
         const blob = new Blob([header + content], {
             type: 'text/markdown',
         });
@@ -591,79 +577,69 @@ export default function DashboardHome() {
         <ErrorBoundary>
             <div
                 ref={containerRef}
-                className="full-bleed w-full max-w-[1780px] mx-auto px-0 sm:px-6 md:px-10 lg:px-16 pt-6 md:pt-16 pb-32 space-y-12 md:space-y-20 rounded-none sm:rounded-[32px] lg:rounded-[48px] border-0 sm:border border-foreground/10 bg-card/20 backdrop-blur-xl"
+                className="w-full max-w-6xl mx-auto space-y-8 pb-24"
             >
-                {/* Header Section */}
-                <header className="space-y-6">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <div className="space-y-3">
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                                <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
-                                    {t('home.eyebrow')}
-                                </span>
-                            </div>
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">
-                            {t('home.title')}
-                        </h1>
-                            <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
-                                {t('home.subtitle')}
-                            </p>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-3">
-                            {userStats?.data && userId && (
-                                <Button
-                                    variant="outline"
-                                    className="h-10 rounded-xl border-foreground/10 text-primary hover:bg-primary/10 gap-2 text-[10px] uppercase tracking-[0.2em] font-bold"
-                                    onClick={handleShareProfile}
-                                    disabled={isSharing}
-                                >
-                                    <Share2 size={14} />
-                                    {isSharing ? t('home.preparing') : t('home.share_profile')}
-                                </Button>
-                            )}
+                <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 stagger-card">
+                    <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">
+                            {todayLabel}
+                        </p>
+                        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+                            {t('dashboard.greeting')}{' '}
+                            {userStats?.data?.firstName || ''}
+                        </h2>
+                        <p className="text-sm text-muted-foreground max-w-xl">
+                            {t('home.subtitle')}
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        {userStats?.data && userId && (
                             <Button
-                                onClick={() => navigate('/dashboard/ai-assistant')}
-                                className="h-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold gap-2 shadow-lg shadow-primary/20"
+                                variant="outline"
+                                size="sm"
+                                className="gap-2"
+                                onClick={handleShareProfile}
+                                disabled={isSharing}
                             >
-                                <MessageCircle size={14} />
-                                {t('home.ai_assistant')}
+                                <Share2 size={14} />
+                                {isSharing
+                                    ? t('home.preparing')
+                                    : t('home.share_profile')}
                             </Button>
-                        </div>
-                    </div>
-
-                    <div className="glass p-6 md:p-8 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl">
-                        <WelcomeHeader firstName={userStats?.data?.firstName} />
-                        <div className="mt-4 flex flex-wrap items-center gap-3">
-                            <Badge className="bg-primary/15 text-primary border-none text-[10px] font-black uppercase tracking-[0.2em]">
-                                {t('home.today_badge')}
-                            </Badge>
-                            <span className="text-xs font-semibold text-muted-foreground">
-                                {t('home.upload_unlock')}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="glass p-5 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-foreground/10 shadow-xl">
-                        <GamificationStrip streak={streakValue} xp={totalPoints} />
+                        )}
+                        <Button
+                            size="sm"
+                            className="gap-2"
+                            onClick={() => navigate('/dashboard/ai-assistant')}
+                        >
+                            <MessageCircle size={14} />
+                            {t('home.ai_assistant')}
+                        </Button>
                     </div>
                 </header>
 
+                <div className="stagger-card">
+                    <StatsRow
+                        streak={streakValue}
+                        totalPoints={totalPoints}
+                        dailyPoints={dailyPoints}
+                        studyHours={totalStudyHours}
+                    />
+                </div>
 
-                <section className="workspace-area space-y-6">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
-                                {t('home.study_workspace')}
-                            </span>
-                        </div>
-                        <span className="text-xs text-muted-foreground/70">
+                <section className="space-y-4 stagger-card">
+                    <div>
+                        <h3 className="text-lg font-semibold">
+                            {t('home.study_workspace')}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
                             {t('home.upload_then_generate')}
-                        </span>
+                        </p>
                     </div>
                     {session.pdfSelections.length > 0 ? (
                         <>
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-10 stagger-card">
-                                <div className="lg:col-span-4 xl:col-span-3 space-y-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div className="lg:col-span-1">
                                     <DocumentInfo
                                         fileNames={session.fileNames}
                                         userStats={userStats}
@@ -672,7 +648,7 @@ export default function DashboardHome() {
                                         onPreview={handlePreviewFile}
                                     />
                                 </div>
-                                <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+                                <div className="lg:col-span-2">
                                     <StudyControls
                                         moduleStatuses={moduleStatuses}
                                         isProcessing={isProcessing}
@@ -715,139 +691,19 @@ export default function DashboardHome() {
                             />
                         </>
                     ) : (
-                        <div className="stagger-card">
-                            <UploadPrompt
-                                onSelectionComplete={handleSelectionComplete}
-                                onReadyToLearn={handleReadyToLearn}
-                            />
-                        </div>
+                        <UploadPrompt
+                            onSelectionComplete={handleSelectionComplete}
+                            onReadyToLearn={handleReadyToLearn}
+                        />
                     )}
                 </section>
 
-                <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
-                    <div className="glass-card p-5 sm:p-6 border border-foreground/10 rounded-[24px]">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                <BarChart3 size={18} />
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                {t('progress.eyebrow')}
-                            </span>
-                        </div>
-                        <div className="text-2xl font-black tracking-tight">
-                            {totalStudyHours}h
-                        </div>
-                        <p className="text-xs text-muted-foreground font-medium">
-                            {t('home.total_study_time')}
-                        </p>
-                        <div className="mt-4">
-                            <div className="h-2 rounded-full bg-foreground/10 overflow-hidden">
-                                <div
-                                    className="h-full bg-primary"
-                                    style={{ width: `${progressPercent}%` }}
-                                />
-                            </div>
-                            <div className="mt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                                {progressPercent}% {t('home.weekly_goal_suffix')}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="glass-card p-5 sm:p-6 border border-foreground/10 rounded-[24px]">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                <FileText size={18} />
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                {t('home.recent_notes')}
-                            </span>
-                        </div>
-                        <div className="space-y-2">
-                            {hasRecentFiles ? (
-                                recentFiles.map((file) => (
-                                    <div
-                                        key={file}
-                                        className="flex items-center gap-2 text-xs font-semibold text-foreground/80"
-                                    >
-                                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                        <span className="truncate">{file}</span>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-xs text-muted-foreground font-medium">
-                                    {t('home.no_uploads')}
-                                </p>
-                            )}
-                        </div>
-                        <Button
-                            variant="outline"
-                            onClick={handleUploadDocument}
-                            className="mt-4 h-9 rounded-xl border-foreground/10 text-primary hover:bg-primary/10 gap-2 text-[10px] uppercase tracking-[0.2em] font-bold"
-                        >
-                            <Upload size={12} />
-                            {t('home.upload_notes_btn')}
-                        </Button>
-                    </div>
-
-                    <div className="glass-card p-5 sm:p-6 border border-foreground/10 rounded-[24px]">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                <CalendarClock size={18} />
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                {t('home.upcoming_exam')}
-                            </span>
-                        </div>
-                        <div className="text-lg font-bold text-foreground">
-                            {userExamType ? `${userExamType} ${t('home.exam_prep_suffix')}` : t('home.no_exam_selected')}
-                        </div>
-                        <p className="text-xs text-muted-foreground font-medium">
-                            {userExamType
-                                ? t('home.set_milestones')
-                                : t('home.choose_exam_type')}
-                        </p>
-                        <Button
-                            variant="outline"
-                            onClick={() => navigate('/dashboard/profile')}
-                            className="mt-4 h-9 rounded-xl border-foreground/10 text-primary hover:bg-primary/10 gap-2 text-[10px] uppercase tracking-[0.2em] font-bold"
-                        >
-                            {t('home.update_profile')}
-                        </Button>
-                    </div>
-
-                    <div className="glass-card p-5 sm:p-6 border border-foreground/10 rounded-[24px]">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                <BrainCircuit size={18} />
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                {t('home.daily_xp')}
-                            </span>
-                        </div>
-                        <div className="text-2xl font-black tracking-tight">
-                            {dailyPoints.toLocaleString()}
-                        </div>
-                        <p className="text-xs text-muted-foreground font-medium">
-                            {t('home.points_earned_today')}
-                        </p>
-                        <Button
-                            onClick={() => navigate('/dashboard/ai-assistant')}
-                            className="mt-4 h-9 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold gap-2"
-                        >
-                            <MessageCircle size={12} />
-                            {t('home.ask_ai')}
-                        </Button>
-                    </div>
-                </section>
-
-                <section className="grid grid-cols-1 xl:grid-cols-2 gap-8 md:gap-12 items-stretch">
-                    <div className="flex flex-col h-full">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
-                                {t('home.daily_pulse')}
-                            </span>
-                        </div>
-                        <div className="flex-1 glass p-4 sm:p-6 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl">
+                <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 stagger-card">
+                    <div className="space-y-3">
+                        <h3 className="text-lg font-semibold">
+                            {t('home.daily_pulse')}
+                        </h3>
+                        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
                             <BrainDropSection
                                 isCompleted={isBrainDropCompleted}
                                 question={brainDropQuestion}
@@ -856,14 +712,11 @@ export default function DashboardHome() {
                             />
                         </div>
                     </div>
-
-                    <div className="flex flex-col h-full">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10 mb-6">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
-                                {t('home.quick_actions')}
-                            </span>
-                        </div>
-                        <div className="flex-1 glass p-2 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl group">
+                    <div className="space-y-3">
+                        <h3 className="text-lg font-semibold">
+                            {t('home.quick_actions')}
+                        </h3>
+                        <div className="rounded-xl border border-border bg-card p-2">
                             <IntentCards
                                 onPracticeSkills={handlePracticeSkills}
                                 onQuickTest={handleQuickTest}
@@ -876,82 +729,10 @@ export default function DashboardHome() {
 
                 <AnimatePresence>
                     {showContextCard && (
-                        <div className="stagger-card">
-                            <ContextCard
-                                onSelect={handleContextSelect}
-                                onDismiss={handleContextDismiss}
-                            />
-                        </div>
-                    )}
-                </AnimatePresence>
-
-                <AnimatePresence>
-                    {showAIUpdate && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, height: 'auto', scale: 1 }}
-                            exit={{ opacity: 0, height: 0, scale: 0.95 }}
-                            className="stagger-card overflow-hidden"
-                        >
-                            <Alert className="relative border-foreground/10 bg-card/50 p-4 sm:p-6 rounded-3xl overflow-hidden group">
-                                {/* Decorative Gradient */}
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-primary/20 transition-all duration-700" />
-
-                                <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                    <div className="flex gap-4 sm:gap-6">
-                                        <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 rotate-3 group-hover:rotate-0 transition-transform duration-500">
-                                            <BrainCircuit className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-                                        </div>
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <div className="flex items-center gap-2">
-                                                <Badge variant="secondary" className="bg-primary/20 text-primary border-none text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-0.5">
-                                                    {t('home.new_badge')}
-                                                </Badge>
-                                                <span className="flex h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                                            </div>
-                                            <AlertTitle className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
-                                                {t('home.advanced_ai_title')}
-                                            </AlertTitle>
-                                            <AlertDescription className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed">
-                                                {t('home.advanced_ai_desc')}
-                                            </AlertDescription>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3">
-                                        <Button
-                                            onClick={() => navigate('/dashboard/ai-assistant')}
-                                            className="h-11 sm:h-13 px-6 sm:px-8 bg-primary hover:bg-primary/90 text-white rounded-2xl font-bold shadow-xl shadow-primary/20 group/btn transition-all hover:scale-105 active:scale-95"
-                                        >
-                                            {t('home.try_now')}
-                                            <ChevronRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover/btn:translate-x-1 transition-transform" />
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={dismissAIUpdate}
-                                            className="h-11 w-11 sm:h-13 sm:w-13 rounded-2xl border-foreground/10 hover:bg-foreground/5 shadow-sm"
-                                        >
-                                            <X className="h-4 w-4 sm:h-5 sm:w-5" />
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 pt-6 border-t border-primary/10 grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {[
-                                        { label: t('home.feat_multi_file_chat'), icon: FileStack },
-                                        { label: t('home.feat_ocr'), icon: Sparkles },
-                                        { label: t('home.feat_deep_synthesis'), icon: BrainCircuit },
-                                        { label: t('home.feat_source_grounded'), icon: CheckCircle2 },
-                                    ].map((feat, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                                            <feat.icon className="h-3 w-3 text-primary/50" />
-                                            {feat.label}
-                                        </div>
-                                    ))}
-                                </div>
-                            </Alert>
-                        </motion.div>
+                        <ContextCard
+                            onSelect={handleContextSelect}
+                            onDismiss={handleContextDismiss}
+                        />
                     )}
                 </AnimatePresence>
             </div>
@@ -983,14 +764,14 @@ export default function DashboardHome() {
             {/* Document Preview Dialog */}
             <Dialog open={!!previewFile} onOpenChange={() => setPreviewFile(null)}>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 glass border-foreground/10 rounded-2xl">
-                    <DialogHeader className="p-6 border-b border-foreground/5 shrink-0 bg-card/60 backdrop-blur-xl">
+                    <DialogHeader className="p-6 border-b border-foreground/5 shrink-0 bg-card/60 ">
                         <DialogTitle className="flex items-center gap-3">
                             <FileText className="text-primary" />
                             <div className="flex flex-col">
-                                <span className="text-lg font-bold truncate max-w-[300px] sm:max-w-md uppercase tracking-tight">
+                                <span className="text-base font-medium truncate max-w-[300px] sm:max-w-md">
                                     {previewFile?.name}
                                 </span>
-                                <span className="text-[10px] font-bold opacity-40 uppercase tracking-widest">
+                                <span className="text-xs text-muted-foreground">
                                     {t('home.review_document')}
                                 </span>
                             </div>
@@ -1000,7 +781,7 @@ export default function DashboardHome() {
                         {previewFile && (
                             <div className="w-full flex justify-center">
                                 {previewFile.type.startsWith('image/') ? (
-                                    <div className="relative group rounded-xl overflow-hidden shadow-2xl border border-foreground/5">
+                                    <div className="relative group rounded-xl overflow-hidden shadow-sm border border-foreground/5">
                                         <img 
                                             src={URL.createObjectURL(previewFile)} 
                                             alt={previewFile.name}
@@ -1008,7 +789,7 @@ export default function DashboardHome() {
                                         />
                                     </div>
                                 ) : previewFile.type === 'application/pdf' ? (
-                                    <div className="w-full h-[600px] rounded-xl overflow-hidden shadow-2xl border border-foreground/5">
+                                    <div className="w-full h-[600px] rounded-xl overflow-hidden shadow-sm border border-foreground/5">
                                         <PDFPreview 
                                             file={previewFile}
                                             className="w-full h-full"

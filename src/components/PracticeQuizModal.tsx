@@ -77,15 +77,15 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 backdrop-blur-sm">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 ">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="relative w-full max-w-2xl bg-background rounded-[32px] shadow-2xl border border-primary/20 overflow-hidden"
+                    className="relative w-full max-w-2xl bg-background rounded-xl shadow-sm border border-primary/20 overflow-hidden"
                 >
                     {/* Header */}
-                    <div className="bg-background/95 backdrop-blur-xl border-b border-foreground/10 p-6 flex items-center justify-between">
+                    <div className="bg-background/95 border-b border-foreground/10 p-6 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
                                 <BookOpen size={20} className="text-primary" />
@@ -248,10 +248,10 @@ const PracticeQuizModal: React.FC<PracticeQuizModalProps> = ({
                                 </div>
 
                                 <div className="p-6 rounded-2xl bg-card/5 border border-foreground/10">
-                                    <div className="text-sm font-medium opacity-60 uppercase tracking-widest mb-2">
+                                    <div className="text-sm font-medium opacity-60 mb-2">
                                         {t('quiz.accuracy')}
                                     </div>
-                                    <div className="text-4xl font-black">
+                                    <div className="text-4xl font-semibold">
                                         {Math.round(
                                             (score / questions.length) * 100,
                                         )}

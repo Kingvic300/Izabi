@@ -11,14 +11,14 @@ type UsageBannerProps = {
 export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
     const { t } = useLanguage();
     return (
-        <div className="p-1 rounded-3xl bg-primary/10 border border-primary/10">
-            <div className="glass-card rounded-[22px] p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+        <div className="p-1 rounded-xl bg-primary/10 border border-primary/10">
+            <div className="glass-card rounded-xl p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
                 <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center md:text-left">
                     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 animate-pulse">
                         <Zap className="text-primary" size={32} />
                     </div>
                     <div>
-                        <h2 className="text-xl font-black uppercase tracking-tight">
+                        <h2 className="text-xl font-semibold tracking-tight">
                             {USAGE_LIMITS_ENABLED
                                 ? subscription?.status === 'premium'
                                     ? t('progress.premium_active')
@@ -39,10 +39,10 @@ export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
 
                 <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
                     <div className="text-center">
-                        <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1">
+                        <p className="text-xs font-semibold opacity-40 mb-1">
                             {t('progress.uploads_label')}
                         </p>
-                        <div className="text-2xl font-black">
+                        <div className="text-2xl font-semibold">
                             {USAGE_LIMITS_ENABLED && usage.limits
                                 ? `${usage.dailyDocs} / ${usage.limits.dailyDocs}`
                                 : `${usage.dailyDocs} / ${t('progress.unlimited_suffix')}`}
@@ -59,10 +59,10 @@ export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
                         )}
                     </div>
                     <div className="text-center">
-                        <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1">
+                        <p className="text-xs font-semibold opacity-40 mb-1">
                             {t('progress.ai_chats_label')}
                         </p>
-                        <div className="text-2xl font-black">
+                        <div className="text-2xl font-semibold">
                             {USAGE_LIMITS_ENABLED && usage.limits
                                 ? `${usage.dailyMessages} / ${usage.limits.dailyMessages}`
                                 : `${usage.dailyMessages} / ${t('progress.unlimited_suffix')}`}

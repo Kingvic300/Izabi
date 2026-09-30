@@ -36,7 +36,7 @@ export default function PreviewImportDialog({
 }: PreviewImportDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-3xl sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 overflow-hidden">
+            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-xl sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 overflow-hidden">
                 <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
                     <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
                         Preview Import
@@ -50,7 +50,7 @@ export default function PreviewImportDialog({
                         <div className="space-y-2">
                             <Label
                                 htmlFor="preview-title"
-                                className="text-xs uppercase tracking-widest font-bold opacity-60"
+                                className="text-xs font-bold opacity-60"
                             >
                                 Title
                             </Label>
@@ -64,7 +64,7 @@ export default function PreviewImportDialog({
                         <div className="space-y-2">
                             <Label
                                 htmlFor="preview-subject"
-                                className="text-xs uppercase tracking-widest font-bold opacity-60"
+                                className="text-xs font-bold opacity-60"
                             >
                                 Subject
                             </Label>
@@ -81,7 +81,7 @@ export default function PreviewImportDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-xs uppercase tracking-widest font-bold opacity-60">
+                        <Label className="text-xs font-bold opacity-60">
                             Extracted Text
                         </Label>
                         <Textarea

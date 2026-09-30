@@ -73,7 +73,7 @@ export default function ExamLobby({
         <div className="w-full space-y-8 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
                 <div>
-                    <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tighter mb-2 italic">
+                    <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold mb-2 ">
                         {t('exams.title_top')}{' '}
                         <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
                             {t('exams.title_gradient')}
@@ -88,7 +88,7 @@ export default function ExamLobby({
                     <motion.div
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-primary/10 border border-primary/20 p-4 rounded-3xl flex items-center justify-between gap-6"
+                        className="bg-primary/10 border border-primary/20 p-4 rounded-xl flex items-center justify-between gap-6"
                     >
                         <div className="flex items-center gap-4 px-2">
                             <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center animate-pulse border border-primary/30">
@@ -101,30 +101,30 @@ export default function ExamLobby({
                                 <p className="font-bold text-sm">
                                     {t('exams.ongoing_session')}
                                 </p>
-                                <p className="text-[10px] uppercase font-black tracking-widest opacity-40">
+                                <p className="text-xs font-semibold opacity-40">
                                     {t('exams.ready_to_resume')}
                                 </p>
                             </div>
                         </div>
                         <Button
                             onClick={onResume}
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-xs px-8 h-12 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs px-8 h-12 rounded-2xl shadow-sm shadow-primary/20 transition-all active:scale-95"
                         >
                             {t('exams.resume_now')}
                         </Button>
                     </motion.div>
                 )}
 
-                <div className="flex bg-card/20 p-1.5 rounded-3xl backdrop-blur-xl border border-foreground/5 shadow-inner overflow-x-auto scrollbar-hide max-w-full w-full md:w-auto">
+                <div className="flex bg-card/20 p-1.5 rounded-xl border border-foreground/5 shadow-inner overflow-x-auto scrollbar-hide max-w-full w-full md:w-auto">
                     {(['JAMB', 'WAEC', 'JUPEB', 'UNIVERSITY'] as const).map(
                         (tab) => (
                             <button
                                 key={tab}
                                 onClick={() => onTabChange(tab)}
                                 className={cn(
-                                    'px-5 sm:px-8 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-[0.15em] sm:tracking-[0.2em] whitespace-nowrap',
+                                    'px-5 sm:px-8 py-3 rounded-2xl text-xs font-semibold transition-all sm:tracking-[0.2em] whitespace-nowrap',
                                     activeTab === tab
-                                        ? 'bg-primary text-primary-foreground shadow-2xl flex items-center gap-2'
+                                        ? 'bg-primary text-primary-foreground shadow-sm flex items-center gap-2'
                                         : 'hover:bg-foreground/5 text-muted-foreground',
                                 )}
                             >
@@ -140,10 +140,10 @@ export default function ExamLobby({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto">
                 {/* Simulation Card */}
-                <Card className="glass-card stagger-card border-primary/20 shadow-2xl relative overflow-hidden group rounded-[40px]">
+                <Card className="glass-card stagger-card border-primary/20 shadow-sm relative overflow-hidden group rounded-xl">
                     <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     <CardHeader className="relative z-10 p-5 sm:p-8">
-                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-black italic tracking-tighter">
+                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-semibold ">
                             <div className="p-3 rounded-2xl bg-primary/20 text-primary shadow-inner">
                                 <Zap className="fill-primary" size={24} />
                             </div>
@@ -158,7 +158,7 @@ export default function ExamLobby({
                             {activeTab === 'UNIVERSITY' ? (
                                 <>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
+                                        <label className="text-xs font-semibold opacity-40 ml-1">
                                             {t('exams.university_label')}
                                         </label>
                                         <Input
@@ -173,7 +173,7 @@ export default function ExamLobby({
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
+                                        <label className="text-xs font-semibold opacity-40 ml-1">
                                             {t('exams.course_title_label')}
                                         </label>
                                         <Input
@@ -190,7 +190,7 @@ export default function ExamLobby({
                                 </>
                             ) : (
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
+                                    <label className="text-xs font-semibold opacity-40 ml-1">
                                         {t('exams.subject_label')}
                                     </label>
                                     <Input
@@ -210,7 +210,7 @@ export default function ExamLobby({
                         <Button
                             onClick={onStartSimulation}
                             disabled={isSimulating}
-                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-primary hover:bg-primary/90 text-primary-foreground mt-4 relative z-30 shadow-2xl shadow-primary/20 active:scale-95 transition-all rounded-[20px]"
+                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-semibold sm:tracking-[0.2em] bg-primary hover:bg-primary/90 text-primary-foreground mt-4 relative z-30 shadow-sm shadow-primary/20 active:scale-95 transition-all rounded-xl"
                         >
                             {isSimulating ? (
                                 <Loader2 className="animate-spin" />
@@ -222,10 +222,10 @@ export default function ExamLobby({
                 </Card>
 
                 {/* Note Practice Card */}
-                <Card className="glass-card stagger-card border-blue-600/20 shadow-2xl relative overflow-hidden group rounded-[40px]">
+                <Card className="glass-card stagger-card border-blue-600/20 shadow-sm relative overflow-hidden group rounded-xl">
                     <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     <CardHeader className="relative z-10 p-5 sm:p-8">
-                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-black italic tracking-tighter">
+                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-semibold ">
                             <div className="p-3 rounded-2xl bg-blue-600/20 text-blue-600 shadow-inner">
                                 <FileText size={24} />
                             </div>
@@ -238,10 +238,10 @@ export default function ExamLobby({
                     </CardHeader>
                     <CardContent className="space-y-6 relative z-20 p-5 sm:p-8 pt-0">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
+                            <label className="text-xs font-semibold opacity-40 ml-1">
                                 {t('exams.upload_pdf_label')}
                             </label>
-                            <div className="border-2 border-dashed border-foreground/10 rounded-[20px] p-6 flex flex-col items-center justify-center gap-3 hover:border-blue-600/50 transition-all cursor-pointer relative bg-background/50 group/upload hover:bg-blue-600/5">
+                            <div className="border-2 border-dashed border-foreground/10 rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:border-blue-600/50 transition-all cursor-pointer relative bg-background/50 group/upload hover:bg-blue-600/5">
                                 <input
                                     type="file"
                                     accept=".pdf"
@@ -260,7 +260,7 @@ export default function ExamLobby({
                                         <p className="text-xs font-bold text-blue-600 truncate max-w-[170px] sm:max-w-[200px]">
                                             {selectedFile.name}
                                         </p>
-                                        <p className="text-[10px] uppercase font-black tracking-widest opacity-40 mt-1">
+                                        <p className="text-xs font-semibold opacity-40 mt-1">
                                             {t('exams.click_to_change')}
                                         </p>
                                     </div>
@@ -272,7 +272,7 @@ export default function ExamLobby({
                                                 className="text-muted-foreground group-hover/upload:text-blue-600 transition-colors"
                                             />
                                         </div>
-                                        <p className="text-[10px] font-black opacity-40 uppercase tracking-[0.2em]">
+                                        <p className="text-xs font-semibold opacity-40 ">
                                             {t('exams.select_notes')}
                                         </p>
                                     </>
@@ -282,7 +282,7 @@ export default function ExamLobby({
                         <Button
                             onClick={onStartNotePractice}
                             disabled={isNotePracticing || !selectedFile}
-                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] bg-blue-700 hover:bg-blue-600 text-white mt-4 relative z-30 shadow-2xl shadow-blue-700/20 active:scale-95 transition-all rounded-[20px]"
+                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-semibold sm:tracking-[0.2em] bg-blue-700 hover:bg-blue-600 text-white mt-4 relative z-30 shadow-sm shadow-blue-700/20 active:scale-95 transition-all rounded-xl"
                         >
                             {isNotePracticing ? (
                                 <Loader2 className="animate-spin" />
@@ -294,12 +294,12 @@ export default function ExamLobby({
                 </Card>
             </div>
 
-            <div className="stagger-card glass-card rounded-[24px] sm:rounded-[40px] p-5 sm:p-10 border border-foreground/5 relative overflow-hidden">
+            <div className="stagger-card glass-card rounded-xl sm:rounded-xl p-5 sm:p-10 border border-foreground/5 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none">
                     <Trophy size={200} />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10 relative z-10">
-                    <h3 className="text-2xl sm:text-3xl font-black flex items-center gap-3 sm:gap-4 tracking-tighter italic">
+                    <h3 className="text-2xl sm:text-3xl font-semibold flex items-center gap-3 sm:gap-4 ">
                         <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
                             <Trophy size={28} />
                         </div>
@@ -313,7 +313,7 @@ export default function ExamLobby({
                         onClick={() =>
                             (window.location.href = '/dashboard/history')
                         }
-                        className="h-12 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] opacity-40 hover:opacity-100 hover:bg-foreground/5 transition-all"
+                        className="h-12 px-6 rounded-2xl text-xs font-semibold opacity-40 hover:opacity-100 hover:bg-foreground/5 transition-all"
                     >
                         {t('exams.historical_data')}{' '}
                         <ChevronRight size={14} className="ml-2" />
@@ -331,12 +331,12 @@ export default function ExamLobby({
                                 <button
                                     key={i}
                                     onClick={() => onSelectResult(res)}
-                                    className="flex items-center justify-between p-6 bg-card/40 rounded-[24px] border border-foreground/5 hover:border-primary/20 transition-all group/stat hover:translate-x-1 cursor-pointer text-left w-full"
+                                    className="flex items-center justify-between p-6 bg-card/40 rounded-xl border border-foreground/5 hover:border-primary/20 transition-all group/stat hover:translate-x-1 cursor-pointer text-left w-full"
                                 >
                                     <div className="flex items-center gap-5">
                                         <div
                                             className={cn(
-                                                'w-16 h-16 rounded-[20px] flex items-center justify-center font-black text-2xl shadow-inner',
+                                                'w-16 h-16 rounded-xl flex items-center justify-center font-semibold text-2xl shadow-inner',
                                                 res.score >= 70
                                                     ? 'bg-blue-500/10 text-blue-500'
                                                     : res.score >= 45
@@ -350,11 +350,11 @@ export default function ExamLobby({
                                             </span>
                                         </div>
                                         <div>
-                                            <p className="font-black text-base sm:text-lg uppercase tracking-tight truncate max-w-[170px] sm:max-w-[200px] mb-1">
+                                            <p className="font-semibold text-base sm:text-lg tracking-tight truncate max-w-[170px] sm:max-w-[200px] mb-1">
                                                 {res.subject || res.quizTitle}
                                             </p>
                                             <div className="flex items-center gap-3">
-                                                <div className="flex items-center gap-1 text-[10px] font-black opacity-30 uppercase tracking-widest bg-foreground/5 px-2 py-1 rounded-md">
+                                                <div className="flex items-center gap-1 text-xs font-semibold opacity-30 bg-foreground/5 px-2 py-1 rounded-md">
                                                     <Calendar size={10} />{' '}
                                                     {Number.isNaN(
                                                         resultDate.getTime(),
@@ -362,7 +362,7 @@ export default function ExamLobby({
                                                         ? '—'
                                                         : resultDate.toLocaleDateString()}
                                                 </div>
-                                                <div className="flex items-center gap-1 text-[10px] font-black opacity-30 uppercase tracking-widest bg-blue-500/5 text-blue-500/60 px-2 py-1 rounded-md">
+                                                <div className="flex items-center gap-1 text-xs font-semibold opacity-30 bg-blue-500/5 text-blue-500/60 px-2 py-1 rounded-md">
                                                     <CheckCircle2 size={10} />{' '}
                                                     {res.correctAnswers ??
                                                         Math.round(
@@ -382,14 +382,14 @@ export default function ExamLobby({
                             })}
                         </div>
                     ) : (
-                        <div className="text-center py-20 bg-background/40 rounded-[32px] border border-dashed border-foreground/10">
-                            <div className="w-20 h-20 rounded-3xl bg-foreground/5 flex items-center justify-center mx-auto mb-6">
+                        <div className="text-center py-20 bg-background/40 rounded-xl border border-dashed border-foreground/10">
+                            <div className="w-20 h-20 rounded-xl bg-foreground/5 flex items-center justify-center mx-auto mb-6">
                                 <Clock
                                     size={40}
                                     className="text-muted-foreground opacity-30"
                                 />
                             </div>
-                            <h4 className="text-xl font-black uppercase tracking-widest opacity-20">
+                            <h4 className="text-xl font-semibold opacity-20">
                                 {t('exams.archive_empty')}
                             </h4>
                             <p className="text-sm opacity-40 mt-2 max-w-xs mx-auto font-medium leading-relaxed">

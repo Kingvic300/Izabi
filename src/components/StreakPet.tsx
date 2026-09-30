@@ -516,12 +516,12 @@ const StreakPet: React.FC<PetProps> = ({
                             : 'opacity-0 translate-y-4 pointer-events-none md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto',
                     )}
                 >
-                    <div className="glass border-primary/20 p-5 rounded-3xl shadow-2xl space-y-3">
+                    <div className="glass border-primary/20 p-5 rounded-xl shadow-sm space-y-3">
                         <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">
+                            <span className="text-xs font-semibold text-primary/60">
                                 Companion
                             </span>
-                            <div className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">
+                            <div className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[8px] font-semibold ">
                                 {evolution.badge}
                             </div>
                         </div>
@@ -530,12 +530,12 @@ const StreakPet: React.FC<PetProps> = ({
                             <h3 className="font-bold text-lg leading-tight">
                                 {evolution.label}
                             </h3>
-                            <p className="text-[10px] font-medium opacity-50 uppercase tracking-widest">
+                            <p className="text-xs font-medium opacity-50 ">
                                 {evolution.subtitle}
                             </p>
                         </div>
 
-                        <div className="text-[9px] uppercase tracking-widest font-semibold text-primary/70">
+                        <div className="text-xs font-semibold text-primary/70">
                             Personality: Encouraging, Slightly Dramatic
                         </div>
 
@@ -559,14 +559,14 @@ const StreakPet: React.FC<PetProps> = ({
                             {onFeed && (
                                 <div className="flex items-center gap-2">
                                     {streakFreezes > 0 && (
-                                        <div className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-500 text-[9px] font-black uppercase flex items-center gap-1">
+                                        <div className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-500 text-xs font-semibold flex items-center gap-1">
                                             ❄️ {streakFreezes}
                                         </div>
                                     )}
                                     <button
                                         onClick={handleFeed}
                                         disabled={userPoints < 50 || isFeeding}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                                             userPoints >= 50
                                                 ? 'bg-amber-500 text-black hover:bg-amber-400'
                                                 : 'bg-card/5 text-foreground/30 cursor-not-allowed'
@@ -581,7 +581,7 @@ const StreakPet: React.FC<PetProps> = ({
                     </div>
 
                     {/* Speech Bubble Tail */}
-                    <div className="absolute -bottom-2 right-8 w-4 h-4 bg-[#0a0a0a]/50 rotate-45 border-r border-b border-primary/20 backdrop-blur-md" />
+                    <div className="absolute -bottom-2 right-8 w-4 h-4 bg-[#0a0a0a]/50 rotate-45 border-r border-b border-primary/20 " />
                 </div>
             </motion.div>
         </div>

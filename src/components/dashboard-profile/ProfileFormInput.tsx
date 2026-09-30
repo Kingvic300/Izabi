@@ -23,7 +23,7 @@ export default function ProfileFormInput({
         <div className="space-y-3">
             <Label
                 htmlFor={id}
-                className="text-xs uppercase font-bold tracking-widest opacity-40 flex items-center gap-2"
+                className="text-xs font-bold opacity-40 flex items-center gap-2"
             >
                 {icon}
                 {label}

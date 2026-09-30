@@ -29,7 +29,7 @@ export const LeaderboardTable = ({
     const getAvatarFallback = (user: LeaderboardUser) => (user.firstName || 'U')[0];
 
     return (
-        <div className="bg-card/5 border border-foreground/5 rounded-2xl sm:rounded-3xl overflow-hidden backdrop-blur-md">
+        <div className="bg-card/5 border border-foreground/5 rounded-2xl sm:rounded-xl overflow-hidden ">
             <div className="p-4 sm:p-6 md:p-8">
                 <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2">
                     {icon}
@@ -75,7 +75,7 @@ export const LeaderboardTable = ({
                                             </Badge>
                                         )}
                                     </div>
-                                    <p className="text-[10px] sm:text-xs text-foreground/70 font-medium truncate">
+                                    <p className="text-xs sm:text-xs text-foreground/70 font-medium truncate">
                                         {type === 'xp'
                                             ? (user.institution || t('leaderboard.scholar'))
                                             : (user.pet ? `${user.pet.name} (Lvl ${user.pet.level})` : t('leaderboard.scholar'))
@@ -86,10 +86,10 @@ export const LeaderboardTable = ({
                             <div className="text-right shrink-0">
                                 {type === 'xp' ? (
                                     <>
-                                        <span className="font-black text-base sm:text-xl tracking-tight">
+                                        <span className="font-semibold text-base sm:text-xl tracking-tight">
                                             {user.points.toLocaleString()}
                                         </span>
-                                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest opacity-50 leading-none">
+                                        <p className="text-[8px] sm:text-[10px] font-bold opacity-50 leading-none">
                                             {t('leaderboard.xp_label')}
                                         </p>
                                     </>
@@ -97,11 +97,11 @@ export const LeaderboardTable = ({
                                     <>
                                         <div className="flex items-center justify-end gap-1">
                                             <Flame size={12} className="text-orange-500 fill-orange-500 sm:w-3.5 sm:h-3.5" />
-                                            <span className="font-black text-base sm:text-xl tracking-tight">
+                                            <span className="font-semibold text-base sm:text-xl tracking-tight">
                                                 {user.streak}
                                             </span>
                                         </div>
-                                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest opacity-50 leading-none">
+                                        <p className="text-[8px] sm:text-[10px] font-bold opacity-50 leading-none">
                                             {t('leaderboard.days_label')}
                                         </p>
                                     </>

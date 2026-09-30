@@ -63,7 +63,7 @@ const DashboardPartner = () => {
             )}
 
             {partnership?.status === 'pending' && !partnership.awaitingYourResponse && (
-                <Card className="glass-card border-foreground/10 rounded-[28px]">
+                <Card className="glass-card border-foreground/10 rounded-xl">
                     <CardContent className="p-8 text-center space-y-3">
                         <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
                         <p className="text-sm text-muted-foreground">
@@ -77,14 +77,14 @@ const DashboardPartner = () => {
             {partnership?.status === 'active' && (
                 <>
                     <section className="space-y-4">
-                        <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                        <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                             Streaks
                         </div>
                         <PartnerStatCards streaks={streaks} />
                     </section>
 
                     <section className="space-y-4">
-                        <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                        <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                             Shared Goal
                         </div>
                         <GoalPanel
@@ -99,7 +99,7 @@ const DashboardPartner = () => {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <section className="space-y-4">
-                            <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                            <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                                 Study Activity
                             </div>
                             <PartnerStudyActivity
@@ -109,7 +109,7 @@ const DashboardPartner = () => {
                         </section>
 
                         <section className="space-y-4">
-                            <div className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+                            <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                                 Chat
                             </div>
                             <PartnerChat

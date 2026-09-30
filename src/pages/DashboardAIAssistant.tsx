@@ -479,7 +479,7 @@ const DashboardAIAssistant = () => {
                     onSelectSession={handleSelectSession}
                 />
 
-                <Card className="chat-card flex-1 min-h-0 flex flex-col overflow-hidden glass-card border-foreground/10 rounded-2xl shadow-xl md:shadow-2xl relative">
+                <Card className="chat-card flex-1 min-h-0 flex flex-col overflow-hidden glass-card border-foreground/10 rounded-2xl shadow-sm md:shadow-2xl relative">
                     {/* Background decorative element */}
 
                     <CardContent className="flex-1 min-h-0 flex flex-col overflow-hidden p-0">

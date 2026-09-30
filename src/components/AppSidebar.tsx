@@ -54,7 +54,7 @@ import {
     SUBSCRIPTIONS_ENABLED,
 } from '@/config/featureFlags';
 
-const navigationItems = [
+export const navigationItems = [
     {
         title: 'Dashboard',
         url: '/dashboard',
@@ -74,7 +74,7 @@ const navigationItems = [
         description: 'Interactive learning with AI',
     },
     {
-        title: 'Learning Progress',
+        title: 'Progress',
         url: '/dashboard/progress',
         icon: TrendingUp,
         description: 'Track your learning journey',
@@ -86,7 +86,7 @@ const navigationItems = [
         description: 'View uploaded files',
     },
     {
-        title: 'Exam Center',
+        title: 'Exams',
         url: '/dashboard/exams',
         icon: GraduationCap,
         description: 'Practice past questions',
@@ -109,7 +109,7 @@ const navigationItems = [
         : []),
 ];
 
-const settingsItems = [
+export const settingsItems = [
     {
         title: 'Profile',
         url: '/dashboard/profile',
@@ -255,7 +255,7 @@ export function AppSidebar() {
     return (
         <Sidebar
             collapsible="icon"
-            className="bg-card/50 backdrop-blur-xl border-r border-foreground/5 data-[variant=inset]:bg-transparent"
+            className="border-r border-border bg-card"
         >
             {/* Header */}
             <SidebarHeader className="border-b border-border p-4">
@@ -270,11 +270,11 @@ export function AppSidebar() {
             <SidebarContent className="flex-1 px-3 py-4">
                 {/* Main Navigation Group */}
                 <SidebarGroup>
-                    <SidebarGroupLabel className="text-[10px] uppercase font-bold tracking-widest mb-4 px-4 opacity-50 text-foreground">
-                        The Lab
+                    <SidebarGroupLabel className="text-xs font-medium mb-1 px-3 text-muted-foreground">
+                        Study
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
-                        <SidebarMenu className="gap-2">
+                        <SidebarMenu className="gap-1">
                             {navigationItems.map((item) => {
                                 const active = isActive(item.url);
                                 return (
@@ -282,8 +282,8 @@ export function AppSidebar() {
                                         <SidebarMenuButton
                                             asChild
                                             isActive={active}
-                                            className={`h-12 rounded-3xl transition-all duration-300 px-4 group
-                                                ${active ? 'bg-primary/10 text-primary shadow-[inset_0_0_20px_hsla(var(--primary)/0.1)]' : 'hover:bg-card/5'}
+                                            className={`h-10 rounded-lg px-3 transition-colors
+                                                ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
                                             `}
                                         >
                                             <Link
@@ -298,22 +298,22 @@ export function AppSidebar() {
                                                         return;
                                                     }
                                                 }}
-                                                className="flex items-center gap-4"
+                                                className="flex items-center gap-3"
                                             >
                                                 <item.icon
-                                                    className={`h-5 w-5 transition-transform group-hover:scale-110 ${active ? 'text-primary shadow-glow' : 'opacity-60'}`}
+                                                    className="h-[18px] w-[18px] shrink-0"
                                                 />
                                                 {!collapsed && (
                                                     <div className="flex flex-1 items-center justify-between">
                                                         <span
-                                                            className={`font-bold text-sm tracking-tight ${active ? 'text-gradient' : 'opacity-80'}`}
+                                                            className="text-sm font-medium"
                                                         >
                                                             {item.title}
                                                         </span>
                                                         {(item as any)
                                                             .status ===
                                                             'unavailable' && (
-                                                            <span className="text-[12px] font-bold uppercase tracking-tighter px-1.5 py-0.5 rounded-2xl bg-rose-500/20 text-rose-500 border border-rose-500/10">
+                                                            <span className="text-[12px] font-bold px-1.5 py-0.5 rounded-2xl bg-rose-500/20 text-rose-500 border border-rose-500/10">
                                                                 Soon
                                                             </span>
                                                         )}
@@ -330,11 +330,11 @@ export function AppSidebar() {
 
                 {/* Settings Group */}
                 <SidebarGroup className="mt-auto">
-                    <SidebarGroupLabel className="text-[10px] uppercase font-bold tracking-widest mb-4 px-4 opacity-50 text-foreground">
+                    <SidebarGroupLabel className="text-xs font-medium mb-1 px-3 text-muted-foreground">
                         Account
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
-                        <SidebarMenu className="gap-2">
+                        <SidebarMenu className="gap-1">
                             {settingsItems.map((item) => {
                                 const active = isActive(item.url);
                                 return (
@@ -342,17 +342,17 @@ export function AppSidebar() {
                                         <SidebarMenuButton
                                             asChild
                                             isActive={active}
-                                            className={`h-12 rounded-3xl transition-all duration-300 px-4 group
-                                                ${active ? 'bg-card/10 text-foreground shadow-xl' : 'hover:bg-card/5'}
+                                            className={`h-10 rounded-lg px-3 transition-colors
+                                                ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
                                             `}
                                         >
                                             <Link
                                                 to={item.url}
-                                                className="flex items-center gap-4"
+                                                className="flex items-center gap-3"
                                             >
-                                                <item.icon className="h-5 w-5 opacity-60 group-hover:opacity-100" />
+                                                <item.icon className="h-[18px] w-[18px] shrink-0" />
                                                 {!collapsed && (
-                                                    <span className="font-bold text-sm tracking-tight opacity-80 group-hover:opacity-100">
+                                                    <span className="text-sm font-medium">
                                                         {item.title}
                                                     </span>
                                                 )}
@@ -366,20 +366,18 @@ export function AppSidebar() {
                                 <SidebarMenuItem>
                                     <SidebarMenuButton
                                         isActive={isActive('/dashboard/admin')}
-                                        className={`h-12 rounded-3xl transition-all duration-300 px-4 group
-                                            ${isActive('/dashboard/admin') ? 'bg-primary/20 text-primary shadow-glow' : 'hover:bg-primary/5'}
+                                        className={`h-10 rounded-lg px-3 transition-colors
+                                            ${isActive('/dashboard/admin') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
                                         `}
                                         onClick={() =>
                                             navigate('/dashboard/admin')
                                         }
                                     >
-                                        <div className="flex items-center gap-4">
-                                            <ShieldCheck
-                                                className={`h-5 w-5 ${isActive('/dashboard/admin') ? 'text-primary shadow-glow' : 'text-primary/60'}`}
-                                            />
+                                        <div className="flex items-center gap-3">
+                                            <ShieldCheck className="h-[18px] w-[18px] shrink-0" />
                                             {!collapsed && (
-                                                <span className="font-bold text-sm tracking-tight text-primary">
-                                                    Admin Center
+                                                <span className="text-sm font-medium">
+                                                    Admin
                                                 </span>
                                             )}
                                         </div>
@@ -392,10 +390,10 @@ export function AppSidebar() {
             </SidebarContent>
 
             {/* Footer / User Profile */}
-            <SidebarFooter className="p-4 border-t border-foreground/5">
+            <SidebarFooter className="p-3 border-t border-border">
                 {impersonating && (
                     <div className="mb-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3">
-                        <p className="text-[10px] uppercase tracking-widest font-bold text-amber-300 mb-2">
+                        <p className="text-xs font-medium text-amber-500 mb-2">
                             Impersonating
                         </p>
                         <Button
@@ -411,7 +409,7 @@ export function AppSidebar() {
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton
                             size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-14 rounded-3xl transition-all"
+                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-12 rounded-lg"
                         >
                             <Avatar className="h-9 w-9 rounded-lg border border-foreground/10 shadow-sm">
                                 <AvatarImage
@@ -423,10 +421,10 @@ export function AppSidebar() {
                                 </AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-bold mb-0.5">
+                                <span className="truncate font-medium">
                                     {userInfo.name}
                                 </span>
-                                <span className="truncate text-xs opacity-60 font-medium">
+                                <span className="truncate text-xs text-muted-foreground">
                                     {userInfo.email}
                                 </span>
                             </div>
@@ -435,11 +433,11 @@ export function AppSidebar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         side="top"
-                        className="w-[--radix-popper-anchor-width] rounded-3xl glass border-foreground/10 p-2 shadow-2xl"
+                        className="w-[--radix-popper-anchor-width] rounded-lg p-1"
                     >
                         <DropdownMenuItem
                             onClick={handleLogout}
-                            className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 font-bold rounded-lg p-3"
+                            className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 rounded-md"
                         >
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Sign out</span>

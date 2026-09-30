@@ -15,7 +15,7 @@ export default function NotificationsSection({
 }: NotificationsSectionProps) {
     const { t } = useLanguage();
     return (
-        <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-2xl overflow-hidden">
+        <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-sm overflow-hidden">
             <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
                 <CardTitle className="flex items-center gap-3 text-xl font-bold">
                     <Bell className="text-primary" />

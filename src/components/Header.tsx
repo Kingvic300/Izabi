@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Link, useLocation } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -31,32 +31,28 @@ export const Header = () => {
     return (
         <nav
             className={cn(
-                'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-                scrolled
-                    ? 'py-4 bg-card/50 backdrop-blur-xl border-b border-foreground/5'
-                    : 'py-6 bg-transparent',
+                'fixed top-0 left-0 right-0 z-50 transition-colors',
+                scrolled || isOpen
+                    ? 'bg-background/95 border-b border-border'
+                    : 'bg-transparent border-b border-transparent',
             )}
         >
-            <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                <div className="flex justify-between items-center h-20">
-                    {/* Logo */}
-                    <Link
-                        to="/"
-                        className="flex items-center group relative z-10"
-                    >
-                        <Logo size={200} />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between gap-6 h-16">
+                    <Link to="/" className="flex items-center shrink-0">
+                        <Logo size={150} height={56} />
                     </Link>
 
-                    {/* Desktop Links */}
-                    <div className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-card/5 border border-foreground/5 backdrop-blur-md">
+                    {/* Desktop links */}
+                    <div className="hidden lg:flex items-center gap-1">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 to={link.href}
                                 className={cn(
-                                    'px-4 py-2 text-sm font-bold tracking-tight rounded-xl transition-all duration-300',
+                                    'px-3 py-2 text-sm font-medium whitespace-nowrap rounded-md transition-colors',
                                     location.pathname === link.href
-                                        ? 'bg-card/10 text-primary'
+                                        ? 'text-foreground'
                                         : 'text-muted-foreground hover:text-foreground',
                                 )}
                             >
@@ -65,88 +61,70 @@ export const Header = () => {
                         ))}
                     </div>
 
-                    {/* Actions */}
-                    <div className="hidden md:flex items-center space-x-4">
+                    {/* Desktop actions */}
+                    <div className="hidden lg:flex items-center gap-2 shrink-0">
                         <LanguageToggle />
                         <ThemeToggle />
                         <Link to="/login">
-                            <Button
-                                variant="ghost"
-                                className="font-bold text-sm tracking-tight hover:bg-card/5"
-                            >
+                            <Button variant="ghost" size="sm">
                                 {t('nav.client_portal')}
                             </Button>
                         </Link>
                         <Link to="/signup">
-                            <Button className="font-bold text-sm tracking-tight rounded-xl h-11 px-6 bg-primary hover:bg-primary/90 shadow-glow flex items-center gap-2 group">
-                                <Sparkles
-                                    size={16}
-                                    className="group-hover:rotate-12 transition-transform"
-                                />
-                                <span>{t('nav.get_early_access')}</span>
+                            <Button size="sm" className="whitespace-nowrap">
+                                {t('nav.get_early_access')}
                             </Button>
                         </Link>
                     </div>
 
-                    {/* Mobile Menu Button */}
+                    {/* Mobile menu button */}
                     <button
-                        className="lg:hidden p-3 bg-card/5 hover:bg-card/10 rounded-xl transition-colors border border-foreground/5"
+                        className="lg:hidden p-2 rounded-md hover:bg-muted transition-colors"
                         onClick={() => setIsOpen(!isOpen)}
                         aria-label="Toggle menu"
                     >
                         {isOpen ? (
-                            <X className="h-6 w-6" />
+                            <X className="h-5 w-5" />
                         ) : (
-                            <Menu className="h-6 w-6" />
+                            <Menu className="h-5 w-5" />
                         )}
                     </button>
                 </div>
-
-                {/* Mobile Menu Overlay */}
-                {isOpen && (
-                    <div className="lg:hidden absolute top-full left-0 right-0 mt-4 mx-4 sm:mx-6 p-4 sm:p-6 space-y-4 rounded-2xl bg-background/90 backdrop-blur-3xl border border-foreground/10 shadow-2xl shimmer">
-                        <div className="grid grid-cols-1 gap-2">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    to={link.href}
-                                    onClick={() => setIsOpen(false)}
-                                    className="p-4 rounded-xl bg-card/5 font-bold text-lg"
-                                >
-                                    {link.name}
-                                </Link>
-                            ))}
-                        </div>
-                        <div className="pt-4 flex flex-col gap-3 border-t border-foreground/5">
-                            <div className="flex items-center gap-2 px-2">
-                                <LanguageToggle />
-                                <ThemeToggle />
-                            </div>
-                            <Link
-                                to="/login"
-                                onClick={() => setIsOpen(false)}
-                                className="block"
-                            >
-                                <Button
-                                    variant="ghost"
-                                    className="w-full h-14 font-bold text-lg rounded-xl"
-                                >
-                                    {t('nav.client_portal')}
-                                </Button>
-                            </Link>
-                            <Link
-                                to="/signup"
-                                onClick={() => setIsOpen(false)}
-                                className="block"
-                            >
-                                <Button className="w-full h-14 font-bold text-lg rounded-xl bg-primary hover:bg-primary/90 shadow-glow">
-                                    {t('nav.get_started')}
-                                </Button>
-                            </Link>
-                        </div>
-                    </div>
-                )}
             </div>
+
+            {/* Mobile menu */}
+            {isOpen && (
+                <div className="lg:hidden border-t border-border bg-background px-4 sm:px-6 py-4 space-y-4">
+                    <div className="flex flex-col">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                to={link.href}
+                                onClick={() => setIsOpen(false)}
+                                className="py-2.5 text-base font-medium"
+                            >
+                                {link.name}
+                            </Link>
+                        ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <LanguageToggle />
+                        <ThemeToggle />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <Link to="/login" onClick={() => setIsOpen(false)}>
+                            <Button variant="outline" className="w-full">
+                                {t('nav.client_portal')}
+                            </Button>
+                        </Link>
+                        <Link to="/signup" onClick={() => setIsOpen(false)}>
+                            <Button className="w-full">
+                                {t('nav.get_started')}
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            )}
         </nav>
     );
 };

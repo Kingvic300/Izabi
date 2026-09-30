@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -51,15 +50,13 @@ const LazyPage: React.FC<{
     }, []);
 
     return (
-        <motion.div
+        <div
             ref={containerRef}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
             className={cn(
-                'relative cursor-pointer transition-all duration-500 rounded-2xl overflow-hidden group min-h-[250px] bg-card/5',
-                isSelected &&
-                    'ring-4 ring-primary ring-offset-4 ring-offset-black scale-105',
-                'hover:scale-[1.08] hover:shadow-[0_0_30px_hsla(var(--primary)/0.2)]',
+                'relative cursor-pointer rounded-lg overflow-hidden min-h-[180px] bg-white border-2 transition-colors',
+                isSelected
+                    ? 'border-primary'
+                    : 'border-transparent opacity-60 hover:opacity-100',
             )}
             onClick={onClick}
         >
@@ -67,10 +64,10 @@ const LazyPage: React.FC<{
                 <>
                     <Page
                         pageNumber={pageNumber}
-                        width={200}
+                        width={160}
                         onLoadSuccess={onLoadSuccess}
                         loading={
-                            <div className="flex items-center justify-center h-full min-h-[250px]">
+                            <div className="flex items-center justify-center h-full min-h-[180px]">
                                 <SkeletonLoader
                                     variant="image"
                                     className="w-full h-full"
@@ -79,27 +76,17 @@ const LazyPage: React.FC<{
                         }
                         renderTextLayer={false}
                         renderAnnotationLayer={false}
-                        className="opacity-90 group-hover:opacity-100 transition-opacity"
                     />
 
-                    <div className="absolute top-4 left-4 px-2 py-0.5 rounded-2xl bg-card/40 backdrop-blur-md border border-foreground/10 text-[10px] font-bold tracking-widest text-foreground uppercase">
-                        SEG {pageNumber}
+                    <div className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/60 text-[11px] font-medium text-white">
+                        {pageNumber}
                     </div>
 
-                    <AnimatePresence>
-                        {isSelected && (
-                            <motion.div
-                                initial={{ scale: 0.5, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.5, opacity: 0 }}
-                                className="absolute top-4 right-4 z-10"
-                            >
-                                <div className="bg-primary text-primary-foreground rounded-2xl p-1 shadow-glow ring-2 ring-foreground/20">
-                                    <CheckCircle2 size={16} />
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    {isSelected && (
+                        <div className="absolute top-1.5 right-1.5 z-10 bg-primary text-primary-foreground rounded-full">
+                            <CheckCircle2 size={18} />
+                        </div>
+                    )}
 
                     {!isLoaded && (
                         <div className="absolute inset-0 bg-background/20 backdrop-blur-sm flex items-center justify-center z-20">
@@ -108,11 +95,11 @@ const LazyPage: React.FC<{
                     )}
                 </>
             ) : (
-                <div className="flex items-center justify-center h-full min-h-[250px]">
+                <div className="flex items-center justify-center h-full min-h-[180px]">
                     <SkeletonLoader variant="image" className="w-full h-full" />
                 </div>
             )}
-        </motion.div>
+        </div>
     );
 };
 
@@ -168,12 +155,12 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
                 onLoadSuccess={handleDocumentLoadSuccess}
                 onLoadError={handleDocumentLoadError}
                 loading={
-                    <div className="flex flex-col items-center justify-center min-h-[400px] w-full py-20">
-                        <LoadingSpinner size="lg" text="Loading PDF Node..." />
+                    <div className="flex flex-col items-center justify-center min-h-[240px] w-full py-10">
+                        <LoadingSpinner size="lg" text="Loading PDF…" />
                     </div>
                 }
             >
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6 p-6">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 p-3">
                     {Array.from({ length: numPages }, (_, index) => {
                         const pageNumber = index + 1;
                         const isSelected = selectedPages.includes(pageNumber);

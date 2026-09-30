@@ -53,12 +53,12 @@ export default function DashboardSupport() {
             {/* Header Section */}
             <div className="page-header space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary">
+                    <span className="text-xs sm:text-xs font-semibold text-primary">
                         Support
                     </span>
                 </div>
-                <div className="glass-card border-foreground/10 rounded-[28px] p-5 sm:p-6 space-y-2">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter leading-tight">
+                <div className="glass-card border-foreground/10 rounded-xl p-5 sm:p-6 space-y-2">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight">
                         We’ve got you <span className="text-gradient">covered</span>
                     </h1>
                     <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium max-w-none leading-relaxed">
@@ -70,7 +70,7 @@ export default function DashboardSupport() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Email Support Card */}
-                <Card className="contact-card glass border-foreground/5 rounded-[32px] overflow-hidden shadow-xl hover:shadow-2xl transition-all group">
+                <Card className="contact-card glass border-foreground/5 rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all group">
                     <CardHeader className="p-5 sm:p-8 pb-3 sm:pb-4">
                         <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
                             <Mail size={28} />
@@ -101,7 +101,7 @@ export default function DashboardSupport() {
                 </Card>
 
                 {/* WhatsApp Support Card */}
-                <Card className="contact-card glass border-foreground/5 rounded-[32px] overflow-hidden shadow-xl hover:shadow-2xl transition-all group">
+                <Card className="contact-card glass border-foreground/5 rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all group">
                     <CardHeader className="p-5 sm:p-8 pb-3 sm:pb-4">
                         <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 text-green-500 group-hover:scale-110 transition-transform">
                             <MessageCircle size={28} />
@@ -135,7 +135,7 @@ export default function DashboardSupport() {
             </div>
 
             {/* Additional Info / FAQ Link could go here */}
-            <div className="contact-card glass-card border-foreground/10 rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
+            <div className="contact-card glass-card border-foreground/10 rounded-xl sm:rounded-xl p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
                 <div className="space-y-2 text-center md:text-left">
                     <h3 className="text-2xl font-bold flex items-center justify-center md:justify-start gap-3">
                         <HelpCircle className="text-primary" />

@@ -36,7 +36,7 @@ export default function AchievementsSection({
 }: AchievementsSectionProps) {
     const { t } = useLanguage();
     return (
-        <Card className="chart-card glass-card border-foreground/10 shadow-2xl overflow-hidden">
+        <Card className="chart-card glass-card border-foreground/10 shadow-sm overflow-hidden">
             <CardHeader className="border-b border-foreground/10 bg-card/5">
                 <CardTitle className="flex items-center gap-3">
                     <div className="p-2 rounded-xl bg-yellow-500/20 text-yellow-500">

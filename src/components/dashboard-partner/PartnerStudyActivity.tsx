@@ -16,7 +16,7 @@ export default function PartnerStudyActivity({
     const sessions = studySummary?.recentSessions || [];
 
     return (
-        <Card className="glass-card border-foreground/10 rounded-[28px]">
+        <Card className="glass-card border-foreground/10 rounded-xl">
             <CardContent className="p-6 sm:p-8 space-y-5">
                 <div className="flex items-center justify-between flex-wrap gap-3">
                     <h3 className="text-lg font-bold">{name}'s Study Activity</h3>
@@ -44,7 +44,7 @@ export default function PartnerStudyActivity({
                                     <p className="text-sm font-medium truncate">
                                         {session.topic || session.type || 'Study session'}
                                     </p>
-                                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">
+                                    <p className="text-xs text-muted-foreground font-bold ">
                                         {formatRelativeTime(session.createdAt)}
                                         {session.duration
                                             ? ` · ${formatMinutes(session.duration)}`

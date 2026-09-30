@@ -19,7 +19,7 @@ export const StructuredSummaryContent = ({
     return (
         <div className={cn('space-y-6 text-sm md:text-base', className)}>
             <section className="space-y-2">
-                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
+                <h4 className="text-xs font-semibold text-primary/70">
                     {t('module.summary_label')}
                 </h4>
                 <p className="text-foreground/90 leading-relaxed">
@@ -28,7 +28,7 @@ export const StructuredSummaryContent = ({
             </section>
 
             <section className="space-y-3">
-                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
+                <h4 className="text-xs font-semibold text-primary/70">
                     {t('module.key_concepts')}
                 </h4>
                 {summary.keyConcepts?.length ? (
@@ -50,7 +50,7 @@ export const StructuredSummaryContent = ({
             </section>
 
             <section className="space-y-3">
-                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
+                <h4 className="text-xs font-semibold text-primary/70">
                     {t('module.definitions_label')}
                 </h4>
                 {summary.definitions?.length ? (
@@ -77,7 +77,7 @@ export const StructuredSummaryContent = ({
             </section>
 
             <section className="space-y-2">
-                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
+                <h4 className="text-xs font-semibold text-primary/70">
                     {t('module.simplified_explanation')}
                 </h4>
                 <p className="text-foreground/90 leading-relaxed">
@@ -88,7 +88,7 @@ export const StructuredSummaryContent = ({
 
             {showQuiz && (
                 <section className="space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-primary/70">
+                    <h4 className="text-xs font-semibold text-primary/70">
                         {t('module.quick_quiz')}
                     </h4>
                     {summary.quiz?.length ? (
@@ -122,7 +122,7 @@ export const StructuredSummaryContent = ({
                                                 )}
                                             </div>
                                         )}
-                                    <p className="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                                    <p className="mt-3 text-xs font-bold text-muted-foreground">
                                         {t('module.answer_label')}
                                     </p>
                                     <p className="text-sm text-foreground/90">

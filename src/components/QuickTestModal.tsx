@@ -127,15 +127,15 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 backdrop-blur-sm">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 ">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-background rounded-[32px] shadow-2xl border border-primary/20"
+                    className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-background rounded-xl shadow-sm border border-primary/20"
                 >
                     {/* Header */}
-                    <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-xl border-b border-foreground/10 p-6">
+                    <div className="sticky top-0 z-10 bg-background/95 border-b border-foreground/10 p-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center">
@@ -352,7 +352,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                         {results && (
                             <div className="space-y-6">
                                 {/* Score Card */}
-                                <div className="p-8 rounded-3xl bg-primary/10 border border-primary/30 text-center">
+                                <div className="p-8 rounded-xl bg-primary/10 border border-primary/30 text-center">
                                     <Trophy
                                         size={64}
                                         className="mx-auto mb-4 text-primary"

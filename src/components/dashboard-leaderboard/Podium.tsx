@@ -36,11 +36,11 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                                 {getAvatarFallback(second)}
                             </AvatarFallback>
                         </Avatar>
-                        <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 bg-gray-300 text-gray-900 font-bold px-2 sm:px-3 py-0.5 rounded-full text-[10px] sm:text-xs shadow-lg">
+                        <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 bg-gray-300 text-gray-900 font-bold px-2 sm:px-3 py-0.5 rounded-full text-xs sm:text-xs shadow-lg">
                             #2
                         </div>
                     </div>
-                    <div className="text-center p-4 sm:p-6 bg-card/5 border border-foreground/10 rounded-2xl sm:rounded-3xl w-full backdrop-blur-md relative overflow-hidden group hover:border-gray-300/30 transition-all">
+                    <div className="text-center p-4 sm:p-6 bg-card/5 border border-foreground/10 rounded-2xl sm:rounded-xl w-full relative overflow-hidden group hover:border-gray-300/30 transition-all">
                         <div className="absolute inset-0 bg-gray-300/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                             <h3 className="font-bold text-sm sm:text-lg truncate text-foreground opacity-100 leading-tight">
@@ -52,7 +52,7 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                                 </Badge>
                             )}
                         </div>
-                        <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate mb-2 sm:mb-3 font-medium uppercase tracking-wider">
+                        <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate mb-2 sm:mb-3 font-medium ">
                             {second.institution || t('leaderboard.scholar')}
                         </p>
                         <Badge
@@ -78,11 +78,11 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                                 {getAvatarFallback(first)}
                             </AvatarFallback>
                         </Avatar>
-                        <div className="absolute -bottom-3 sm:-bottom-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-950 font-black px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm shadow-xl border sm:border-2 border-yellow-200">
+                        <div className="absolute -bottom-3 sm:-bottom-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-950 font-semibold px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm shadow-sm border sm:border-2 border-yellow-200">
                             #1
                         </div>
                     </div>
-                    <div className="text-center p-6 sm:p-8 bg-yellow-400/10 border border-yellow-400/30 rounded-[1.5rem] sm:rounded-[2rem] w-full backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(250,204,21,0.1)] group hover:scale-[1.02] transition-transform duration-300">
+                    <div className="text-center p-6 sm:p-8 bg-yellow-400/10 border border-yellow-400/30 rounded-[1.5rem] sm:rounded-[2rem] w-full relative overflow-hidden shadow-[0_0_40px_rgba(250,204,21,0.1)] group hover:scale-[1.02] transition-transform duration-300">
                         <div className="absolute inset-0 bg-yellow-400/10 opacity-50" />
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                             <h3 className="font-bold text-xl sm:text-2xl truncate text-foreground leading-tight opacity-100">
@@ -94,13 +94,13 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                                 </Badge>
                             )}
                         </div>
-                        <p className="text-[10px] sm:text-xs text-foreground/60 dark:text-yellow-500/80 truncate mb-3 sm:mb-4 font-bold tracking-wide uppercase">
+                        <p className="text-xs sm:text-xs text-foreground/60 dark:text-yellow-500/80 truncate mb-3 sm:mb-4 font-bold tracking-wide ">
                             {(first.institution || t('leaderboard.champion')).substring(0, 20)}
                         </p>
-                        <div className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 drop-shadow-sm">
+                        <div className="text-3xl sm:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 drop-shadow-sm">
                             {type === 'xp' ? first.points.toLocaleString() : first.streak}
                         </div>
-                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mt-1 sm:mt-2">
+                        <p className="text-[8px] sm:text-[10px] font-bold opacity-40 mt-1 sm:mt-2">
                             {type === 'xp' ? t('leaderboard.experience_points') : t('leaderboard.consecutive_days')}
                         </p>
                     </div>
@@ -117,11 +117,11 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                                 {getAvatarFallback(third)}
                             </AvatarFallback>
                         </Avatar>
-                        <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 bg-amber-600 text-foreground font-bold px-2 sm:px-3 py-0.5 rounded-full text-[10px] sm:text-xs shadow-lg">
+                        <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 bg-amber-600 text-foreground font-bold px-2 sm:px-3 py-0.5 rounded-full text-xs sm:text-xs shadow-lg">
                             #3
                         </div>
                     </div>
-                    <div className="text-center p-4 sm:p-6 bg-card/5 border border-foreground/10 rounded-2xl sm:rounded-3xl w-full backdrop-blur-md relative overflow-hidden group hover:border-amber-600/30 transition-all">
+                    <div className="text-center p-4 sm:p-6 bg-card/5 border border-foreground/10 rounded-2xl sm:rounded-xl w-full relative overflow-hidden group hover:border-amber-600/30 transition-all">
                         <div className="absolute inset-0 bg-amber-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                             <h3 className="font-bold text-sm sm:text-lg truncate text-foreground opacity-100 leading-tight">
@@ -133,7 +133,7 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                                 </Badge>
                             )}
                         </div>
-                        <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate mb-2 sm:mb-3 font-medium uppercase tracking-wider">
+                        <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate mb-2 sm:mb-3 font-medium ">
                             {third.institution || t('leaderboard.scholar')}
                         </p>
                         <Badge
