@@ -67,9 +67,9 @@ export const AIMarkdown = ({ content, className }: AIMarkdownProps) => {
                         }
                         return <pre>{children}</pre>;
                     },
-                    code({ inline, className, children, ...props }) {
+                    code({ className, children, ...props }) {
                         const match = /language-(\w+)/.exec(className || '');
-                        if (!inline && match?.[1]?.toLowerCase() === 'mermaid') {
+                        if (match?.[1]?.toLowerCase() === 'mermaid') {
                             return (
                                 <MermaidBlock
                                     code={String(children || '').trim()}

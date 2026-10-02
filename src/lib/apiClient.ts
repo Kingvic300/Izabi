@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { type AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
 import { BASE_URL } from '@/constants';
 import { toast } from 'sonner';
@@ -109,6 +109,10 @@ axiosRetry(apiClient, {
 
 // 2. Cache Interceptor
 // WHY: Reduces data usage and provides instant "perceived speed" for repeated views.
+// A cache hit swaps in an adapter that resolves immediately with the cached
+// data, so the request never touches the network.
+const defaultAdapter = apiClient.defaults.adapter;
+
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('authToken');
     if (token) {
@@ -128,9 +132,16 @@ apiClient.interceptors.request.use((config) => {
         const cached = apiCache.get(cacheKey);
 
         if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-            // Signal to the response interceptor that this is a cache hit
-            (config as any)._isCacheHit = true;
-            (config as any)._cachedData = cached.data;
+            config.adapter = () =>
+                Promise.resolve<AxiosResponse>({
+                    data: cached.data,
+                    status: 200,
+                    statusText: 'OK',
+                    headers: {},
+                    config,
+                });
+        } else if (defaultAdapter) {
+            config.adapter = defaultAdapter;
         }
     }
 
@@ -163,15 +174,6 @@ apiClient.interceptors.response.use(
         return response;
     },
     async (error) => {
-        // Handle Cache Hit shortcut
-        if (error.config?._isCacheHit) {
-            return Promise.resolve({
-                ...error.config,
-                data: error.config._cachedData,
-                status: 200,
-            });
-        }
-
         const statusCode = error.response?.status;
         const originalRequest = error.config || {};
 
