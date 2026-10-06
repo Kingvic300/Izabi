@@ -39,7 +39,7 @@ export const SummarySection = ({
     return (
         <div id="summary-result-section">
             <Collapsible open={isOpen} onOpenChange={onOpenChange}>
-                <Card className="relative glass border-foreground/5 rounded-2xl md:rounded-xl overflow-hidden shadow-sm bg-gradient-to-br from-card/70 via-card/40 to-background/90">
+                <Card className="border border-border rounded-xl overflow-hidden shadow-card bg-card">
                     <CollapsibleTrigger asChild>
                         <button className="w-full text-left p-4 sm:p-6 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
                             <div className="flex items-center gap-4 md:gap-6">

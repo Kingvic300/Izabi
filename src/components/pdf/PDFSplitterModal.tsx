@@ -434,7 +434,7 @@ const SuggestionCard: React.FC<{
             className={cn(
                 'p-4 rounded-2xl border-2 cursor-pointer transition-all group',
                 selected
-                    ? 'border-primary bg-primary/10 shadow-glow'
+                    ? 'border-primary bg-primary/10'
                     : 'border-foreground/5 bg-card/[0.02] hover:bg-card/5 hover:border-foreground/10',
             )}
         >

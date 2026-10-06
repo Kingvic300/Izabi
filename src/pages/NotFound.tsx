@@ -51,7 +51,7 @@ const NotFound = () => {
             <div className="text-center space-y-8 relative z-10">
                 <div className="fade-in">
                     <div className="w-20 h-20 sm:w-24 sm:h-24 bg-card/5 rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8 border border-foreground/10 shadow-2xl relative overflow-hidden group">
-                        <AlertTriangle className="h-12 w-12 text-primary animate-pulse" />
+                        <AlertTriangle className="h-12 w-12 text-primary" />
                     </div>
                     <h1 className="text-7xl sm:text-9xl font-bold tracking-tighter text-foreground opacity-20 leading-none">
                         404
@@ -70,7 +70,7 @@ const NotFound = () => {
 
                 <div className="fade-in">
                     <Link to="/">
-                        <Button className="h-14 sm:h-16 px-6 sm:px-10 rounded-xl bg-card text-black font-bold text-base sm:text-lg shadow-glow hover:bg-card/5 active:scale-95 transition-all flex items-center gap-3 mx-auto">
+                        <Button className="h-14 sm:h-16 px-6 sm:px-10 rounded-xl bg-card text-black font-bold text-base sm:text-lg hover:bg-card/5 active:scale-95 transition-all flex items-center gap-3 mx-auto">
                             <Sparkles size={20} />
                             <span>Return to Station</span>
                         </Button>

@@ -27,7 +27,7 @@ export default function ThemeOption({
                 group relative p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-4
                 ${
                     isActive
-                        ? 'bg-primary/20 border-primary text-primary shadow-glow'
+                        ? 'bg-primary/20 border-primary text-primary'
                         : 'bg-foreground/5 border-foreground/5 hover:bg-foreground/10 opacity-60 hover:opacity-100'
                 }
             `}

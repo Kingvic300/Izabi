@@ -107,7 +107,7 @@ const About = () => {
             <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-10 sm:pb-14">
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 relative z-10">
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8 items-stretch">
-                        <div className="xl:col-span-8 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
+                        <div className="xl:col-span-8 rounded-xl sm:rounded-xl border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
                             <div className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                                 <Sparkles size={14} className="text-primary" />
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
@@ -126,7 +126,7 @@ const About = () => {
                             </p>
                         </div>
 
-                        <div className="xl:col-span-4 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-primary/5 p-6 sm:p-8 flex flex-col justify-center">
+                        <div className="xl:col-span-4 rounded-xl sm:rounded-xl border border-foreground/10 bg-primary/5 p-6 sm:p-8 flex flex-col justify-center">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50 mb-4">
                                 At a glance
                             </p>
@@ -165,7 +165,7 @@ const About = () => {
             <section className="about-section py-10 sm:py-14 relative z-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
-                        <div className="xl:col-span-8 glass p-6 sm:p-10 rounded-[28px] sm:rounded-[36px] border border-foreground/10 space-y-6 sm:space-y-8 shadow-2xl">
+                        <div className="xl:col-span-8 glass p-6 sm:p-10 rounded-xl sm:rounded-xl border border-foreground/10 space-y-6 sm:space-y-8 shadow-2xl">
                             <div className="flex items-center gap-4">
                                 <div className="w-1.5 h-12 bg-primary rounded-xl" />
                                 <h2 className="text-2xl sm:text-4xl font-bold">
@@ -200,7 +200,7 @@ const About = () => {
                             </div>
                         </div>
 
-                        <div className="xl:col-span-4 glass p-6 sm:p-8 rounded-[28px] sm:rounded-[36px] border border-foreground/10 shadow-2xl">
+                        <div className="xl:col-span-4 glass p-6 sm:p-8 rounded-xl sm:rounded-xl border border-foreground/10 shadow-2xl">
                             <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] opacity-50 mb-5">
                                 Why it matters
                             </h3>
@@ -284,7 +284,7 @@ const About = () => {
                                 key={i}
                                 className="glass p-6 sm:p-8 border-foreground/5 hover-lift relative overflow-hidden group"
                             >
-                                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center text-foreground font-bold text-2xl shadow-glow mb-6 group-hover:rotate-6 transition-transform">
+                                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center text-foreground font-bold text-2xl mb-6 group-hover:rotate-6 transition-transform">
                                     {member.initials}
                                 </div>
                                 <h3 className="text-xl font-bold mb-1">
@@ -305,8 +305,8 @@ const About = () => {
             {/* Manifesto CTA */}
             <section className="about-section py-14 sm:py-20 lg:py-24 relative z-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 text-center">
-                    <div className="rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-primary/5 py-10 sm:py-14 px-4 sm:px-8">
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-8 sm:mb-10 shadow-glow">
+                    <div className="rounded-xl sm:rounded-xl border border-foreground/10 bg-primary/5 py-10 sm:py-14 px-4 sm:px-8">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-8 sm:mb-10">
                             <Trophy className="text-primary" size={32} />
                         </div>
                         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-8 sm:mb-10 leading-none tracking-tighter">
@@ -315,7 +315,7 @@ const About = () => {
                         <Link to="/signup">
                             <Button
                                 size="lg"
-                                className="h-14 sm:h-16 md:h-20 px-8 sm:px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg md:text-xl shadow-glow group"
+                                className="h-14 sm:h-16 md:h-20 px-8 sm:px-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg md:text-xl group"
                             >
                                 <span>Create Account</span>
                                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />

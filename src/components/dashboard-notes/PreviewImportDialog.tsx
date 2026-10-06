@@ -102,7 +102,7 @@ export default function PreviewImportDialog({
                     <Button
                         onClick={onSave}
                         disabled={previewSaving}
-                        className="rounded-2xl h-11 px-6 shadow-glow w-full sm:w-auto"
+                        className="rounded-2xl h-11 px-6 w-full sm:w-auto"
                     >
                         {previewSaving ? (
                             <Loader2 className="h-4 w-4 animate-spin" />

@@ -44,7 +44,7 @@ export default function NotesHeader({
                     </Button>
                     <Button
                         onClick={onCreate}
-                        className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl shadow-glow w-full sm:w-auto"
+                        className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl w-full sm:w-auto"
                     >
                         <Plus className="h-5 w-5 mr-2" /> Create New Note
                     </Button>

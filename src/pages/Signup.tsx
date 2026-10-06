@@ -256,7 +256,7 @@ const Signup = () => {
             >
                 {/* Branding */}
                 <div className="text-center space-y-2 sm:space-y-3">
-                    <Logo size={180} className="justify-center mx-auto" />
+                    <Logo size={168} height={48} className="justify-center mx-auto" />
                     <div>
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
                             {t('auth.signup')}
@@ -266,13 +266,13 @@ const Signup = () => {
                         </p>
 
                         {selectedPlan && (
-                            <div className="mt-3 sm:mt-4 inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg sm:rounded-xl glass border border-primary/20 bg-primary/5">
+                            <div className="mt-3 sm:mt-4 inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg glass border border-primary/20 bg-primary/5">
                                 <Star
                                     size={12}
-                                    className="text-primary fill-primary animate-pulse"
+                                    className="text-primary fill-primary"
                                 />
-                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-primary">
-                                    Selected Plan:{' '}
+                                <span className="text-xs font-semibold text-primary">
+                                    Selected plan:{' '}
                                     {selectedPlan.replace(/-/g, ' ')}
                                 </span>
                             </div>
@@ -280,7 +280,7 @@ const Signup = () => {
                     </div>
                 </div>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
+                <Card className="glass shadow-2xl border-foreground/10 rounded-xl overflow-hidden">
                     <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6">
                         <form
                             onSubmit={handleSubmit}
@@ -462,7 +462,7 @@ const Signup = () => {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
+                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
                             >
                                 {isLoading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />
@@ -476,7 +476,7 @@ const Signup = () => {
 
                             <div className="relative my-6">
                                 <div className="absolute inset-0 flex items-center">
-                                    <span className="w-full border-t border-foreground/5"></span>
+                                    <span className="w-full border-t border-border"></span>
                                 </div>
                                 <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
                                     <span className="bg-background px-4 text-muted-foreground/40">
@@ -503,7 +503,7 @@ const Signup = () => {
                             </div>
                         </form>
 
-                        <div className="pt-6 border-t border-foreground/5 text-center">
+                        <div className="pt-6 border-t border-border text-center">
                             <p className="text-xs sm:text-sm font-bold text-muted-foreground">
                                 Already have an account?{' '}
                                 <Link

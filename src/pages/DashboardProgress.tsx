@@ -11,6 +11,7 @@ import ProgressStatCards from '@/components/dashboard-progress/ProgressStatCards
 import ActivityStreaks from '@/components/dashboard-progress/ActivityStreaks';
 import ProgressCharts from '@/components/dashboard-progress/ProgressCharts';
 import AchievementsSection from '@/components/dashboard-progress/AchievementsSection';
+import { LearningVelocityWidget } from '@/components/dashboard-home/LearningVelocityWidget';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const DashboardProgress = () => {
@@ -108,6 +109,17 @@ const DashboardProgress = () => {
                     {t('progress.snapshot_label')}
                 </div>
                 <ProgressStatCards progressData={progressData} />
+            </section>
+
+            <section className="space-y-4">
+                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
+                    Learning Velocity
+                </div>
+                <LearningVelocityWidget
+                    streak={`${progressData.studyStreak ?? 0} Days`}
+                    totalPoints={progressData.totalQuizzes ?? 0}
+                    retentionPercent={Math.round(progressData.averageScore ?? 0)}
+                />
             </section>
 
             <section className="space-y-4">

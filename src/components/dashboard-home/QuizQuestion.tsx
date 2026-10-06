@@ -81,7 +81,7 @@ export const QuizQuestion = ({
                         className={cn(
                             "w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all",
                             isCorrect
-                                ? 'bg-primary text-foreground shadow-primary/20'
+                                ? 'bg-primary text-foreground'
                                 : 'bg-destructive text-primary-foreground shadow-destructive/20'
                         )}
                     >
@@ -107,7 +107,7 @@ export const QuizQuestion = ({
                                 className={cn(
                                     "h-auto min-h-[72px] py-4 md:py-6 px-4 md:px-6 justify-start text-left rounded-2xl md:rounded-xl transition-all duration-300 font-bold border border-foreground/5 w-full touch-manipulation",
                                     "whitespace-normal break-words",
-                                    isSelected && 'bg-primary text-primary-foreground shadow-glow',
+                                    isSelected && 'bg-primary text-primary-foreground',
                                     !isSelected && 'bg-card/5 hover:bg-card/10 text-primary-foreground/70',
                                     isCorrect && 'bg-primary/20 border-primary/50 text-primary !bg-opacity-20',
                                     isWrong && 'bg-destructive/20 border-destructive/50 text-destructive-foreground !bg-opacity-20'

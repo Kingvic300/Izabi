@@ -54,7 +54,7 @@ export default function AdminQuickStats({ stats }: AdminQuickStatsProps) {
                         className="admin-card glass border-foreground/5 shadow-xl hover-lift group overflow-hidden"
                     >
                         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-40">
+                            <CardTitle className="text-xs font-medium text-muted-foreground">
                                 {stat.label}
                             </CardTitle>
                             <Icon

@@ -14,7 +14,7 @@ export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
         <div className="p-1 rounded-xl bg-primary/10 border border-primary/10">
             <div className="glass-card rounded-xl p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
                 <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center md:text-left">
-                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 animate-pulse">
+                    <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                         <Zap className="text-primary" size={32} />
                     </div>
                     <div>

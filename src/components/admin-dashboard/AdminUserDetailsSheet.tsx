@@ -113,20 +113,17 @@ export default function AdminUserDetailsSheet({
                 </SheetHeader>
                 {userDetails ? (
                     <>
-                        <div className="relative overflow-hidden border-b border-foreground/10">
-                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(56,189,248,0.22),_transparent_58%)] opacity-80 pointer-events-none" />
-                            <div className="absolute -top-28 -right-16 h-64 w-64 rounded-full bg-primary/25 blur-3xl pointer-events-none" />
-                            <div className="absolute -bottom-28 -left-20 h-64 w-64 rounded-full bg-sky-500/20 blur-3xl pointer-events-none" />
-                            <div className="relative z-10 p-5 md:p-8 space-y-6">
+                        <div className="border-b border-border">
+                            <div className="p-5 md:p-8 space-y-6">
                                 <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
                                     <div className="flex items-start gap-4 md:gap-6">
                                         <div className="relative">
-                                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-card/10 border border-foreground/10 shadow-xl flex items-center justify-center text-2xl md:text-3xl font-bold text-foreground/70">
+                                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl md:rounded-xl bg-card/10 border border-foreground/10 shadow-xl flex items-center justify-center text-2xl md:text-3xl font-bold text-foreground/70">
                                                 {selectedUserInitial.toUpperCase()}
                                             </div>
                                             <div
                                                 className={cn(
-                                                    'absolute -bottom-2 -right-2 h-8 w-8 rounded-2xl border border-foreground/10 flex items-center justify-center shadow-lg',
+                                                    'absolute -bottom-2 -right-2 h-8 w-8 rounded-xl border border-foreground/10 flex items-center justify-center shadow-lg',
                                                     hasSignals
                                                         ? 'bg-destructive/20 text-destructive'
                                                         : 'bg-emerald-500/20 text-emerald-300',
@@ -259,7 +256,7 @@ export default function AdminUserDetailsSheet({
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                                    <div className="p-3 md:p-4 rounded-2xl bg-card/10 border border-foreground/10 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
+                                    <div className="p-3 md:p-4 rounded-xl bg-card/10 border border-foreground/10">
                                         <div className="flex items-center gap-2 mb-2 text-foreground/60">
                                             <Calendar size={14} />
                                             <span className="text-[10px] font-bold uppercase tracking-wider">
@@ -270,7 +267,7 @@ export default function AdminUserDetailsSheet({
                                             {joinedLabel}
                                         </p>
                                     </div>
-                                    <div className="p-3 md:p-4 rounded-2xl bg-card/10 border border-foreground/10 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
+                                    <div className="p-3 md:p-4 rounded-xl bg-card/10 border border-foreground/10">
                                         <div className="flex items-center gap-2 mb-2 text-foreground/60">
                                             <Activity size={14} />
                                             <span className="text-[10px] font-bold uppercase tracking-wider">
@@ -281,7 +278,7 @@ export default function AdminUserDetailsSheet({
                                             {lastActivityLabel}
                                         </p>
                                     </div>
-                                    <div className="p-3 md:p-4 rounded-2xl bg-card/10 border border-foreground/10 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
+                                    <div className="p-3 md:p-4 rounded-xl bg-card/10 border border-foreground/10">
                                         <div className="flex items-center gap-2 mb-2 text-foreground/60">
                                             <Award size={14} />
                                             <span className="text-[10px] font-bold uppercase tracking-wider">
@@ -294,7 +291,7 @@ export default function AdminUserDetailsSheet({
                                             days
                                         </p>
                                     </div>
-                                    <div className="p-3 md:p-4 rounded-2xl bg-card/10 border border-foreground/10 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
+                                    <div className="p-3 md:p-4 rounded-xl bg-card/10 border border-foreground/10">
                                         <div className="flex items-center gap-2 mb-2 text-foreground/60">
                                             <ShieldCheck size={14} />
                                             <span className="text-[10px] font-bold uppercase tracking-wider">
@@ -315,7 +312,7 @@ export default function AdminUserDetailsSheet({
                             <div className="p-4 md:p-8 space-y-6 md:space-y-8">
                                 <div className="grid xl:grid-cols-[1fr_1.2fr] gap-6 md:gap-8">
                                     <div className="space-y-6">
-                                        <div className="rounded-3xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(15,23,42,0.4),_rgba(59,130,246,0.06))] p-5 md:p-6">
+                                        <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(15,23,42,0.4),_rgba(59,130,246,0.06))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">
                                                 <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50 flex items-center gap-2">
                                                     <ShieldCheck
@@ -332,32 +329,32 @@ export default function AdminUserDetailsSheet({
                                                 </Badge>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3">
-                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
-                                                    <p className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                    <p className="text-[11px] font-medium text-muted-foreground mb-2">
                                                         Level
                                                     </p>
                                                     <p className="text-2xl font-bold">
                                                         {studyLevel}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
-                                                    <p className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                    <p className="text-[11px] font-medium text-muted-foreground mb-2">
                                                         Daily XP
                                                     </p>
                                                     <p className="text-2xl font-bold">
                                                         {dailyPoints}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
-                                                    <p className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                    <p className="text-[11px] font-medium text-muted-foreground mb-2">
                                                         Study Time
                                                     </p>
                                                     <p className="text-2xl font-bold">
                                                         {formattedMinutes}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
-                                                    <p className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                    <p className="text-[11px] font-medium text-muted-foreground mb-2">
                                                         Streak Freezes
                                                     </p>
                                                     <p className="text-2xl font-bold">
@@ -367,7 +364,7 @@ export default function AdminUserDetailsSheet({
                                             </div>
                                         </div>
 
-                                        <div className="rounded-3xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(239,68,68,0.05),_rgba(15,23,42,0.2))] p-5 md:p-6">
+                                        <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(239,68,68,0.05),_rgba(15,23,42,0.2))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">
                                                 <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50 flex items-center gap-2">
                                                     <XCircle
@@ -399,7 +396,7 @@ export default function AdminUserDetailsSheet({
                                                         ) => (
                                                             <div
                                                                 key={i}
-                                                                className="flex items-center gap-3 p-4 rounded-2xl bg-destructive/5 border border-destructive/10"
+                                                                className="flex items-center gap-3 p-4 rounded-xl bg-destructive/5 border border-destructive/10"
                                                             >
                                                                 <div className="w-2 h-2 rounded-full bg-destructive/60" />
                                                                 <span className="text-sm font-medium text-destructive/80">
@@ -410,7 +407,7 @@ export default function AdminUserDetailsSheet({
                                                     )}
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
+                                                <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
                                                     <CheckCircle2
                                                         size={16}
                                                         className="text-emerald-400"
@@ -424,7 +421,7 @@ export default function AdminUserDetailsSheet({
                                             )}
                                         </div>
 
-                                        <div className="rounded-3xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(59,130,246,0.08),_rgba(15,23,42,0.3))] p-5 md:p-6">
+                                        <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(59,130,246,0.08),_rgba(15,23,42,0.3))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">
                                                 <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50">
                                                     Study Mix
@@ -437,8 +434,8 @@ export default function AdminUserDetailsSheet({
                                                 </Badge>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3">
-                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
-                                                    <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                    <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground mb-2">
                                                         <FileText size={12} />
                                                         Summaries
                                                     </div>
@@ -447,8 +444,8 @@ export default function AdminUserDetailsSheet({
                                                             0}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
-                                                    <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                    <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground mb-2">
                                                         <BrainCircuit
                                                             size={12}
                                                         />
@@ -459,8 +456,8 @@ export default function AdminUserDetailsSheet({
                                                             0}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
-                                                    <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                    <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground mb-2">
                                                         <TrendingUp
                                                             size={12}
                                                         />
@@ -471,8 +468,8 @@ export default function AdminUserDetailsSheet({
                                                             0}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-2xl border border-foreground/10 bg-card/10 p-3">
-                                                    <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
+                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                    <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground mb-2">
                                                         <Key size={12} />
                                                         Flashcards
                                                     </div>
@@ -484,7 +481,7 @@ export default function AdminUserDetailsSheet({
                                             </div>
                                         </div>
 
-                                        <div className="rounded-3xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(16,185,129,0.08),_rgba(15,23,42,0.3))] p-5 md:p-6">
+                                        <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(16,185,129,0.08),_rgba(15,23,42,0.3))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">
                                                 <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50">
                                                     Companion
@@ -499,8 +496,8 @@ export default function AdminUserDetailsSheet({
                                                 </Badge>
                                             </div>
                                             {petProfile ? (
-                                                <div className="flex items-center gap-4 rounded-2xl border border-foreground/10 bg-card/10 px-4 py-3">
-                                                    <div className="h-10 w-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-300">
+                                                <div className="flex items-center gap-4 rounded-xl border border-foreground/10 bg-card/10 px-4 py-3">
+                                                    <div className="h-10 w-10 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-300">
                                                         <ShieldCheck
                                                             size={16}
                                                         />
@@ -510,7 +507,7 @@ export default function AdminUserDetailsSheet({
                                                             {petProfile.name ||
                                                                 'Izabi Pet'}
                                                         </p>
-                                                        <p className="text-xs uppercase tracking-widest text-foreground/50">
+                                                        <p className="text-xs font-medium text-muted-foreground">
                                                             {petProfile.type ||
                                                                 'companion'}{' '}
                                                             ·{' '}
@@ -528,7 +525,7 @@ export default function AdminUserDetailsSheet({
                                         </div>
                                     </div>
 
-                                    <div className="rounded-3xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(59,130,246,0.05),_rgba(15,23,42,0.35))] p-5 md:p-6">
+                                    <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(59,130,246,0.05),_rgba(15,23,42,0.35))] p-5 md:p-6">
                                         <div className="flex items-center justify-between mb-4">
                                             <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50 flex items-center gap-2">
                                                 <Clock size={14} />
@@ -570,7 +567,7 @@ export default function AdminUserDetailsSheet({
                                                                         },
                                                                     )}
                                                                 </p>
-                                                                <div className="rounded-2xl bg-card/10 border border-foreground/10 p-4 hover:bg-card/20 transition-colors">
+                                                                <div className="rounded-xl bg-card/10 border border-foreground/10 p-4 hover:bg-card/20 transition-colors">
                                                                     <div className="flex flex-wrap items-center gap-3 mb-2">
                                                                         {getActivityIcon(
                                                                             event.type,

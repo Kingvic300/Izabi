@@ -30,7 +30,7 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
             {second && (
                 <div className="order-2 md:order-1 flex flex-col items-center w-full md:w-1/3 max-w-[200px] sm:max-w-[240px]">
                     <div className="relative mb-3 sm:mb-4">
-                        <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-2 sm:border-4 border-gray-300 shadow-[0_0_15px_rgba(209,213,219,0.3)]">
+                        <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-2 sm:border-4 border-gray-300">
                             <AvatarImage src={getAvatarSrc(second)} />
                             <AvatarFallback className="bg-gray-300 text-gray-900 font-bold text-lg sm:text-xl">
                                 {getAvatarFallback(second)}
@@ -70,9 +70,9 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                 <div className="order-1 md:order-2 flex flex-col items-center w-full md:w-1/3 max-w-[240px] sm:max-w-[280px] mb-4 md:mb-0 z-10">
                     <div className="relative mb-4 sm:mb-6">
                         <div className="absolute -top-10 sm:-top-14 inset-x-0 flex justify-center pointer-events-none">
-                            <Crown className="text-yellow-400 w-8 h-8 sm:w-10 sm:h-10 animate-bounce drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]" />
+                            <Crown className="text-yellow-400 w-8 h-8 sm:w-10 sm:h-10 animate-bounce" />
                         </div>
-                        <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-2 sm:border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.4)]">
+                        <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-2 sm:border-4 border-yellow-400">
                             <AvatarImage src={getAvatarSrc(first)} />
                             <AvatarFallback className="bg-yellow-400 text-yellow-900 font-bold text-2xl sm:text-3xl">
                                 {getAvatarFallback(first)}
@@ -82,7 +82,7 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                             #1
                         </div>
                     </div>
-                    <div className="text-center p-6 sm:p-8 bg-yellow-400/10 border border-yellow-400/30 rounded-[1.5rem] sm:rounded-[2rem] w-full relative overflow-hidden shadow-[0_0_40px_rgba(250,204,21,0.1)] group hover:scale-[1.02] transition-transform duration-300">
+                    <div className="text-center p-6 sm:p-8 bg-yellow-400/10 border border-yellow-400/30 rounded-xl w-full relative overflow-hidden group transition-colors duration-300">
                         <div className="absolute inset-0 bg-yellow-400/10 opacity-50" />
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                             <h3 className="font-bold text-xl sm:text-2xl truncate text-foreground leading-tight opacity-100">
@@ -97,7 +97,7 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
                         <p className="text-xs sm:text-xs text-foreground/60 dark:text-yellow-500/80 truncate mb-3 sm:mb-4 font-bold tracking-wide ">
                             {(first.institution || t('leaderboard.champion')).substring(0, 20)}
                         </p>
-                        <div className="text-3xl sm:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 drop-shadow-sm">
+                        <div className="text-3xl sm:text-4xl font-semibold text-yellow-500">
                             {type === 'xp' ? first.points.toLocaleString() : first.streak}
                         </div>
                         <p className="text-[8px] sm:text-[10px] font-bold opacity-40 mt-1 sm:mt-2">
@@ -111,7 +111,7 @@ export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
             {third && (
                 <div className="order-3 md:order-3 flex flex-col items-center w-full md:w-1/3 max-w-[200px] sm:max-w-[240px]">
                     <div className="relative mb-3 sm:mb-4">
-                        <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-2 sm:border-4 border-amber-600 shadow-[0_0_15px_rgba(217,119,6,0.3)]">
+                        <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-2 sm:border-4 border-amber-600">
                             <AvatarImage src={getAvatarSrc(third)} />
                             <AvatarFallback className="bg-amber-600 text-foreground font-bold text-lg sm:text-xl">
                                 {getAvatarFallback(third)}

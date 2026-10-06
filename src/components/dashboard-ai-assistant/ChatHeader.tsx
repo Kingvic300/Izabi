@@ -45,7 +45,7 @@ export default function ChatHeader({
             <div>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 flex items-center gap-2 sm:gap-3">
                     <span className="text-gradient">Izabi AI</span>
-                    <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary animate-pulse" />
+                    <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </h1>
                 <p className="text-sm sm:text-base text-muted-foreground font-medium">
                     {t('assistant.subtitle')}

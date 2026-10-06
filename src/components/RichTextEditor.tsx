@@ -400,7 +400,7 @@ const RichTextEditor = ({
                     }
                 }}
             >
-                <DialogContent className="glass border-foreground/10 max-w-[92vw] sm:max-w-md rounded-3xl p-0 overflow-hidden">
+                <DialogContent className="glass border-foreground/10 max-w-[92vw] sm:max-w-md rounded-xl p-0 overflow-hidden">
                     <div className="border-b border-foreground/10 bg-card/40 px-5 py-4">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">

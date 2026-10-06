@@ -30,7 +30,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
                     </Button>
                     <h1 className="text-3xl sm:text-5xl font-extrabold mb-2 ">
                         {t('exams.title_top')}{' '}
-                        <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
+                        <span className="text-primary">
                             {t('exams.review_gradient')}
                         </span>
                     </h1>
@@ -139,7 +139,7 @@ export default function ExamReview({ result, onBack }: ExamReviewProps) {
             <div className="flex gap-4 justify-center pt-8">
                 <Button
                     onClick={onBack}
-                    className="h-14 px-8 rounded-2xl font-semibold text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/20 transition-all active:scale-95"
+                    className="h-14 px-8 rounded-2xl font-semibold text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all active:scale-95"
                 >
                     {t('exams.back_to_lobby')}
                 </Button>

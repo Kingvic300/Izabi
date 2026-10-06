@@ -28,7 +28,7 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
     return (
         <div id="flashcards-result-section">
             <Collapsible open={isOpen} onOpenChange={onOpenChange}>
-                <Card className="relative glass border-foreground/5 rounded-2xl md:rounded-xl overflow-hidden shadow-sm bg-gradient-to-br from-card/70 via-card/40 to-background/90">
+                <Card className="border border-border rounded-xl overflow-hidden shadow-card bg-card">
                     <CollapsibleTrigger asChild>
                         <button className="w-full text-left p-4 sm:p-6 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
                             <div className="min-w-0 flex items-center gap-4 sm:gap-5">

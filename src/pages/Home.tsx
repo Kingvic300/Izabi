@@ -277,7 +277,7 @@ const Home = () => {
                 <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-10 sm:pb-14">
                     <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
                         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8 hero-animate">
-                            <div className="xl:col-span-8 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
+                            <div className="xl:col-span-8 rounded-xl sm:rounded-xl border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
                                 <div className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-xl border border-foreground/10 bg-background/40">
                                     <Trophy size={14} className="text-primary" />
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
@@ -324,7 +324,7 @@ const Home = () => {
                                 </div>
                             </div>
 
-                            <div className="xl:col-span-4 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-primary/5 p-6 sm:p-8">
+                            <div className="xl:col-span-4 rounded-xl sm:rounded-xl border border-foreground/10 bg-primary/5 p-6 sm:p-8">
                                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50 mb-4">
                                     In One Session
                                 </p>
@@ -565,7 +565,7 @@ const Home = () => {
                 <section id="about" className="py-14 sm:py-16 lg:py-20">
                     <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
                         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8 items-stretch">
-                            <div className="about-card xl:col-span-7 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12">
+                            <div className="about-card xl:col-span-7 rounded-xl sm:rounded-xl border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12">
                                 <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight text-foreground">
                                     Our Mission:{' '}
                                     <span className="text-primary">
@@ -612,7 +612,7 @@ const Home = () => {
 
                 <section className="py-14 sm:py-16 lg:py-20">
                     <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                        <div className="cta-panel text-center bg-primary/5 py-10 sm:py-14 rounded-[24px] sm:rounded-[36px] border border-foreground/10 px-4 sm:px-8">
+                        <div className="cta-panel text-center bg-primary/5 py-10 sm:py-14 rounded-xl sm:rounded-xl border border-foreground/10 px-4 sm:px-8">
                             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground">
                                 {t('cta.upgrade')}
                             </h2>

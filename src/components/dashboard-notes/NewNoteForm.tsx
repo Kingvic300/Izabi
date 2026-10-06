@@ -151,7 +151,7 @@ export default function NewNoteForm({
                     <Button
                         onClick={onSave}
                         disabled={!draft.title.trim() || !draft.content.trim()}
-                        className="rounded-2xl h-11 sm:h-12 px-4 sm:px-8 shadow-glow w-full sm:w-auto"
+                        className="rounded-2xl h-11 sm:h-12 px-4 sm:px-8 w-full sm:w-auto"
                     >
                         <Save className="h-4 w-4 mr-2" />
                         Save Note

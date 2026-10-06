@@ -127,14 +127,14 @@ const Pricing = () => {
                         {plans.map((plan, i) => (
                             <Card
                                 key={i}
-                                className={`pricing-card p-6 sm:p-10 transition-all relative overflow-hidden border-foreground/5 flex flex-col ${
+                                className={`pricing-card p-6 sm:p-10 transition-all relative border-border flex flex-col ${
                                     plan.highlighted
-                                        ? 'glass shadow-[0_0_80px_rgba(59,130,246,0.15)] ring-2 ring-primary lg:scale-110 z-20 py-10 sm:py-16'
-                                        : 'glass bg-card/[0.02]'
+                                        ? 'glass border-primary z-20 py-10 sm:py-16'
+                                        : 'glass'
                                 }`}
                             >
                                 {plan.highlighted && (
-                                    <div className="absolute top-6 right-6 bg-primary text-primary-foreground px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest animate-pulse">
+                                    <div className="absolute top-6 right-6 bg-primary text-primary-foreground px-3 py-1 rounded-lg text-xs font-semibold">
                                         Most Popular
                                     </div>
                                 )}
@@ -177,7 +177,7 @@ const Pricing = () => {
                                     <Button
                                         className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${
                                             plan.highlighted
-                                                ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow'
+                                                ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
                                                 : 'bg-card/5 hover:bg-card/10 text-foreground border border-foreground/10'
                                         }`}
                                     >

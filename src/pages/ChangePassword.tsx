@@ -155,7 +155,7 @@ const ChangePassword = ({ trigger, initialEmail }: ChangePasswordProps) => {
                             <Button
                                 onClick={sendOtp}
                                 disabled={loading}
-                                className="w-full h-14 rounded-xl font-bold bg-primary hover:bg-primary-glow shadow-glow text-lg"
+                                className="w-full h-14 rounded-xl font-bold bg-primary hover:bg-primary-glow text-lg"
                             >
                                 {loading ? (
                                     <Loader2 className="animate-spin" />
@@ -213,7 +213,7 @@ const ChangePassword = ({ trigger, initialEmail }: ChangePasswordProps) => {
                             <Button
                                 onClick={resetPassword}
                                 disabled={loading}
-                                className="w-full h-14 rounded-xl font-bold bg-primary hover:bg-primary-glow shadow-glow text-lg"
+                                className="w-full h-14 rounded-xl font-bold bg-primary hover:bg-primary-glow text-lg"
                             >
                                 {loading ? (
                                     <Loader2 className="animate-spin" />

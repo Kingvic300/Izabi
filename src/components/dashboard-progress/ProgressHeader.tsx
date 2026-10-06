@@ -12,7 +12,7 @@ export default function ProgressHeader({ studyStreak }: ProgressHeaderProps) {
             <div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-2 ">
                     {t('progress.header_title_top')}{' '}
-                    <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent">
+                    <span className="text-primary">
                         {t('progress.header_title_gradient')}
                     </span>
                 </h1>

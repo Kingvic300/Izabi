@@ -40,7 +40,7 @@ export default function ProfileHeader({
                     <Button
                         onClick={onSave}
                         disabled={isSaving}
-                        className="h-11 sm:h-12 rounded-2xl bg-primary hover:bg-primary-glow font-bold px-4 sm:px-8 shadow-glow w-full sm:w-auto"
+                        className="h-11 sm:h-12 rounded-2xl bg-primary hover:bg-primary-glow font-bold px-4 sm:px-8 w-full sm:w-auto"
                     >
                         {isSaving ? (
                             <Loader2 className="animate-spin" />

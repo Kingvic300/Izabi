@@ -23,7 +23,7 @@ export default function HistoryHeader({
     return (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
             <div>
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
                     {t('history.title')}
                 </h1>
                 <p className="text-muted-foreground mt-2 font-medium">
@@ -39,7 +39,7 @@ export default function HistoryHeader({
                         className={cn(
                             'px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-bold capitalize transition-all whitespace-nowrap',
                             activeType === type
-                                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                                ? 'bg-primary text-primary-foreground shadow-lg'
                                 : 'text-muted-foreground hover:bg-foreground/5',
                         )}
                     >

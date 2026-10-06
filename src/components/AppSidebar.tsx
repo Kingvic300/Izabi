@@ -255,26 +255,28 @@ export function AppSidebar() {
     return (
         <Sidebar
             collapsible="icon"
-            className="border-r border-border bg-card"
+            className="border-r border-sidebar-border bg-sidebar"
         >
             {/* Header */}
-            <SidebarHeader className="border-b border-border p-4">
+            <SidebarHeader
+                className={`border-b border-sidebar-border ${collapsed ? 'p-3' : 'p-5'}`}
+            >
                 <Logo
-                    size={collapsed ? 44 : 160}
-                    height={collapsed ? 44 : 90}
-                    className={`px-2 ${collapsed ? 'justify-center' : ''}`}
+                    size={collapsed ? 40 : 136}
+                    height={collapsed ? 40 : 40}
+                    className={collapsed ? 'justify-center' : ''}
                 />
             </SidebarHeader>
 
             {/* Navigation */}
-            <SidebarContent className="flex-1 px-3 py-4">
+            <SidebarContent className="flex-1 px-3 py-5">
                 {/* Main Navigation Group */}
                 <SidebarGroup>
-                    <SidebarGroupLabel className="text-xs font-medium mb-1 px-3 text-muted-foreground">
+                    <SidebarGroupLabel className="text-[11px] font-semibold tracking-wide mb-2 px-3 text-muted-foreground/70">
                         Study
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
-                        <SidebarMenu className="gap-1">
+                        <SidebarMenu className="gap-0.5">
                             {navigationItems.map((item) => {
                                 const active = isActive(item.url);
                                 return (
@@ -282,8 +284,8 @@ export function AppSidebar() {
                                         <SidebarMenuButton
                                             asChild
                                             isActive={active}
-                                            className={`h-10 rounded-lg px-3 transition-colors
-                                                ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
+                                            className={`relative h-10 rounded-md px-3 transition-colors
+                                                ${active ? 'bg-sidebar-accent text-primary' : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60'}
                                             `}
                                         >
                                             <Link
@@ -300,6 +302,12 @@ export function AppSidebar() {
                                                 }}
                                                 className="flex items-center gap-3"
                                             >
+                                                {active && (
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-primary"
+                                                    />
+                                                )}
                                                 <item.icon
                                                     className="h-[18px] w-[18px] shrink-0"
                                                 />
@@ -313,7 +321,7 @@ export function AppSidebar() {
                                                         {(item as any)
                                                             .status ===
                                                             'unavailable' && (
-                                                            <span className="text-[12px] font-bold px-1.5 py-0.5 rounded-2xl bg-rose-500/20 text-rose-500 border border-rose-500/10">
+                                                            <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md bg-urgent/15 text-urgent">
                                                                 Soon
                                                             </span>
                                                         )}
@@ -330,11 +338,11 @@ export function AppSidebar() {
 
                 {/* Settings Group */}
                 <SidebarGroup className="mt-auto">
-                    <SidebarGroupLabel className="text-xs font-medium mb-1 px-3 text-muted-foreground">
+                    <SidebarGroupLabel className="text-[11px] font-semibold tracking-wide mb-2 px-3 text-muted-foreground/70">
                         Account
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
-                        <SidebarMenu className="gap-1">
+                        <SidebarMenu className="gap-0.5">
                             {settingsItems.map((item) => {
                                 const active = isActive(item.url);
                                 return (
@@ -342,14 +350,20 @@ export function AppSidebar() {
                                         <SidebarMenuButton
                                             asChild
                                             isActive={active}
-                                            className={`h-10 rounded-lg px-3 transition-colors
-                                                ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
+                                            className={`relative h-10 rounded-md px-3 transition-colors
+                                                ${active ? 'bg-sidebar-accent text-primary' : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60'}
                                             `}
                                         >
                                             <Link
                                                 to={item.url}
                                                 className="flex items-center gap-3"
                                             >
+                                                {active && (
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-primary"
+                                                    />
+                                                )}
                                                 <item.icon className="h-[18px] w-[18px] shrink-0" />
                                                 {!collapsed && (
                                                     <span className="text-sm font-medium">
@@ -366,14 +380,20 @@ export function AppSidebar() {
                                 <SidebarMenuItem>
                                     <SidebarMenuButton
                                         isActive={isActive('/dashboard/admin')}
-                                        className={`h-10 rounded-lg px-3 transition-colors
-                                            ${isActive('/dashboard/admin') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}
+                                        className={`relative h-10 rounded-md px-3 transition-colors
+                                            ${isActive('/dashboard/admin') ? 'bg-sidebar-accent text-primary' : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60'}
                                         `}
                                         onClick={() =>
                                             navigate('/dashboard/admin')
                                         }
                                     >
                                         <div className="flex items-center gap-3">
+                                            {isActive('/dashboard/admin') && (
+                                                <span
+                                                    aria-hidden="true"
+                                                    className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-primary"
+                                                />
+                                            )}
                                             <ShieldCheck className="h-[18px] w-[18px] shrink-0" />
                                             {!collapsed && (
                                                 <span className="text-sm font-medium">
@@ -390,15 +410,15 @@ export function AppSidebar() {
             </SidebarContent>
 
             {/* Footer / User Profile */}
-            <SidebarFooter className="p-3 border-t border-border">
+            <SidebarFooter className="p-3 border-t border-sidebar-border">
                 {impersonating && (
-                    <div className="mb-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3">
-                        <p className="text-xs font-medium text-amber-500 mb-2">
+                    <div className="mb-3 rounded-lg border border-urgent/30 bg-urgent/10 p-3">
+                        <p className="text-xs font-medium text-urgent mb-2">
                             Impersonating
                         </p>
                         <Button
                             variant="outline"
-                            className="w-full rounded-xl border-amber-500/30 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20"
+                            className="w-full rounded-md border-urgent/30 bg-urgent/10 text-urgent hover:bg-urgent/20"
                             onClick={handleStopImpersonation}
                         >
                             Stop Impersonation
@@ -409,14 +429,14 @@ export function AppSidebar() {
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton
                             size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-12 rounded-lg"
+                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-12 rounded-md"
                         >
-                            <Avatar className="h-9 w-9 rounded-lg border border-foreground/10 shadow-sm">
+                            <Avatar className="h-9 w-9 rounded-md border border-sidebar-border">
                                 <AvatarImage
                                     src={userInfo.avatar}
                                     alt={userInfo.email}
                                 />
-                                <AvatarFallback className="rounded-lg font-bold bg-primary/20 text-primary">
+                                <AvatarFallback className="rounded-md font-semibold bg-primary/15 text-primary">
                                     {userInfo.initial}
                                 </AvatarFallback>
                             </Avatar>
@@ -433,7 +453,7 @@ export function AppSidebar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         side="top"
-                        className="w-[--radix-popper-anchor-width] rounded-lg p-1"
+                        className="w-[--radix-popper-anchor-width] rounded-md p-1"
                     >
                         <DropdownMenuItem
                             onClick={handleLogout}

@@ -136,7 +136,7 @@ export default function ChatInput({
                         onClick={onSend}
                         disabled={isLoading || isUploadingPdf || !inputValue.trim()}
                         size="icon"
-                        className="h-9 w-9 md:h-10 md:w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary/90 shadow-glow shadow-primary/20 relative overflow-hidden group/btn"
+                        className="h-9 w-9 md:h-10 md:w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary/90 relative overflow-hidden group/btn"
                     >
                         <Send className="h-4 w-4 md:h-5 md:w-5 relative z-10" />
                         <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:animate-shimmer" />

@@ -67,7 +67,7 @@ export default function GroupManagerDialog({
                         <Button
                             onClick={onCreateGroup}
                             disabled={groupBusyId === 'create'}
-                            className="rounded-2xl h-11 px-5 shadow-glow"
+                            className="rounded-2xl h-11 px-5"
                         >
                             {groupBusyId === 'create' ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />

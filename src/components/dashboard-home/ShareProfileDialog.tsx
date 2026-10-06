@@ -176,7 +176,7 @@ export const ShareProfileDialog = ({
                 </DialogHeader>
 
                 {/* Profile Preview Card */}
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-primary/5 border border-primary/10 mb-2">
+                <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 mb-2">
                     <div className="flex items-center gap-4">
                         <Avatar className="w-16 h-16 border-2 border-primary/20">
                             <AvatarImage 

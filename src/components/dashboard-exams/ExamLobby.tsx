@@ -75,7 +75,7 @@ export default function ExamLobby({
                 <div>
                     <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold mb-2 ">
                         {t('exams.title_top')}{' '}
-                        <span className="bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 bg-clip-text text-transparent">
+                        <span className="text-primary">
                             {t('exams.title_gradient')}
                         </span>
                     </h1>
@@ -91,7 +91,7 @@ export default function ExamLobby({
                         className="bg-primary/10 border border-primary/20 p-4 rounded-xl flex items-center justify-between gap-6"
                     >
                         <div className="flex items-center gap-4 px-2">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center animate-pulse border border-primary/30">
+                            <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/30">
                                 <Play
                                     className="text-primary fill-primary"
                                     size={20}
@@ -108,7 +108,7 @@ export default function ExamLobby({
                         </div>
                         <Button
                             onClick={onResume}
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs px-8 h-12 rounded-2xl shadow-sm shadow-primary/20 transition-all active:scale-95"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs px-8 h-12 rounded-2xl shadow-sm transition-all active:scale-95"
                         >
                             {t('exams.resume_now')}
                         </Button>
@@ -210,7 +210,7 @@ export default function ExamLobby({
                         <Button
                             onClick={onStartSimulation}
                             disabled={isSimulating}
-                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-semibold sm:tracking-[0.2em] bg-primary hover:bg-primary/90 text-primary-foreground mt-4 relative z-30 shadow-sm shadow-primary/20 active:scale-95 transition-all rounded-xl"
+                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-semibold sm:tracking-[0.2em] bg-primary hover:bg-primary/90 text-primary-foreground mt-4 relative z-30 shadow-sm active:scale-95 transition-all rounded-xl"
                         >
                             {isSimulating ? (
                                 <Loader2 className="animate-spin" />
@@ -294,17 +294,14 @@ export default function ExamLobby({
                 </Card>
             </div>
 
-            <div className="stagger-card glass-card rounded-xl sm:rounded-xl p-5 sm:p-10 border border-foreground/5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none">
-                    <Trophy size={200} />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10 relative z-10">
+            <div className="stagger-card rounded-xl p-5 sm:p-10 border border-border bg-card">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10">
                     <h3 className="text-2xl sm:text-3xl font-semibold flex items-center gap-3 sm:gap-4 ">
-                        <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
+                        <div className="p-2 rounded-lg bg-primary/10 text-primary">
                             <Trophy size={28} />
                         </div>
                         {t('exams.recent_top')}{' '}
-                        <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent underline decoration-blue-500/30">
+                        <span className="text-primary underline decoration-primary/30">
                             {t('exams.recent_gradient')}
                         </span>
                     </h3>

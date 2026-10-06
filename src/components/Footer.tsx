@@ -32,11 +32,11 @@ export const Footer = () => {
     return (
         <footer className="relative bg-background border-t border-foreground/10">
             <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 pt-10 sm:pt-14 pb-2 sm:pb-4">
-                <div className="rounded-3xl border border-foreground/10 bg-card/5 p-6 sm:p-8 lg:p-10">
+                <div className="rounded-xl border border-border bg-card/40 p-6 sm:p-8 lg:p-10">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
                         <div className="lg:col-span-5 space-y-5">
                             <Link to="/" className="inline-flex items-center">
-                                <Logo size={180} />
+                                <Logo size={168} height={48} />
                             </Link>
                             <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed max-w-md">
                                 Turn class notes and textbooks into clear

@@ -206,7 +206,7 @@ export default function ImportNoteDialog({
                         <Button
                             onClick={onSave}
                             disabled={!importFile || isBusy}
-                            className="rounded-2xl h-11 px-6 shadow-glow w-full sm:w-auto"
+                            className="rounded-2xl h-11 px-6 w-full sm:w-auto"
                         >
                             {importMode === 'scan'
                                 ? 'Scan & Save'

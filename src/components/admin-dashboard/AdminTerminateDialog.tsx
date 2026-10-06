@@ -30,7 +30,7 @@ export default function AdminTerminateDialog({
 }: AdminTerminateDialogProps) {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="glass border-red-500/20 rounded-3xl p-0 overflow-hidden max-w-[92vw] sm:max-w-md">
+            <AlertDialogContent className="glass border-red-500/20 rounded-xl p-0 overflow-hidden max-w-[92vw] sm:max-w-md">
                 <div className="border-b border-red-500/20 bg-red-500/5 px-5 py-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">

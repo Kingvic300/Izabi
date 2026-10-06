@@ -242,18 +242,9 @@ const Login = () => {
             </Link>
 
             {/* Branding panel */}
-            <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-center px-16 overflow-hidden bg-card/20 border-r border-foreground/5">
-                <div
-                    aria-hidden="true"
-                    className="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-primary/20 blur-3xl"
-                />
-                <div
-                    aria-hidden="true"
-                    className="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-primary-glow/10 blur-3xl"
-                />
-
-                <div className="relative z-10 max-w-md">
-                    <Logo size={72} />
+            <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-16 bg-card/20 border-r border-border">
+                <div className="max-w-md">
+                    <Logo size={128} height={36} />
                     <h2 className="mt-10 text-4xl font-bold tracking-tighter text-foreground leading-tight">
                         Pick up right where you left off.
                     </h2>
@@ -264,7 +255,7 @@ const Login = () => {
 
                     <div className="mt-10 space-y-5">
                         <div className="flex items-center gap-4">
-                            <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <div className="h-11 w-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
                                 <Brain size={20} />
                             </div>
                             <span className="text-sm font-semibold text-foreground/80">
@@ -272,7 +263,7 @@ const Login = () => {
                             </span>
                         </div>
                         <div className="flex items-center gap-4">
-                            <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <div className="h-11 w-11 rounded-lg bg-urgent/10 text-urgent flex items-center justify-center shrink-0">
                                 <Flame size={20} />
                             </div>
                             <span className="text-sm font-semibold text-foreground/80">
@@ -280,7 +271,7 @@ const Login = () => {
                             </span>
                         </div>
                         <div className="flex items-center gap-4">
-                            <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <div className="h-11 w-11 rounded-lg bg-reward/10 text-reward flex items-center justify-center shrink-0">
                                 <Trophy size={20} />
                             </div>
                             <span className="text-sm font-semibold text-foreground/80">
@@ -299,7 +290,7 @@ const Login = () => {
             >
                 {/* Branding (mobile only) */}
                 <div className="text-center space-y-3 sm:space-y-4 lg:hidden">
-                    <Logo size={200} className="justify-center mx-auto" />
+                    <Logo size={168} height={48} className="justify-center mx-auto" />
                 </div>
                 <div className="text-center lg:text-left">
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
@@ -310,7 +301,7 @@ const Login = () => {
                     </p>
                 </div>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
+                <Card className="glass shadow-2xl border-border rounded-xl overflow-hidden">
                     <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6">
                         <form
                             onSubmit={handleSubmit}
@@ -416,7 +407,7 @@ const Login = () => {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
+                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
                             >
                                 {loading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />

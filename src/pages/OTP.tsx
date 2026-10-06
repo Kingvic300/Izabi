@@ -304,7 +304,7 @@ const OTP = () => {
             >
                 {/* Branding */}
                 <div className="text-center space-y-3 sm:space-y-4">
-                    <Logo size={180} className="justify-center mx-auto" />
+                    <Logo size={168} height={48} className="justify-center mx-auto" />
                     <div>
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
                             Email{' '}
@@ -316,7 +316,7 @@ const OTP = () => {
                     </div>
                 </div>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-xl sm:rounded-2xl overflow-hidden">
+                <Card className="glass shadow-2xl border-foreground/10 rounded-xl overflow-hidden">
                     <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6 md:space-y-8">
                         <div className="flex flex-col items-center gap-2 text-center">
                             <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-card/5 flex items-center justify-center mb-1 md:mb-2">
@@ -367,7 +367,7 @@ const OTP = () => {
                             <Button
                                 type="submit"
                                 disabled={loading || otp.join('').length < 6}
-                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
+                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
                             >
                                 {loading ? (
                                     <Loader2 className="h-6 w-6 animate-spin" />
@@ -380,7 +380,7 @@ const OTP = () => {
                             </Button>
                         </form>
 
-                        <div className="pt-6 border-t border-foreground/5 text-center flex flex-col gap-4">
+                        <div className="pt-6 border-t border-border text-center flex flex-col gap-4">
                             <button
                                 type="button"
                                 onClick={handleResendOtp}

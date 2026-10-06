@@ -20,8 +20,9 @@ export default {
         },
         extend: {
             fontFamily: {
-                sans: ['Montserrat', 'sans-serif'],
-                mono: ['Montserrat', 'sans-serif'],
+                sans: ['Inter', 'sans-serif'],
+                display: ['Space Grotesk', 'sans-serif'],
+                mono: ['Space Grotesk', 'sans-serif'],
             },
             colors: {
                 border: 'hsl(var(--border))',
@@ -66,6 +67,14 @@ export default {
                     purple: 'hsl(var(--learning-purple))',
                     orange: 'hsl(var(--learning-orange))',
                 },
+                reward: {
+                    DEFAULT: 'hsl(var(--reward))',
+                    foreground: 'hsl(var(--reward-foreground))',
+                },
+                urgent: {
+                    DEFAULT: 'hsl(var(--urgent))',
+                    foreground: 'hsl(var(--urgent-foreground))',
+                },
                 sidebar: {
                     DEFAULT: 'hsl(var(--sidebar-background))',
                     foreground: 'hsl(var(--sidebar-foreground))',
@@ -80,7 +89,6 @@ export default {
                 },
             },
             boxShadow: {
-                glow: 'var(--shadow-glow)',
                 card: 'var(--shadow-card)',
                 float: 'var(--shadow-float)',
             },

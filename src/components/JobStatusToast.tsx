@@ -92,7 +92,7 @@ const JobStatusToast: React.FC<JobStatusToastProps> = ({ job, onClose }) => {
                                     ? 'text-green-500'
                                     : isFailed
                                       ? 'text-red-500'
-                                      : 'text-primary shadow-[0_0_10px_theme(colors.primary.DEFAULT)]',
+                                      : 'text-primary',
                             )}
                         />
                     </svg>
@@ -143,7 +143,7 @@ const JobStatusToast: React.FC<JobStatusToastProps> = ({ job, onClose }) => {
             {isProcessing && (
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
                     <motion.div
-                        className="h-full bg-primary shadow-[0_0_10px_theme(colors.primary.DEFAULT)]"
+                        className="h-full bg-primary"
                         initial={{ width: 0 }}
                         animate={{ width: `${job.progress}%` }}
                         transition={{ duration: 0.5 }}

@@ -80,7 +80,7 @@ export default function NotesGrid({
                 <Button
                     onClick={onCreateNote}
                     size="lg"
-                    className="rounded-2xl h-12 sm:h-14 px-6 sm:px-10 shadow-glow font-bold text-base sm:text-lg w-full sm:w-auto"
+                    className="rounded-2xl h-12 sm:h-14 px-6 sm:px-10 font-bold text-base sm:text-lg w-full sm:w-auto"
                 >
                     <FileText size={20} className="mr-2" /> Create First Note
                 </Button>

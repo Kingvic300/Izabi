@@ -58,7 +58,7 @@ const BrainDrop: React.FC<BrainDropProps> = ({
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                        <div className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold shadow-glow flex items-center gap-2">
+                        <div className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center gap-2">
                             <Zap size={12} fill="currentColor" />
                             Brain Drop
                         </div>

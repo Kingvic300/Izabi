@@ -109,7 +109,7 @@ const HowItWorks = () => {
             <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-10 sm:pb-14">
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 relative z-10">
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
-                        <div className="xl:col-span-8 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
+                        <div className="xl:col-span-8 rounded-xl sm:rounded-xl border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
                             <div className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                                 <Binary size={14} className="text-primary" />
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
@@ -127,7 +127,7 @@ const HowItWorks = () => {
                             </p>
                         </div>
 
-                        <div className="xl:col-span-4 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-primary/5 p-6 sm:p-8">
+                        <div className="xl:col-span-4 rounded-xl sm:rounded-xl border border-foreground/10 bg-primary/5 p-6 sm:p-8">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50 mb-4">
                                 Process Overview
                             </p>
@@ -158,7 +158,7 @@ const HowItWorks = () => {
                         {steps.map((step, i) => (
                             <Card
                                 key={i}
-                                className="step-card border border-foreground/10 bg-card/5 rounded-[24px] sm:rounded-[32px] p-5 sm:p-7 lg:p-8"
+                                className="step-card border border-foreground/10 bg-card/5 rounded-xl sm:rounded-xl p-5 sm:p-7 lg:p-8"
                             >
                                 <div className="space-y-6">
                                     <div className="flex items-start justify-between gap-4">
@@ -225,7 +225,7 @@ const HowItWorks = () => {
                         ].map((stat, i) => (
                             <Card
                                 key={i}
-                                className="border border-foreground/10 bg-card/5 p-4 sm:p-7 text-center rounded-2xl sm:rounded-[28px]"
+                                className="border border-foreground/10 bg-card/5 p-4 sm:p-7 text-center rounded-2xl sm:rounded-xl"
                             >
                                 <div className="text-xl sm:text-3xl font-black text-primary mb-1">
                                     {stat.time}
@@ -242,14 +242,14 @@ const HowItWorks = () => {
             {/* Final CTA */}
             <section className="py-14 sm:py-20 lg:py-24 relative z-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                    <div className="text-center bg-primary/5 py-10 sm:py-14 rounded-[24px] sm:rounded-[36px] border border-foreground/10 px-4 sm:px-8">
+                    <div className="text-center bg-primary/5 py-10 sm:py-14 rounded-xl sm:rounded-xl border border-foreground/10 px-4 sm:px-8">
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 leading-tight text-foreground">
                             {t('hiw.cta_title')}
                         </h2>
                         <Link to="/signup">
                             <Button
                                 size="lg"
-                                className="h-14 sm:h-16 md:h-20 px-8 sm:px-12 rounded-[28px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg md:text-xl shadow-glow group"
+                                className="h-14 sm:h-16 md:h-20 px-8 sm:px-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg md:text-xl group"
                             >
                                 <span>{t('hiw.cta_btn')}</span>
                                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />

@@ -331,15 +331,15 @@ const DashboardSubscription = () => {
                                 >
                                     <Card
                                         className={cn(
-                                            'glass relative overflow-hidden transition-all h-full flex flex-col rounded-xl border-foreground/5',
+                                            'glass relative transition-all h-full flex flex-col rounded-xl border-border',
                                             plan.id === 'pro' &&
-                                                'md:scale-105 z-10 border-primary/40 shadow-[0_0_40px_rgba(59,130,246,0.15)] bg-primary/5',
+                                                'z-10 border-primary/40 bg-primary/5',
                                             isCurrent &&
                                                 'ring-2 ring-primary ring-offset-4 ring-offset-background',
                                         )}
                                     >
                                         {plan.id === 'pro' && (
-                                            <div className="absolute top-6 right-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold shadow-lg shadow-primary/20 animate-pulse">
+                                            <div className="absolute top-6 right-6 bg-primary text-primary-foreground px-3 py-1 rounded-lg text-xs font-semibold">
                                                 {t('subscription.popular')}
                                             </div>
                                         )}
@@ -414,7 +414,7 @@ const DashboardSubscription = () => {
                                                 className={cn(
                                                     'w-full h-14 md:h-16 font-semibold text-xs rounded-2xl transition-all active:scale-95',
                                                     plan.id === 'pro'
-                                                        ? 'bg-primary text-white hover:bg-primary/90 shadow-sm shadow-primary/20'
+                                                        ? 'bg-primary text-white hover:bg-primary/90 shadow-sm'
                                                         : 'bg-foreground/5 hover:bg-foreground/10 border border-foreground/10',
                                                 )}
                                             >

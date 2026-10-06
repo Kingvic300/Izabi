@@ -59,35 +59,14 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
         }
     };
 
-    const getGlowColor = () => {
-        switch (error.type) {
-            case 'validation':
-                return 'shadow-yellow-500/20';
-            case 'network':
-                return 'shadow-primary/20';
-            case 'backend':
-                return 'shadow-rose-500/20';
-            default:
-                return 'shadow-primary/20';
-        }
-    };
-
     return (
         <Card
             className={cn(
-                'relative overflow-hidden glass border-foreground/5 rounded-2xl shadow-2xl transition-all duration-500 group',
-                getGlowColor(),
+                'overflow-hidden border border-border rounded-xl shadow-card transition-all duration-200',
+                getErrorBg(),
             )}
         >
-            {/* Background Accent */}
-            <div
-                className={cn(
-                    'absolute inset-0 opacity-50',
-                    getErrorBg(),
-                )}
-            />
-
-            <CardContent className="relative p-6">
+            <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-5 flex-1">
                         <div className="mt-1">{getErrorIcon()}</div>

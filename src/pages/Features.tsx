@@ -169,7 +169,7 @@ const Features = () => {
             <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-12 sm:pb-16">
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 relative z-10">
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
-                        <div className="xl:col-span-8 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
+                        <div className="xl:col-span-8 rounded-xl sm:rounded-xl border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
                             <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                                 <Trophy size={14} className="text-primary" />
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
@@ -189,7 +189,7 @@ const Features = () => {
                             </p>
                         </div>
 
-                        <div className="xl:col-span-4 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-primary/5 p-6 sm:p-8">
+                        <div className="xl:col-span-4 rounded-xl sm:rounded-xl border border-foreground/10 bg-primary/5 p-6 sm:p-8">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50 mb-4">
                                 Core Modules
                             </p>
@@ -220,7 +220,7 @@ const Features = () => {
                         {features.map((feature, i) => (
                             <Card
                                 key={i}
-                                className="feature-card border border-foreground/10 bg-card/5 p-6 sm:p-8 hover-lift group overflow-hidden rounded-[24px] sm:rounded-[30px]"
+                                className="feature-card border border-foreground/10 bg-card/5 p-6 sm:p-8 hover-lift group overflow-hidden rounded-xl sm:rounded-xl"
                             >
                                 <div
                                     className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl ${feature.bg} ${feature.color} flex items-center justify-center mb-6 sm:mb-8 shadow-xl group-hover:scale-110 transition-transform duration-500`}
@@ -260,7 +260,7 @@ const Features = () => {
                     <Link to="/signup">
                         <Button
                             size="lg"
-                            className="h-14 sm:h-16 md:h-20 px-8 sm:px-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg md:text-xl shadow-glow group"
+                            className="h-14 sm:h-16 md:h-20 px-8 sm:px-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg md:text-xl group"
                         >
                             <span>Create Account</span>
                             <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />

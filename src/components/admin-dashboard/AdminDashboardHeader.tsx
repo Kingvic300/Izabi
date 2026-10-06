@@ -52,7 +52,7 @@ export default function AdminDashboardHeader({
                 <Button
                     onClick={onExportReport}
                     disabled={isExportingReport}
-                    className="h-11 md:h-12 rounded-2xl bg-primary shadow-glow hover:bg-primary/90 font-bold px-6 md:px-8 w-full lg:w-auto"
+                    className="h-11 md:h-12 rounded-2xl bg-primary hover:bg-primary/90 font-bold px-6 md:px-8 w-full lg:w-auto"
                 >
                     {isExportingReport ? (
                         <>

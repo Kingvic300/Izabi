@@ -23,25 +23,29 @@ export const StatsRow = ({
             label: t('module.active_streak'),
             value: `${streak} ${t('leaderboard.days_label')}`,
             icon: Flame,
-            iconClass: 'text-orange-500 bg-orange-500/10',
+            accent: 'bg-urgent',
+            iconClass: 'text-urgent bg-urgent/10',
         },
         {
             label: t('module.knowledge_xp'),
             value: totalPoints.toLocaleString(),
             icon: Star,
+            accent: 'bg-primary',
             iconClass: 'text-primary bg-primary/10',
         },
         {
             label: t('home.daily_xp'),
             value: `+${dailyPoints.toLocaleString()}`,
             icon: TrendingUp,
-            iconClass: 'text-emerald-500 bg-emerald-500/10',
+            accent: 'bg-reward',
+            iconClass: 'text-reward bg-reward/10',
         },
         {
             label: t('home.total_study_time'),
             value: `${studyHours}h`,
             icon: Clock,
-            iconClass: 'text-sky-500 bg-sky-500/10',
+            accent: 'bg-learning-purple',
+            iconClass: 'text-learning-purple bg-learning-purple/10',
         },
     ];
 
@@ -50,10 +54,14 @@ export const StatsRow = ({
             {stats.map((stat) => (
                 <div
                     key={stat.label}
-                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-4"
+                    className="relative flex items-center gap-3 overflow-hidden rounded-lg border border-border bg-card p-4"
                 >
+                    <span
+                        aria-hidden="true"
+                        className={`absolute inset-y-0 left-0 w-[3px] ${stat.accent}`}
+                    />
                     <div
-                        className={`h-9 w-9 shrink-0 rounded-lg flex items-center justify-center ${stat.iconClass}`}
+                        className={`h-9 w-9 shrink-0 rounded-md flex items-center justify-center ${stat.iconClass}`}
                     >
                         <stat.icon size={18} />
                     </div>
@@ -61,7 +69,7 @@ export const StatsRow = ({
                         <p className="text-xs text-muted-foreground truncate">
                             {stat.label}
                         </p>
-                        <p className="text-lg font-semibold leading-tight">
+                        <p className="text-lg font-semibold leading-tight font-display">
                             {stat.value}
                         </p>
                     </div>

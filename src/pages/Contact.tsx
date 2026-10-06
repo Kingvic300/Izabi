@@ -33,7 +33,7 @@ const Contact = () => {
             <section className="pb-20 sm:pb-24">
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 space-y-6 sm:space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card className="glass border-foreground/5 rounded-[32px] overflow-hidden shadow-xl">
+                        <Card className="glass border-foreground/5 rounded-xl overflow-hidden shadow-xl">
                             <CardHeader className="p-5 sm:p-8 pb-3 sm:pb-4">
                                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 text-primary">
                                     <Mail size={28} />
@@ -62,7 +62,7 @@ const Contact = () => {
                             </CardContent>
                         </Card>
 
-                        <Card className="glass border-foreground/5 rounded-[32px] overflow-hidden shadow-xl">
+                        <Card className="glass border-foreground/5 rounded-xl overflow-hidden shadow-xl">
                             <CardHeader className="p-5 sm:p-8 pb-3 sm:pb-4">
                                 <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 text-green-500">
                                     <MessageCircle size={28} />
@@ -96,7 +96,7 @@ const Contact = () => {
                         </Card>
                     </div>
 
-                    <div className="bg-card/5 border border-foreground/5 rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
+                    <div className="bg-card/5 border border-foreground/5 rounded-xl sm:rounded-xl p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
                         <div className="space-y-2 text-center md:text-left">
                             <h3 className="text-2xl font-bold flex items-center justify-center md:justify-start gap-3">
                                 <HelpCircle className="text-primary" />

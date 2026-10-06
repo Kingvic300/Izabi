@@ -102,7 +102,7 @@ export default function ExamView({
                                 className={cn(
                                     'h-9 sm:h-10 rounded-lg border text-xs sm:text-sm font-semibold transition-all',
                                     isAnswered
-                                        ? 'border-green-500 bg-green-500 text-white shadow-lg shadow-green-500/20'
+                                        ? 'border-green-500 bg-green-500 text-white'
                                         : isCurrent
                                           ? 'border-foreground/50 ring-2 ring-foreground/20 bg-background text-foreground'
                                           : isVisited
@@ -139,7 +139,7 @@ export default function ExamView({
                                 onClick={() => onAnswer(option)}
                                 className={`text-left p-6 rounded-2xl transition-all border-2 flex items-start gap-4 group whitespace-normal ${
                                     answers[currentQuestionIndex] === option
-                                        ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(37,99,235,0.15)]'
+                                        ? 'border-blue-500 bg-blue-500/10'
                                         : 'border-foreground/5 bg-card/5 hover:bg-card/10 hover:border-foreground/10'
                                 }`}
                             >
@@ -181,7 +181,7 @@ export default function ExamView({
                     ) : (
                         <Button
                             onClick={onNext}
-                            className="w-full sm:w-32 h-12 rounded-[14px] font-semibold text-xs bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm shadow-primary/20 transition-all active:scale-95"
+                            className="w-full sm:w-32 h-12 rounded-xl font-semibold text-xs bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm transition-all active:scale-95"
                         >
                             {t('exams.next')}
                         </Button>

@@ -7,6 +7,7 @@ import PartnerStatCards from '@/components/dashboard-partner/PartnerStatCards';
 import GoalPanel from '@/components/dashboard-partner/GoalPanel';
 import PartnerStudyActivity from '@/components/dashboard-partner/PartnerStudyActivity';
 import PartnerChat from '@/components/dashboard-partner/PartnerChat';
+import { AccountabilityPartnerView } from '@/components/dashboard-partner/AccountabilityPartnerView';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { getPartnerDisplayName } from '@/components/dashboard-partner/partnerUtils';
@@ -76,6 +77,21 @@ const DashboardPartner = () => {
 
             {partnership?.status === 'active' && (
                 <>
+                    <section className="space-y-4">
+                        <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
+                            Co-Working & Nudges
+                        </div>
+                        <AccountabilityPartnerView
+                            partnership={partnership}
+                            streaks={streaks}
+                            goal={goal}
+                            checkInStatus={checkInStatus}
+                            onLaunchStudy={() => {
+                                window.location.href = '/dashboard';
+                            }}
+                        />
+                    </section>
+
                     <section className="space-y-4">
                         <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
                             Streaks

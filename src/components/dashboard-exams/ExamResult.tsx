@@ -24,7 +24,7 @@ export default function ExamResult({
             <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="w-40 h-40 sm:w-56 sm:h-56 mx-auto rounded-full bg-blue-600 flex items-center justify-center shadow-[0_0_50px_rgba(37,99,235,0.4)] mb-6 sm:mb-8 border-4 border-white/10"
+                className="w-40 h-40 sm:w-56 sm:h-56 mx-auto rounded-full bg-blue-600 flex items-center justify-center mb-6 sm:mb-8 border-4 border-white/10"
             >
                 <div className="text-5xl sm:text-7xl font-semibold text-white">
                     {Math.round(score)}%
@@ -64,7 +64,7 @@ export default function ExamResult({
 
             <Button
                 onClick={onReturn}
-                className="h-14 sm:h-16 px-8 sm:px-12 rounded-xl font-semibold sm:tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/20 transition-all active:scale-95"
+                className="h-14 sm:h-16 px-8 sm:px-12 rounded-xl font-semibold sm:tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all active:scale-95"
             >
                 {t('exams.return_to_lobby')}
             </Button>

@@ -175,7 +175,7 @@ export function TourOverlay() {
                             stiffness: 300,
                             damping: 30,
                         }}
-                        className="absolute rounded-2xl border-2 border-primary shadow-[0_0_30px_rgba(59,130,246,0.5)] pointer-events-none bg-primary/5 hidden md:block"
+                        className="absolute rounded-xl border-2 border-primary pointer-events-none bg-primary/5 hidden md:block"
                     />
                 )}
             </AnimatePresence>
@@ -197,21 +197,16 @@ export function TourOverlay() {
                 >
                     <div
                         className={cn(
-                            'bg-card/95 backdrop-blur-3xl border border-foreground/10 shadow-2xl relative overflow-hidden',
+                            'bg-card border border-border shadow-elevated',
                             isCenter
-                                ? 'p-6 md:p-10 rounded-[32px] text-center'
-                                : 'p-5 rounded-[24px]',
+                                ? 'p-6 md:p-10 rounded-xl text-center'
+                                : 'p-5 rounded-xl',
                         )}
                     >
-                        {/* Background decoration for intro card */}
-                        {isCenter && (
-                            <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-primary/10 blur-[60px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-                        )}
-
-                        <div className="relative z-10 flex flex-col h-full">
+                        <div className="flex flex-col h-full">
                             {isCenter && (
                                 <div className="flex justify-center mb-6">
-                                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-[24px] bg-primary/10 flex items-center justify-center text-primary animate-pulse border border-primary/20">
+                                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                                         <Map className="w-8 h-8 md:w-10 md:h-10" />
                                     </div>
                                 </div>
@@ -311,7 +306,7 @@ export function TourOverlay() {
                                         size="sm"
                                         onClick={nextStep}
                                         className={cn(
-                                            'rounded-xl font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow transition-all active:scale-95',
+                                            'rounded-xl font-bold bg-primary hover:bg-primary/90 text-primary-foreground transition-all active:scale-95',
                                             isCenter
                                                 ? 'w-full h-11 text-base'
                                                 : 'h-8 px-4 text-xs ml-auto',

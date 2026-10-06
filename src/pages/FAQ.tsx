@@ -96,7 +96,7 @@ const FAQ = () => {
             <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-10 sm:pb-14">
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 relative z-10">
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8 items-stretch">
-                        <div className="xl:col-span-8 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12">
+                        <div className="xl:col-span-8 rounded-xl sm:rounded-xl border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12">
                             <div className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 glass rounded-xl border border-foreground/10">
                                 <HelpCircle size={14} className="text-secondary" />
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
@@ -113,7 +113,7 @@ const FAQ = () => {
                             </p>
                         </div>
 
-                        <div className="xl:col-span-4 rounded-[28px] sm:rounded-[36px] border border-foreground/10 bg-primary/5 p-6 sm:p-8 flex flex-col justify-center">
+                        <div className="xl:col-span-4 rounded-xl sm:rounded-xl border border-foreground/10 bg-primary/5 p-6 sm:p-8 flex flex-col justify-center">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50 mb-4">
                                 Quick Guide
                             </p>
@@ -139,7 +139,7 @@ const FAQ = () => {
                         {faqs.map((category, i) => (
                             <div
                                 key={i}
-                                className="faq-section rounded-[24px] sm:rounded-[32px] border border-foreground/10 bg-card/5 p-4 sm:p-6 lg:p-8"
+                                className="faq-section rounded-xl sm:rounded-xl border border-foreground/10 bg-card/5 p-4 sm:p-6 lg:p-8"
                             >
                                 <h2 className="text-xs font-bold uppercase tracking-[0.2em] opacity-50 mb-4 sm:mb-6 px-1">
                                     {category.category}
@@ -175,7 +175,7 @@ const FAQ = () => {
             {/* Support CTA */}
             <section className="py-14 sm:py-20 relative z-10 border-t border-foreground/10">
                 <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                    <div className="text-center bg-primary/5 py-10 sm:py-16 rounded-[24px] sm:rounded-[36px] border border-foreground/10 px-4 sm:px-8">
+                    <div className="text-center bg-primary/5 py-10 sm:py-16 rounded-xl sm:rounded-xl border border-foreground/10 px-4 sm:px-8">
                         <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-primary/20 flex items-center justify-center mx-auto mb-6 sm:mb-8">
                             <Sparkles className="text-primary" size={30} />
                         </div>
@@ -186,7 +186,7 @@ const FAQ = () => {
                             Contact support and we will help you quickly.
                         </p>
                         <Link to="/contact">
-                            <Button className="h-12 sm:h-14 px-6 sm:px-10 rounded-xl bg-card text-black font-bold text-sm sm:text-base hover:bg-card/5 shadow-glow">
+                            <Button className="h-12 sm:h-14 px-6 sm:px-10 rounded-xl bg-card text-black font-bold text-sm sm:text-base hover:bg-card/5">
                                 Contact Support
                             </Button>
                         </Link>

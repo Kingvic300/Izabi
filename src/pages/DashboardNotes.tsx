@@ -18,6 +18,8 @@ import GroupManagerDialog from '@/components/dashboard-notes/GroupManagerDialog'
 import ImportNoteDialog from '@/components/dashboard-notes/ImportNoteDialog';
 import PreviewImportDialog from '@/components/dashboard-notes/PreviewImportDialog';
 import NoteReaderDialog from '@/components/dashboard-notes/NoteReaderDialog';
+import { StudyToolsGrid, type StudyToolId } from '@/components/dashboard-notes/StudyToolsGrid';
+import { StudyToolModal } from '@/components/dashboard-notes/StudyToolModal';
 import type { Note, NoteGroup } from '@/components/dashboard-notes/noteTypes';
 import {
     ACCEPTED_IMPORT_TYPES,
@@ -58,6 +60,7 @@ export default function DashboardNotes() {
     const [importOpen, setImportOpen] = useState(false);
     const [importMode, setImportMode] = useState<'import' | 'scan'>('import');
     const [importFile, setImportFile] = useState<File | null>(null);
+    const [activeStudyTool, setActiveStudyTool] = useState<StudyToolId | null>(null);
     const [importTitle, setImportTitle] = useState('');
     const [importSubject, setImportSubject] = useState('');
     const [importStatus, setImportStatus] = useState<
@@ -697,6 +700,17 @@ export default function DashboardNotes() {
                     />
                 </div>
 
+                <StudyToolsGrid
+                    onSelectTool={(toolId) => {
+                        if (toolId === 'upload-notes') {
+                            openImportModal('import');
+                            return;
+                        }
+                        setActiveStudyTool(toolId);
+                    }}
+                    selectedToolId={activeStudyTool}
+                />
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="glass-card border-foreground/10 rounded-2xl p-5">
                         <div className="flex items-center justify-between">
@@ -893,6 +907,12 @@ export default function DashboardNotes() {
                 onOpenChange={(open) => {
                     if (!open) setReadingNote(null);
                 }}
+            />
+
+            <StudyToolModal
+                toolId={activeStudyTool === 'upload-notes' ? null : activeStudyTool}
+                onClose={() => setActiveStudyTool(null)}
+                onEarnPoints={() => {}}
             />
         </div>
     );

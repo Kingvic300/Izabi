@@ -19,7 +19,7 @@ export const QuizResults = ({ score, total, onFinalize, isResultsView }: QuizRes
             <div className="pt-8">
                 <Button
                     onClick={onFinalize}
-                    className="w-full h-16 md:h-20 rounded-2xl md:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg md:text-2xl shadow-glow group"
+                    className="w-full h-16 md:h-20 rounded-2xl md:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg md:text-2xl group"
                 >
                     <span>{t('quiz.finalize')}</span>
                 </Button>
@@ -30,7 +30,7 @@ export const QuizResults = ({ score, total, onFinalize, isResultsView }: QuizRes
     return (
         <div
             id="mastery-verdict"
-            className="p-4 md:p-10 rounded-2xl md:rounded-xl bg-primary relative overflow-hidden group shadow-glow"
+            className="p-4 md:p-10 rounded-2xl md:rounded-xl bg-primary relative overflow-hidden group"
         >
             <div className="absolute inset-0 bg-background/10 transition-colors" />
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
@@ -51,7 +51,7 @@ export const QuizResults = ({ score, total, onFinalize, isResultsView }: QuizRes
                             {score} / {total}
                         </div>
                     </div>
-                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-xl bg-primary text-primary-foreground flex items-center justify-center text-lg md:text-2xl font-bold shadow-glow">
+                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-xl bg-primary text-primary-foreground flex items-center justify-center text-lg md:text-2xl font-bold">
                         {percentage}%
                     </div>
                 </div>

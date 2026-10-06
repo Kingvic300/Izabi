@@ -31,6 +31,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import PDFPreview from '@/components/pdf/PDFPreview';
+import { FloatingAssistant } from '@/components/dashboard-home/FloatingAssistant';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useDashboardData } from '@/hooks/useDashboardData';
@@ -85,6 +86,7 @@ export default function DashboardHome() {
     const [practiceQuestions, setPracticeQuestions] = useState<any[]>([]);
     const [userExamType, setUserExamType] = useState<string | null>(null);
     const [previewFile, setPreviewFile] = useState<File | null>(null);
+    const [isAssistantOpen, setIsAssistantOpen] = useState(false);
     const streakValue =
         userStats?.data?.streakData?.academicStreak ??
         userStats?.data?.studyStreak ??
@@ -813,6 +815,12 @@ export default function DashboardHome() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            <FloatingAssistant
+                isOpen={isAssistantOpen}
+                onToggle={() => setIsAssistantOpen((prev) => !prev)}
+                currentTopic={session.fileNames[0]}
+            />
         </ErrorBoundary>
     );
 }

@@ -142,8 +142,8 @@ export default function AdminUsersTab({
                                 </div>
                             ))
                         ) : (
-                            <div className="py-10 text-center opacity-30 font-bold italic uppercase tracking-widest">
-                                No Active Records Found
+                            <div className="py-10 text-center text-muted-foreground">
+                                No users found
                             </div>
                         )}
                     </div>
@@ -289,9 +289,9 @@ export default function AdminUsersTab({
                                     <TableRow>
                                         <TableCell
                                             colSpan={5}
-                                            className="py-20 text-center opacity-30 font-bold text-xl italic uppercase tracking-widest"
+                                            className="py-20 text-center text-muted-foreground"
                                         >
-                                            No Active Records Found
+                                            No users found
                                         </TableCell>
                                     </TableRow>
                                 )}

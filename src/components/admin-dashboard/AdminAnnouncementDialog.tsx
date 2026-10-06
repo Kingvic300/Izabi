@@ -26,7 +26,7 @@ export default function AdminAnnouncementDialog({
 }: AdminAnnouncementDialogProps) {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="glass border-primary/20 rounded-3xl p-0 overflow-hidden max-w-[92vw] sm:max-w-md">
+            <AlertDialogContent className="glass border-primary/20 rounded-xl p-0 overflow-hidden max-w-[92vw] sm:max-w-md">
                 <div className="border-b border-primary/20 bg-primary/5 px-5 py-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">

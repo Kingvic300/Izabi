@@ -137,7 +137,7 @@ export default function HistoryDetailModal({
 
                                 {item.hType === 'quiz' && (
                                     <div className="space-y-6 text-center py-10">
-                                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-primary/10 flex items-center justify-center mx-auto border border-primary/20 shadow-glow mb-4">
+                                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-primary/10 flex items-center justify-center mx-auto border border-primary/20 mb-4">
                                             <span className="text-3xl sm:text-4xl font-semibold text-primary">
                                                 {Math.round(item.score)}%
                                             </span>
@@ -199,7 +199,7 @@ export default function HistoryDetailModal({
                                 {t('history.close_view')}
                             </Button>
                             <Button
-                                className="rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 w-full sm:w-auto"
+                                className="rounded-xl font-bold bg-primary text-primary-foreground shadow-lg w-full sm:w-auto"
                                 onClick={onContinue}
                             >
                                 {t('history.continue_learning')}

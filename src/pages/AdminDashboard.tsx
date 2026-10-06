@@ -501,11 +501,11 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
                 <AdminQuickStats stats={stats} />
             </div>
 
-            <div className="glass-card border-foreground/10 rounded-[28px] p-4 sm:p-6">
+            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
                 <Tabs defaultValue="overview" className="w-full">
                     <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
                         <TabsList className="h-14 bg-card/5 border border-foreground/10 p-1.5 rounded-2xl mb-4 w-full md:w-auto inline-flex min-w-max">
