@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
+import { gsap, useGSAP, revealOnScroll, MOTION_OK, EASE } from '@/lib/motion';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -15,14 +16,28 @@ export function MarketingPage({
     aside?: ReactNode;
     children: ReactNode;
 }) {
+    const rootRef = useRef<HTMLDivElement>(null);
+    useGSAP(
+        () => {
+            const root = rootRef.current;
+            if (!root) return;
+            const mm = gsap.matchMedia();
+            mm.add(MOTION_OK, () => {
+                gsap.from('[data-page-head] > *', { autoAlpha: 0, y: 22, duration: 0.75, ease: EASE, stagger: 0.1 });
+                revealOnScroll(root);
+            });
+            return () => mm.revert();
+        },
+        { scope: rootRef },
+    );
     return (
         <ErrorBoundary>
-            <div className="min-h-screen bg-background">
+            <div ref={rootRef} className="min-h-screen bg-background">
                 <Header />
                 <main>
                     <header className="page-gutter border-b border-border pb-12 pt-28 sm:pb-16 sm:pt-36">
                         <div className="grid grid-cols-1 items-end gap-8 lg:grid-cols-12 lg:gap-10">
-                            <div className="lg:col-span-7">
+                            <div data-page-head className="lg:col-span-7">
                                 <h1 className="max-w-[16ch] text-[2.5rem] leading-[1.05] sm:text-6xl">
                                     {title}
                                 </h1>
@@ -68,7 +83,7 @@ export function MarketingSection({
         >
             <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-10">
                 {(title || intro) && (
-                    <div className="lg:col-span-4">
+                    <div data-reveal className="lg:col-span-4">
                         {title && (
                             <h2 className="text-[1.75rem] leading-tight sm:text-[2rem]">
                                 {title}
@@ -99,6 +114,7 @@ export function DefinitionRows({
             {items.map((item, i) => (
                 <div
                     key={i}
+                    data-reveal
                     className="grid grid-cols-1 gap-x-8 gap-y-1.5 py-5 sm:grid-cols-[14rem_1fr]"
                 >
                     <dt className="font-display text-lg leading-snug">

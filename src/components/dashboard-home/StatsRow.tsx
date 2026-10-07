@@ -1,3 +1,4 @@
+import { CountUp } from '@/components/ui/count-up';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StatsRowProps {
@@ -55,7 +56,7 @@ export const StatsRow = ({
                     </dt>
                     <dd className="mt-1 flex items-baseline gap-1.5">
                         <span className="tabular font-display text-[1.75rem] leading-none sm:text-[2rem]">
-                            {stat.value}
+                            <CountUp value={stat.value} />
                         </span>
                         <span className="text-sm text-muted-foreground">
                             {stat.unit}

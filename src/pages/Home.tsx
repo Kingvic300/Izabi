@@ -6,7 +6,9 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Button } from '@/components/ui/button';
 import { Bubble } from '@/components/ui/bubble';
 import { AnswerSheetDemo } from '@/components/home/AnswerSheetDemo';
+import { useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { gsap, useGSAP, revealOnScroll, MOTION_OK, EASE } from '@/lib/motion';
 import { translations, type Language } from '@/contexts/translations';
 import { PRICING_ENABLED } from '@/config/featureFlags';
 import { TESTIMONIALS } from '@/config/testimonials';
@@ -41,7 +43,7 @@ function SectionHeading({
     className?: string;
 }) {
     return (
-        <div className={cn('max-w-[34rem]', className)}>
+        <div data-reveal className={cn('max-w-[34rem]', className)}>
             <h2
                 id={id}
                 className="text-[2rem] leading-[1.1] sm:text-[2.5rem]"
@@ -59,6 +61,52 @@ function SectionHeading({
 
 const Home = () => {
     const { t } = useLanguage();
+    const rootRef = useRef<HTMLDivElement>(null);
+
+    useGSAP(
+        () => {
+            const root = rootRef.current;
+            if (!root) return;
+            const mm = gsap.matchMedia();
+            mm.add(MOTION_OK, () => {
+                // One orchestrated entrance: copy rises, then the answer sheet
+                // slides in and its timing marks print down the edge.
+                const tl = gsap.timeline({ defaults: { ease: EASE } });
+                tl.from('[data-hero]', { autoAlpha: 0, y: 28, duration: 0.8, stagger: 0.12 })
+                    .from('[data-hero-sheet]', { autoAlpha: 0, x: 40, duration: 0.9 }, '-=0.55')
+                    .from('[data-hero-sheet] .timing-track', { scaleY: 0, transformOrigin: 'top', duration: 0.9, ease: 'power2.inOut' }, '-=0.4');
+
+                revealOnScroll(root);
+
+                // Steps: each bubble shades in, then the red rule draws to the next.
+                const steps = root.querySelector('[data-steps]');
+                if (steps) {
+                    const stl = gsap.timeline({ scrollTrigger: { trigger: steps, start: 'top 80%', once: true } });
+                    gsap.utils.toArray<HTMLElement>('li', steps).forEach((li) => {
+                        stl.from(li.querySelector('[data-step-bubble]'), { scale: 0.4, autoAlpha: 0, duration: 0.45, ease: 'back.out(2)' })
+                            .from(li.querySelector('[data-step-text]'), { autoAlpha: 0, y: 12, duration: 0.4 }, '<0.1');
+                        const line = li.querySelector('[data-step-line]');
+                        if (line) stl.from(line, { scaleX: 0, duration: 0.5, ease: 'power2.inOut' }, '-=0.15');
+                    });
+                }
+
+                // Streak: days get shaded one after another, like a pencil going down the sheet.
+                const streak = root.querySelector('[data-streak]');
+                if (streak) {
+                    gsap.from(streak.querySelectorAll('[data-streak-day]'), {
+                        scale: 0.3,
+                        autoAlpha: 0,
+                        duration: 0.35,
+                        ease: 'back.out(2)',
+                        stagger: 0.035,
+                        scrollTrigger: { trigger: streak, start: 'top 85%', once: true },
+                    });
+                }
+            });
+            return () => mm.revert();
+        },
+        { scope: rootRef },
+    );
 
     const outputs = [
         {
@@ -165,7 +213,7 @@ const Home = () => {
 
     return (
         <ErrorBoundary>
-            <div className="min-h-screen bg-background">
+            <div ref={rootRef} className="min-h-screen bg-background">
                 <Header />
 
                 <main>
@@ -173,14 +221,14 @@ const Home = () => {
                     <section className="page-gutter pb-16 pt-28 sm:pb-24 sm:pt-32 lg:pt-36">
                         <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-16">
                             <div className="lg:col-span-5 lg:pt-6">
-                                <h1 className="max-w-[13ch] text-[2.75rem] leading-[1.04] sm:text-6xl xl:text-[4.5rem]">
+                                <h1 data-hero className="max-w-[13ch] text-[2.75rem] leading-[1.04] sm:text-6xl xl:text-[4.5rem]">
                                     {t('hero.title_top')}{' '}
                                     {t('hero.title_bottom')}
                                 </h1>
-                                <p className="mt-6 max-w-[34rem] text-lg leading-relaxed text-muted-foreground">
+                                <p data-hero className="mt-6 max-w-[34rem] text-lg leading-relaxed text-muted-foreground">
                                     {t('hero.tagline')}
                                 </p>
-                                <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
+                                <div data-hero className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
                                     <Button asChild size="lg">
                                         <Link to="/signup">
                                             {t('hero.cta')}
@@ -194,7 +242,7 @@ const Home = () => {
                                 </div>
                             </div>
 
-                            <div className="lg:col-span-7">
+                            <div data-hero-sheet className="lg:col-span-7">
                                 <AnswerSheetDemo />
                             </div>
                         </div>
@@ -223,6 +271,7 @@ const Home = () => {
                                 {outputs.map((o) => (
                                     <div
                                         key={o.name}
+                                        data-reveal
                                         className="grid grid-cols-1 gap-x-8 gap-y-3 py-7 sm:grid-cols-[11rem_1fr]"
                                     >
                                         <dt>
@@ -253,27 +302,30 @@ const Home = () => {
                                 id="how-title"
                                 title={t('how.subtitle')}
                             />
-                            <ol className="mt-14 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-0">
+                            <ol data-steps className="mt-14 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-0">
                                 {steps.map((step, i) => (
                                     <li
                                         key={step.title}
                                         className="relative md:pr-10"
                                     >
                                         <div className="flex items-center">
-                                            <Bubble
-                                                label={i + 1}
-                                                state="filled"
-                                                size="lg"
-                                                className="text-base"
-                                            />
+                                            <span data-step-bubble className="inline-flex">
+                                                <Bubble
+                                                    label={i + 1}
+                                                    state="filled"
+                                                    size="lg"
+                                                    className="text-base"
+                                                />
+                                            </span>
                                             {i < steps.length - 1 && (
                                                 <span
                                                     aria-hidden
-                                                    className="ml-4 hidden h-px flex-1 bg-sheet/40 md:block"
+                                                    data-step-line
+                                                    className="ml-4 hidden h-px flex-1 origin-left bg-sheet/40 md:block"
                                                 />
                                             )}
                                         </div>
-                                        <h3 className="mt-6 text-2xl">
+                                        <h3 data-step-text className="mt-6 text-2xl">
                                             {step.title}
                                         </h3>
                                         <p className="mt-2 max-w-[22rem] text-muted-foreground">
@@ -301,6 +353,7 @@ const Home = () => {
                                 {LANGUAGE_SAMPLES.map((l) => (
                                     <li
                                         key={l.code}
+                                        data-reveal
                                         lang={
                                             l.code === 'en' || l.code === 'pidgin'
                                                 ? 'en'
@@ -339,7 +392,7 @@ const Home = () => {
                                     body={t('home.habit.body')}
                                 />
                                 <figure className="mt-10">
-                                    <div className="grid w-fit grid-cols-7 gap-2.5">
+                                    <div data-streak className="grid w-fit grid-cols-7 gap-2.5">
                                         {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(
                                             (d, i) => (
                                                 <span
@@ -354,6 +407,7 @@ const Home = () => {
                                         {STREAK_DAYS.map((day, i) => (
                                             <Bubble
                                                 key={i}
+                                                data-streak-day
                                                 size="md"
                                                 state={
                                                     day.studied
@@ -377,6 +431,7 @@ const Home = () => {
                                 {habits.map((h) => (
                                     <div
                                         key={h.term}
+                                        data-reveal
                                         className="border-t-2 border-foreground pt-4"
                                     >
                                         <dt className="font-display text-xl">
@@ -407,6 +462,7 @@ const Home = () => {
                                 {TESTIMONIALS.slice(0, 3).map((item) => (
                                     <figure
                                         key={item.name}
+                                        data-reveal
                                         className="md:px-8 md:first:pl-0 md:last:pr-0"
                                     >
                                         <blockquote className="font-display text-xl italic leading-snug sm:text-[1.375rem]">
@@ -438,7 +494,7 @@ const Home = () => {
                                 title={t('pricing.title')}
                                 body={t('pricing.subtitle')}
                             />
-                            <div className="mt-12">
+                            <div data-reveal className="mt-12">
                                 <PricingTable />
                             </div>
                         </section>
@@ -446,7 +502,7 @@ const Home = () => {
 
                     {/* Closing call to action */}
                     <section className="page-gutter border-t border-sheet/35 py-20 sm:py-28">
-                        <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
+                        <div data-reveal className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
                             <div>
                                 <h2 className="max-w-[18ch] text-[2.25rem] leading-[1.08] sm:text-5xl">
                                     {t('cta.upgrade')}

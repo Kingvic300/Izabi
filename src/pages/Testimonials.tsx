@@ -14,6 +14,7 @@ const Testimonials = () => {
                     {TESTIMONIALS.map((item) => (
                         <figure
                             key={item.name}
+                            data-reveal
                             className="border-t border-sheet/40 pt-6"
                         >
                             <blockquote className="font-display text-xl italic leading-snug sm:text-[1.375rem]">

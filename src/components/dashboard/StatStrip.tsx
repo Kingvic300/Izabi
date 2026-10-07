@@ -1,3 +1,4 @@
+import { CountUp } from '@/components/ui/count-up';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -36,7 +37,11 @@ export function StatStrip({
                     </dt>
                     <dd className="mt-1 flex items-baseline gap-1.5">
                         <span className="tabular font-display text-[1.75rem] leading-none sm:text-[2rem]">
-                            {item.value}
+                            {typeof item.value === 'string' || typeof item.value === 'number' ? (
+                                <CountUp value={item.value} />
+                            ) : (
+                                item.value
+                            )}
                         </span>
                         {item.unit && (
                             <span className="text-sm text-muted-foreground">

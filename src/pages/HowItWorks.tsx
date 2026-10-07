@@ -49,6 +49,7 @@ const HowItWorks = () => {
                     {STEPS.map((step, i) => (
                         <li
                             key={step.title}
+                            data-reveal
                             className="relative grid grid-cols-[2.5rem_1fr] gap-x-5 pb-14 last:pb-0 sm:grid-cols-[2.5rem_1fr] sm:gap-x-8 lg:grid-cols-[2.5rem_minmax(0,28rem)_1fr]"
                         >
                             {i < STEPS.length - 1 && (

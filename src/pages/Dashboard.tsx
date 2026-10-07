@@ -8,7 +8,8 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import StreakPet from '@/components/StreakPet';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { gsap, useGSAP, MOTION_OK } from '@/lib/motion';
 import { api } from '@/lib/apiClient';
 import { useStudy } from '@/contexts/StudyContext';
 import { cn } from '@/lib/utils';
@@ -33,6 +34,19 @@ const Dashboard = () => {
             (item) => item.url === location.pathname,
         )?.title ??
         (location.pathname.startsWith('/dashboard/admin') ? 'Admin' : '');
+
+    const outletRef = useRef<HTMLDivElement>(null);
+    useGSAP(
+        () => {
+            const mm = gsap.matchMedia();
+            mm.add(MOTION_OK, () => {
+                if (outletRef.current)
+                    gsap.from(outletRef.current, { autoAlpha: 0, y: 12, duration: 0.45, ease: 'power2.out', clearProps: 'all' });
+            });
+            return () => mm.revert();
+        },
+        { dependencies: [location.pathname], revertOnUpdate: true },
+    );
 
     const fetchStats = async () => {
         if (!userId) return;
@@ -96,7 +110,7 @@ const Dashboard = () => {
                                     : 'overflow-y-auto px-4 pb-10 pt-6 sm:px-6 lg:px-10 lg:pt-8',
                             )}
                         >
-                            <div className="w-full h-full min-w-0">
+                            <div ref={outletRef} className="w-full h-full min-w-0">
                                 <Outlet />
                             </div>
                         </main>
