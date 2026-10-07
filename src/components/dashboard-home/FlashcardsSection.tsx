@@ -1,9 +1,8 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Layers, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
+import { Layers, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import { ResultPanel } from './ResultPanel';
 import { useFlashcards } from '@/hooks/useFlashcards';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -25,127 +24,89 @@ export const FlashcardsSection = ({ flashcards, isOpen, onOpenChange }: Flashcar
         flipCard,
     } = useFlashcards(flashcards.length);
 
-    return (
-        <div id="flashcards-result-section">
-            <Collapsible open={isOpen} onOpenChange={onOpenChange}>
-                <Card className="border border-border rounded-xl overflow-hidden shadow-card bg-card">
-                    <CollapsibleTrigger asChild>
-                        <button className="w-full text-left p-4 sm:p-6 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
-                            <div className="min-w-0 flex items-center gap-4 sm:gap-5">
-                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Layers className="h-5 w-5 md:h-6 md:w-6" />
-                                </div>
-                                <div className="min-w-0 space-y-1">
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight break-words">
-                                            {t('flashcards.title')}
-                                        </h3>
-                                        <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-xs font-semibold opacity-60">
-                                            {flashcards.length} {t('flashcards.cards_suffix')}
-                                        </div>
-                                    </div>
-                                    <p className="text-xs font-bold opacity-40">
-                                        {t('flashcards.tap_to_flip')}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                                <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold ">
-                                    {t('flashcards.active')}
-                                </div>
-                                <div className="w-10 h-10 rounded-xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
-                                    {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                                </div>
-                            </div>
-                        </button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                        <div className="p-4 sm:p-6 md:p-10 flex flex-col items-center space-y-5 sm:space-y-8">
-                            <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl bg-card/5 border border-foreground/5 px-4 py-3">
-                                <div className="text-xs font-bold opacity-50">
-                                    {t('flashcards.flip_reveal')}
-                                </div>
-                                <div className="text-xs font-bold">
-                                    {currentCardIndex + 1} / {flashcards.length} cards
-                                </div>
-                            </div>
-                            
-                            <div
-                                className="relative w-full max-w-sm sm:max-w-md h-[240px] sm:h-64 cursor-pointer perspective-1000 touch-manipulation"
-                                onClick={flipCard}
-                            >
-                                <div
-                                    className={cn(
-                                        'relative w-full h-full transition-all duration-500 preserve-3d',
-                                        isFlipped && 'rotate-y-180'
-                                    )}
-                                >
-                                    <div className="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-5 sm:p-8 rounded-xl glass bg-card/[0.02] border-2 border-primary/20 shadow-sm overflow-hidden">
-                                        <div className="absolute top-4 left-4 text-xs font-bold opacity-30">
-                                            {t('flashcards.front')}
-                                        </div>
-                                        <p className="text-base sm:text-lg md:text-xl font-bold text-center text-foreground break-words leading-normal whitespace-pre-wrap">
-                                            {flashcards[currentCardIndex]?.front}
-                                        </p>
-                                    </div>
-                                    <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-5 sm:p-8 rounded-xl glass bg-primary/10 border-2 border-primary/40 shadow-sm overflow-hidden">
-                                        <div className="absolute top-4 left-4 text-xs font-bold opacity-30 text-primary">
-                                            {t('flashcards.back')}
-                                        </div>
-                                        <p className="text-sm sm:text-base md:text-lg font-bold text-center text-foreground/90 leading-relaxed break-words whitespace-pre-wrap">
-                                            {flashcards[currentCardIndex]?.back}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+    const card = flashcards[currentCardIndex];
 
-                            <div className="flex items-center gap-3 sm:gap-6">
-                                <Button
-                                    variant="outline"
-                                    className="h-10 sm:h-12 px-4 sm:px-0 sm:w-12 rounded-xl glass hover:bg-card/10"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        prevCard();
-                                    }}
-                                >
-                                    <ChevronDown className="rotate-90" />
-                                    <span className="ml-1 text-xs font-bold sm:hidden">
-                                        {t('flashcards.prev')}
-                                    </span>
-                                </Button>
-                                <span className="text-sm sm:text-lg font-bold whitespace-nowrap">
+    return (
+        <ResultPanel
+            id="flashcards-result-section"
+            title={t('flashcards.title')}
+            meta={`${flashcards.length} ${t('flashcards.cards_suffix')}`}
+            icon={Layers}
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+        >
+            <div className="flex flex-col items-center gap-6">
+                <button
+                    type="button"
+                    className="perspective-1000 relative h-[240px] w-full max-w-md cursor-pointer touch-manipulation rounded-lg text-left sm:h-64"
+                    onClick={flipCard}
+                    aria-label={isFlipped ? 'Show the front of the card' : 'Show the back of the card'}
+                >
+                    <div
+                        className={cn(
+                            'preserve-3d relative h-full w-full transition-transform duration-500 motion-reduce:transition-none',
+                            isFlipped && 'rotate-y-180',
+                        )}
+                    >
+                        <div className="backface-hidden absolute inset-0 flex flex-col overflow-hidden rounded-lg border border-border bg-card shadow-elevated">
+                            <div className="flex items-center justify-between border-b border-sheet/40 px-4 py-2 text-sm text-muted-foreground">
+                                {t('flashcards.front')}
+                                <span className="tabular">
                                     {currentCardIndex + 1} / {flashcards.length}
                                 </span>
-                                <Button
-                                    variant="outline"
-                                    className="h-10 sm:h-12 px-4 sm:px-0 sm:w-12 rounded-xl glass hover:bg-card/10"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        nextCard();
-                                    }}
-                                >
-                                    <ChevronDown className="-rotate-90" />
-                                    <span className="ml-1 text-xs font-bold sm:hidden">
-                                        {t('flashcards.next')}
-                                    </span>
-                                </Button>
                             </div>
-
-                            <Button
-                                variant="ghost"
-                                className="w-full sm:w-auto text-xs font-bold sm:tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity gap-2"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    resetCards();
-                                }}
-                            >
-                                <RotateCcw size={14} />
-                                {t('flashcards.reset')}
-                            </Button>
+                            <p className="flex flex-1 items-center justify-center whitespace-pre-wrap break-words p-6 text-center font-display text-xl leading-snug sm:text-2xl">
+                                {card?.front}
+                            </p>
                         </div>
-                    </CollapsibleContent>
-                </Card>
-            </Collapsible>
-        </div>
+                        <div className="backface-hidden rotate-y-180 absolute inset-0 flex flex-col overflow-hidden rounded-lg border border-foreground/30 bg-muted shadow-elevated">
+                            <div className="flex items-center justify-between border-b border-sheet/40 px-4 py-2 text-sm text-muted-foreground">
+                                {t('flashcards.back')}
+                                <span className="tabular">
+                                    {currentCardIndex + 1} / {flashcards.length}
+                                </span>
+                            </div>
+                            <p className="flex flex-1 items-center justify-center whitespace-pre-wrap break-words p-6 text-center text-base leading-relaxed sm:text-lg">
+                                {card?.back}
+                            </p>
+                        </div>
+                    </div>
+                </button>
+                <p className="text-sm text-muted-foreground">
+                    {t('flashcards.tap_to_flip')}
+                </p>
+
+                <div className="flex items-center gap-3">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={prevCard}
+                        aria-label={t('flashcards.prev')}
+                    >
+                        <ChevronLeft />
+                    </Button>
+                    <span className="tabular min-w-[4rem] text-center font-bold">
+                        {currentCardIndex + 1} / {flashcards.length}
+                    </span>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={nextCard}
+                        aria-label={t('flashcards.next')}
+                    >
+                        <ChevronRight />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="ml-2 text-muted-foreground"
+                        onClick={resetCards}
+                    >
+                        <RotateCcw />
+                        {t('flashcards.reset')}
+                    </Button>
+                </div>
+            </div>
+        </ResultPanel>
     );
 };

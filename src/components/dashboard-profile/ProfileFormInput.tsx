@@ -23,7 +23,7 @@ export default function ProfileFormInput({
         <div className="space-y-3">
             <Label
                 htmlFor={id}
-                className="text-xs font-bold opacity-40 flex items-center gap-2"
+                className="flex items-center gap-2 text-sm font-bold"
             >
                 {icon}
                 {label}
@@ -31,7 +31,7 @@ export default function ProfileFormInput({
             <Input
                 id={id}
                 {...props}
-                className="h-14 rounded-2xl glass border-foreground/10 px-4 font-medium transition-all focus:border-primary/50 focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed text-foreground"
+                className="h-11 text-base disabled:cursor-not-allowed disabled:opacity-60"
             />
         </div>
     );

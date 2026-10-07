@@ -15,21 +15,18 @@ export default function PersonalDetailsCard({
     onFieldChange,
 }: PersonalDetailsCardProps) {
     return (
-        <Card className="profile-card glass border-foreground/5 rounded-2xl shadow-sm overflow-hidden">
-            <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
-                <CardTitle className="flex items-center gap-3 text-xl font-bold">
-                    <User className="text-primary" />
-                    Personal Details
-                </CardTitle>
+        <Card className="overflow-hidden">
+            <CardHeader className="border-b border-border px-6 py-4">
+                <CardTitle className="text-xl">Your details</CardTitle>
                 <CardDescription>
-                    Information visible to your instructors and peers
+                    Other students see your name and school on the leaderboard.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="p-6 md:p-8 space-y-6 md:space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="space-y-5 p-6">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                     <ProfileFormInput
                         icon={<User size={16} />}
-                        label="First Name"
+                        label="First name"
                         id="firstName"
                         value={profileData.firstName}
                         onChange={(e) =>
@@ -39,7 +36,7 @@ export default function PersonalDetailsCard({
                     />
                     <ProfileFormInput
                         icon={<User size={16} />}
-                        label="Last Name"
+                        label="Last name"
                         id="lastName"
                         value={profileData.lastName}
                         onChange={(e) =>

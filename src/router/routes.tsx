@@ -89,7 +89,7 @@ const withErrorBoundary = (Component: React.ComponentType, text?: string) => (
             fallback={
                 <PageLoader
                     variant="spinner"
-                    text={text || 'Synchronizing data...'}
+                    text={text || 'Loading…'}
                 />
             }
         >

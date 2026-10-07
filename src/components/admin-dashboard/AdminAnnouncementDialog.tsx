@@ -33,7 +33,7 @@ export default function AdminAnnouncementDialog({
                             <Send size={18} />
                         </div>
                         <div>
-                            <p className="text-[11px] uppercase tracking-[0.16em] font-bold text-primary/70">
+                            <p className="text-[11px] font-bold text-primary/70">
                                 Broadcast Email
                             </p>
                             <h3 className="font-bold text-base text-foreground">
@@ -56,7 +56,7 @@ export default function AdminAnnouncementDialog({
                 <AlertDialogFooter className="px-5 pb-5 pt-5 gap-2">
                     <AlertDialogCancel
                         disabled={isSending}
-                        className="rounded-xl border-foreground/10"
+                        className="rounded-xl border-border"
                     >
                         Cancel
                     </AlertDialogCancel>

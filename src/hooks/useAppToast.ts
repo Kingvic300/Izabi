@@ -32,7 +32,7 @@ export const useAppToast = () => {
                     description: options.description,
                     duration: options.duration ?? 5000,
                     icon: React.createElement(CheckCircle2, {
-                        className: 'h-5 w-5 text-green-500',
+                        className: 'h-5 w-5 text-reward',
                     }),
                 });
             },
@@ -55,7 +55,7 @@ export const useAppToast = () => {
                     description,
                     duration,
                     icon: React.createElement(XCircle, {
-                        className: 'h-5 w-5 text-red-500',
+                        className: 'h-5 w-5 text-destructive',
                     }),
                 });
             },
@@ -77,7 +77,7 @@ export const useAppToast = () => {
                     description,
                     duration,
                     icon: React.createElement(AlertCircle, {
-                        className: 'h-5 w-5 text-yellow-500',
+                        className: 'h-5 w-5 text-urgent',
                     }),
                 });
             },
@@ -88,7 +88,7 @@ export const useAppToast = () => {
                     description: options.description,
                     duration: options.duration ?? 5000,
                     icon: React.createElement(Info, {
-                        className: 'h-5 w-5 text-blue-500',
+                        className: 'h-5 w-5 text-muted-foreground',
                     }),
                 });
             },
@@ -108,7 +108,7 @@ export const useAppToast = () => {
                     description,
                     duration: 5000,
                     icon: React.createElement(XCircle, {
-                        className: 'h-5 w-5 text-red-500',
+                        className: 'h-5 w-5 text-destructive',
                     }),
                 });
             },
@@ -118,7 +118,7 @@ export const useAppToast = () => {
                 toast.success(t('toast.note_saved_title'), {
                     description: t('toast.note_saved_desc'),
                     icon: React.createElement(CheckCircle2, {
-                        className: 'h-5 w-5 text-green-500',
+                        className: 'h-5 w-5 text-reward',
                     }),
                 });
             },
@@ -127,7 +127,7 @@ export const useAppToast = () => {
                 toast.success(t('toast.note_deleted_title'), {
                     description: t('toast.note_deleted_desc'),
                     icon: React.createElement(CheckCircle2, {
-                        className: 'h-5 w-5 text-green-500',
+                        className: 'h-5 w-5 text-reward',
                     }),
                 });
             },
@@ -136,7 +136,7 @@ export const useAppToast = () => {
                 toast.success(t('toast.profile_updated_title'), {
                     description: t('toast.profile_updated_desc'),
                     icon: React.createElement(CheckCircle2, {
-                        className: 'h-5 w-5 text-green-500',
+                        className: 'h-5 w-5 text-reward',
                     }),
                 });
             },
@@ -145,7 +145,7 @@ export const useAppToast = () => {
                 toast.success(t('toast.setting_updated_title'), {
                     description: `${settingName} ${t('toast.setting_updated_desc_suffix')}`,
                     icon: React.createElement(CheckCircle2, {
-                        className: 'h-5 w-5 text-green-500',
+                        className: 'h-5 w-5 text-reward',
                     }),
                 });
             },
@@ -165,7 +165,7 @@ export const useAppToast = () => {
                     id,
                     description,
                     icon: React.createElement(XCircle, {
-                        className: 'h-5 w-5 text-red-500',
+                        className: 'h-5 w-5 text-destructive',
                     }),
                 });
             },
@@ -185,7 +185,7 @@ export const useAppToast = () => {
                     id,
                     description,
                     icon: React.createElement(XCircle, {
-                        className: 'h-5 w-5 text-red-500',
+                        className: 'h-5 w-5 text-destructive',
                     }),
                 });
             },
@@ -204,7 +204,7 @@ export const useAppToast = () => {
                     description: readable.description,
                     duration: 5000,
                     icon: React.createElement(XCircle, {
-                        className: 'h-5 w-5 text-red-500',
+                        className: 'h-5 w-5 text-destructive',
                     }),
                 });
             },
@@ -223,7 +223,7 @@ export const useAppToast = () => {
                     id,
                     description,
                     icon: React.createElement(XCircle, {
-                        className: 'h-5 w-5 text-red-500',
+                        className: 'h-5 w-5 text-destructive',
                     }),
                 });
             },

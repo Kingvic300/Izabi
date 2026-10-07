@@ -45,10 +45,10 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                     const isSilver = idx === 1;
                     const isCurrentUser = user._id === currentUserId;
                     const crownColor = isGold
-                        ? 'text-amber-500 border-amber-500/40 bg-amber-500/10'
+                        ? 'text-urgent border-urgent/40 bg-urgent/10'
                         : isSilver
                           ? 'text-muted-foreground border-border bg-muted/40'
-                          : 'text-amber-700 border-amber-700/40 bg-amber-700/10';
+                          : 'text-urgent border-urgent/40 bg-urgent/10';
 
                     return (
                         <div
@@ -60,7 +60,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                             } ${isCurrentUser ? 'ring-2 ring-primary/60' : ''}`}
                         >
                             <div
-                                className={`w-7 h-7 mx-auto rounded-full border flex items-center justify-center text-xs font-mono font-bold mb-3 ${crownColor}`}
+                                className={`w-7 h-7 mx-auto rounded-full border flex items-center justify-center text-xs tabular font-bold mb-3 ${crownColor}`}
                             >
                                 #{idx + 1}
                             </div>
@@ -78,19 +78,19 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
 
                             <div className="mt-4 pt-3 border-t border-border flex items-center justify-around">
                                 <div className="text-center">
-                                    <span className="text-[10px] text-muted-foreground uppercase block font-mono">
+                                    <span className="text-xs text-muted-foreground block tabular">
                                         XP
                                     </span>
-                                    <span className="text-sm font-extrabold text-foreground font-mono">
+                                    <span className="text-sm font-extrabold text-foreground tabular">
                                         {user.points.toLocaleString()}
                                     </span>
                                 </div>
                                 <div className="text-center">
-                                    <span className="text-[10px] text-muted-foreground uppercase block font-mono">
+                                    <span className="text-xs text-muted-foreground block tabular">
                                         Streak
                                     </span>
-                                    <span className="text-sm font-bold text-amber-500 font-mono flex items-center justify-center gap-0.5">
-                                        <Flame className="w-3 h-3 fill-amber-500" />
+                                    <span className="text-sm font-bold text-urgent tabular flex items-center justify-center gap-0.5">
+                                        <Flame className="w-3 h-3 fill-urgent" />
                                         {user.streak}d
                                     </span>
                                 </div>
@@ -101,7 +101,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             </div>
 
             <div className="rounded-2xl bg-card border border-border overflow-hidden shadow-card">
-                <div className="p-4 border-b border-border flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase font-mono tracking-wider">
+                <div className="p-4 border-b border-border flex items-center justify-between text-xs font-semibold text-muted-foreground tabular">
                     <span>Rank & Scholar</span>
                     <div className="flex items-center gap-8">
                         <span className="hidden sm:inline">Streak</span>
@@ -144,7 +144,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                                                 {getDisplayName(user)}
                                             </span>
                                             {isCurrentUser && (
-                                                <span className="text-[11px] font-mono text-primary font-medium">
+                                                <span className="text-[11px] tabular text-primary font-medium">
                                                     (You)
                                                 </span>
                                             )}
@@ -158,12 +158,12 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                                 </div>
 
                                 <div className="flex items-center gap-6 sm:gap-8 shrink-0">
-                                    <div className="hidden sm:flex items-center gap-1 text-xs font-mono font-bold text-amber-500">
-                                        <Flame className="w-3.5 h-3.5 fill-amber-500" />
+                                    <div className="hidden sm:flex items-center gap-1 text-xs tabular font-bold text-urgent">
+                                        <Flame className="w-3.5 h-3.5 fill-urgent" />
                                         <span>{user.streak}d</span>
                                     </div>
 
-                                    <div className="text-xs sm:text-sm font-extrabold text-foreground font-mono tabular-nums">
+                                    <div className="text-xs sm:text-sm font-extrabold text-foreground tabular tabular-nums">
                                         {user.points.toLocaleString()} XP
                                     </div>
 

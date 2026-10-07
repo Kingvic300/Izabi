@@ -1,10 +1,7 @@
-'use client';
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Crown } from 'lucide-react';
 import { LeaderboardUser, LeaderboardType } from './types';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 
 interface PodiumProps {
     users: LeaderboardUser[];
@@ -12,139 +9,73 @@ interface PodiumProps {
     currentUserId: string | null;
 }
 
+export const avatarSrc = (user: LeaderboardUser) =>
+    user.profilePicturePath ||
+    `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(user.email)}`;
+
+export const displayName = (user: LeaderboardUser, fallback: string) =>
+    [user.firstName, user.lastName].filter(Boolean).join(' ') || fallback;
+
 export const Podium = ({ users, type, currentUserId }: PodiumProps) => {
     const { t } = useLanguage();
     if (!users || users.length === 0) return null;
 
-    const first = users[0];
-    const second = users[1];
-    const third = users[2];
-
-    const getAvatarSrc = (user: LeaderboardUser) => 
-        user.profilePicturePath || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.email}`;
-    const getAvatarFallback = (user: LeaderboardUser) => (user.firstName || 'U')[0];
+    const top = users.slice(0, 3);
 
     return (
-        <div className="flex flex-col md:flex-row items-center md:items-end justify-center gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12 min-h-[300px] px-2 sm:px-4">
-            {/* Second Place - Left */}
-            {second && (
-                <div className="order-2 md:order-1 flex flex-col items-center w-full md:w-1/3 max-w-[200px] sm:max-w-[240px]">
-                    <div className="relative mb-3 sm:mb-4">
-                        <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-2 sm:border-4 border-gray-300">
-                            <AvatarImage src={getAvatarSrc(second)} />
-                            <AvatarFallback className="bg-gray-300 text-gray-900 font-bold text-lg sm:text-xl">
-                                {getAvatarFallback(second)}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 bg-gray-300 text-gray-900 font-bold px-2 sm:px-3 py-0.5 rounded-full text-xs sm:text-xs shadow-lg">
-                            #2
+        <ol className="grid grid-cols-1 gap-0 overflow-hidden rounded-lg border border-border bg-card md:grid-cols-3">
+            {top.map((user, i) => {
+                const isYou = user._id === currentUserId;
+                const value =
+                    type === 'xp' ? user.points.toLocaleString() : user.streak;
+                return (
+                    <li
+                        key={user._id}
+                        className={cn(
+                            'relative flex items-center gap-4 p-5 sm:p-6 md:flex-col md:items-start md:gap-5',
+                            i > 0 && 'border-t border-border md:border-l md:border-t-0',
+                            i === 0 &&
+                                'before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-foreground',
+                            isYou && 'bg-highlight/15',
+                        )}
+                    >
+                        <span className="tabular w-8 shrink-0 font-display text-4xl leading-none md:w-auto md:text-5xl">
+                            {i + 1}
+                        </span>
+                        <div className="flex min-w-0 flex-1 items-center gap-3 md:w-full">
+                            <Avatar className="h-11 w-11 shrink-0 border border-border">
+                                <AvatarImage src={avatarSrc(user)} alt="" />
+                                <AvatarFallback className="font-bold">
+                                    {(user.firstName || 'S')[0]}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                                <p className="truncate font-bold">
+                                    {displayName(user, t('leaderboard.scholar'))}
+                                    {isYou && (
+                                        <span className="ml-2 text-sm font-normal text-muted-foreground">
+                                            ({t('leaderboard.you_badge')})
+                                        </span>
+                                    )}
+                                </p>
+                                <p className="truncate text-sm text-muted-foreground">
+                                    {user.institution || t('leaderboard.scholar')}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="text-center p-4 sm:p-6 bg-card/5 border border-foreground/10 rounded-2xl sm:rounded-xl w-full relative overflow-hidden group hover:border-gray-300/30 transition-all">
-                        <div className="absolute inset-0 bg-gray-300/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
-                            <h3 className="font-bold text-sm sm:text-lg truncate text-foreground opacity-100 leading-tight">
-                                {second.firstName || ''} {second.lastName || '' || t('leaderboard.scholar')}
-                            </h3>
-                            {second._id === currentUserId && (
-                                <Badge className="bg-primary/20 text-primary border-none text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0">
-                                    {t('leaderboard.you_badge')}
-                                </Badge>
-                            )}
-                        </div>
-                        <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate mb-2 sm:mb-3 font-medium ">
-                            {second.institution || t('leaderboard.scholar')}
+                        <p className="shrink-0 text-right md:text-left">
+                            <span className="tabular block font-display text-2xl leading-none md:text-3xl">
+                                {value}
+                            </span>
+                            <span className="mt-1 block text-xs text-muted-foreground">
+                                {type === 'xp'
+                                    ? t('leaderboard.xp_label')
+                                    : t('leaderboard.days_label')}
+                            </span>
                         </p>
-                        <Badge
-                            variant="outline"
-                            className="border-gray-300/30 text-gray-300 bg-gray-300/10 px-2 sm:px-3 py-0.5 sm:py-1 text-sm sm:text-lg font-bold"
-                        >
-                            {type === 'xp' ? second.points.toLocaleString() : second.streak}
-                        </Badge>
-                    </div>
-                </div>
-            )}
-
-            {/* First Place - Middle */}
-            {first && (
-                <div className="order-1 md:order-2 flex flex-col items-center w-full md:w-1/3 max-w-[240px] sm:max-w-[280px] mb-4 md:mb-0 z-10">
-                    <div className="relative mb-4 sm:mb-6">
-                        <div className="absolute -top-10 sm:-top-14 inset-x-0 flex justify-center pointer-events-none">
-                            <Crown className="text-yellow-400 w-8 h-8 sm:w-10 sm:h-10 animate-bounce" />
-                        </div>
-                        <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-2 sm:border-4 border-yellow-400">
-                            <AvatarImage src={getAvatarSrc(first)} />
-                            <AvatarFallback className="bg-yellow-400 text-yellow-900 font-bold text-2xl sm:text-3xl">
-                                {getAvatarFallback(first)}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -bottom-3 sm:-bottom-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-950 font-semibold px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm shadow-sm border sm:border-2 border-yellow-200">
-                            #1
-                        </div>
-                    </div>
-                    <div className="text-center p-6 sm:p-8 bg-yellow-400/10 border border-yellow-400/30 rounded-xl w-full relative overflow-hidden group transition-colors duration-300">
-                        <div className="absolute inset-0 bg-yellow-400/10 opacity-50" />
-                        <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
-                            <h3 className="font-bold text-xl sm:text-2xl truncate text-foreground leading-tight opacity-100">
-                                {first.firstName || ''} {first.lastName || '' || t('leaderboard.scholar')}
-                            </h3>
-                            {first._id === currentUserId && (
-                                <Badge className="bg-yellow-500/20 text-yellow-600 border-yellow-500/20 text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0">
-                                    {t('leaderboard.you_badge')}
-                                </Badge>
-                            )}
-                        </div>
-                        <p className="text-xs sm:text-xs text-foreground/60 dark:text-yellow-500/80 truncate mb-3 sm:mb-4 font-bold tracking-wide ">
-                            {(first.institution || t('leaderboard.champion')).substring(0, 20)}
-                        </p>
-                        <div className="text-3xl sm:text-4xl font-semibold text-yellow-500">
-                            {type === 'xp' ? first.points.toLocaleString() : first.streak}
-                        </div>
-                        <p className="text-[8px] sm:text-[10px] font-bold opacity-40 mt-1 sm:mt-2">
-                            {type === 'xp' ? t('leaderboard.experience_points') : t('leaderboard.consecutive_days')}
-                        </p>
-                    </div>
-                </div>
-            )}
-
-            {/* Third Place - Right */}
-            {third && (
-                <div className="order-3 md:order-3 flex flex-col items-center w-full md:w-1/3 max-w-[200px] sm:max-w-[240px]">
-                    <div className="relative mb-3 sm:mb-4">
-                        <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-2 sm:border-4 border-amber-600">
-                            <AvatarImage src={getAvatarSrc(third)} />
-                            <AvatarFallback className="bg-amber-600 text-foreground font-bold text-lg sm:text-xl">
-                                {getAvatarFallback(third)}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 bg-amber-600 text-foreground font-bold px-2 sm:px-3 py-0.5 rounded-full text-xs sm:text-xs shadow-lg">
-                            #3
-                        </div>
-                    </div>
-                    <div className="text-center p-4 sm:p-6 bg-card/5 border border-foreground/10 rounded-2xl sm:rounded-xl w-full relative overflow-hidden group hover:border-amber-600/30 transition-all">
-                        <div className="absolute inset-0 bg-amber-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
-                            <h3 className="font-bold text-sm sm:text-lg truncate text-foreground opacity-100 leading-tight">
-                                {third.firstName || ''} {third.lastName || '' || t('leaderboard.scholar')}
-                            </h3>
-                            {third._id === currentUserId && (
-                                <Badge className="bg-primary/20 text-primary border-none text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0">
-                                    {t('leaderboard.you_badge')}
-                                </Badge>
-                            )}
-                        </div>
-                        <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate mb-2 sm:mb-3 font-medium ">
-                            {third.institution || t('leaderboard.scholar')}
-                        </p>
-                        <Badge
-                            variant="outline"
-                            className="border-amber-600/30 text-amber-500 bg-amber-600/10 px-2 sm:px-3 py-0.5 sm:py-1 text-sm sm:text-lg font-bold"
-                        >
-                            {type === 'xp' ? third.points.toLocaleString() : third.streak}
-                        </Badge>
-                    </div>
-                </div>
-            )}
-        </div>
+                    </li>
+                );
+            })}
+        </ol>
     );
 };

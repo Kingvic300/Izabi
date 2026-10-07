@@ -45,8 +45,8 @@ export default function GroupManagerDialog({
 }: GroupManagerDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-xl sm:max-w-xl w-[95vw] p-0 overflow-hidden">
-                <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
+            <DialogContent className="glass border-border rounded-2xl sm:rounded-xl sm:max-w-xl w-[95vw] p-0 overflow-hidden">
+                <DialogHeader className="p-5 sm:p-6 border-b border-border bg-card">
                     <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
                         Manage Groups
                     </DialogTitle>
@@ -62,7 +62,7 @@ export default function GroupManagerDialog({
                                 onGroupNameDraftChange(e.target.value)
                             }
                             placeholder="New group name..."
-                            className="rounded-2xl h-11 bg-card/5 border-foreground/10 flex-1"
+                            className="rounded-2xl h-11 bg-card border-border flex-1"
                         />
                         <Button
                             onClick={onCreateGroup}
@@ -87,7 +87,7 @@ export default function GroupManagerDialog({
                             groups.map((group) => (
                                 <div
                                     key={group.id}
-                                    className="flex items-center justify-between gap-3 rounded-2xl border border-foreground/10 px-4 py-3 bg-card/5"
+                                    className="flex items-center justify-between gap-3 rounded-2xl border border-border px-4 py-3 bg-card"
                                 >
                                     {groupEditingId === group.id ? (
                                         <Input
@@ -97,7 +97,7 @@ export default function GroupManagerDialog({
                                                     e.target.value,
                                                 )
                                             }
-                                            className="rounded-xl h-9 bg-background/60 border-foreground/10 flex-1"
+                                            className="rounded-xl h-9 bg-background/60 border-border flex-1"
                                         />
                                     ) : (
                                         <span className="font-semibold text-sm">

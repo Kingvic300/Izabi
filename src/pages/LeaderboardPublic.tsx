@@ -1,21 +1,17 @@
-'use client';
-
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { Trophy, Flame, Zap } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { api } from '@/lib/apiClient';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import {
     LeaderboardData,
     LeaderboardType,
 } from '@/components/dashboard-leaderboard/types';
 import { Podium } from '@/components/dashboard-leaderboard/Podium';
 import { LeaderboardTable } from '@/components/dashboard-leaderboard/LeaderboardTable';
-import { useLocation } from 'react-router-dom';
 import { getLeaderboardSocket } from '@/lib/leaderboardSocket';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { MarketingPage } from '@/components/marketing/MarketingPage';
 
 export default function LeaderboardPublic() {
     const { t } = useLanguage();
@@ -24,8 +20,7 @@ export default function LeaderboardPublic() {
         topStreaks: [],
     });
     const [isLoading, setIsLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<LeaderboardType>('xp');
-    const containerRef = useRef(null);
+    const [, setActiveTab] = useState<LeaderboardType>('xp');
     const location = useLocation();
 
     const sharedUserId = useMemo(() => {
@@ -52,117 +47,86 @@ export default function LeaderboardPublic() {
 
     useEffect(() => {
         const socket = getLeaderboardSocket();
-        const handleUpdate = () => {
-            fetchLeaderboard();
-        };
+        const handleUpdate = () => fetchLeaderboard();
         socket.on('leaderboard:updated', handleUpdate);
         return () => {
             socket.off('leaderboard:updated', handleUpdate);
         };
     }, [fetchLeaderboard]);
 
-    useGSAP(() => {
-        if (!isLoading) {
-            gsap.from('.leaderboard-item', {
-                y: 20,
-                opacity: 1,
-                duration: 0.4,
-                stagger: 0.02,
-                ease: 'power2.out',
-                clearProps: 'opacity',
-            });
-        }
-    }, [isLoading, activeTab]);
+    const empty =
+        !isLoading &&
+        leaderboardData.topStudents.length === 0 &&
+        leaderboardData.topStreaks.length === 0;
 
     return (
-        <div
-            ref={containerRef}
-            className="space-y-6 md:space-y-8 pb-20 w-full max-w-none mx-auto px-4 sm:px-6 md:px-10 lg:px-14 pt-6 md:pt-10"
+        <MarketingPage
+            title="Leaderboard"
+            intro="Students earn points as they practise. Streaks count the days in a row they studied."
         >
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 pb-6 border-b border-foreground/5">
-                <div className="space-y-2">
-                    <Badge
-                        variant="outline"
-                        className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-[10px] tracking-widest uppercase mb-1"
-                    >
-                        {t('leaderboard.badge')}
-                    </Badge>
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter leading-none">
-                        {t('leaderboard.public_title_top')}{' '}
-                        <span className="text-gradient">
-                            {t('leaderboard.public_title_gradient')}
-                        </span>
-                    </h1>
-                    <p className="text-muted-foreground text-sm sm:text-base font-medium max-w-lg">
-                        {t('leaderboard.subtitle')}
-                    </p>
-                </div>
-            </header>
-
-            <Tabs
-                defaultValue="xp"
-                className="w-full"
-                onValueChange={(value) => setActiveTab(value as LeaderboardType)}
-            >
-                <div className="flex justify-center mb-6 sm:mb-10 overflow-x-auto pb-2 scrollbar-none">
-                    <TabsList className="bg-card/5 border border-foreground/10 p-1 rounded-full h-12 sm:h-14">
-                        <TabsTrigger
-                            value="xp"
-                            className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
-                        >
-                            <Zap size={14} className="sm:w-4 sm:h-4" /> {t('leaderboard.tab_xp')}
+            <section className="page-gutter py-12 sm:py-16">
+                <Tabs
+                    defaultValue="xp"
+                    onValueChange={(v) => setActiveTab(v as LeaderboardType)}
+                >
+                    <TabsList>
+                        <TabsTrigger value="xp" className="px-5">
+                            {t('leaderboard.tab_xp')}
                         </TabsTrigger>
-                        <TabsTrigger
-                            value="streak"
-                            className="rounded-full px-4 sm:px-8 h-full font-bold uppercase text-[10px] sm:text-xs tracking-wider data-[state=active]:bg-orange-500 data-[state=active]:text-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
-                        >
-                            <Flame size={14} className="sm:w-4 sm:h-4" /> {t('leaderboard.tab_streak')}
+                        <TabsTrigger value="streak" className="px-5">
+                            {t('leaderboard.tab_streak')}
                         </TabsTrigger>
                     </TabsList>
+
+                    {isLoading ? (
+                        <div className="mt-8 h-48 animate-pulse rounded-lg border border-border bg-card" />
+                    ) : empty ? (
+                        <p className="mt-8 text-muted-foreground">
+                            No rankings yet. Be the first on the board.
+                        </p>
+                    ) : (
+                        <>
+                            <TabsContent value="xp" className="mt-8 space-y-6">
+                                <Podium
+                                    users={leaderboardData.topStudents || []}
+                                    type="xp"
+                                    currentUserId={sharedUserId}
+                                />
+                                <LeaderboardTable
+                                    users={leaderboardData.topStudents || []}
+                                    type="xp"
+                                    currentUserId={sharedUserId}
+                                    title={t('leaderboard.standings_title')}
+                                />
+                            </TabsContent>
+                            <TabsContent value="streak" className="mt-8 space-y-6">
+                                <Podium
+                                    users={leaderboardData.topStreaks || []}
+                                    type="streak"
+                                    currentUserId={sharedUserId}
+                                />
+                                <LeaderboardTable
+                                    users={leaderboardData.topStreaks || []}
+                                    type="streak"
+                                    currentUserId={sharedUserId}
+                                    title={t('leaderboard.persistence_title')}
+                                />
+                            </TabsContent>
+                        </>
+                    )}
+                </Tabs>
+            </section>
+
+            <section className="page-gutter border-t border-border py-16 sm:py-20">
+                <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+                    <h2 className="text-[1.75rem] sm:text-[2rem]">
+                        Want your name on this list?
+                    </h2>
+                    <Button asChild size="lg">
+                        <Link to="/signup">Create a free account</Link>
+                    </Button>
                 </div>
-
-                <TabsContent value="xp" className="space-y-6 sm:space-y-10">
-                    <Podium
-                        users={leaderboardData.topStudents || []}
-                        type="xp"
-                        currentUserId={sharedUserId}
-                    />
-
-                    <LeaderboardTable
-                        users={leaderboardData.topStudents || []}
-                        type="xp"
-                        currentUserId={sharedUserId}
-                        title={t('leaderboard.standings_title')}
-                        icon={
-                            <Trophy
-                                className="text-primary sm:w-5 sm:h-5"
-                                size={18}
-                            />
-                        }
-                    />
-                </TabsContent>
-
-                <TabsContent value="streak" className="space-y-6 sm:space-y-10">
-                    <Podium
-                        users={leaderboardData.topStreaks || []}
-                        type="streak"
-                        currentUserId={sharedUserId}
-                    />
-
-                    <LeaderboardTable
-                        users={leaderboardData.topStreaks || []}
-                        type="streak"
-                        currentUserId={sharedUserId}
-                        title={t('leaderboard.persistence_title')}
-                        icon={
-                            <Flame
-                                className="text-orange-500 sm:w-5 sm:h-5"
-                                size={18}
-                            />
-                        }
-                    />
-                </TabsContent>
-            </Tabs>
-        </div>
+            </section>
+        </MarketingPage>
     );
 }

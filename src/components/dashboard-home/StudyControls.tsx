@@ -45,7 +45,7 @@ export const StudyControls = ({
         <div className="space-y-4">
             <div
                 id="study-modes-grid"
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                className="grid grid-cols-1 overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-2 [&>*:nth-child(n+2)]:border-t sm:[&>*:nth-child(2)]:border-t-0 sm:[&>*:nth-child(even)]:border-l [&>*]:border-border"
             >
                 {MODULE_CARDS.map((module) => (
                     <ModuleCard
@@ -59,7 +59,7 @@ export const StudyControls = ({
                 ))}
             </div>
 
-            <div className="rounded-xl border border-border bg-card">
+            <div className="rounded-lg border border-border bg-card">
                 <SettingsPanel
                     numberOfQuestions={numberOfQuestions}
                     quizDifficulty={quizDifficulty}

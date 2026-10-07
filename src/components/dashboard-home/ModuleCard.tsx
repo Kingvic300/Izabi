@@ -24,12 +24,12 @@ const statusMeta: Record<
     idle: null,
     processing: {
         labelKey: 'module.status_processing',
-        className: 'text-primary',
+        className: 'text-muted-foreground',
         icon: <Loader2 size={12} className="animate-spin" />,
     },
     completed: {
         labelKey: 'module.status_active',
-        className: 'text-emerald-500',
+        className: 'text-reward',
         icon: <CheckCircle2 size={12} />,
     },
     failed: {
@@ -57,37 +57,32 @@ export const ModuleCard = ({
         <button
             onClick={onClick}
             disabled={isProcessing}
-            className="text-left rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary/5 disabled:opacity-60 disabled:cursor-not-allowed flex flex-col gap-3"
+            className="group flex items-start gap-4 p-5 text-left transition-colors hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-60"
         >
-            <div className="flex items-center justify-between">
-                <div
-                    className={cn(
-                        'h-9 w-9 rounded-lg bg-muted flex items-center justify-center',
-                        color,
-                    )}
-                >
-                    <Icon size={18} />
-                </div>
-                {meta && (
-                    <span
-                        className={cn(
-                            'inline-flex items-center gap-1 text-xs font-medium',
-                            meta.className,
-                        )}
-                    >
-                        {meta.icon}
-                        {t(meta.labelKey)}
+            <Icon size={20} className="mt-0.5 shrink-0 text-muted-foreground group-hover:text-foreground" />
+            <span className="min-w-0 flex-1">
+                <span className="flex items-baseline justify-between gap-3">
+                    <span className="font-display text-lg leading-tight">
+                        {t(labelKey)}
                     </span>
-                )}
-            </div>
-            <div>
-                <p className="font-medium">{t(labelKey)}</p>
-                <p className="text-sm text-muted-foreground">
+                    {meta && (
+                        <span
+                            className={cn(
+                                'inline-flex shrink-0 items-center gap-1 text-sm',
+                                meta.className,
+                            )}
+                        >
+                            {meta.icon}
+                            {t(meta.labelKey)}
+                        </span>
+                    )}
+                </span>
+                <span className="mt-1 block text-sm text-muted-foreground">
                     {t(descKey)}
                     {id === 'quiz' &&
-                        ` · ${numberOfQuestions} ${t('module.units')}`}
-                </p>
-            </div>
+                        `, ${numberOfQuestions} ${t('module.units')}`}
+                </span>
+            </span>
         </button>
     );
 };

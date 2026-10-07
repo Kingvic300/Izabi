@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { PageHeader } from '@/components/dashboard/PageHeader';
 import { Loader2 } from 'lucide-react';
 import AdminDashboardHeader from '@/components/admin-dashboard/AdminDashboardHeader';
 import AdminQuickStats from '@/components/admin-dashboard/AdminQuickStats';
@@ -437,11 +438,9 @@ export default function AdminDashboard() {
 
     if (isLoading) {
         return (
-            <div className="h-[80vh] flex flex-col items-center justify-center space-y-4">
-                <Loader2 className="h-12 w-12 text-primary animate-spin" />
-                <p className="font-bold uppercase tracking-[0.2em] text-xs opacity-40">
-                    Decrypting Admin Secure Layer...
-                </p>
+            <div className="flex h-[60vh] items-center justify-center gap-3 text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Loading admin data…
             </div>
         );
     }
@@ -471,83 +470,55 @@ export default function AdminDashboard() {
         : 'this user';
 
     return (
-        <div
-            ref={containerRef}
-            className="space-y-8 md:space-y-12 w-full pb-6 md:pb-20 px-4 sm:px-6 md:px-6 lg:px-8 xl:px-10 pt-4 md:pt-10"
-        >
-            <div className="space-y-6">
-                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-                    <div className="space-y-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-[10px] uppercase tracking-widest font-bold">
-                            Admin Command Center
-                        </div>
-                        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                            System <span className="text-gradient">Intelligence</span>
-                        </h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
-                            Live visibility into users, growth, and platform operations.
-                        </p>
-                    </div>
+        <div ref={containerRef} className="w-full space-y-10 pb-16">
+            <PageHeader
+                title="Admin"
+                description="Users, growth and platform activity."
+                actions={
                     <AdminDashboardHeader
-                        onOpenAnnouncement={() =>
-                            setIsAnnouncementDialogOpen(true)
-                        }
+                        onOpenAnnouncement={() => setIsAnnouncementDialogOpen(true)}
                         onSyncRegistry={handleSyncRegistry}
                         onExportReport={handleExportReport}
                         isSendingAnnouncement={isSendingAnnouncement}
                         isSyncingRegistry={isSyncingRegistry}
                         isExportingReport={isExportingReport}
                     />
-                </div>
-            </div>
+                }
+            />
 
-            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
-                <AdminQuickStats stats={stats} />
-            </div>
+            <AdminQuickStats stats={stats} />
 
-            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
-                <Tabs defaultValue="overview" className="w-full">
-                    <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
-                        <TabsList className="h-14 bg-card/5 border border-foreground/10 p-1.5 rounded-2xl mb-4 w-full md:w-auto inline-flex min-w-max">
-                            <TabsTrigger
-                                value="overview"
-                                className="flex-1 md:flex-none rounded-xl px-6 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-                            >
-                                Overview
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="users"
-                                className="flex-1 md:flex-none rounded-xl px-6 md:px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-                            >
-                                User Registry
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
+            <Tabs defaultValue="overview" className="w-full">
+                <TabsList>
+                    <TabsTrigger value="overview" className="px-5">
+                        Overview
+                    </TabsTrigger>
+                    <TabsTrigger value="users" className="px-5">
+                        Users
+                    </TabsTrigger>
+                </TabsList>
 
-                    <TabsContent value="overview">
-                        <AdminOverviewTab
-                            chartData={chartData}
-                            recentActivities={recentActivities}
-                            onViewUser={handleViewUser}
-                        />
-                    </TabsContent>
+                <TabsContent value="overview" className="mt-6">
+                    <AdminOverviewTab
+                        chartData={chartData}
+                        recentActivities={recentActivities}
+                        onViewUser={handleViewUser}
+                    />
+                </TabsContent>
 
-                    <TabsContent value="users">
-                        <AdminUsersTab
-                            filteredUsers={filteredUsers}
-                            searchQuery={searchQuery}
-                            onSearchChange={setSearchQuery}
-                            showActiveOnly={showActiveOnly}
-                            onToggleActiveOnly={() =>
-                                setShowActiveOnly(!showActiveOnly)
-                            }
-                            onFilterAction={handleFilterAction}
-                            onViewUser={handleViewUser}
-                            onDeleteUser={handleDeleteUser}
-                        />
-                    </TabsContent>
-                </Tabs>
-            </div>
+                <TabsContent value="users" className="mt-6">
+                    <AdminUsersTab
+                        filteredUsers={filteredUsers}
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        showActiveOnly={showActiveOnly}
+                        onToggleActiveOnly={() => setShowActiveOnly(!showActiveOnly)}
+                        onFilterAction={handleFilterAction}
+                        onViewUser={handleViewUser}
+                        onDeleteUser={handleDeleteUser}
+                    />
+                </TabsContent>
+            </Tabs>
 
             <AdminUserDetailsSheet
                 open={isSheetOpen}

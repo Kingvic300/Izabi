@@ -5,8 +5,6 @@ import apiClient from '@/lib/apiClient';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import ProfileHeader from '@/components/dashboard-profile/ProfileHeader';
 import ProfileSidebar from '@/components/dashboard-profile/ProfileSidebar';
 import PersonalDetailsCard from '@/components/dashboard-profile/PersonalDetailsCard';
@@ -66,28 +64,6 @@ const DashboardProfile = () => {
         loadProfile();
     }, [appToast]);
 
-    useGSAP(
-        () => {
-            const tl = gsap.timeline();
-            tl.from('.profile-header', {
-                y: -20,
-                opacity: 0,
-                duration: 0.8,
-                ease: 'expo.out',
-            }).from(
-                '.profile-card',
-                {
-                    y: 30,
-                    opacity: 0,
-                    stagger: 0.1,
-                    duration: 0.8,
-                    ease: 'expo.out',
-                },
-                '-=0.4',
-            );
-        },
-        { scope: containerRef },
-    );
 
     const handleInputChange = (field: keyof ProfileData, value: string) => {
         const updatedData = { ...profileData, [field]: value };
@@ -181,25 +157,16 @@ const DashboardProfile = () => {
     return (
         <div
             ref={containerRef}
-            className="space-y-8 md:space-y-12 w-full min-w-0 pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
+            className="w-full min-w-0 space-y-10 pb-16"
         >
-            <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-xs sm:text-xs font-semibold text-primary">
-                        Profile
-                    </span>
-                </div>
-                <div className="glass-card border-foreground/10 rounded-xl p-5 sm:p-6">
-                    <ProfileHeader
-                        isEditing={isEditing}
-                        isSaving={loading}
-                        onToggleEdit={() => setIsEditing(!isEditing)}
-                        onSave={handleSaveProfile}
-                    />
-                </div>
-            </div>
+            <ProfileHeader
+                isEditing={isEditing}
+                isSaving={loading}
+                onToggleEdit={() => setIsEditing(!isEditing)}
+                onSave={handleSaveProfile}
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
                 <div className="md:col-span-4 space-y-6">
                     <ProfileSidebar
                         profileData={profileData}

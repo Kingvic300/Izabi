@@ -103,7 +103,7 @@ export const PdfPagePicker: React.FC<PdfPagePickerProps> = ({
             <div className="flex-1 py-2">
                 <div className="flex items-center justify-between text-xs text-muted-foreground mb-3 px-1">
                     <span>
-                        Selected: <strong className="text-foreground font-mono">{selectedCount}</strong> of{' '}
+                        Selected: <strong className="text-foreground tabular">{selectedCount}</strong> of{' '}
                         {pages.length} pages
                     </span>
                     <button
@@ -128,7 +128,7 @@ export const PdfPagePicker: React.FC<PdfPagePickerProps> = ({
                         >
                             <div>
                                 <div className="flex items-start justify-between mb-3">
-                                    <span className="text-xs font-mono text-primary font-bold">
+                                    <span className="text-xs tabular text-primary font-bold">
                                         Page {page.pageNumber}
                                     </span>
 

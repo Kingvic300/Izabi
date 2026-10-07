@@ -1,64 +1,28 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Flame, Users, Zap } from 'lucide-react';
 import type { StreakSummary } from './partnerTypes';
+import { StatStrip } from '@/components/dashboard/StatStrip';
 
 type PartnerStatCardsProps = {
     streaks: StreakSummary | null;
 };
 
+const days = (n: number) => (n === 1 ? 'day' : 'days');
+
 export default function PartnerStatCards({ streaks }: PartnerStatCardsProps) {
+    const you = streaks?.yourStreak ?? 0;
+    const partner = streaks?.partnerStreak ?? 0;
+    const shared = streaks?.sharedStreak ?? 0;
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <Card className="stat-card glass-card group hover-lift relative overflow-hidden">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-xs font-bold opacity-60 flex items-center gap-2">
-                        <Zap size={14} className="text-primary" />
-                        Your Streak
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-4xl font-bold">
-                        {streaks?.yourStreak ?? 0} Days
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1 font-bold ">
-                        Consistency
-                    </p>
-                </CardContent>
-            </Card>
-
-            <Card className="stat-card glass-card group hover-lift relative overflow-hidden">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-xs font-bold opacity-60 flex items-center gap-2">
-                        <Users size={14} className="text-blue-500" />
-                        Partner Streak
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-4xl font-bold text-blue-400">
-                        {streaks?.partnerStreak ?? 0} Days
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1 font-bold ">
-                        Their Consistency
-                    </p>
-                </CardContent>
-            </Card>
-
-            <Card className="stat-card glass-card group hover-lift relative overflow-hidden border-primary/30">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-xs font-bold flex items-center gap-2 text-primary">
-                        <Flame size={14} className="fill-current" />
-                        Shared Streak
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-4xl font-bold text-gradient">
-                        {streaks?.sharedStreak ?? 0} Days
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1 font-bold ">
-                        Together, Consistently
-                    </p>
-                </CardContent>
-            </Card>
-        </div>
+        <StatStrip
+            items={[
+                { label: 'Your streak', value: you, unit: days(you) },
+                { label: 'Their streak', value: partner, unit: days(partner) },
+                {
+                    label: 'Both of you',
+                    value: shared,
+                    unit: days(shared),
+                    note: 'Days you both studied',
+                },
+            ]}
+        />
     );
 }

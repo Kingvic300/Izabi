@@ -1,266 +1,103 @@
-'use client';
-
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import {
-    Upload,
-    Zap,
-    BookOpen,
-    Trophy,
-    ArrowRight,
-    CheckCircle,
-    Binary,
-} from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useGSAP } from '@gsap/react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
+import { Bubble } from '@/components/ui/bubble';
+import { MarketingPage } from '@/components/marketing/MarketingPage';
 
-gsap.registerPlugin(ScrollTrigger);
+const STEPS = [
+    {
+        title: 'Add your material',
+        body: 'Upload a PDF, Word file, text file or a photo of your notes. Up to five files at once, 25 MB each.',
+        points: [
+            'Choose only the pages you need from a long PDF',
+            'No file? Start from the name of a topic',
+        ],
+    },
+    {
+        title: 'Pick what to make',
+        body: 'Choose a summary, a quiz, flashcards or a study guide. Izabi writes it from your material, in the language you have selected.',
+        points: [
+            'Set the quiz difficulty before you start',
+            'Play any summary as audio',
+        ],
+    },
+    {
+        title: 'Practise and check',
+        body: 'Answer the questions. Every answer is marked straight away with a short explanation, so you know why, not just what.',
+        points: [
+            'Ask the AI assistant when something does not make sense',
+            'Past-question practice for JAMB, WAEC, JUPEB and university exams',
+        ],
+    },
+    {
+        title: 'Come back tomorrow',
+        body: 'Answer the daily Brain Drop question, keep your streak, and see on your progress page which topics need another look.',
+        points: [
+            'Streak freezes protect your run on busy days',
+            'Invite a study partner to keep each other going',
+        ],
+    },
+];
 
 const HowItWorks = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { t } = useLanguage();
-
-    useGSAP(
-        () => {
-            gsap.from('.step-card', {
-                opacity: 0,
-                x: (i) => (i % 2 === 0 ? -40 : 40),
-                duration: 1,
-                stagger: 0.2,
-                ease: 'expo.out',
-                scrollTrigger: {
-                    trigger: '.steps-container',
-                    start: 'top 80%',
-                },
-            });
-        },
-        { scope: containerRef },
-    );
-
-    const steps = [
-        {
-            icon: <Upload size={32} />,
-            title: t('hiw.ingest_title'),
-            description: t('hiw.ingest_desc'),
-            details: [
-                t('hiw.ingest_d1'),
-                t('hiw.ingest_d2'),
-                t('hiw.ingest_d3'),
-                t('hiw.ingest_d4'),
-            ],
-            bg: 'bg-primary/10',
-            color: 'text-primary',
-        },
-        {
-            icon: <Zap size={32} />,
-            title: t('hiw.neural_title'),
-            description: t('hiw.neural_desc'),
-            details: [
-                t('hiw.neural_d1'),
-                t('hiw.neural_d2'),
-                t('hiw.neural_d3'),
-                t('hiw.neural_d4'),
-            ],
-            bg: 'bg-primary/10',
-            color: 'text-primary',
-        },
-        {
-            icon: <BookOpen size={32} />,
-            title: t('hiw.synth_title'),
-            description: t('hiw.synth_desc'),
-            details: [
-                t('hiw.synth_d1'),
-                t('hiw.synth_d2'),
-                t('hiw.synth_d3'),
-                t('hiw.synth_d4'),
-            ],
-            bg: 'bg-primary/10',
-            color: 'text-primary',
-        },
-        {
-            icon: <Trophy size={32} />,
-            title: t('hiw.mastery_title'),
-            description: t('hiw.mastery_desc'),
-            details: [
-                t('hiw.mastery_d1'),
-                t('hiw.mastery_d2'),
-                t('hiw.mastery_d3'),
-                t('hiw.mastery_d4'),
-            ],
-            bg: 'bg-primary/10',
-            color: 'text-primary',
-        },
-    ];
-
     return (
-        <div
-            ref={containerRef}
-            className="min-h-screen bg-background relative overflow-hidden"
+        <MarketingPage
+            title="From notes to practice"
+            intro="Four steps, the same every time."
         >
-            <Header />
-
-            {/* Hero */}
-            <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-10 sm:pb-14">
-                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 relative z-10">
-                    <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
-                        <div className="xl:col-span-8 rounded-xl sm:rounded-xl border border-foreground/10 bg-card/5 p-6 sm:p-10 lg:p-12 text-center xl:text-left">
-                            <div className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                                <Binary size={14} className="text-primary" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/60">
-                                    {t('hiw.hero_tag')}
-                                </span>
+            <section className="page-gutter py-16 sm:py-20">
+                <ol className="relative">
+                    {STEPS.map((step, i) => (
+                        <li
+                            key={step.title}
+                            className="relative grid grid-cols-[2.5rem_1fr] gap-x-5 pb-14 last:pb-0 sm:grid-cols-[2.5rem_1fr] sm:gap-x-8 lg:grid-cols-[2.5rem_minmax(0,28rem)_1fr]"
+                        >
+                            {i < STEPS.length - 1 && (
+                                <span
+                                    aria-hidden
+                                    className="absolute bottom-0 left-5 top-12 w-px -translate-x-1/2 bg-sheet/35"
+                                />
+                            )}
+                            <Bubble
+                                label={i + 1}
+                                state="filled"
+                                size="lg"
+                                className="text-base"
+                            />
+                            <div>
+                                <h2 className="pt-1 text-[1.75rem] leading-tight">
+                                    {step.title}
+                                </h2>
+                                <p className="mt-3 text-[1.0625rem] leading-relaxed text-muted-foreground">
+                                    {step.body}
+                                </p>
                             </div>
-                            <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-5 sm:mb-7 leading-[0.95] tracking-tighter">
-                                {t('hiw.hero_title')}{' '}
-                                <span className="text-primary">
-                                    {t('hiw.hero_title_span')}
-                                </span>
-                            </h1>
-                            <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto xl:mx-0 font-medium leading-relaxed">
-                                {t('hiw.hero_desc')}
-                            </p>
-                        </div>
-
-                        <div className="xl:col-span-4 rounded-xl sm:rounded-xl border border-foreground/10 bg-primary/5 p-6 sm:p-8">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-50 mb-4">
-                                Process Overview
-                            </p>
-                            <ul className="space-y-3">
-                                {steps.map((step, i) => (
-                                    <li
-                                        key={step.title}
-                                        className="min-h-11 rounded-xl border border-foreground/10 bg-background/40 px-4 flex items-center gap-3"
-                                    >
-                                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-primary text-xs font-black">
-                                            {i + 1}
-                                        </span>
-                                        <span className="text-sm font-semibold text-foreground/80">
-                                            {step.title}
-                                        </span>
+                            <ul className="col-start-2 mt-5 space-y-2 text-[15px] lg:col-start-3 lg:mt-2 lg:border-l lg:border-border lg:pl-8">
+                                {step.points.map((p) => (
+                                    <li key={p} className="flex gap-3">
+                                        <span
+                                            aria-hidden
+                                            className="mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full bg-sheet"
+                                        />
+                                        {p}
                                     </li>
                                 ))}
                             </ul>
-                        </div>
-                    </div>
-                </div>
+                        </li>
+                    ))}
+                </ol>
             </section>
 
-            {/* Steps Container */}
-            <section className="steps-container py-8 sm:py-12 lg:py-16 relative z-10">
-                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
-                        {steps.map((step, i) => (
-                            <Card
-                                key={i}
-                                className="step-card border border-foreground/10 bg-card/5 rounded-xl sm:rounded-xl p-5 sm:p-7 lg:p-8"
-                            >
-                                <div className="space-y-6">
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div
-                                            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${step.bg} ${step.color} flex items-center justify-center shadow-xl shrink-0`}
-                                        >
-                                            {step.icon}
-                                        </div>
-                                        <span className="text-4xl sm:text-5xl font-black text-foreground/10 leading-none">
-                                            {i + 1}
-                                        </span>
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground tracking-tight">
-                                            {step.title}
-                                        </h2>
-                                        <p className="text-sm sm:text-base lg:text-lg text-muted-foreground font-medium leading-relaxed">
-                                            {step.description}
-                                        </p>
-                                    </div>
-
-                                    <ul className="space-y-2.5">
-                                        {step.details.map((detail, j) => (
-                                            <li
-                                                key={j}
-                                                className="min-h-11 flex items-center gap-3 rounded-xl border border-foreground/10 bg-background/40 px-3 sm:px-4"
-                                            >
-                                                <CheckCircle
-                                                    size={16}
-                                                    className="text-primary shrink-0"
-                                                />
-                                                <span className="text-xs sm:text-sm font-semibold text-foreground/80 leading-snug">
-                                                    {detail}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    <div
-                                        className={`w-full h-28 sm:h-36 rounded-2xl border border-foreground/10 bg-background/40 flex items-center justify-center ${step.color} opacity-60`}
-                                    >
-                                        {step.icon}
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Quick Timeline */}
-            <section className="py-14 sm:py-20 lg:py-24 bg-card/[0.01] border-y border-foreground/10">
-                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                    <h2 className="text-2xl sm:text-4xl font-bold text-center mb-8 sm:mb-12">
-                        Typical Flow Time
+            <section className="page-gutter border-t border-border py-16 sm:py-20">
+                <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+                    <h2 className="text-[1.75rem] sm:text-[2rem]">
+                        Start with step one.
                     </h2>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-                        {[
-                            { label: t('hiw.lat_setup'), time: '2 min' },
-                            { label: t('hiw.lat_upload'), time: '1 min' },
-                            { label: t('hiw.lat_neural'), time: '30 sec' },
-                            { label: t('hiw.lat_mastery'), time: 'Instant' },
-                        ].map((stat, i) => (
-                            <Card
-                                key={i}
-                                className="border border-foreground/10 bg-card/5 p-4 sm:p-7 text-center rounded-2xl sm:rounded-xl"
-                            >
-                                <div className="text-xl sm:text-3xl font-black text-primary mb-1">
-                                    {stat.time}
-                                </div>
-                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-50">
-                                    {stat.label}
-                                </p>
-                            </Card>
-                        ))}
-                    </div>
+                    <Button asChild size="lg">
+                        <Link to="/signup">Create a free account</Link>
+                    </Button>
                 </div>
             </section>
-
-            {/* Final CTA */}
-            <section className="py-14 sm:py-20 lg:py-24 relative z-10">
-                <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-                    <div className="text-center bg-primary/5 py-10 sm:py-14 rounded-xl sm:rounded-xl border border-foreground/10 px-4 sm:px-8">
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 leading-tight text-foreground">
-                            {t('hiw.cta_title')}
-                        </h2>
-                        <Link to="/signup">
-                            <Button
-                                size="lg"
-                                className="h-14 sm:h-16 md:h-20 px-8 sm:px-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg md:text-xl group"
-                            >
-                                <span>{t('hiw.cta_btn')}</span>
-                                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
-                            </Button>
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
-            <Footer />
-        </div>
+        </MarketingPage>
     );
 };
 

@@ -1,5 +1,4 @@
-import { Bell, Mail, Smartphone } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import SettingsSection from './SettingsSection';
 import type { SettingsState } from './settingsTypes';
 import SettingRow from './SettingRow';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -15,17 +14,11 @@ export default function NotificationsSection({
 }: NotificationsSectionProps) {
     const { t } = useLanguage();
     return (
-        <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-sm overflow-hidden">
-            <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
-                <CardTitle className="flex items-center gap-3 text-xl font-bold">
-                    <Bell className="text-primary" />
-                    {t('settings.notifications_title')}
-                </CardTitle>
-                <CardDescription>
-                    {t('settings.notifications_desc')}
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
+        <SettingsSection
+            title={t('settings.notifications_title')}
+            description={t('settings.notifications_desc')}
+        >
+            <div className="divide-y divide-border rounded-lg border border-border bg-card">
                 <SettingRow
                     title={t('settings.email_notif_title')}
                     description={t('settings.email_notif_desc')}
@@ -33,9 +26,7 @@ export default function NotificationsSection({
                     onToggle={(checked) =>
                         onToggle('emailNotifications', checked)
                     }
-                    icon={<Mail size={20} />}
                 />
-                <div className="h-[1px] w-full bg-foreground/5 mx-8" />
                 <SettingRow
                     title={t('settings.study_reminders_title')}
                     description={t('settings.study_reminders_desc')}
@@ -43,9 +34,8 @@ export default function NotificationsSection({
                     onToggle={(checked) =>
                         onToggle('studyReminders', checked)
                     }
-                    icon={<Smartphone size={20} />}
                 />
-            </CardContent>
-        </Card>
+            </div>
+        </SettingsSection>
     );
 }

@@ -78,7 +78,7 @@ const LazyPage: React.FC<{
                         renderAnnotationLayer={false}
                     />
 
-                    <div className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/60 text-[11px] font-medium text-white">
+                    <div className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/60 text-[11px] font-medium text-background">
                         {pageNumber}
                     </div>
 
@@ -89,7 +89,7 @@ const LazyPage: React.FC<{
                     )}
 
                     {!isLoaded && (
-                        <div className="absolute inset-0 bg-background/20 backdrop-blur-sm flex items-center justify-center z-20">
+                        <div className="absolute inset-0 bg-background/20 flex items-center justify-center z-20">
                             <LoadingSpinner size="sm" />
                         </div>
                     )}

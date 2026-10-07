@@ -78,7 +78,7 @@ export const MermaidBlock = ({ code }: MermaidBlockProps) => {
 
     if (error) {
         return (
-            <pre className="whitespace-pre-wrap rounded-2xl border border-foreground/10 bg-background/60 p-4 text-xs text-muted-foreground">
+            <pre className="whitespace-pre-wrap rounded-md border border-foreground/10 bg-background/60 p-4 text-xs text-muted-foreground">
                 {code}
             </pre>
         );
@@ -86,14 +86,14 @@ export const MermaidBlock = ({ code }: MermaidBlockProps) => {
 
     if (!svg) {
         return (
-            <div className="rounded-2xl border border-foreground/10 bg-background/60 p-4 text-xs text-muted-foreground">
+            <div className="rounded-md border border-foreground/10 bg-background/60 p-4 text-xs text-muted-foreground">
                 Rendering diagram...
             </div>
         );
     }
 
     return (
-        <div className="w-full overflow-x-auto rounded-2xl border border-foreground/10 bg-background/60 p-4">
+        <div className="w-full overflow-x-auto rounded-md border border-foreground/10 bg-background/60 p-4">
             <div
                 className="w-full"
                 aria-label="Summary diagram"

@@ -1,15 +1,11 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import {
     Brain,
     ChevronRight,
     Clock,
     FileText,
+    ListChecks,
     MessageSquare,
-    Search,
-    Trophy,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 type HistoryListProps = {
@@ -20,13 +16,13 @@ type HistoryListProps = {
 const getIcon = (type: string) => {
     switch (type) {
         case 'generation':
-            return <Brain className="text-purple-400" />;
+            return <Brain />;
         case 'quiz':
-            return <Trophy className="text-yellow-400" />;
+            return <ListChecks />;
         case 'note':
-            return <FileText className="text-blue-400" />;
+            return <FileText />;
         case 'chat':
-            return <MessageSquare className="text-green-400" />;
+            return <MessageSquare />;
         default:
             return <Clock />;
     }
@@ -34,101 +30,65 @@ const getIcon = (type: string) => {
 
 export default function HistoryList({ items, onSelect }: HistoryListProps) {
     const { t } = useLanguage();
+    if (items.length === 0) {
+        return (
+            <div className="rounded-lg border border-dashed border-sheet/45 px-6 py-12">
+                <h3 className="text-xl">{t('history.no_items_found')}</h3>
+                <p className="mt-1 text-muted-foreground">
+                    {t('history.adjust_filters')}
+                </p>
+            </div>
+        );
+    }
+
     return (
-        <div className="grid grid-cols-1 gap-4">
-            <AnimatePresence mode="popLayout">
-                {items.map((item, index) => (
-                    <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ delay: index * 0.05 }}
+        <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+            {items.map((item, index) => (
+                <li key={index}>
+                    <button
+                        type="button"
+                        onClick={() => onSelect(item)}
+                        className="group flex w-full items-center gap-4 px-4 py-4 text-left transition-colors hover:bg-muted/50 sm:px-5"
                     >
-                        <Card
-                            onClick={() => onSelect(item)}
-                            className="group glass border-foreground/5 hover:border-primary/20 transition-all cursor-pointer overflow-hidden relative"
-                        >
-                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-all" />
-
-                            <CardContent className="p-4 sm:p-5 flex items-center gap-4 sm:gap-6">
-                                <div className="w-14 h-14 rounded-2xl bg-foreground/5 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
-                                    {getIcon(item.hType)}
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-3 mb-1">
-                                        <h3 className="font-bold text-lg truncate tracking-tight">
-                                            {item.title}
-                                        </h3>
-                                        <Badge
-                                            variant="outline"
-                                            className="text-xs font-semibold opacity-60"
-                                        >
-                                            {item.hType === 'generation'
-                                                ? t('history.ai_material')
-                                                : item.hType}
-                                        </Badge>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-xs font-bold opacity-40 ">
-                                        <span className="flex items-center gap-1.5">
-                                            <Clock size={12} />{' '}
-                                            {new Date(
-                                                item.hDate,
-                                            ).toLocaleDateString()}
-                                        </span>
-                                        {item.hType === 'generation' && (
-                                            <span>
-                                                {item.questions?.length || 0}{' '}
-                                                {t('history.questions_suffix')}
-                                            </span>
-                                        )}
-                                        {item.hType === 'note' && (
-                                            <span>
-                                                {item.content?.length || 0}{' '}
-                                                {t('history.chars_suffix')}
-                                            </span>
-                                        )}
-                                        {item.hType === 'quiz' && (
-                                            <span>
-                                                {item.correctAnswers}/
-                                                {item.totalQuestions} {t('history.correct_suffix')}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {item.score !== undefined && (
-                                    <div className="px-3 sm:px-6 py-2 rounded-2xl bg-primary/5 border border-primary/10 text-center">
-                                        <div className="text-xl font-semibold text-primary">
-                                            {Math.round(item.score)}%
-                                        </div>
-                                        <div className="text-xs font-semibold opacity-40">
-                                            {t('history.score_label')}
-                                        </div>
-                                    </div>
+                        <span className="shrink-0 text-muted-foreground [&>svg]:h-5 [&>svg]:w-5">
+                            {getIcon(item.hType)}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                            <span className="block truncate font-bold">
+                                {item.title}
+                            </span>
+                            <span className="tabular mt-0.5 flex flex-wrap gap-x-3 text-sm text-muted-foreground">
+                                <span>
+                                    {item.hType === 'generation'
+                                        ? t('history.ai_material')
+                                        : ({ quiz: 'Quiz', note: 'Note', chat: 'Chat' } as Record<string, string>)[item.hType] ?? item.hType}
+                                </span>
+                                <span>
+                                    {new Date(item.hDate).toLocaleDateString()}
+                                </span>
+                                {item.hType === 'generation' && (
+                                    <span>
+                                        {item.questions?.length || 0}{' '}
+                                        {t('history.questions_suffix')}
+                                    </span>
                                 )}
-
-                                <div className="w-10 h-10 rounded-full border border-foreground/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0 bg-card/50">
-                                    <ChevronRight size={18} />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                ))}
-            </AnimatePresence>
-
-            {items.length === 0 && (
-                <div className="text-center py-20 bg-card/5 rounded-xl border-2 border-dashed border-foreground/5">
-                    <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Search className="text-muted-foreground" size={32} />
-                    </div>
-                    <h3 className="text-xl font-bold">{t('history.no_items_found')}</h3>
-                    <p className="text-muted-foreground">
-                        {t('history.adjust_filters')}
-                    </p>
-                </div>
-            )}
-        </div>
+                                {item.hType === 'quiz' && (
+                                    <span>
+                                        {item.correctAnswers}/{item.totalQuestions}{' '}
+                                        {t('history.correct_suffix')}
+                                    </span>
+                                )}
+                            </span>
+                        </span>
+                        {item.score !== undefined && (
+                            <span className="tabular shrink-0 font-display text-xl">
+                                {Math.round(item.score)}%
+                            </span>
+                        )}
+                        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                </li>
+            ))}
+        </ul>
     );
 }

@@ -104,7 +104,7 @@ const DashboardSubscription = () => {
             price: '0',
             description: t('subscription.free_desc'),
             icon: Sparkles,
-            color: 'text-blue-400',
+            color: 'text-learning-blue',
             features: [
                 t('subscription.free_f1'),
                 t('subscription.free_f2'),
@@ -139,7 +139,7 @@ const DashboardSubscription = () => {
             price: '2,999',
             description: t('subscription.premium_desc'),
             icon: Crown,
-            color: 'text-yellow-500',
+            color: 'text-urgent',
             features: [
                 t('subscription.premium_f1'),
                 t('subscription.premium_f2'),
@@ -160,12 +160,12 @@ const DashboardSubscription = () => {
                 <div className="space-y-8 md:space-y-12">
                     {/* Header */}
                     <div className="space-y-6">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-border">
                             <span className="text-xs sm:text-xs font-semibold text-primary">
                                 {t('subscription.eyebrow')}
                             </span>
                         </div>
-                        <div className="glass-card border-foreground/10 rounded-xl p-6 sm:p-8 text-center space-y-2 md:space-y-4">
+                        <div className="p-6 sm:p-8 text-center space-y-2 md:space-y-4">
                             <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold leading-tight">
                                 {t('subscription.title_top')}{' '}
                                 <span className="text-gradient">{t('subscription.title_gradient')}</span>
@@ -219,14 +219,14 @@ const DashboardSubscription = () => {
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter className="gap-2">
-                                                    <AlertDialogCancel className="rounded-xl border-foreground/10">
+                                                    <AlertDialogCancel className="rounded-xl border-border">
                                                         {t('subscription.keep_subscription')}
                                                     </AlertDialogCancel>
                                                     <AlertDialogAction
                                                         onClick={
                                                             handleCancelAutoRenew
                                                         }
-                                                        className="rounded-xl bg-destructive hover:bg-destructive/90 text-white font-bold"
+                                                        className="rounded-xl bg-destructive hover:bg-destructive/90 text-background font-bold"
                                                     >
                                                         {t('subscription.yes_cancel_autorenew')}
                                                     </AlertDialogAction>
@@ -237,7 +237,7 @@ const DashboardSubscription = () => {
                                 </CardHeader>
                                 <CardContent className="p-5 md:p-6 pt-0">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 space-y-1">
+                                        <div className="p-4 rounded-2xl bg-card border border-border space-y-1">
                                             <p className="text-xs font-bold opacity-40 ">
                                                 {t('subscription.documents_label')}
                                             </p>
@@ -245,7 +245,7 @@ const DashboardSubscription = () => {
                                                 <span className="text-2xl md:text-3xl font-semibold">
                                                     {stats.usage.dailyDocs}
                                                 </span>
-                                                <span className="text-xs opacity-40">
+                                                <span className="text-xs text-muted-foreground">
                                                     /{' '}
                                                     {
                                                         stats.usage.limits
@@ -254,7 +254,7 @@ const DashboardSubscription = () => {
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="p-4 rounded-2xl bg-card/5 border border-foreground/5 space-y-1">
+                                        <div className="p-4 rounded-2xl bg-card border border-border space-y-1">
                                             <p className="text-xs font-bold opacity-40 ">
                                                 {t('subscription.ai_messages_label')}
                                             </p>
@@ -262,7 +262,7 @@ const DashboardSubscription = () => {
                                                 <span className="text-2xl md:text-3xl font-semibold">
                                                     {stats.usage.dailyMessages}
                                                 </span>
-                                                <span className="text-xs opacity-40">
+                                                <span className="text-xs text-muted-foreground">
                                                     /{' '}
                                                     {
                                                         stats.usage.limits
@@ -274,7 +274,7 @@ const DashboardSubscription = () => {
                                     </div>
                                     {stats.subscriptionExpiry &&
                                         stats.subscriptionStatus !== 'free' && (
-                                            <div className="mt-5 pt-4 border-t border-foreground/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div className="mt-5 pt-4 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                                 <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                                                     <Clock
                                                         size={14}
@@ -289,11 +289,11 @@ const DashboardSubscription = () => {
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     {stats.paystackSubscriptionCode ? (
-                                                        <Badge className="bg-green-500/10 text-green-500 border-0 text-xs font-bold py-0.5 px-2">
+                                                        <Badge className="bg-reward/10 text-reward border-0 text-xs font-bold py-0.5 px-2">
                                                             {t('subscription.autorenew_active')}
                                                         </Badge>
                                                     ) : (
-                                                        <Badge className="bg-amber-500/10 text-amber-500 border-0 text-xs font-bold py-0.5 px-2">
+                                                        <Badge className="bg-urgent/10 text-urgent border-0 text-xs font-bold py-0.5 px-2">
                                                             {t('subscription.autorenew_off')}
                                                         </Badge>
                                                     )}
@@ -369,7 +369,7 @@ const DashboardSubscription = () => {
                                                 </p>
                                             </div>
                                             <div className="flex items-baseline gap-2 mt-8">
-                                                <span className="text-xl font-bold opacity-40">
+                                                <span className="text-xl font-bold text-muted-foreground">
                                                     ₦
                                                 </span>
                                                 <span className="text-4xl md:text-5xl font-semibold tracking-tight">
@@ -412,10 +412,10 @@ const DashboardSubscription = () => {
                                                     !isUpgrade
                                                 }
                                                 className={cn(
-                                                    'w-full h-14 md:h-16 font-semibold text-xs rounded-2xl transition-all active:scale-95',
+                                                    'w-full h-14 md:h-16 font-semibold text-xs rounded-2xl transition-all',
                                                     plan.id === 'pro'
-                                                        ? 'bg-primary text-white hover:bg-primary/90 shadow-sm'
-                                                        : 'bg-foreground/5 hover:bg-foreground/10 border border-foreground/10',
+                                                        ? 'bg-primary text-background hover:bg-primary/90 shadow-sm'
+                                                        : 'bg-foreground/5 hover:bg-foreground/10 border border-border',
                                                 )}
                                             >
                                                 {loading ? (
@@ -445,7 +445,7 @@ const DashboardSubscription = () => {
                     </div>
 
                     {/* Footer Note */}
-                    <div className="glass-card border-foreground/10 rounded-xl p-6 sm:p-8 text-center text-sm text-muted-foreground max-w-none space-y-4">
+                    <div className="p-6 sm:p-8 text-center text-sm text-muted-foreground max-w-none space-y-4">
                         <p className="font-bold text-foreground">
                             {t('subscription.terms_title')}
                         </p>

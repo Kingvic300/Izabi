@@ -1,4 +1,4 @@
-import { Brain, Zap, FileText, Layers } from 'lucide-react';
+import { AlignLeft, ListChecks, BookOpen, Layers } from 'lucide-react';
 import { ModuleCardId } from './types';
 
 export const DEFAULT_PRACTICE_QUESTION_COUNT = 2;
@@ -13,26 +13,26 @@ export const MODULE_CARDS: Array<{
 }> = [
     {
         id: 'summarize',
-        icon: Brain,
+        icon: AlignLeft,
         labelKey: 'module.summarize_label',
         descKey: 'module.summarize_desc',
-        color: 'text-blue-400',
+        color: '',
         endpoint: 'summarize',
     },
     {
         id: 'quiz',
-        icon: Zap,
+        icon: ListChecks,
         labelKey: 'quiz.practice_title',
         descKey: 'module.quiz_desc',
-        color: 'text-yellow-400',
+        color: '',
         endpoint: 'generate-questions',
     },
     {
         id: 'guide',
-        icon: FileText,
+        icon: BookOpen,
         labelKey: 'module.guide_label',
         descKey: 'module.guide_desc',
-        color: 'text-primary',
+        color: '',
         endpoint: 'generate-study-material',
     },
     {
@@ -40,7 +40,7 @@ export const MODULE_CARDS: Array<{
         icon: Layers,
         labelKey: 'flashcards.title',
         descKey: 'module.cards_desc',
-        color: 'text-blue-400',
+        color: '',
         endpoint: 'flashcards',
     },
 ];

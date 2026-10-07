@@ -1,5 +1,5 @@
 import React from 'react';
-import { Brain, Zap, Lightbulb, Layers, ArrowRight } from 'lucide-react';
+import { Brain, Timer, Lightbulb, FileUp, ArrowRight } from 'lucide-react';
 
 export type StudyToolId = 'practice' | 'quick-test' | 'study-tricks' | 'upload-notes';
 
@@ -14,27 +14,27 @@ export interface StudyToolDef {
 export const STUDY_TOOLS: StudyToolDef[] = [
     {
         id: 'practice',
-        title: 'Analytical Reasoning Drills',
-        subtitle: 'High-yield problem deconstruction & proof verification',
+        title: 'Practice skills',
+        subtitle: 'Short reasoning drills with worked answers',
         icon: 'brain',
     },
     {
         id: 'quick-test',
-        title: 'Timed Recall Sprint',
-        subtitle: '5-minute calibrated exam under memory decay intervals',
+        title: 'Quick test',
+        subtitle: 'A timed set for a short break',
         icon: 'zap',
         badge: '5 min',
     },
     {
         id: 'study-tricks',
-        title: 'Feynman Model Decomposition',
-        subtitle: 'Translate complex abstractions into intuitive mental frameworks',
+        title: 'Study tricks',
+        subtitle: 'Explain a topic simply so it sticks',
         icon: 'lightbulb',
     },
     {
         id: 'upload-notes',
-        title: 'Selective Document Synthesis',
-        subtitle: 'Isolate key diagrammatic pages and extract core conceptual matrices',
+        title: 'Import a note',
+        subtitle: 'Bring in a PDF, Word file or text file',
         icon: 'layers',
     },
 ];
@@ -53,73 +53,58 @@ export const StudyToolsGrid: React.FC<StudyToolsGridProps> = ({
             case 'brain':
                 return Brain;
             case 'zap':
-                return Zap;
+                return Timer;
             case 'lightbulb':
                 return Lightbulb;
             case 'layers':
             default:
-                return Layers;
+                return FileUp;
         }
     };
 
     return (
-        <div className="my-6">
-            <div className="flex items-center justify-between mb-3.5">
-                <div>
-                    <h3 className="text-lg font-bold text-foreground tracking-tight">
-                        Cognitive Synthesis Modes
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                        Calibrated recall architectures for every curriculum
-                    </p>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {STUDY_TOOLS.map((tool) => {
+        <section aria-labelledby="study-tools-title">
+            <h3 id="study-tools-title" className="mb-4 text-2xl">
+                Study from your notes
+            </h3>
+            <div className="grid grid-cols-1 overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-2">
+                {STUDY_TOOLS.map((tool, i) => {
                     const IconComp = getIcon(tool.icon);
                     const isSelected = selectedToolId === tool.id;
-
                     return (
                         <button
                             key={tool.id}
                             type="button"
                             onClick={() => onSelectTool(tool.id)}
-                            className={`group text-left p-4 sm:p-5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 relative overflow-hidden ${
-                                isSelected
-                                    ? 'bg-muted border-primary ring-1 ring-primary/40 shadow-card'
-                                    : 'bg-card border-border hover:border-primary/30 hover:bg-muted/40 shadow-card'
-                            }`}
+                            aria-pressed={isSelected}
+                            className={[
+                                'group flex items-center gap-4 border-border px-5 py-4 text-left transition-colors hover:bg-muted/50',
+                                i > 0 ? 'border-t' : '',
+                                i === 1 ? 'sm:border-t-0' : '',
+                                i % 2 === 1 ? 'sm:border-l' : '',
+                                isSelected ? 'bg-muted/60' : '',
+                            ].join(' ')}
                         >
-                            <div className="flex items-center gap-3.5 min-w-0">
-                                <div
-                                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 border ${
-                                        isSelected
-                                            ? 'bg-primary border-primary text-primary-foreground shadow-sm'
-                                            : 'bg-muted border-border text-primary group-hover:border-primary/30'
-                                    }`}
-                                >
-                                    <IconComp className="w-4 h-4" />
-                                </div>
-
-                                <div className="min-w-0">
-                                    <h4 className="text-sm font-bold text-foreground truncate">
-                                        {tool.title}
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground mt-0.5 truncate leading-tight">
-                                        {tool.subtitle}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="shrink-0 text-muted-foreground group-hover:text-foreground transition-colors">
-                                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                            </div>
+                            <IconComp className="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-foreground" />
+                            <span className="min-w-0 flex-1">
+                                <span className="flex items-baseline gap-2 font-bold">
+                                    {tool.title}
+                                    {tool.badge && (
+                                        <span className="text-sm font-normal text-muted-foreground">
+                                            {tool.badge}
+                                        </span>
+                                    )}
+                                </span>
+                                <span className="block truncate text-sm text-muted-foreground">
+                                    {tool.subtitle}
+                                </span>
+                            </span>
+                            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                         </button>
                     );
                 })}
             </div>
-        </div>
+        </section>
     );
 };
 

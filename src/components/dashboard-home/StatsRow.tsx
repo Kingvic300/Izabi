@@ -1,6 +1,3 @@
-'use client';
-
-import { Flame, Star, TrendingUp, Clock } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StatsRowProps {
@@ -21,60 +18,51 @@ export const StatsRow = ({
     const stats = [
         {
             label: t('module.active_streak'),
-            value: `${streak} ${t('leaderboard.days_label')}`,
-            icon: Flame,
-            accent: 'bg-urgent',
-            iconClass: 'text-urgent bg-urgent/10',
+            value: streak.toLocaleString(),
+            unit: streak === 1 ? 'day' : 'days',
         },
         {
             label: t('module.knowledge_xp'),
             value: totalPoints.toLocaleString(),
-            icon: Star,
-            accent: 'bg-primary',
-            iconClass: 'text-primary bg-primary/10',
+            unit: 'points',
         },
         {
             label: t('home.daily_xp'),
             value: `+${dailyPoints.toLocaleString()}`,
-            icon: TrendingUp,
-            accent: 'bg-reward',
-            iconClass: 'text-reward bg-reward/10',
+            unit: 'points',
         },
         {
             label: t('home.total_study_time'),
-            value: `${studyHours}h`,
-            icon: Clock,
-            accent: 'bg-learning-purple',
-            iconClass: 'text-learning-purple bg-learning-purple/10',
+            value: String(studyHours),
+            unit: studyHours === 1 ? 'hour' : 'hours',
         },
     ];
 
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {stats.map((stat) => (
+        <dl className="grid grid-cols-2 overflow-hidden rounded-lg border border-border bg-card lg:grid-cols-4">
+            {stats.map((stat, i) => (
                 <div
                     key={stat.label}
-                    className="relative flex items-center gap-3 overflow-hidden rounded-lg border border-border bg-card p-4"
+                    className={[
+                        'px-5 py-4 sm:px-6 sm:py-5',
+                        i % 2 === 1 ? 'border-l border-border' : '',
+                        i >= 2 ? 'border-t border-border lg:border-t-0' : '',
+                        i === 2 ? 'lg:border-l' : '',
+                    ].join(' ')}
                 >
-                    <span
-                        aria-hidden="true"
-                        className={`absolute inset-y-0 left-0 w-[3px] ${stat.accent}`}
-                    />
-                    <div
-                        className={`h-9 w-9 shrink-0 rounded-md flex items-center justify-center ${stat.iconClass}`}
-                    >
-                        <stat.icon size={18} />
-                    </div>
-                    <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground truncate">
-                            {stat.label}
-                        </p>
-                        <p className="text-lg font-semibold leading-tight font-display">
+                    <dt className="truncate text-sm text-muted-foreground">
+                        {stat.label}
+                    </dt>
+                    <dd className="mt-1 flex items-baseline gap-1.5">
+                        <span className="tabular font-display text-[1.75rem] leading-none sm:text-[2rem]">
                             {stat.value}
-                        </p>
-                    </div>
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                            {stat.unit}
+                        </span>
+                    </dd>
                 </div>
             ))}
-        </div>
+        </dl>
     );
 };

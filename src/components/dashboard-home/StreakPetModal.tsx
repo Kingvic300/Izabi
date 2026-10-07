@@ -32,7 +32,7 @@ export const StreakPetModal: React.FC<StreakPetModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
             <div className="bg-card border border-border rounded-xl max-w-2xl w-full p-6 sm:p-8 shadow-elevated">
                 <div className="flex items-center justify-between pb-4 border-b border-border mb-6">
                     <div className="flex items-center gap-3">
@@ -60,7 +60,7 @@ export const StreakPetModal: React.FC<StreakPetModalProps> = ({
 
                 <div className="rounded-2xl bg-muted/40 border border-border p-5 sm:p-6 mb-6 flex flex-col sm:flex-row items-center gap-6">
                     <div className="relative shrink-0">
-                        <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border border-primary/40 bg-background shadow-xl p-1 flex items-center justify-center">
+                        <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border border-primary/40 bg-background p-1 flex items-center justify-center">
                             {pet.image ? (
                                 <img
                                     src={pet.image}
@@ -72,18 +72,18 @@ export const StreakPetModal: React.FC<StreakPetModalProps> = ({
                                 <Sparkles className="w-16 h-16 text-primary" />
                             )}
                         </div>
-                        <span className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border-2 border-card shadow">
+                        <span className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground text-[11px] tabular font-bold px-2 py-0.5 rounded-full border-2 border-card shadow">
                             Lv.{pet.level}
                         </span>
                     </div>
 
                     <div className="flex-1 min-w-0 text-center sm:text-left">
                         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-                            <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-md border border-primary/25">
+                            <span className="text-xs tabular font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-md border border-primary/25">
                                 STAGE {pet.stage} / 4
                             </span>
-                            <span className="inline-flex items-center gap-1 text-xs font-mono text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/25">
-                                <Flame className="w-3.5 h-3.5 fill-amber-500" />
+                            <span className="inline-flex items-center gap-1 text-xs tabular text-urgent bg-urgent/10 px-2 py-0.5 rounded-md border border-urgent/25">
+                                <Flame className="w-3.5 h-3.5 fill-urgent" />
                                 <span>{pet.totalStreak}d Active Streak</span>
                             </span>
                         </div>
@@ -98,7 +98,7 @@ export const StreakPetModal: React.FC<StreakPetModalProps> = ({
 
                         <div className="mt-4 pt-3 border-t border-border flex items-center justify-between gap-4">
                             <div className="flex-1">
-                                <div className="flex justify-between text-[11px] text-muted-foreground font-mono mb-1">
+                                <div className="flex justify-between text-[11px] text-muted-foreground tabular mb-1">
                                     <span>Growth Progress</span>
                                     <span className="text-foreground font-bold">
                                         {pet.xpTowardsNextStage}%
@@ -117,7 +117,7 @@ export const StreakPetModal: React.FC<StreakPetModalProps> = ({
                                 onClick={handleFeed}
                                 className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                                     justFed
-                                        ? 'bg-learning-green text-white'
+                                        ? 'bg-learning-green text-background'
                                         : 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md'
                                 }`}
                             >
@@ -130,7 +130,7 @@ export const StreakPetModal: React.FC<StreakPetModalProps> = ({
 
                 <div>
                     <div className="flex items-center justify-between mb-3 text-xs font-semibold text-muted-foreground">
-                        <span className="font-mono uppercase tracking-wider text-foreground/80">
+                        <span className="tabular text-foreground/80">
                             Evolution Stages
                         </span>
                         <span className="text-[11px]">Select a tier to inspect perks</span>
@@ -153,7 +153,7 @@ export const StreakPetModal: React.FC<StreakPetModalProps> = ({
                                     }`}
                                 >
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className="text-[10px] font-mono text-muted-foreground">
+                                        <span className="text-xs tabular text-muted-foreground">
                                             Tier 0{s.stage}
                                         </span>
                                         {isSelected ? (
@@ -171,7 +171,7 @@ export const StreakPetModal: React.FC<StreakPetModalProps> = ({
                                         <h5 className="text-xs font-bold text-foreground truncate">
                                             {s.name}
                                         </h5>
-                                        <span className="text-[10px] font-mono text-primary block mt-0.5">
+                                        <span className="text-xs tabular text-primary block mt-0.5">
                                             Day {s.minStreak}+
                                         </span>
                                     </div>
@@ -187,7 +187,7 @@ export const StreakPetModal: React.FC<StreakPetModalProps> = ({
                         <span className="text-foreground/80 font-medium">Stage {pet.stage} Perk:</span>
                         <span className="text-foreground font-semibold">{currentStageInfo.perk}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-learning-green font-mono text-[11px] shrink-0">
+                    <div className="flex items-center gap-1.5 text-learning-green tabular text-[11px] shrink-0">
                         <Shield className="w-3.5 h-3.5" />
                         <span>Streak Shield Active</span>
                     </div>

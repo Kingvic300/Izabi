@@ -24,13 +24,13 @@ export const LearningVelocityWidget: React.FC<LearningVelocityWidgetProps> = ({
                         <span className="w-2 h-2 rounded-full bg-learning-green" />
                         <span className="text-foreground font-semibold">Active Spaced Repetition Engine</span>
                         <span>·</span>
-                        <span className="font-mono tabular-nums">Optimal Interval: 18h</span>
+                        <span className="tabular tabular-nums">Optimal Interval: 18h</span>
                     </div>
 
                     <div>
                         <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
                             <span>Cognitive Retention:</span>
-                            <span className="font-mono tabular-nums text-primary font-extrabold">
+                            <span className="tabular tabular-nums text-primary font-extrabold">
                                 {retentionPercent}%
                             </span>
                         </h3>
@@ -41,13 +41,13 @@ export const LearningVelocityWidget: React.FC<LearningVelocityWidgetProps> = ({
                     </div>
 
                     <div className="pt-2">
-                        <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground mb-1.5">
+                        <div className="flex items-center justify-between text-[11px] tabular text-muted-foreground mb-1.5">
                             <span>Memory Stability Index</span>
                             <span className="text-foreground">Target: 95%</span>
                         </div>
                         <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-gradient-to-r from-primary to-learning-blue rounded-full transition-all duration-500"
+                                className="h-full rounded-full bg-foreground transition-all duration-500"
                                 style={{ width: `${Math.min(100, retentionPercent)}%` }}
                             />
                         </div>
@@ -56,15 +56,15 @@ export const LearningVelocityWidget: React.FC<LearningVelocityWidgetProps> = ({
 
                 <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-4 border-t lg:border-t-0 border-border pt-4 lg:pt-0">
                     <div className="text-left lg:text-right space-y-1">
-                        <div className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
+                        <div className="text-[11px] tabular text-muted-foreground">
                             Study Velocity
                         </div>
                         <div className="flex items-center gap-3 lg:justify-end">
-                            <span className="text-lg font-bold font-mono text-foreground tabular-nums">
+                            <span className="text-lg font-bold tabular text-foreground tabular-nums">
                                 {streak}
                             </span>
                             <span className="text-muted-foreground">·</span>
-                            <span className="text-sm font-semibold font-mono text-foreground/80 tabular-nums">
+                            <span className="text-sm font-semibold tabular text-foreground/80 tabular-nums">
                                 {totalPoints} XP
                             </span>
                         </div>
@@ -77,7 +77,7 @@ export const LearningVelocityWidget: React.FC<LearningVelocityWidgetProps> = ({
                     >
                         <Zap className="w-3.5 h-3.5 text-primary" />
                         <span>Launch 5-Min Memory Drill</span>
-                        <ChevronRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 text-muted-foreground" />
+                        <ChevronRight className="w-3.5 h-3.5 transition-transform text-muted-foreground" />
                     </button>
                 </div>
             </div>

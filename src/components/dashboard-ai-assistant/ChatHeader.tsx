@@ -3,7 +3,7 @@
 import type React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Copy, Loader, Paperclip, Plus, Share2, Sparkles } from 'lucide-react';
+import { Copy, Loader, Paperclip, Plus, Share2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ChatHistorySheet from './ChatHistorySheet';
 import type { ChatSession } from './types';
@@ -41,13 +41,12 @@ export default function ChatHeader({
     };
 
     return (
-        <div className="chat-header flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 flex items-center gap-2 sm:gap-3">
-                    <span className="text-gradient">Izabi AI</span>
-                    <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                </h1>
-                <p className="text-sm sm:text-base text-muted-foreground font-medium">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+                <h2 className="text-[1.75rem] leading-tight sm:text-[2rem]">
+                    Assistant
+                </h2>
+                <p className="text-muted-foreground">
                     {t('assistant.subtitle')}
                 </p>
             </div>
@@ -59,7 +58,7 @@ export default function ChatHeader({
                     className="sm:hidden h-9 w-9"
                     aria-label={t('assistant.new_chat_aria')}
                 >
-                    <Plus className="h-3 w-3" />
+                    <Plus />
                 </Button>
                 <Button
                     variant="outline"
@@ -68,7 +67,7 @@ export default function ChatHeader({
                     className="h-9 w-9"
                     aria-label={t('assistant.copy_transcript_aria')}
                 >
-                    <Copy className="h-3 w-3" />
+                    <Copy />
                 </Button>
                 <Button
                     variant="outline"
@@ -77,15 +76,15 @@ export default function ChatHeader({
                     className="h-9 w-9"
                     aria-label={t('assistant.share_transcript_aria')}
                 >
-                    <Share2 className="h-3 w-3" />
+                    <Share2 />
                 </Button>
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={onStartNewChat}
-                    className="hidden sm:flex items-center gap-2 glass border-primary/20 hover:bg-primary/10 text-primary font-bold transition-all"
+                    className="hidden sm:inline-flex"
                 >
-                    <Plus className="h-3 w-3" />
+                    <Plus />
                     {t('assistant.new_chat')}
                 </Button>
                 <Button
@@ -99,7 +98,7 @@ export default function ChatHeader({
                     {isUploadingPdf ? (
                         <Loader className="h-4 w-4 animate-spin" />
                     ) : (
-                        <Paperclip className="h-3 w-3" />
+                        <Paperclip />
                     )}
                 </Button>
                 <Button
@@ -107,12 +106,12 @@ export default function ChatHeader({
                     size="sm"
                     onClick={handleUploadClick}
                     disabled={isUploadingPdf || isLoading}
-                    className="hidden sm:flex items-center gap-2 glass border-primary/20 hover:bg-primary/10 text-primary font-bold transition-all"
+                    className="hidden sm:inline-flex"
                 >
                     {isUploadingPdf ? (
                         <Loader className="h-4 w-4 animate-spin" />
                     ) : (
-                        <Paperclip className="h-3 w-3" />
+                        <Paperclip />
                     )}
                     {t('assistant.upload_materials')}
                 </Button>

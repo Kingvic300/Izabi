@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { FlashcardsSection } from './FlashcardsSection';
 import { SummarySection } from './SummarySection';
 import { QuizSection } from './QuizSection';
-import { Brain, FileText } from 'lucide-react';
+import { AlignLeft, BookOpen } from 'lucide-react';
 import { useStudy } from '@/contexts/StudyContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -42,17 +42,17 @@ export const ResultsHub = ({
     if (!hasContent) return null;
 
     return (
-        <div id="results-hub" className="space-y-6 pt-6">
+        <div id="results-hub" className="space-y-4 pt-4">
             <div>
-                <h3 className="text-lg font-semibold">
+                <h3 className="text-2xl">
                     {t('module.knowledge_vault_top')}
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="mt-0.5 text-muted-foreground">
                     {t('module.synthesis_complete')}
                 </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
                 {flashcards.length > 0 && (
                     <FlashcardsSection
                         flashcards={flashcards}
@@ -68,8 +68,7 @@ export const ResultsHub = ({
                         onOpenChange={setShowSummary}
                         onDownload={onDownloadSummary}
                         title={t('module.core_synthesis')}
-                        icon={Brain}
-                        iconColor="text-primary"
+                        icon={AlignLeft}
                     />
                 )}
 
@@ -80,8 +79,7 @@ export const ResultsHub = ({
                         onOpenChange={setShowStudyGuide}
                         onDownload={onDownloadGuide}
                         title={t('module.tactical_guide')}
-                        icon={FileText}
-                        iconColor="text-primary"
+                        icon={BookOpen}
                         audioLabel={t('module.vocalize_guide')}
                     />
                 )}

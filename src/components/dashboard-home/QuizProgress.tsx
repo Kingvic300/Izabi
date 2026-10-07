@@ -13,24 +13,31 @@ export const QuizProgress = ({ answered, total, showResults }: QuizProgressProps
     const percentage = total ? Math.round((answered / total) * 100) : 0;
 
     return (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-card/5 border border-foreground/5 px-4 py-3">
-            <div className="space-y-1">
-                <div className="text-xs font-bold opacity-50">
-                    {t('quiz.progress_label')}
-                </div>
-                <div className="text-sm font-bold">
-                    {answered} / {total} {t('quiz.answered_suffix')}
-                </div>
-            </div>
-            <div className="w-full sm:w-40 h-2 rounded-full bg-card/10 overflow-hidden">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <p className="tabular text-sm">
+                <span className="font-bold">
+                    {answered} / {total}
+                </span>{' '}
+                <span className="text-muted-foreground">
+                    {t('quiz.answered_suffix')}
+                </span>
+            </p>
+            <div
+                className="h-1.5 min-w-[8rem] flex-1 overflow-hidden rounded-full bg-muted"
+                role="progressbar"
+                aria-valuenow={percentage}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={t('quiz.progress_label')}
+            >
                 <div
-                    className="h-full bg-primary transition-all"
+                    className="h-full bg-foreground transition-all"
                     style={{ width: `${percentage}%` }}
                 />
             </div>
-            <div className="text-xs font-bold opacity-50">
+            <p className="text-sm text-muted-foreground">
                 {showResults ? t('quiz.results_locked') : t('quiz.select_answers')}
-            </div>
+            </p>
         </div>
     );
 };

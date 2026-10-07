@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface RankTrendProps {
-    change: number;
+    change?: number;
 }
 
 export const RankTrend = ({ change }: RankTrendProps) => {
@@ -13,8 +13,8 @@ export const RankTrend = ({ change }: RankTrendProps) => {
     return (
         <div
             className={cn(
-                'flex items-center gap-0.5 text-xs font-bold',
-                isPositive ? 'text-blue-500' : 'text-destructive',
+                'tabular flex items-center gap-0.5 text-[11px] font-bold',
+                isPositive ? 'text-reward' : 'text-destructive',
             )}
         >
             {isPositive ? <ChevronUp size={10} /> : <ChevronDown size={10} />}

@@ -90,7 +90,7 @@ export const FloatingAssistant: React.FC<FloatingAssistantProps> = ({
                     type="button"
                     onClick={onToggle}
                     aria-label="Open AI Study Assistant"
-                    className="group relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-card border-2 border-primary p-1 shadow-xl flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95"
+                    className="group relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-card border-2 border-primary p-1 flex items-center justify-center cursor-pointer transition-all duration-300"
                 >
                     <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-30 pointer-events-none" />
                     <div className="w-full h-full rounded-full overflow-hidden bg-muted relative flex items-center justify-center">
@@ -113,7 +113,7 @@ export const FloatingAssistant: React.FC<FloatingAssistantProps> = ({
                                     <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                                 </div>
                                 {currentTopic && (
-                                    <p className="text-[10px] text-muted-foreground font-mono">
+                                    <p className="text-xs text-muted-foreground tabular">
                                         Context: {currentTopic}
                                     </p>
                                 )}
@@ -147,7 +147,7 @@ export const FloatingAssistant: React.FC<FloatingAssistantProps> = ({
                                     >
                                         {m.text}
                                     </div>
-                                    <span className="text-[9px] font-mono text-muted-foreground mt-1 px-1">
+                                    <span className="text-xs tabular text-muted-foreground mt-1 px-1">
                                         {m.time}
                                     </span>
                                 </div>
@@ -156,9 +156,9 @@ export const FloatingAssistant: React.FC<FloatingAssistantProps> = ({
 
                         {isTyping && (
                             <div className="flex items-center gap-1.5 bg-muted/40 border border-border px-3 py-2 rounded-xl w-16">
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.15s]" />
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.3s]" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary [animation-delay:0.15s]" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary [animation-delay:0.3s]" />
                             </div>
                         )}
                     </div>

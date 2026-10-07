@@ -43,11 +43,11 @@ export default function GoalPanel({
 
     if (!goal) {
         return (
-            <Card className="glass-card border-foreground/10 rounded-xl">
+            <Card >
                 <CardContent className="p-6 sm:p-8 space-y-4">
                     <div className="flex items-center gap-2">
                         <Target className="h-5 w-5 text-primary" />
-                        <h3 className="text-lg font-bold">Set a Shared Goal</h3>
+                        <h3 className="text-xl">Set a shared goal</h3>
                     </div>
                     <p className="text-sm text-muted-foreground">
                         Agree on something you'll both check in on. You can
@@ -74,7 +74,7 @@ export default function GoalPanel({
                             </SelectContent>
                         </Select>
                         <Button type="submit" disabled={isLoading || !title.trim()}>
-                            {isLoading ? <Loader className="h-4 w-4 animate-spin" /> : 'Set Goal'}
+                            {isLoading ? <Loader className="h-4 w-4 animate-spin" /> : 'Set goal'}
                         </Button>
                     </form>
                 </CardContent>
@@ -83,7 +83,7 @@ export default function GoalPanel({
     }
 
     return (
-        <Card className="glass-card border-foreground/10 rounded-xl">
+        <Card >
             <CardContent className="p-6 sm:p-8 space-y-6">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="space-y-1">
@@ -113,7 +113,7 @@ export default function GoalPanel({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="flex items-center gap-2 rounded-xl border border-foreground/10 p-3">
+                    <div className="flex items-center gap-2 rounded-xl border border-border p-3">
                         {checkInStatus?.youCheckedInToday ? (
                             <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                         ) : (
@@ -123,7 +123,7 @@ export default function GoalPanel({
                             You {checkInStatus?.youCheckedInToday ? 'checked in' : "haven't checked in"} today
                         </span>
                     </div>
-                    <div className="flex items-center gap-2 rounded-xl border border-foreground/10 p-3">
+                    <div className="flex items-center gap-2 rounded-xl border border-border p-3">
                         {checkInStatus?.partnerCheckedInToday ? (
                             <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                         ) : (

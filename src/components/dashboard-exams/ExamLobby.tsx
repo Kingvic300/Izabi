@@ -1,30 +1,11 @@
-'use client';
-
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-    Calendar,
-    CheckCircle2,
-    ChevronRight,
-    Clock,
-    FileText,
-    Loader2,
-    Play,
-    Trophy,
-    Upload,
-    Zap,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Label } from '@/components/ui/label';
+import { ChevronRight, FileText, Loader2, Play, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
-
+import { PageHeader, SectionTitle } from '@/components/dashboard/PageHeader';
 type ExamTab = 'JAMB' | 'WAEC' | 'JUPEB' | 'UNIVERSITY';
 
 type ExamLobbyProps = {
@@ -69,333 +50,215 @@ export default function ExamLobby({
     onSelectResult,
 }: ExamLobbyProps) {
     const { t } = useLanguage();
+    const tabs = ['JAMB', 'WAEC', 'JUPEB', 'UNIVERSITY'] as const;
     return (
-        <div className="w-full space-y-8 animate-in fade-in duration-700">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
-                <div>
-                    <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold mb-2 ">
-                        {t('exams.title_top')}{' '}
-                        <span className="text-primary">
-                            {t('exams.title_gradient')}
-                        </span>
-                    </h1>
-                    <p className="text-muted-foreground text-base sm:text-lg lg:text-xl font-medium">
-                        {t('exams.subtitle')}
-                    </p>
-                </div>
-
-                {showResume && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-primary/10 border border-primary/20 p-4 rounded-xl flex items-center justify-between gap-6"
+        <div className="w-full space-y-10 pb-16">
+            <PageHeader
+                title="Exams"
+                description={t('exams.subtitle')}
+                actions={
+                    <div
+                        role="tablist"
+                        aria-label="Exam type"
+                        className="no-scrollbar flex max-w-full overflow-x-auto rounded-md bg-muted p-1"
                     >
-                        <div className="flex items-center gap-4 px-2">
-                            <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/30">
-                                <Play
-                                    className="text-primary fill-primary"
-                                    size={20}
-                                />
-                            </div>
-                            <div>
-                                <p className="font-bold text-sm">
-                                    {t('exams.ongoing_session')}
-                                </p>
-                                <p className="text-xs font-semibold opacity-40">
-                                    {t('exams.ready_to_resume')}
-                                </p>
-                            </div>
-                        </div>
-                        <Button
-                            onClick={onResume}
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs px-8 h-12 rounded-2xl shadow-sm transition-all active:scale-95"
-                        >
-                            {t('exams.resume_now')}
-                        </Button>
-                    </motion.div>
-                )}
-
-                <div className="flex bg-card/20 p-1.5 rounded-xl border border-foreground/5 shadow-inner overflow-x-auto scrollbar-hide max-w-full w-full md:w-auto">
-                    {(['JAMB', 'WAEC', 'JUPEB', 'UNIVERSITY'] as const).map(
-                        (tab) => (
+                        {tabs.map((tab) => (
                             <button
                                 key={tab}
+                                role="tab"
+                                aria-selected={activeTab === tab}
                                 onClick={() => onTabChange(tab)}
                                 className={cn(
-                                    'px-5 sm:px-8 py-3 rounded-2xl text-xs font-semibold transition-all sm:tracking-[0.2em] whitespace-nowrap',
+                                    'whitespace-nowrap rounded-[5px] px-4 py-2 text-sm font-bold transition-colors',
                                     activeTab === tab
-                                        ? 'bg-primary text-primary-foreground shadow-sm flex items-center gap-2'
-                                        : 'hover:bg-foreground/5 text-muted-foreground',
+                                        ? 'bg-card text-foreground shadow-soft'
+                                        : 'text-muted-foreground hover:text-foreground',
                                 )}
                             >
-                                {activeTab === tab && (
-                                    <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                                )}
-                                {tab}
+                                {tab === 'UNIVERSITY' ? 'University' : tab}
                             </button>
-                        ),
-                    )}
-                </div>
-            </div>
+                        ))}
+                    </div>
+                }
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto">
-                {/* Simulation Card */}
-                <Card className="glass-card stagger-card border-primary/20 shadow-sm relative overflow-hidden group rounded-xl">
-                    <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <CardHeader className="relative z-10 p-5 sm:p-8">
-                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-semibold ">
-                            <div className="p-3 rounded-2xl bg-primary/20 text-primary shadow-inner">
-                                <Zap className="fill-primary" size={24} />
-                            </div>
-                            {t('exams.full_sim_top')} <span className="text-primary">{t('exams.full_sim_gradient')}</span>
-                        </CardTitle>
-                        <CardDescription className="text-base font-medium opacity-70">
-                            {t('exams.full_sim_desc')}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6 relative z-20 p-5 sm:p-8 pt-0">
-                        <div className="space-y-4">
-                            {activeTab === 'UNIVERSITY' ? (
-                                <>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-semibold opacity-40 ml-1">
-                                            {t('exams.university_label')}
-                                        </label>
-                                        <Input
-                                            placeholder={t('exams.university_placeholder')}
-                                            value={simUniName}
-                                            onChange={(e) =>
-                                                onSimUniNameChange(
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="bg-background/50 border-foreground/10 h-14 rounded-2xl focus:ring-primary/20"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-semibold opacity-40 ml-1">
-                                            {t('exams.course_title_label')}
-                                        </label>
-                                        <Input
-                                            placeholder={t('exams.course_title_placeholder')}
-                                            value={simCourseTitle}
-                                            onChange={(e) =>
-                                                onSimCourseTitleChange(
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="bg-background/50 border-foreground/10 h-14 rounded-2xl focus:ring-primary/20"
-                                        />
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="space-y-2">
-                                    <label className="text-xs font-semibold opacity-40 ml-1">
-                                        {t('exams.subject_label')}
-                                    </label>
-                                    <Input
-                                        id="sim-subject-input"
-                                        type="text"
-                                        placeholder={t('exams.subject_placeholder')}
-                                        value={simSubject}
-                                        onChange={(e) =>
-                                            onSimSubjectChange(e.target.value)
-                                        }
-                                        className="bg-background/50 border-foreground/10 h-14 rounded-2xl shadow-sm focus:border-primary/50 text-lg font-bold"
-                                        autoFocus
-                                    />
-                                </div>
-                            )}
-                        </div>
-                        <Button
-                            onClick={onStartSimulation}
-                            disabled={isSimulating}
-                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-semibold sm:tracking-[0.2em] bg-primary hover:bg-primary/90 text-primary-foreground mt-4 relative z-30 shadow-sm active:scale-95 transition-all rounded-xl"
-                        >
-                            {isSimulating ? (
-                                <Loader2 className="animate-spin" />
-                            ) : (
-                                t('exams.start_exam')
-                            )}
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Note Practice Card */}
-                <Card className="glass-card stagger-card border-blue-600/20 shadow-sm relative overflow-hidden group rounded-xl">
-                    <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <CardHeader className="relative z-10 p-5 sm:p-8">
-                        <CardTitle className="flex items-center gap-3 sm:gap-4 text-2xl sm:text-3xl font-semibold ">
-                            <div className="p-3 rounded-2xl bg-blue-600/20 text-blue-600 shadow-inner">
-                                <FileText size={24} />
-                            </div>
-                            {t('exams.notes_top')}{' '}
-                            <span className="text-blue-600">{t('exams.notes_gradient')}</span>
-                        </CardTitle>
-                        <CardDescription className="text-base font-medium opacity-70">
-                            {t('exams.notes_desc')}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6 relative z-20 p-5 sm:p-8 pt-0">
-                        <div className="space-y-2">
-                            <label className="text-xs font-semibold opacity-40 ml-1">
-                                {t('exams.upload_pdf_label')}
-                            </label>
-                            <div className="border-2 border-dashed border-foreground/10 rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:border-blue-600/50 transition-all cursor-pointer relative bg-background/50 group/upload hover:bg-blue-600/5">
-                                <input
-                                    type="file"
-                                    accept=".pdf"
-                                    onChange={(e) =>
-                                        onSelectFile(
-                                            e.target.files?.[0] || null,
-                                        )
-                                    }
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                />
-                                {selectedFile ? (
-                                    <div className="text-center">
-                                        <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center mx-auto mb-2 text-blue-600">
-                                            <FileText size={20} />
-                                        </div>
-                                        <p className="text-xs font-bold text-blue-600 truncate max-w-[170px] sm:max-w-[200px]">
-                                            {selectedFile.name}
-                                        </p>
-                                        <p className="text-xs font-semibold opacity-40 mt-1">
-                                            {t('exams.click_to_change')}
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center group-hover/upload:scale-110 transition-transform">
-                                            <Upload
-                                                size={24}
-                                                className="text-muted-foreground group-hover/upload:text-blue-600 transition-colors"
-                                            />
-                                        </div>
-                                        <p className="text-xs font-semibold opacity-40 ">
-                                            {t('exams.select_notes')}
-                                        </p>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                        <Button
-                            onClick={onStartNotePractice}
-                            disabled={isNotePracticing || !selectedFile}
-                            className="w-full h-14 sm:h-16 text-base sm:text-lg font-semibold sm:tracking-[0.2em] bg-blue-700 hover:bg-blue-600 text-white mt-4 relative z-30 shadow-sm shadow-blue-700/20 active:scale-95 transition-all rounded-xl"
-                        >
-                            {isNotePracticing ? (
-                                <Loader2 className="animate-spin" />
-                            ) : (
-                                t('exams.start_note_exam')
-                            )}
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="stagger-card rounded-xl p-5 sm:p-10 border border-border bg-card">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10">
-                    <h3 className="text-2xl sm:text-3xl font-semibold flex items-center gap-3 sm:gap-4 ">
-                        <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                            <Trophy size={28} />
-                        </div>
-                        {t('exams.recent_top')}{' '}
-                        <span className="text-primary underline decoration-primary/30">
-                            {t('exams.recent_gradient')}
-                        </span>
-                    </h3>
-                    <Button
-                        variant="ghost"
-                        onClick={() =>
-                            (window.location.href = '/dashboard/history')
-                        }
-                        className="h-12 px-6 rounded-2xl text-xs font-semibold opacity-40 hover:opacity-100 hover:bg-foreground/5 transition-all"
-                    >
-                        {t('exams.historical_data')}{' '}
-                        <ChevronRight size={14} className="ml-2" />
+            {showResume && (
+                <div className="flex flex-col gap-4 rounded-lg border border-border border-l-4 border-l-highlight bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p className="font-bold">{t('exams.ongoing_session')}</p>
+                        <p className="text-sm text-muted-foreground">
+                            {t('exams.ready_to_resume')}
+                        </p>
+                    </div>
+                    <Button onClick={onResume}>
+                        <Play className="fill-current" />
+                        {t('exams.resume_now')}
                     </Button>
                 </div>
+            )}
 
-                <div className="relative z-10">
-                    {recentResults.length > 0 ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {recentResults.map((res, i) => {
-                                const resultDate = new Date(
-                                    res.date || res.createdAt,
-                                );
-                                return (
-                                <button
-                                    key={i}
-                                    onClick={() => onSelectResult(res)}
-                                    className="flex items-center justify-between p-6 bg-card/40 rounded-xl border border-foreground/5 hover:border-primary/20 transition-all group/stat hover:translate-x-1 cursor-pointer text-left w-full"
-                                >
-                                    <div className="flex items-center gap-5">
-                                        <div
-                                            className={cn(
-                                                'w-16 h-16 rounded-xl flex items-center justify-center font-semibold text-2xl shadow-inner',
-                                                res.score >= 70
-                                                    ? 'bg-blue-500/10 text-blue-500'
-                                                    : res.score >= 45
-                                                      ? 'bg-blue-400/10 text-blue-400'
-                                                      : 'bg-destructive/10 text-destructive',
-                                            )}
-                                        >
-                                            {Math.round(res.score)}
-                                            <span className="text-xs opacity-60 ml-0.5">
-                                                %
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-base sm:text-lg tracking-tight truncate max-w-[170px] sm:max-w-[200px] mb-1">
-                                                {res.subject || res.quizTitle}
-                                            </p>
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex items-center gap-1 text-xs font-semibold opacity-30 bg-foreground/5 px-2 py-1 rounded-md">
-                                                    <Calendar size={10} />{' '}
-                                                    {Number.isNaN(
-                                                        resultDate.getTime(),
-                                                    )
-                                                        ? '—'
-                                                        : resultDate.toLocaleDateString()}
-                                                </div>
-                                                <div className="flex items-center gap-1 text-xs font-semibold opacity-30 bg-blue-500/5 text-blue-500/60 px-2 py-1 rounded-md">
-                                                    <CheckCircle2 size={10} />{' '}
-                                                    {res.correctAnswers ??
-                                                        Math.round(
-                                                            (res.score / 100) *
-                                                                res.totalQuestions,
-                                                        )}
-                                                    /{res.totalQuestions}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="w-10 h-10 rounded-xl bg-primary/5 text-primary opacity-0 group-hover/stat:opacity-100 transition-all flex items-center justify-center group-hover/stat:bg-primary group-hover/stat:text-white">
-                                        <ChevronRight size={20} />
-                                    </div>
-                                </button>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <div className="text-center py-20 bg-background/40 rounded-xl border border-dashed border-foreground/10">
-                            <div className="w-20 h-20 rounded-xl bg-foreground/5 flex items-center justify-center mx-auto mb-6">
-                                <Clock
-                                    size={40}
-                                    className="text-muted-foreground opacity-30"
+            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border lg:grid-cols-2">
+                <section className="flex flex-col bg-card p-5 sm:p-7">
+                    <h3 className="text-2xl">{t('exams.full_sim_top')}</h3>
+                    <p className="mt-1 text-muted-foreground">
+                        {t('exams.full_sim_desc')}
+                    </p>
+                    <div className="mt-6 flex-1 space-y-4">
+                        {activeTab === 'UNIVERSITY' ? (
+                            <>
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="sim-uni" className="text-sm font-bold">
+                                        {t('exams.university_label')}
+                                    </Label>
+                                    <Input
+                                        id="sim-uni"
+                                        placeholder={t('exams.university_placeholder')}
+                                        value={simUniName}
+                                        onChange={(e) => onSimUniNameChange(e.target.value)}
+                                        className="h-11"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="sim-course" className="text-sm font-bold">
+                                        {t('exams.course_title_label')}
+                                    </Label>
+                                    <Input
+                                        id="sim-course"
+                                        placeholder={t('exams.course_title_placeholder')}
+                                        value={simCourseTitle}
+                                        onChange={(e) => onSimCourseTitleChange(e.target.value)}
+                                        className="h-11"
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <div className="space-y-1.5">
+                                <Label htmlFor="sim-subject-input" className="text-sm font-bold">
+                                    {t('exams.subject_label')}
+                                </Label>
+                                <Input
+                                    id="sim-subject-input"
+                                    type="text"
+                                    placeholder={t('exams.subject_placeholder')}
+                                    value={simSubject}
+                                    onChange={(e) => onSimSubjectChange(e.target.value)}
+                                    className="h-11"
                                 />
                             </div>
-                            <h4 className="text-xl font-semibold opacity-20">
-                                {t('exams.archive_empty')}
-                            </h4>
-                            <p className="text-sm opacity-40 mt-2 max-w-xs mx-auto font-medium leading-relaxed">
-                                {t('exams.archive_empty_desc')}
-                            </p>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                    <Button
+                        onClick={onStartSimulation}
+                        disabled={isSimulating}
+                        size="lg"
+                        className="mt-6 self-start"
+                    >
+                        {isSimulating ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                            t('exams.start_exam')
+                        )}
+                    </Button>
+                </section>
+
+                <section className="flex flex-col bg-card p-5 sm:p-7">
+                    <h3 className="text-2xl">{t('exams.notes_top')}</h3>
+                    <p className="mt-1 text-muted-foreground">
+                        {t('exams.notes_desc')}
+                    </p>
+                    <label className="relative mt-6 flex flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-[1.5px] border-dashed border-sheet/45 px-4 py-8 text-center transition-colors hover:border-foreground/50 hover:bg-muted/40 focus-within:border-foreground">
+                        <input
+                            type="file"
+                            accept=".pdf"
+                            onChange={(e) => onSelectFile(e.target.files?.[0] || null)}
+                            className="sr-only"
+                        />
+                        {selectedFile ? (
+                            <>
+                                <FileText size={20} className="text-muted-foreground" />
+                                <span className="max-w-full truncate font-bold">
+                                    {selectedFile.name}
+                                </span>
+                                <span className="text-sm text-muted-foreground">
+                                    {t('exams.click_to_change')}
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                <Upload size={20} className="text-muted-foreground" />
+                                <span className="font-display text-lg">
+                                    {t('exams.select_notes')}
+                                </span>
+                                <span className="text-sm text-muted-foreground">PDF only</span>
+                            </>
+                        )}
+                    </label>
+                    <Button
+                        onClick={onStartNotePractice}
+                        disabled={isNotePracticing || !selectedFile}
+                        size="lg"
+                        className="mt-6 self-start"
+                    >
+                        {isNotePracticing ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                            t('exams.start_note_exam')
+                        )}
+                    </Button>
+                </section>
             </div>
+
+            <section>
+                <SectionTitle
+                    title={t('exams.recent_top')}
+                    actions={
+                        <Button asChild variant="link">
+                            <Link to="/dashboard/history">{t('exams.historical_data')}</Link>
+                        </Button>
+                    }
+                />
+                {recentResults.length > 0 ? (
+                    <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+                        {recentResults.map((res, i) => {
+                            const resultDate = new Date(res.date || res.createdAt);
+                            const correct =
+                                res.correctAnswers ??
+                                Math.round((res.score / 100) * res.totalQuestions);
+                            return (
+                                <li key={i}>
+                                    <button
+                                        onClick={() => onSelectResult(res)}
+                                        className="group flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-muted/50"
+                                    >
+                                        <span className="tabular w-16 shrink-0 font-display text-2xl">
+                                            {Math.round(res.score)}%
+                                        </span>
+                                        <span className="min-w-0 flex-1">
+                                            <span className="block truncate font-bold">
+                                                {res.subject || res.quizTitle}
+                                            </span>
+                                            <span className="tabular block text-sm text-muted-foreground">
+                                                {Number.isNaN(resultDate.getTime())
+                                                    ? '—'
+                                                    : resultDate.toLocaleDateString()}
+                                                , {correct} of {res.totalQuestions} correct
+                                            </span>
+                                        </span>
+                                        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                ) : (
+                    <div className="rounded-lg border border-dashed border-sheet/45 px-6 py-10">
+                        <p className="font-display text-xl">{t('exams.archive_empty')}</p>
+                        <p className="mt-1 text-muted-foreground">
+                            {t('exams.archive_empty_desc')}
+                        </p>
+                    </div>
+                )}
+            </section>
         </div>
     );
 }

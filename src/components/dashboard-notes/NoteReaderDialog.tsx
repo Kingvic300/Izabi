@@ -32,8 +32,8 @@ export default function NoteReaderDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-xl sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 overflow-hidden flex flex-col">
-                <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5 shrink-0">
+            <DialogContent className="glass border-border rounded-2xl sm:rounded-xl sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 overflow-hidden flex flex-col">
+                <DialogHeader className="p-5 sm:p-6 border-b border-border bg-card shrink-0">
                     <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight leading-tight break-words">
                         {note.title}
                     </DialogTitle>
@@ -66,7 +66,7 @@ export default function NoteReaderDialog({
                     />
                 </div>
 
-                <div className="px-5 sm:px-6 py-4 border-t border-foreground/10 shrink-0 flex justify-end">
+                <div className="px-5 sm:px-6 py-4 border-t border-border shrink-0 flex justify-end">
                     <Button
                         variant="outline"
                         size="sm"

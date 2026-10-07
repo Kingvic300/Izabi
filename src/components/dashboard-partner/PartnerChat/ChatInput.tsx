@@ -43,7 +43,7 @@ export default function ChatInput({ onSend }: ChatInputProps) {
     };
 
     return (
-        <div className="p-4 border-t border-foreground/10 space-y-2">
+        <div className="p-4 border-t border-border space-y-2">
             <div className="flex gap-2 overflow-x-auto pb-1">
                 {NUDGE_PRESETS.map((preset) => (
                     <Button

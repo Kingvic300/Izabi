@@ -36,12 +36,12 @@ export const SettingsPanel = ({
 }: SettingsPanelProps) => {
     const { t } = useLanguage();
     return (
-        <div className="p-4 sm:p-5 space-y-4">
-            <h4 className="font-medium">{t('module.session_settings')}</h4>
+        <div className="space-y-5 p-5">
+            <h4 className="font-display text-lg">{t('module.session_settings')}</h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-lg bg-muted/40 p-3 space-y-3">
-                    <div className="text-sm font-medium">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+                <div className="space-y-2">
+                    <div className="text-sm font-bold">
                         {t('module.questions_label')}
                     </div>
                     <ToggleGroup
@@ -63,8 +63,8 @@ export const SettingsPanel = ({
                     </ToggleGroup>
                 </div>
 
-                <div className="rounded-lg bg-muted/40 p-3 space-y-3">
-                    <div className="text-sm font-medium">
+                <div className="space-y-2">
+                    <div className="text-sm font-bold">
                         {t('module.difficulty_label')}
                     </div>
                     <ToggleGroup
@@ -86,8 +86,8 @@ export const SettingsPanel = ({
                     </ToggleGroup>
                 </div>
 
-                <div className="rounded-lg bg-muted/40 p-3 space-y-3">
-                    <div className="text-sm font-medium">
+                <div className="space-y-2">
+                    <div className="text-sm font-bold">
                         {t('module.question_type_label')}
                     </div>
                     <ToggleGroup
@@ -105,13 +105,13 @@ export const SettingsPanel = ({
                     </ToggleGroup>
                 </div>
 
-                <div className="rounded-lg bg-muted/40 p-3 space-y-4">
+                <div className="space-y-4">
                     <div className="flex items-center justify-between gap-3">
                         <div className="space-y-1">
-                            <div className="text-sm font-medium">
+                            <div className="text-sm font-bold">
                                 {t('module.shuffle_label')}
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-sm text-muted-foreground">
                                 {t('module.shuffle_desc')}
                             </div>
                         </div>
@@ -124,10 +124,10 @@ export const SettingsPanel = ({
 
                     <div className="flex items-center justify-between gap-3">
                         <div className="space-y-1">
-                            <div className="text-sm font-medium">
+                            <div className="text-sm font-bold">
                                 {t('module.explanations_label')}
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-sm text-muted-foreground">
                                 {t('module.explanations_desc')}
                             </div>
                         </div>
@@ -141,7 +141,7 @@ export const SettingsPanel = ({
             </div>
 
             {isProcessing && (
-                <div className="flex items-center gap-2 text-sm text-primary">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground" role="status">
                     <Loader2 className="animate-spin" size={16} />
                     <span>
                         {t('module.creating_plan')}

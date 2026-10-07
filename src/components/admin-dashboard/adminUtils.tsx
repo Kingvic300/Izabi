@@ -36,13 +36,13 @@ export const processChartData = (users: any[]) => {
 export const getActivityIcon = (type: string): ReactNode => {
     switch (type) {
         case 'NOTE_CREATED':
-            return <FileText size={14} className="text-blue-400" />;
+            return <FileText size={14} className="text-learning-blue" />;
         case 'QUIZ_COMPLETED':
-            return <BrainCircuit size={14} className="text-purple-400" />;
+            return <BrainCircuit size={14} className="text-learning-purple" />;
         case 'ACCOUNT_CREATED':
-            return <UserCircle size={14} className="text-green-400" />;
+            return <UserCircle size={14} className="text-reward" />;
         default:
-            return <Activity size={14} className="text-gray-400" />;
+            return <Activity size={14} className="text-muted-foreground" />;
     }
 };
 

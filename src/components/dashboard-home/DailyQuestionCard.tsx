@@ -86,7 +86,7 @@ export const DailyQuestionCard: React.FC<DailyQuestionCardProps> = ({
     return (
         <div className="rounded-2xl bg-card border border-border p-5 sm:p-6 shadow-card transition-all duration-200 hover:border-primary/30 my-6">
             <div className="flex items-center justify-between gap-4 mb-3.5">
-                <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
+                <div className="flex items-center gap-2 text-xs tabular text-muted-foreground">
                     <span className="text-foreground/80 font-semibold">{localQuestion.title}</span>
                     <span>·</span>
                     <span className="tabular-nums">+{localQuestion.points} XP</span>
@@ -96,7 +96,7 @@ export const DailyQuestionCard: React.FC<DailyQuestionCardProps> = ({
                     <button
                         type="button"
                         onClick={handleReset}
-                        className="flex items-center gap-1 text-[11px] font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                        className="flex items-center gap-1 text-[11px] tabular text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                     >
                         <RotateCcw className="w-3 h-3" />
                         <span>Retry</span>
@@ -166,7 +166,7 @@ export const DailyQuestionCard: React.FC<DailyQuestionCardProps> = ({
                             </>
                         ) : (
                             <>
-                                <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
+                                <HelpCircle className="w-3.5 h-3.5 text-urgent" />
                                 <span>Memory Reinforcement</span>
                             </>
                         )}

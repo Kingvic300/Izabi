@@ -32,7 +32,7 @@ export const ShareProfileModal: React.FC<ShareProfileModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4">
             <div className="bg-card border border-border rounded-xl max-w-sm w-full p-6 shadow-float relative">
                 <div className="flex items-center justify-between pb-3 border-b border-border mb-4">
                     <div className="flex items-center gap-2">
@@ -54,12 +54,12 @@ export const ShareProfileModal: React.FC<ShareProfileModalProps> = ({
 
                     <div className="flex items-center justify-center gap-4 my-3 py-2 border-y border-border">
                         <div className="flex items-center gap-1.5 text-xs text-foreground/80">
-                            <Flame className="w-3.5 h-3.5 text-amber-500" />
-                            <span className="font-mono font-bold text-foreground">{streak}</span>
+                            <Flame className="w-3.5 h-3.5 text-urgent" />
+                            <span className="tabular font-bold text-foreground">{streak}</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-foreground/80">
                             <Star className="w-3.5 h-3.5 text-primary" />
-                            <span className="font-mono font-bold text-foreground">{totalPoints} XP</span>
+                            <span className="tabular font-bold text-foreground">{totalPoints} XP</span>
                         </div>
                     </div>
 
@@ -75,7 +75,7 @@ export const ShareProfileModal: React.FC<ShareProfileModalProps> = ({
                             type="text"
                             readOnly
                             value={shareUrl}
-                            className="flex-1 bg-muted/30 border border-border rounded-xl px-3 py-2 text-xs font-mono text-foreground/80 select-all"
+                            className="flex-1 bg-muted/30 border border-border rounded-xl px-3 py-2 text-xs tabular text-foreground/80 select-all"
                         />
                         <button
                             type="button"

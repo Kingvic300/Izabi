@@ -43,7 +43,7 @@ export default function AdminUsersTab({
 }: AdminUsersTabProps) {
     return (
         <div className="animate-in fade-in slide-in-from-bottom-5">
-            <Card className="glass border-foreground/5 rounded-2xl overflow-hidden shadow-2xl">
+            <Card className="glass border-border rounded-2xl overflow-hidden">
                 <div className="p-3 sm:p-4 md:p-8 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                     <div>
                         <h3 className="text-2xl md:text-3xl font-bold">
@@ -70,14 +70,14 @@ export default function AdminUsersTab({
                             />
                             <Input
                                 placeholder="Search by ID or email..."
-                                className="pl-12 rounded-2xl glass border-foreground/10 h-11 md:h-14 font-medium w-full"
+                                className="pl-12 rounded-2xl glass border-border h-11 md:h-14 font-medium w-full"
                                 value={searchQuery}
                                 onChange={(e) => onSearchChange(e.target.value)}
                             />
                         </div>
                         <Button
                             onClick={onFilterAction}
-                            className="h-11 w-full sm:w-11 md:h-14 md:w-14 rounded-2xl bg-card/5 border border-foreground/10 p-0 text-foreground hover:bg-card/10 shrink-0"
+                            className="h-11 w-full sm:w-11 md:h-14 md:w-14 rounded-2xl bg-card border border-border p-0 text-foreground hover:bg-muted shrink-0"
                         >
                             <Filter size={20} />
                         </Button>
@@ -90,7 +90,7 @@ export default function AdminUsersTab({
                             filteredUsers.map((user) => (
                                 <div
                                     key={user.id}
-                                    className="rounded-2xl border border-foreground/10 bg-card/5 p-3 space-y-3"
+                                    className="rounded-2xl border border-border bg-card p-3 space-y-3"
                                     onClick={() => onViewUser(user.id)}
                                 >
                                     <div className="flex items-center gap-3">
@@ -101,18 +101,18 @@ export default function AdminUsersTab({
                                             <p className="font-bold leading-tight tracking-tight truncate">
                                                 {user.firstName} {user.lastName}
                                             </p>
-                                            <p className="text-xs opacity-50 truncate">
+                                            <p className="text-xs truncate text-muted-foreground">
                                                 {user.email}
                                             </p>
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
                                         {user.isVerified ? (
-                                            <Badge className="bg-green-500/10 text-green-500 border-none px-2 py-1 font-bold">
+                                            <Badge className="bg-reward/10 text-reward border-none px-2 py-1 font-bold">
                                                 Verified
                                             </Badge>
                                         ) : (
-                                            <Badge className="bg-yellow-500/10 text-yellow-500 border-none px-2 py-1 font-bold">
+                                            <Badge className="bg-highlight/10 text-urgent border-none px-2 py-1 font-bold">
                                                 Pending
                                             </Badge>
                                         )}
@@ -121,7 +121,7 @@ export default function AdminUsersTab({
                                         </Badge>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <p className="text-[11px] opacity-50">
+                                        <p className="text-[11px] text-muted-foreground">
                                             Joined{' '}
                                             {new Date(
                                                 user.createdAt || Date.now(),
@@ -151,7 +151,7 @@ export default function AdminUsersTab({
                     <div className="hidden md:block overflow-x-auto">
                         <Table className="min-w-[760px]">
                             <TableHeader>
-                                <TableRow className="border-foreground/5 hover:bg-transparent uppercase tracking-widest text-[10px] font-bold opacity-40">
+                                <TableRow className="border-border hover:bg-transparent text-xs font-bold text-muted-foreground">
                                     <TableHead>User Identification</TableHead>
                                     <TableHead className="hidden md:table-cell">
                                         Account Status
@@ -172,7 +172,7 @@ export default function AdminUsersTab({
                                     filteredUsers.map((user) => (
                                         <TableRow
                                             key={user.id}
-                                            className="border-foreground/5 hover:bg-card/5 transition-colors py-4 cursor-pointer"
+                                            className="border-border hover:bg-muted transition-colors py-4 cursor-pointer"
                                             onClick={() => onViewUser(user.id)}
                                         >
                                             <TableCell className="py-6">
@@ -185,7 +185,7 @@ export default function AdminUsersTab({
                                                             {user.firstName}{' '}
                                                             {user.lastName}
                                                         </p>
-                                                        <p className="text-sm opacity-40 font-medium">
+                                                        <p className="text-sm font-medium text-muted-foreground">
                                                             {user.email}
                                                         </p>
                                                     </div>
@@ -193,11 +193,11 @@ export default function AdminUsersTab({
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">
                                                 {user.isVerified ? (
-                                                    <Badge className="bg-green-500/10 text-green-500 border-none px-3 py-1 font-bold">
+                                                    <Badge className="bg-reward/10 text-reward border-none px-3 py-1 font-bold">
                                                         Verified
                                                     </Badge>
                                                 ) : (
-                                                    <Badge className="bg-yellow-500/10 text-yellow-500 border-none px-3 py-1 font-bold">
+                                                    <Badge className="bg-highlight/10 text-urgent border-none px-3 py-1 font-bold">
                                                         Pending
                                                     </Badge>
                                                 )}
@@ -211,7 +211,7 @@ export default function AdminUsersTab({
                                                                     60 *
                                                                     1000,
                                                         ) && (
-                                                        <Badge className="ml-2 bg-blue-500/10 text-blue-500 border-none px-3 py-1 font-bold">
+                                                        <Badge className="ml-2 bg-learning-blue/10 text-learning-blue border-none px-3 py-1 font-bold">
                                                             Active
                                                         </Badge>
                                                     )}
@@ -222,7 +222,7 @@ export default function AdminUsersTab({
                                                         {user.streak || 0}{' '}
                                                         Streak
                                                     </p>
-                                                    <div className="w-24 h-1 bg-card/5 rounded-2xl overflow-hidden">
+                                                    <div className="w-24 h-1 bg-card rounded-2xl overflow-hidden">
                                                         <div
                                                             className="h-full bg-primary"
                                                             style={{
@@ -232,7 +232,7 @@ export default function AdminUsersTab({
                                                     </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="font-mono text-xs opacity-60 hidden lg:table-cell">
+                                            <TableCell className="tabular text-xs hidden lg:table-cell text-muted-foreground">
                                                 {new Date(
                                                     user.createdAt || Date.now(),
                                                 ).toLocaleDateString('en-GB')}
@@ -247,7 +247,7 @@ export default function AdminUsersTab({
                                                     >
                                                         <Button
                                                             variant="ghost"
-                                                            className="h-10 w-10 p-0 rounded-2xl hover:bg-card/5"
+                                                            className="h-10 w-10 p-0 rounded-2xl hover:bg-muted"
                                                         >
                                                             <MoreVertical
                                                                 size={18}
@@ -256,7 +256,7 @@ export default function AdminUsersTab({
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent
                                                         align="end"
-                                                        className="glass border-foreground/10 rounded-2xl p-2 w-48 shadow-2xl"
+                                                        className="glass border-border rounded-2xl p-2 w-48"
                                                     >
                                                         <DropdownMenuItem
                                                             className="rounded-2xl px-4 py-3 font-bold cursor-pointer"
@@ -270,7 +270,7 @@ export default function AdminUsersTab({
                                                             View Intelligence
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
-                                                            className="rounded-2xl px-4 py-3 font-bold text-red-500 hover:text-red-400 hover:bg-red-500/10 cursor-pointer"
+                                                            className="rounded-2xl px-4 py-3 font-bold text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
                                                             onClick={(event) =>
                                                                 onDeleteUser(
                                                                     user,

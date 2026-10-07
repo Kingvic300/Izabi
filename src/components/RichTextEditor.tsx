@@ -400,14 +400,14 @@ const RichTextEditor = ({
                     }
                 }}
             >
-                <DialogContent className="glass border-foreground/10 max-w-[92vw] sm:max-w-md rounded-xl p-0 overflow-hidden">
-                    <div className="border-b border-foreground/10 bg-card/40 px-5 py-4">
+                <DialogContent className="glass border-border max-w-[92vw] sm:max-w-md rounded-xl p-0 overflow-hidden">
+                    <div className="border-b border-border bg-card px-5 py-4">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                                 <Globe size={18} />
                             </div>
                             <div>
-                                <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-primary/70">
+                                <p className="text-[11px] font-bold text-primary/70">
                                     Link Manager
                                 </p>
                                 <DialogTitle className="text-lg font-bold">
@@ -430,7 +430,7 @@ const RichTextEditor = ({
                         <div className="space-y-2">
                             <Label
                                 htmlFor="rte-link-input"
-                                className="text-xs uppercase tracking-[0.3em] text-foreground/50"
+                                className="text-xs text-foreground/50"
                             >
                                 URL
                             </Label>
@@ -442,7 +442,7 @@ const RichTextEditor = ({
                                 }
                                 autoFocus
                                 placeholder="https://example.com"
-                                className="rounded-2xl border-foreground/10 bg-card/5 h-12 font-medium"
+                                className="rounded-2xl border-border bg-card h-12 font-medium"
                             />
                         </div>
 
@@ -451,7 +451,7 @@ const RichTextEditor = ({
                                 type="button"
                                 variant="outline"
                                 onClick={() => setIsLinkDialogOpen(false)}
-                                className="rounded-xl border-foreground/10"
+                                className="rounded-xl border-border"
                             >
                                 Cancel
                             </Button>

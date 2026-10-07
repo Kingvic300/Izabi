@@ -20,9 +20,16 @@ export default {
         },
         extend: {
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
-                display: ['Space Grotesk', 'sans-serif'],
-                mono: ['Space Grotesk', 'sans-serif'],
+                sans: ['Andika', 'Noto Sans', 'system-ui', 'sans-serif'],
+                display: ['Gentium Book Plus', 'Andika', 'Georgia', 'serif'],
+                mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+            },
+            letterSpacing: {
+                tighter: '-0.02em',
+                tight: '-0.01em',
+                wide: '0.01em',
+                wider: '0.02em',
+                widest: '0.03em',
             },
             colors: {
                 border: 'hsl(var(--border))',
@@ -75,6 +82,14 @@ export default {
                     DEFAULT: 'hsl(var(--urgent))',
                     foreground: 'hsl(var(--urgent-foreground))',
                 },
+                sheet: {
+                    DEFAULT: 'hsl(var(--sheet))',
+                    foreground: 'hsl(var(--sheet-foreground))',
+                },
+                highlight: {
+                    DEFAULT: 'hsl(var(--highlight))',
+                    foreground: 'hsl(var(--highlight-foreground))',
+                },
                 sidebar: {
                     DEFAULT: 'hsl(var(--sidebar-background))',
                     foreground: 'hsl(var(--sidebar-foreground))',
@@ -93,6 +108,9 @@ export default {
                 float: 'var(--shadow-float)',
             },
             borderRadius: {
+                '3xl': 'calc(var(--radius) + 6px)',
+                '2xl': 'calc(var(--radius) + 4px)',
+                xl: 'calc(var(--radius) + 2px)',
                 lg: 'var(--radius)',
                 md: 'calc(var(--radius) - 2px)',
                 sm: 'calc(var(--radius) - 4px)',
@@ -114,10 +132,15 @@ export default {
                         height: '0',
                     },
                 },
+                'pencil-fill': {
+                    from: { transform: 'scale(0.2)', opacity: '0.4' },
+                    to: { transform: 'scale(1)', opacity: '1' },
+                },
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
                 'accordion-up': 'accordion-up 0.2s ease-out',
+                'pencil-fill': 'pencil-fill 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)',
             },
         },
     },

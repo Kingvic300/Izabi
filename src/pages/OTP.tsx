@@ -4,23 +4,13 @@ import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import {
-    Brain,
-    ArrowLeft,
-    Sparkles,
-    Loader2,
-    ShieldCheck,
-    Mail,
-} from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getToastDedupe } from '@/lib/toastDedupe';
 import axios from 'axios';
 import { BASE_URL } from '@/constants';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
-import { Logo } from '@/components/Logo';
+import { AuthLayout } from '@/components/auth/AuthLayout';
 
 // Define types for the error response
 interface ErrorResponse {
@@ -49,7 +39,6 @@ const OTP = () => {
         if (suppressed) return;
         toast.error(title, { id, description });
     };
-    const cardRef = useRef<HTMLDivElement>(null);
     const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
     const [loading, setLoading] = useState(false);
     const [resending, setResending] = useState(false);
@@ -57,15 +46,6 @@ const OTP = () => {
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
     const navigate = useNavigate();
     const location = useLocation();
-
-    useGSAP(() => {
-        gsap.from(cardRef.current, {
-            opacity: 0,
-            y: 40,
-            duration: 1,
-            ease: 'expo.out',
-        });
-    });
 
     // Determine mode from route query or state: "verification" | "reset"
     const mode = location.state?.mode || 'verification';
@@ -283,130 +263,87 @@ const OTP = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6">
-            <Link
-                to="/signup"
-                className="absolute top-4 left-4 sm:top-8 sm:left-8 group z-20"
-            >
-                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold opacity-60 group-hover:opacity-100 transition-all">
-                    <ArrowLeft
-                        size={16}
-                        className="group-hover:-translate-x-1 transition-transform"
-                    />
-                    <span className="hidden sm:inline">Back to Signup</span>
-                    <span className="sm:hidden">Back</span>
-                </div>
-            </Link>
-
-            <div
-                ref={cardRef}
-                className="w-full max-w-full sm:max-w-[480px] space-y-6 sm:space-y-8 relative z-10 px-1"
-            >
-                {/* Branding */}
-                <div className="text-center space-y-3 sm:space-y-4">
-                    <Logo size={168} height={48} className="justify-center mx-auto" />
-                    <div>
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
-                            Email{' '}
-                            <span className="text-gradient">Verification</span>
-                        </h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">
-                            Please enter the security code sent to your email.
-                        </p>
+        <AuthLayout
+            title="Check your email"
+            subtitle={
+                <>
+                    Enter the 6-digit code we sent to{' '}
+                    <span className="break-all font-bold text-foreground">
+                        {email || 'your email'}
+                    </span>
+                    .
+                </>
+            }
+            backTo="/signup"
+            backLabel="Sign up"
+        >
+            <form onSubmit={handleOtpSubmit} className="space-y-6">
+                <fieldset>
+                    <legend className="sr-only">Verification code</legend>
+                    <div className="flex justify-between gap-2">
+                        {otp.map((digit, index) => (
+                            <Input
+                                key={index}
+                                ref={(el) => (inputRefs.current[index] = el)}
+                                aria-label={`Digit ${index + 1}`}
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                autoComplete={index === 0 ? 'one-time-code' : 'off'}
+                                maxLength={1}
+                                value={digit}
+                                onChange={(e) => handleChange(e.target.value, index)}
+                                onKeyDown={(e) => handleKeyDown(e, index)}
+                                onPaste={(e) => handlePaste(e, index)}
+                                onFocus={(e) => e.currentTarget.select()}
+                                autoFocus={index === 0}
+                                className="tabular h-14 w-full max-w-[3.5rem] rounded-[4px] border-sheet/50 p-0 text-center font-display text-2xl focus-visible:border-foreground sm:h-16"
+                            />
+                        ))}
                     </div>
-                </div>
+                </fieldset>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-xl overflow-hidden">
-                    <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6 md:space-y-8">
-                        <div className="flex flex-col items-center gap-2 text-center">
-                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-card/5 flex items-center justify-center mb-1 md:mb-2">
-                                <Mail className="text-primary h-5 w-5 md:h-6 md:w-6" />
-                            </div>
-                            <p className="text-xs md:text-sm font-bold text-muted-foreground">
-                                Code sent to:
-                            </p>
-                            <p className="text-base md:text-lg font-bold text-foreground px-4 py-1 glass rounded-lg border border-foreground/10 break-all">
-                                {email || 'scholar@example.com'}
-                            </p>
-                        </div>
+                <Button
+                    type="submit"
+                    disabled={loading || otp.join('').length < 6}
+                    size="lg"
+                    className="w-full"
+                >
+                    {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                        'Verify email'
+                    )}
+                </Button>
+            </form>
 
-                        <form
-                            onSubmit={handleOtpSubmit}
-                            className="space-y-5 sm:space-y-6 md:space-y-8"
-                        >
-                            <div className="flex justify-between gap-1.5 sm:gap-2 md:gap-3">
-                                {otp.map((digit, index) => (
-                                    <Input
-                                        key={index}
-                                        ref={(el) =>
-                                            (inputRefs.current[index] = el)
-                                        }
-                                        aria-label={`OTP digit ${index + 1}`}
-                                        type="text"
-                                        inputMode="numeric"
-                                        pattern="[0-9]*"
-                                        autoComplete={
-                                            index === 0 ? 'one-time-code' : 'off'
-                                        }
-                                        maxLength={1}
-                                        value={digit}
-                                        onChange={(e) =>
-                                            handleChange(e.target.value, index)
-                                        }
-                                        onKeyDown={(e) =>
-                                            handleKeyDown(e, index)
-                                        }
-                                        onPaste={(e) => handlePaste(e, index)}
-                                        onFocus={(e) => e.currentTarget.select()}
-                                        autoFocus={index === 0}
-                                        className="w-9 h-11 sm:w-12 sm:h-14 md:w-14 md:h-16 rounded-lg sm:rounded-xl text-center text-lg sm:text-xl md:text-2xl font-bold bg-card/5 border-foreground/10 focus:border-primary focus:ring-2 sm:focus:ring-4 focus:ring-primary/20 transition-all text-foreground p-0"
-                                    />
-                                ))}
-                            </div>
-
-                            <Button
-                                type="submit"
-                                disabled={loading || otp.join('').length < 6}
-                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
-                            >
-                                {loading ? (
-                                    <Loader2 className="h-6 w-6 animate-spin" />
-                                ) : (
-                                    <>
-                                        <Sparkles className="group-hover:rotate-12 transition-transform" />
-                                        <span>Verify Account</span>
-                                    </>
-                                )}
-                            </Button>
-                        </form>
-
-                        <div className="pt-6 border-t border-border text-center flex flex-col gap-4">
-                            <button
-                                type="button"
-                                onClick={handleResendOtp}
-                                disabled={resending || resendCountdown > 0}
-                                className="text-xs uppercase font-bold tracking-widest text-primary hover:opacity-80 transition-opacity disabled:opacity-40"
-                            >
-                                {resending
-                                    ? 'Sending code...'
-                                    : resendCountdown > 0
-                                      ? `Resend in ${resendCountdown}s`
-                                      : 'Resend Verification Code'}
-                            </button>
-                            <p className="text-xs font-bold text-muted-foreground">
-                                Wrong email?{' '}
-                                <Link
-                                    to="/signup"
-                                    className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50"
-                                >
-                                    Change email address
-                                </Link>
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
+            <div className="mt-8 space-y-3 border-t border-border pt-6 text-sm text-muted-foreground">
+                <p>
+                    No code?{' '}
+                    <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        disabled={resending || resendCountdown > 0}
+                        className="tabular font-bold text-foreground underline decoration-sheet decoration-2 underline-offset-4 disabled:font-normal disabled:text-muted-foreground disabled:no-underline"
+                    >
+                        {resending
+                            ? 'Sending…'
+                            : resendCountdown > 0
+                              ? `Send again in ${resendCountdown}s`
+                              : 'Send a new code'}
+                    </button>
+                </p>
+                <p>
+                    Wrong email?{' '}
+                    <Link
+                        to="/signup"
+                        className="font-bold text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
+                    >
+                        Change it
+                    </Link>
+                </p>
             </div>
-        </div>
+        </AuthLayout>
     );
 };
 

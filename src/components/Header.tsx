@@ -16,10 +16,15 @@ export const Header = () => {
     const location = useLocation();
 
     useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener('scroll', handleScroll);
+        const handleScroll = () => setScrolled(window.scrollY > 8);
+        handleScroll();
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    useEffect(() => {
+        setIsOpen(false);
+    }, [location.pathname]);
 
     const navLinks = [
         { name: t('nav.features'), href: '/features' },
@@ -29,102 +34,100 @@ export const Header = () => {
     ].filter((link) => PRICING_ENABLED || link.href !== '/pricing');
 
     return (
-        <nav
+        <header
             className={cn(
-                'fixed top-0 left-0 right-0 z-50 transition-colors',
+                'fixed inset-x-0 top-0 z-50 border-b transition-colors duration-200',
                 scrolled || isOpen
-                    ? 'bg-background/95 border-b border-border'
-                    : 'bg-transparent border-b border-transparent',
+                    ? 'border-border bg-background/95 supports-[backdrop-filter]:bg-background/85 supports-[backdrop-filter]:'
+                    : 'border-transparent bg-background',
             )}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between gap-6 h-16">
-                    <Link to="/" className="flex items-center shrink-0">
-                        <Logo size={150} height={56} />
-                    </Link>
+            <div className="page-gutter flex h-16 items-center gap-8">
+                <Link
+                    to="/"
+                    className="-ml-2 flex shrink-0 items-center rounded-md"
+                    aria-label="Izabi home"
+                >
+                    <Logo height={30} />
+                </Link>
 
-                    {/* Desktop links */}
-                    <div className="hidden lg:flex items-center gap-1">
-                        {navLinks.map((link) => (
+                <nav
+                    aria-label="Main"
+                    className="hidden items-center gap-1 lg:flex"
+                >
+                    {navLinks.map((link) => {
+                        const active = location.pathname === link.href;
+                        return (
                             <Link
                                 key={link.href}
                                 to={link.href}
+                                aria-current={active ? 'page' : undefined}
                                 className={cn(
-                                    'px-3 py-2 text-sm font-medium whitespace-nowrap rounded-md transition-colors',
-                                    location.pathname === link.href
-                                        ? 'text-foreground'
+                                    'rounded-md px-3 py-2 text-[15px] transition-colors',
+                                    active
+                                        ? 'text-foreground underline decoration-sheet decoration-2 underline-offset-[10px]'
                                         : 'text-muted-foreground hover:text-foreground',
                                 )}
                             >
                                 {link.name}
                             </Link>
-                        ))}
-                    </div>
+                        );
+                    })}
+                </nav>
 
-                    {/* Desktop actions */}
-                    <div className="hidden lg:flex items-center gap-2 shrink-0">
-                        <LanguageToggle />
-                        <ThemeToggle />
-                        <Link to="/login">
-                            <Button variant="ghost" size="sm">
-                                {t('nav.client_portal')}
-                            </Button>
-                        </Link>
-                        <Link to="/signup">
-                            <Button size="sm" className="whitespace-nowrap">
-                                {t('nav.get_early_access')}
-                            </Button>
-                        </Link>
-                    </div>
-
-                    {/* Mobile menu button */}
-                    <button
-                        className="lg:hidden p-2 rounded-md hover:bg-muted transition-colors"
-                        onClick={() => setIsOpen(!isOpen)}
-                        aria-label="Toggle menu"
-                    >
-                        {isOpen ? (
-                            <X className="h-5 w-5" />
-                        ) : (
-                            <Menu className="h-5 w-5" />
-                        )}
-                    </button>
+                <div className="ml-auto hidden items-center gap-1 lg:flex">
+                    <LanguageToggle />
+                    <ThemeToggle />
+                    <span className="mx-2 h-5 w-px bg-border" aria-hidden />
+                    <Button asChild variant="ghost" size="sm">
+                        <Link to="/login">{t('nav.client_portal')}</Link>
+                    </Button>
+                    <Button asChild size="sm" className="ml-1">
+                        <Link to="/signup">{t('nav.get_started')}</Link>
+                    </Button>
                 </div>
+
+                <button
+                    className="-mr-2 ml-auto rounded-md p-2 text-foreground hover:bg-muted lg:hidden"
+                    onClick={() => setIsOpen(!isOpen)}
+                    aria-label={isOpen ? 'Close menu' : 'Open menu'}
+                    aria-expanded={isOpen}
+                >
+                    {isOpen ? (
+                        <X className="h-5 w-5" />
+                    ) : (
+                        <Menu className="h-5 w-5" />
+                    )}
+                </button>
             </div>
 
-            {/* Mobile menu */}
             {isOpen && (
-                <div className="lg:hidden border-t border-border bg-background px-4 sm:px-6 py-4 space-y-4">
-                    <div className="flex flex-col">
+                <div className="page-gutter border-t border-border bg-background pb-6 pt-2 lg:hidden">
+                    <nav aria-label="Main" className="flex flex-col">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 to={link.href}
-                                onClick={() => setIsOpen(false)}
-                                className="py-2.5 text-base font-medium"
+                                className="border-b border-border py-3.5 font-display text-xl"
                             >
                                 {link.name}
                             </Link>
                         ))}
-                    </div>
-                    <div className="flex items-center gap-2">
+                    </nav>
+                    <div className="mt-4 flex items-center gap-1">
                         <LanguageToggle />
                         <ThemeToggle />
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                        <Link to="/login" onClick={() => setIsOpen(false)}>
-                            <Button variant="outline" className="w-full">
-                                {t('nav.client_portal')}
-                            </Button>
-                        </Link>
-                        <Link to="/signup" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full">
-                                {t('nav.get_started')}
-                            </Button>
-                        </Link>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                        <Button asChild variant="outline">
+                            <Link to="/login">{t('nav.client_portal')}</Link>
+                        </Button>
+                        <Button asChild>
+                            <Link to="/signup">{t('nav.get_started')}</Link>
+                        </Button>
                     </div>
                 </div>
             )}
-        </nav>
+        </header>
     );
 };

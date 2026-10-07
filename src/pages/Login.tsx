@@ -1,33 +1,23 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    ArrowLeft,
-    Mail,
-    Lock,
-    Sparkles,
-    Loader2,
-    Eye,
-    EyeOff,
-    Brain,
-    Trophy,
-    Flame,
-} from 'lucide-react';
-import { Logo } from '@/components/Logo';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import type React from 'react';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '@/constants';
 import { useAppToast } from '@/hooks/useAppToast';
 import { formValidation } from '@/lib/formValidation';
-import { cn } from '@/lib/utils';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import {
+    AuthDivider,
+    AuthField,
+    AuthLayout,
+    authInputClass,
+} from '@/components/auth/AuthLayout';
+import { Bubble } from '@/components/ui/bubble';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ChangePassword from '@/pages/ChangePassword';
 import GoogleAuthButton from '@/components/GoogleAuthButton';
@@ -38,7 +28,6 @@ const Login = () => {
     const getDefaultAvatar = (mail: string) =>
         `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(mail || 'scholar@izabi.ai')}`;
     const { t } = useLanguage();
-    const cardRef = useRef<HTMLDivElement>(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -47,15 +36,6 @@ const Login = () => {
     const navigate = useNavigate();
     const appToast = useAppToast();
     const [showPassword, setShowPassword] = useState(false);
-
-    useGSAP(() => {
-        gsap.from(cardRef.current, {
-            opacity: 0,
-            y: 40,
-            duration: 1,
-            ease: 'expo.out',
-        });
-    });
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -226,244 +206,125 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden flex">
-            <Link
-                to="/"
-                className="absolute top-4 left-4 sm:top-8 sm:left-8 group z-20"
-            >
-                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
-                    <ArrowLeft
-                        size={16}
-                        className="group-hover:-translate-x-1 transition-transform"
-                    />
-                    <span className="hidden sm:inline">Return Home</span>
-                    <span className="sm:hidden">Back</span>
-                </div>
-            </Link>
-
-            {/* Branding panel */}
-            <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-16 bg-card/20 border-r border-border">
-                <div className="max-w-md">
-                    <Logo size={128} height={36} />
-                    <h2 className="mt-10 text-4xl font-bold tracking-tighter text-foreground leading-tight">
-                        Pick up right where you left off.
-                    </h2>
-                    <p className="mt-4 text-base text-muted-foreground font-medium">
-                        Your streak, your notes, and your AI study buddy are
-                        exactly where you left them.
+        <AuthLayout
+            title={t('auth.login')}
+            subtitle="Pick up where you left off."
+            aside={
+                <div className="max-w-sm">
+                    <p className="font-display text-[2rem] leading-tight">
+                        Your streak is waiting.
                     </p>
-
-                    <div className="mt-10 space-y-5">
-                        <div className="flex items-center gap-4">
-                            <div className="h-11 w-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                <Brain size={20} />
-                            </div>
-                            <span className="text-sm font-semibold text-foreground/80">
-                                AI-generated summaries &amp; practice quizzes
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="h-11 w-11 rounded-lg bg-urgent/10 text-urgent flex items-center justify-center shrink-0">
-                                <Flame size={20} />
-                            </div>
-                            <span className="text-sm font-semibold text-foreground/80">
-                                Daily streaks that keep you accountable
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="h-11 w-11 rounded-lg bg-reward/10 text-reward flex items-center justify-center shrink-0">
-                                <Trophy size={20} />
-                            </div>
-                            <span className="text-sm font-semibold text-foreground/80">
-                                Leaderboards to keep you motivated
-                            </span>
-                        </div>
+                    <div className="mt-8 flex gap-2.5" aria-hidden>
+                        {[1, 1, 1, 1, 1, 1, 0].map((done, i) => (
+                            <Bubble
+                                key={i}
+                                state={done ? 'filled' : 'empty'}
+                                size="md"
+                                className={
+                                    i === 6
+                                        ? 'ring-2 ring-highlight ring-offset-2 ring-offset-card'
+                                        : undefined
+                                }
+                            />
+                        ))}
                     </div>
-                </div>
-            </div>
-
-            {/* Form panel */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 py-20 lg:py-6">
-            <div
-                ref={cardRef}
-                className="w-full max-w-full sm:max-w-[480px] space-y-6 sm:space-y-8 relative z-10 px-1"
-            >
-                {/* Branding (mobile only) */}
-                <div className="text-center space-y-3 sm:space-y-4 lg:hidden">
-                    <Logo size={168} height={48} className="justify-center mx-auto" />
-                </div>
-                <div className="text-center lg:text-left">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
-                        {t('auth.login')}
-                    </h1>
-                    <p className="text-sm sm:text-base text-muted-foreground font-medium px-2 lg:px-0">
-                        Welcome back! Please sign in to your account.
+                    <p className="mt-6 text-muted-foreground">
+                        Log in to answer today’s Brain Drop and keep your run
+                        going. Your notes, quizzes and chats are where you left
+                        them.
                     </p>
                 </div>
+            }
+        >
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                <AuthField id="login-email" label={t('auth.email')} error={emailError}>
+                    <Input
+                        id="login-email"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={handleEmailChange}
+                        aria-invalid={!!emailError}
+                        aria-describedby={emailError ? 'login-email-error' : undefined}
+                        className={authInputClass(!!emailError)}
+                    />
+                </AuthField>
 
-                <Card className="glass shadow-2xl border-border rounded-xl overflow-hidden">
-                    <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6">
-                        <form
-                            onSubmit={handleSubmit}
-                            className="space-y-4 sm:space-y-6"
+                <AuthField
+                    id="login-password"
+                    label={t('auth.password')}
+                    error={passwordError}
+                    action={
+                        <ChangePassword
+                            initialEmail={email}
+                            trigger={
+                                <button
+                                    type="button"
+                                    className="text-sm text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground hover:decoration-foreground"
+                                >
+                                    {t('auth.forgot_password')}
+                                </button>
+                            }
+                        />
+                    }
+                >
+                    <div className="relative">
+                        <Input
+                            id="login-password"
+                            type={showPassword ? 'text' : 'password'}
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={handlePasswordChange}
+                            aria-invalid={!!passwordError}
+                            aria-describedby={passwordError ? 'login-password-error' : undefined}
+                            className={authInputClass(!!passwordError) + ' pr-12'}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
                         >
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="login-email"
-                                    className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
-                                >
-                                    {t('auth.email')}
-                                </Label>
-                                <div className="relative">
-                                    <Mail
-                                        className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40"
-                                        size={18}
-                                    />
-                                    <Input
-                                        id="login-email"
-                                        type="email"
-                                        placeholder="scholar@example.com"
-                                        value={email}
-                                        onChange={handleEmailChange}
-                                        className={cn(
-                                            'h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground',
-                                            emailError &&
-                                                'border-destructive/50',
-                                        )}
-                                    />
-                                </div>
-                                {emailError && (
-                                    <p className="text-xs text-destructive font-bold px-1">
-                                        {emailError}
-                                    </p>
-                                )}
-                            </div>
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                    </div>
+                </AuthField>
 
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center px-1">
-                                    <Label
-                                        htmlFor="login-password"
-                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40"
-                                    >
-                                        {t('auth.password')}
-                                    </Label>
-                                    <ChangePassword
-                                        initialEmail={email}
-                                        trigger={
-                                            <button
-                                                type="button"
-                                                className="text-[10px] uppercase font-bold tracking-widest text-primary hover:underline"
-                                            >
-                                                {t('auth.forgot_password')}
-                                            </button>
-                                        }
-                                    />
-                                </div>
-                                <div className="relative">
-                                    <Lock
-                                        className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40"
-                                        size={18}
-                                    />
-                                    <Input
-                                        id="login-password"
-                                        type={
-                                            showPassword ? 'text' : 'password'
-                                        }
-                                        placeholder="••••••••"
-                                        value={password}
-                                        onChange={handlePasswordChange}
-                                        className={cn(
-                                            'h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground',
-                                            passwordError &&
-                                                'border-destructive/50',
-                                        )}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setShowPassword(!showPassword)
-                                        }
-                                        aria-label={
-                                            showPassword
-                                                ? 'Hide password'
-                                                : 'Show password'
-                                        }
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
-                                    >
-                                        {showPassword ? (
-                                            <EyeOff size={18} />
-                                        ) : (
-                                            <Eye size={18} />
-                                        )}
-                                    </button>
-                                </div>
-                                {passwordError && (
-                                    <p className="text-xs text-destructive font-bold px-1">
-                                        {passwordError}
-                                    </p>
-                                )}
-                            </div>
+                <Button type="submit" disabled={loading} size="lg" className="w-full">
+                    {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                        t('auth.initialize')
+                    )}
+                </Button>
+            </form>
 
-                            <Button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
-                            >
-                                {loading ? (
-                                    <Loader2 className="h-6 w-6 animate-spin" />
-                                ) : (
-                                    <>
-                                        <Sparkles className="group-hover:rotate-12 transition-transform" />
-                                        <span>{t('auth.initialize')}</span>
-                                    </>
-                                )}
-                            </Button>
+            <AuthDivider>or</AuthDivider>
 
-                            <div className="relative my-6">
-                                <div className="absolute inset-0 flex items-center">
-                                    <span className="w-full border-t border-foreground/5"></span>
-                                </div>
-                                <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
-                                    <span className="bg-background px-4 text-muted-foreground/40">
-                                        Or continue with Google
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-center w-full">
-                                <GoogleAuthButton
-                                    onSuccess={handleGoogleSuccess}
-                                    onError={() => {
-                                        appToast.error({
-                                            title: t(
-                                                'login.toast_google_error_title',
-                                            ),
-                                            description: t(
-                                                'login.toast_google_error_desc',
-                                            ),
-                                        });
-                                    }}
-                                    label="signin_with"
-                                />
-                            </div>
-                        </form>
-
-                        <div className="pt-6 border-t border-foreground/5 text-center">
-                            <p className="text-xs sm:text-sm font-bold text-muted-foreground">
-                                Don't have an account?{' '}
-                                <Link
-                                    to="/signup"
-                                    className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50"
-                                >
-                                    {t('auth.join')}
-                                </Link>
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
+            <div className="flex w-full justify-center">
+                <GoogleAuthButton
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => {
+                        appToast.error({
+                            title: t('login.toast_google_error_title'),
+                            description: t('login.toast_google_error_desc'),
+                        });
+                    }}
+                    label="signin_with"
+                />
             </div>
-            </div>
-        </div>
+
+            <p className="mt-8 border-t border-border pt-6 text-sm text-muted-foreground">
+                New to Izabi?{' '}
+                <Link
+                    to="/signup"
+                    className="font-bold text-foreground underline decoration-sheet decoration-2 underline-offset-4"
+                >
+                    {t('auth.join')}
+                </Link>
+            </p>
+        </AuthLayout>
     );
 };
 

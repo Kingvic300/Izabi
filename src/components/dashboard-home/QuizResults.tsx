@@ -16,12 +16,9 @@ export const QuizResults = ({ score, total, onFinalize, isResultsView }: QuizRes
 
     if (!isResultsView) {
         return (
-            <div className="pt-8">
-                <Button
-                    onClick={onFinalize}
-                    className="w-full h-16 md:h-20 rounded-2xl md:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg md:text-2xl group"
-                >
-                    <span>{t('quiz.finalize')}</span>
+            <div className="pt-2">
+                <Button onClick={onFinalize} size="lg" className="w-full sm:w-auto">
+                    {t('quiz.finalize')}
                 </Button>
             </div>
         );
@@ -30,32 +27,29 @@ export const QuizResults = ({ score, total, onFinalize, isResultsView }: QuizRes
     return (
         <div
             id="mastery-verdict"
-            className="p-4 md:p-10 rounded-2xl md:rounded-xl bg-primary relative overflow-hidden group"
+            className="flex flex-col gap-6 rounded-lg border border-border bg-muted/40 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
         >
-            <div className="absolute inset-0 bg-background/10 transition-colors" />
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
-                <div className="space-y-2 text-center md:text-left">
-                    <h3 className="text-2xl md:text-4xl font-bold text-foreground ">
-                        {t('quiz.mastery_confirmed_title')}
-                    </h3>
-                    <p className="text-foreground/70 font-bold text-base md:text-lg">
-                        {t('quiz.mastery_confirmed_desc')}
-                    </p>
-                </div>
-                <div className="flex items-center gap-4 md:gap-8 glass p-4 md:p-8 rounded-2xl md:rounded-xl border-foreground/20 bg-background/20">
-                    <div className="text-center">
-                        <div className="text-xs font-bold text-foreground/50 mb-2">
-                            {t('quiz.score_label')}
-                        </div>
-                        <div className="text-2xl md:text-4xl font-bold text-foreground">
-                            {score} / {total}
-                        </div>
-                    </div>
-                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-xl bg-primary text-primary-foreground flex items-center justify-center text-lg md:text-2xl font-bold">
-                        {percentage}%
-                    </div>
-                </div>
+            <div>
+                <h3 className="text-2xl sm:text-[1.75rem]">
+                    {percentage >= 80
+                        ? 'Well done.'
+                        : percentage >= 50
+                          ? 'Good effort.'
+                          : 'Keep practising.'}
+                </h3>
+                <p className="mt-1 text-muted-foreground">
+                    {percentage >= 80
+                        ? 'You know this topic well. Try a harder set next.'
+                        : 'Read the explanations above, then try the quiz again.'}
+                </p>
             </div>
+            <p className="flex items-baseline gap-3">
+                <span className="tabular font-display text-5xl leading-none">
+                    {score}
+                    <span className="text-muted-foreground">/{total}</span>
+                </span>
+                <span className="tabular text-lg font-bold">{percentage}%</span>
+            </p>
         </div>
     );
 };

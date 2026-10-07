@@ -61,14 +61,11 @@ export default function NotesGrid({
 
     if (notes.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-24 glass rounded-2xl border-dashed space-y-6">
-                <div className="w-24 h-24 rounded-2xl bg-card/5 flex items-center justify-center border border-foreground/10">
-                    <FileText size={48} className="text-muted-foreground/30" />
-                </div>
-                <div className="text-center space-y-2">
-                    <h3 className="text-2xl font-bold">
+            <div className="flex flex-col items-start gap-5 rounded-lg border border-dashed border-sheet/45 px-6 py-12 sm:px-10">
+                <div className="space-y-1">
+                    <h3 className="text-2xl">
                         {groupFilter === 'all'
-                            ? 'Your Slate is Clean'
+                            ? 'No notes yet'
                             : `No notes in ${activeGroupLabel}`}
                     </h3>
                     <p className="text-muted-foreground">
@@ -77,12 +74,8 @@ export default function NotesGrid({
                             : 'Switch groups or import a note into this group.'}
                     </p>
                 </div>
-                <Button
-                    onClick={onCreateNote}
-                    size="lg"
-                    className="rounded-2xl h-12 sm:h-14 px-6 sm:px-10 font-bold text-base sm:text-lg w-full sm:w-auto"
-                >
-                    <FileText size={20} className="mr-2" /> Create First Note
+                <Button onClick={onCreateNote}>
+                    <FileText /> Write your first note
                 </Button>
             </div>
         );
@@ -90,7 +83,7 @@ export default function NotesGrid({
 
     return (
         <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {notes.map((note) => {
                     const noteId = note.id;
                     const groupName = note.groupId
@@ -99,31 +92,30 @@ export default function NotesGrid({
                     return (
                         <Card
                             key={noteId}
-                            className="note-card glass shadow-lg hover-lift border-foreground/5 flex flex-col group h-[400px] break-words"
+                            className="group flex h-[320px] flex-col break-words shadow-none transition-colors hover:border-foreground/30"
                         >
-                            <CardContent className="p-6 flex flex-col h-full relative">
+                            <CardContent className="relative flex h-full flex-col p-0">
                                 <div className="flex flex-col h-full">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">
-                                                    {note.subject || 'General'}
-                                                </span>
-                                                {groupName && (
-                                                    <span className="text-xs font-bold text-foreground/70 bg-foreground/10 px-2 py-0.5 rounded">
-                                                        {groupName}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <h3 className="text-xl font-bold group-hover:text-primary transition-colors line-clamp-1">
+                                    <div className="flex items-start justify-between gap-3 border-b border-sheet/35 px-5 pb-3 pt-4">
+                                        <div className="min-w-0 space-y-0.5">
+                                            <p className="truncate text-sm text-muted-foreground">
+                                                {note.subject || 'General'}
+                                                {groupName && `, ${groupName}`}
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={() => onReadNote(note)}
+                                                className="line-clamp-1 text-left font-display text-xl hover:underline hover:decoration-sheet hover:decoration-2 hover:underline-offset-4"
+                                            >
                                                 {note.title}
-                                            </h3>
+                                            </button>
                                         </div>
-                                        <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                        <div className="-mr-2 flex shrink-0 gap-0.5 transition-opacity md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-8 w-8 rounded-lg"
+                                                className="h-8 w-8"
+                                                aria-label={`Read ${note.title}`}
                                                 onClick={() => onReadNote(note)}
                                             >
                                                 <Eye size={14} />
@@ -131,7 +123,8 @@ export default function NotesGrid({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-8 w-8 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+                                                className="h-8 w-8"
+                                                aria-label={`Edit ${note.title}`}
                                                 onClick={() => onEditNote(noteId)}
                                             >
                                                 <Edit2 size={14} />
@@ -139,10 +132,11 @@ export default function NotesGrid({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-8 w-8 rounded-lg text-primary/60 hover:text-primary hover:bg-primary/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+                                                className="h-8 w-8"
                                                 disabled={sendingToAIId === noteId}
                                                 onClick={() => onSendToAI(note)}
-                                                title="Send to AI Assistant"
+                                                aria-label={`Ask the assistant about ${note.title}`}
+                                                title="Ask the assistant about this note"
                                             >
                                                 {sendingToAIId === noteId ? (
                                                     <Loader2 size={14} className="animate-spin" />
@@ -153,7 +147,8 @@ export default function NotesGrid({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-8 w-8 rounded-lg text-destructive/60 hover:text-destructive hover:bg-destructive/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+                                                className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                                                aria-label={`Delete ${note.title}`}
                                                 onClick={() => onDeleteConfirmChange(noteId)}
                                             >
                                                 <Trash2 size={14} />
@@ -162,15 +157,15 @@ export default function NotesGrid({
                                     </div>
 
                                     <div
-                                        className="text-sm leading-relaxed text-muted-foreground prose prose-sm dark:prose-invert max-w-none overflow-hidden mask-fade flex-1"
+                                        className="prose prose-sm max-w-none flex-1 overflow-hidden px-5 pt-3 text-[15px] leading-relaxed text-muted-foreground [mask-image:linear-gradient(to_bottom,black_70%,transparent)] dark:prose-invert"
                                         dangerouslySetInnerHTML={{
                                             __html: note.content,
                                         }}
                                     />
 
-                                    <div className="mt-4 pt-4 border-t border-foreground/5 flex items-center gap-2 text-xs font-bold opacity-40">
-                                        <Clock size={10} />
-                                        <span>
+                                    <div className="flex items-center gap-2 border-t border-border px-5 py-3 text-sm text-muted-foreground">
+                                        <Clock size={13} />
+                                        <span className="tabular">
                                             {new Date(
                                                 note.updatedAt,
                                             ).toLocaleDateString()}
@@ -179,24 +174,25 @@ export default function NotesGrid({
 
                                     {deleteConfirm === noteId && (
                                         <div className="absolute inset-0 bg-background/95 flex flex-col items-center justify-center p-6 space-y-4 z-20">
-                                            <p className="text-xs font-bold text-center">
-                                                Permanently remove this note?
+                                            <p className="text-center font-bold">
+                                                Delete this note? You cannot undo this.
                                             </p>
                                             <div className="flex gap-2 w-full">
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
                                                     onClick={() => onDeleteConfirmChange(null)}
-                                                    className="flex-1 rounded-2xl bg-card/10 border-foreground/20 text-foreground hover:bg-card/20"
+                                                    className="flex-1"
                                                 >
                                                     Cancel
                                                 </Button>
                                                 <Button
                                                     size="sm"
-                                                    className="flex-1 rounded-2xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
+                                                    variant="destructive"
+                                                    className="flex-1"
                                                     onClick={() => onDeleteNote(noteId)}
                                                 >
-                                                    Delete
+                                                    Delete note
                                                 </Button>
                                             </div>
                                         </div>
@@ -214,10 +210,10 @@ export default function NotesGrid({
                     if (!open) onEditNote(null);
                 }}
             >
-                <DialogContent className="glass border-foreground/10 max-w-2xl w-full rounded-xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
-                    <DialogHeader className="px-6 pt-6 pb-4 border-b border-foreground/10 shrink-0">
-                        <DialogTitle className="text-lg font-bold">
-                            Edit Note
+                <DialogContent className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden p-0">
+                    <DialogHeader className="px-6 pt-6 pb-4 border-b border-border shrink-0">
+                        <DialogTitle>
+                            Edit note
                         </DialogTitle>
                     </DialogHeader>
 
@@ -225,8 +221,8 @@ export default function NotesGrid({
                         <div className="flex flex-col gap-4 px-6 py-5 overflow-y-auto flex-1">
                             <Input
                                 value={editingNote.title}
-                                className="rounded-2xl bg-card/5 border-foreground/10"
                                 placeholder="Note title"
+                                aria-label="Note title"
                                 onChange={(e) =>
                                     onUpdateDraft(editingNote.id, {
                                         title: e.target.value,
@@ -241,11 +237,11 @@ export default function NotesGrid({
                                     })
                                 }
                             >
-                                <SelectTrigger className="rounded-2xl bg-card/5 border-foreground/10 h-10">
-                                    <SelectValue placeholder="No Group" />
+                                <SelectTrigger className="h-10" aria-label="Folder">
+                                    <SelectValue placeholder="No folder" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="none">No Group</SelectItem>
+                                    <SelectItem value="none">No folder</SelectItem>
                                     {groups.map((group) => (
                                         <SelectItem key={group.id} value={group.id}>
                                             {group.name}
@@ -262,16 +258,14 @@ export default function NotesGrid({
                         </div>
                     )}
 
-                    <div className="flex justify-end gap-2 px-6 py-4 border-t border-foreground/10 shrink-0">
+                    <div className="flex justify-end gap-2 px-6 py-4 border-t border-border shrink-0">
                         <Button
                             variant="ghost"
-                            className="rounded-xl"
                             onClick={() => onEditNote(null)}
                         >
                             Cancel
                         </Button>
                         <Button
-                            className="rounded-xl px-6"
                             disabled={!!editingNote && savingId === editingNote.id}
                             onClick={() => {
                                 if (!editingNote) return;
@@ -283,10 +277,10 @@ export default function NotesGrid({
                                 );
                             }}
                         >
-                            <Save size={14} className="mr-2" />
+                            <Save />
                             {editingNote && savingId === editingNote.id
-                                ? 'Saving...'
-                                : 'Save'}
+                                ? 'Saving…'
+                                : 'Save changes'}
                         </Button>
                     </div>
                 </DialogContent>

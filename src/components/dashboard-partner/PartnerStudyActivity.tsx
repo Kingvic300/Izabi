@@ -16,10 +16,10 @@ export default function PartnerStudyActivity({
     const sessions = studySummary?.recentSessions || [];
 
     return (
-        <Card className="glass-card border-foreground/10 rounded-xl">
+        <Card >
             <CardContent className="p-6 sm:p-8 space-y-5">
                 <div className="flex items-center justify-between flex-wrap gap-3">
-                    <h3 className="text-lg font-bold">{name}'s Study Activity</h3>
+                    <h3 className="text-xl">{name}’s study activity</h3>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock className="h-4 w-4" />
                         {formatMinutes(studySummary?.todayMinutes || 0)} today
@@ -35,7 +35,7 @@ export default function PartnerStudyActivity({
                         {sessions.map((session, idx) => (
                             <div
                                 key={idx}
-                                className="flex items-center gap-3 rounded-xl border border-foreground/10 p-3"
+                                className="flex items-center gap-3 rounded-xl border border-border p-3"
                             >
                                 <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
                                     <BookOpen className="h-4 w-4 text-primary" />

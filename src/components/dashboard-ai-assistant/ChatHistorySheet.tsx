@@ -35,7 +35,7 @@ export default function ChatHistorySheet({
                 <Button
                     variant="outline"
                     size="sm"
-                    className="flex items-center gap-2 glass-card font-bold hover:bg-card/5"
+                    className="flex items-center gap-2 glass-card font-bold hover:bg-muted"
                 >
                     <History className="h-3 w-3" />
                     <span className="hidden sm:inline">
@@ -45,18 +45,18 @@ export default function ChatHistorySheet({
             </SheetTrigger>
             <SheetContent
                 side="right"
-                className="w-[92vw] max-w-[380px] sm:max-w-[420px] bg-card border-foreground/10 p-0 flex flex-col"
+                className="w-[92vw] max-w-[380px] sm:max-w-[420px] bg-card border-border p-0 flex flex-col"
             >
                 <SheetHeader className="p-6 pb-4">
                     <SheetTitle className="text-2xl font-bold flex items-center gap-3">
                         <History className="text-primary" />
                         <span>{t('assistant.history_title')}</span>
                     </SheetTitle>
-                    <SheetDescription className="font-medium opacity-60">
+                    <SheetDescription className="font-medium text-muted-foreground">
                         {t('assistant.history_desc')}
                     </SheetDescription>
                 </SheetHeader>
-                <Separator className="bg-card/5" />
+                <Separator className="bg-card" />
                 <ScrollArea className="flex-1 px-4 py-6">
                     <div className="space-y-3">
                         {chatSessions.length === 0 ? (
@@ -100,7 +100,7 @@ export default function ChatHistorySheet({
                                                     )}
                                             </span>
                                             {session.lastMessage?.content ? (
-                                                <span className="text-xs opacity-60 line-clamp-1 text-left">
+                                                <span className="text-xs line-clamp-1 text-left text-muted-foreground">
                                                     {session.lastMessage.content}
                                                 </span>
                                             ) : null}
@@ -117,7 +117,7 @@ export default function ChatHistorySheet({
                         )}
                     </div>
                 </ScrollArea>
-                <div className="p-6 border-t border-foreground/5">
+                <div className="p-6 border-t border-border">
                     <Button
                         variant="destructive"
                         onClick={onClearHistory}

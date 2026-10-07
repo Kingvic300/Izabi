@@ -109,11 +109,11 @@ export const UploadCard: React.FC<UploadCardProps> = ({
                                 <span className="text-sm font-semibold text-foreground truncate max-w-[220px] sm:max-w-xs">
                                     {currentFile.name}
                                 </span>
-                                <span className="text-[10px] font-mono text-learning-green bg-learning-green/10 px-1.5 py-0.5 rounded border border-learning-green/20">
+                                <span className="text-xs tabular text-learning-green bg-learning-green/10 px-1.5 py-0.5 rounded border border-learning-green/20">
                                     Ready
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground mt-0.5">
+                            <div className="flex items-center gap-2 text-xs tabular text-muted-foreground mt-0.5">
                                 <span>{currentFile.size}</span>
                                 <span>·</span>
                                 <span>{currentFile.pages} pages extracted</span>
@@ -181,7 +181,7 @@ export const UploadCard: React.FC<UploadCardProps> = ({
                             : 'border-border hover:border-primary/40 bg-muted/10 hover:bg-muted/20'
                     }`}
                 >
-                    <div className="w-12 h-12 rounded-2xl bg-muted border border-border flex items-center justify-center mx-auto mb-3 transition-transform group-hover:scale-105">
+                    <div className="w-12 h-12 rounded-2xl bg-muted border border-border flex items-center justify-center mx-auto mb-3 transition-transform">
                         <UploadCloud className="w-5 h-5 text-foreground/80 group-hover:text-foreground transition-colors" />
                     </div>
 
@@ -203,7 +203,7 @@ export const UploadCard: React.FC<UploadCardProps> = ({
                             <div className="w-full border-t border-border" />
                         </div>
                         <div className="relative flex justify-center text-xs">
-                            <span className="bg-card px-3 text-muted-foreground font-mono text-[11px]">
+                            <span className="bg-card px-3 text-muted-foreground tabular text-[11px]">
                                 OR SYNTHESIZE BY TOPIC
                             </span>
                         </div>

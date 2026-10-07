@@ -17,7 +17,7 @@ export const Header: React.FC<HeaderProps> = ({ userName = 'Scholar', onSharePro
         <header className="w-full pt-2 pb-6 border-b border-border">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                 <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
+                    <div className="flex items-center gap-2 text-xs tabular text-muted-foreground">
                         <span>{todayLabel}</span>
                         <span>·</span>
                         <span>Document Workspace Active</span>

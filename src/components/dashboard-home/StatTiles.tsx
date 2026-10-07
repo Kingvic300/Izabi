@@ -62,10 +62,10 @@ export const StatTiles: React.FC<StatTilesProps> = ({
                         </div>
 
                         <div>
-                            <div className="text-2xl sm:text-3xl font-extrabold font-mono text-foreground tracking-tight tabular-nums">
+                            <div className="text-2xl sm:text-3xl font-extrabold tabular text-foreground tracking-tight tabular-nums">
                                 {metric.value}
                             </div>
-                            <div className="flex items-center gap-1 text-[11px] font-mono text-muted-foreground mt-1">
+                            <div className="flex items-center gap-1 text-[11px] tabular text-muted-foreground mt-1">
                                 <span>{metric.trend}</span>
                             </div>
                         </div>

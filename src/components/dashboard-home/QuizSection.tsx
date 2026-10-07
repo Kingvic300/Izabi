@@ -1,9 +1,7 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Button } from '@/components/ui/button';
-import { Zap, Download, ChevronDown, ChevronUp } from 'lucide-react';
+import { ListChecks } from 'lucide-react';
+import { ResultPanel } from './ResultPanel';
 import { QuizQuestion } from './QuizQuestion';
 import { QuizProgress } from './QuizProgress';
 import { QuizResults } from './QuizResults';
@@ -57,9 +55,9 @@ export const QuizSection = ({
 
     if (displayQuestions.length === 0) {
         return (
-            <div className="p-5 rounded-2xl border border-foreground/10 bg-card/5 text-center space-y-3">
-                <div className="text-sm font-bold">{t('quiz.no_match')}</div>
-                <p className="text-xs text-muted-foreground">
+            <div className="space-y-1 rounded-lg border border-border bg-card p-5">
+                <p className="font-bold">{t('quiz.no_match')}</p>
+                <p className="text-sm text-muted-foreground">
                     {t('quiz.switch_mixed')}
                 </p>
             </div>
@@ -67,49 +65,16 @@ export const QuizSection = ({
     }
 
     return (
-        <div id="questions-result-section">
-            <Collapsible open={isOpen} onOpenChange={onOpenChange}>
-                <Card className="border border-border rounded-xl overflow-hidden shadow-card bg-card">
-                    <CollapsibleTrigger asChild>
-                        <button className="w-full text-left p-4 sm:p-6 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
-                            <div className="flex items-center gap-4 md:gap-6">
-                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Zap className="h-5 w-5 md:h-6 md:w-6" />
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <h3 className="text-xl md:text-2xl font-bold leading-tight">
-                                            {t('quiz.practice_title')}
-                                        </h3>
-                                        <div className="px-2.5 py-1 rounded-full bg-foreground/5 text-xs font-semibold opacity-60">
-                                            {displayQuestions.length} {t('quiz.questions_suffix')}
-                                        </div>
-                                    </div>
-                                    <p className="text-xs font-bold opacity-40">
-                                        {t('quiz.test_understanding')}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-10 w-10 rounded-xl glass hover:bg-primary/20 text-primary"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onDownload();
-                                    }}
-                                >
-                                    <Download size={18} />
-                                </Button>
-                                <div className="w-10 h-10 rounded-xl glass flex items-center justify-center group-hover:bg-card/5 transition-all">
-                                    {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                                </div>
-                            </div>
-                        </button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                        <div className="p-4 sm:p-6 md:p-10 space-y-6 md:space-y-8">
+        <ResultPanel
+            id="questions-result-section"
+            title={t('quiz.practice_title')}
+            meta={`${displayQuestions.length} ${t('quiz.questions_suffix')}`}
+            icon={ListChecks}
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            onDownload={onDownload}
+        >
+            <div className="space-y-6">
                             <QuizProgress
                                 answered={answeredCount}
                                 total={displayQuestions.length}
@@ -146,9 +111,6 @@ export const QuizSection = ({
                                 isResultsView={showResults}
                             />
                         </div>
-                    </CollapsibleContent>
-                </Card>
-            </Collapsible>
-        </div>
+        </ResultPanel>
     );
 };

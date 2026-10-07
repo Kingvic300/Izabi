@@ -36,8 +36,8 @@ export default function PreviewImportDialog({
 }: PreviewImportDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-xl sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 overflow-hidden">
-                <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
+            <DialogContent className="glass border-border rounded-2xl sm:rounded-xl sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 overflow-hidden">
+                <DialogHeader className="p-5 sm:p-6 border-b border-border bg-card">
                     <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
                         Preview Import
                     </DialogTitle>
@@ -50,7 +50,7 @@ export default function PreviewImportDialog({
                         <div className="space-y-2">
                             <Label
                                 htmlFor="preview-title"
-                                className="text-xs font-bold opacity-60"
+                                className="text-xs font-bold text-muted-foreground"
                             >
                                 Title
                             </Label>
@@ -58,13 +58,13 @@ export default function PreviewImportDialog({
                                 id="preview-title"
                                 value={previewTitle}
                                 onChange={(e) => onTitleChange(e.target.value)}
-                                className="rounded-2xl h-11 bg-card/5 border-foreground/10"
+                                className="rounded-2xl h-11 bg-card border-border"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label
                                 htmlFor="preview-subject"
-                                className="text-xs font-bold opacity-60"
+                                className="text-xs font-bold text-muted-foreground"
                             >
                                 Subject
                             </Label>
@@ -75,23 +75,23 @@ export default function PreviewImportDialog({
                                     onSubjectChange(e.target.value)
                                 }
                                 placeholder="Optional"
-                                className="rounded-2xl h-11 bg-card/5 border-foreground/10"
+                                className="rounded-2xl h-11 bg-card border-border"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold opacity-60">
+                        <Label className="text-xs font-bold text-muted-foreground">
                             Extracted Text
                         </Label>
                         <Textarea
                             value={previewText}
                             readOnly
-                            className="min-h-[220px] bg-card/5 border-foreground/10"
+                            className="min-h-[220px] bg-card border-border"
                         />
                     </div>
                 </div>
-                <div className="p-5 sm:p-6 border-t border-foreground/10 bg-card/5 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                <div className="p-5 sm:p-6 border-t border-border bg-card flex flex-col-reverse sm:flex-row justify-end gap-3">
                     <Button
                         variant="ghost"
                         onClick={() => onOpenChange(false)}

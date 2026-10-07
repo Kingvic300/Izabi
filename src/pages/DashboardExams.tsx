@@ -383,10 +383,7 @@ const DashboardExams = () => {
     }, [view, timeLeft, submitExam]);
 
     return (
-        <div
-            ref={containerRef}
-            className="min-h-screen w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-10 pb-24 sm:pb-32 bg-background"
-        >
+        <div ref={containerRef} className="w-full">
             <ErrorBoundary>
                 <AnimatePresence mode="wait">
                     {view === 'lobby' && (
@@ -396,15 +393,8 @@ const DashboardExams = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
-                            <div className="space-y-6">
-                                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                                    <span className="text-xs sm:text-xs font-semibold text-primary">
-                                        {t('exams.eyebrow')}
-                                    </span>
-                                </div>
-                              
-
-                                <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
+                            <div>
+                                <div>
                                     <ExamLobby
                                         activeTab={activeTab}
                                         onTabChange={setActiveTab}

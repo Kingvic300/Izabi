@@ -40,8 +40,8 @@ export default function NewNoteForm({
     onOpenGroupModal,
 }: NewNoteFormProps) {
     return (
-        <Card className="glass shadow-sm border-foreground/10 overflow-hidden stagger-card">
-            <CardHeader className="bg-card/5 border-b border-foreground/5">
+        <Card className="glass shadow-sm border-border overflow-hidden stagger-card">
+            <CardHeader className="bg-card border-b border-border">
                 <CardTitle className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-primary" />
                     <span>Create New Note</span>
@@ -52,7 +52,7 @@ export default function NewNoteForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="title"
-                            className="text-xs font-bold opacity-60"
+                            className="text-xs font-bold text-muted-foreground"
                         >
                             Title
                         </Label>
@@ -75,7 +75,7 @@ export default function NewNoteForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="subject"
-                            className="text-xs font-bold opacity-60"
+                            className="text-xs font-bold text-muted-foreground"
                         >
                             Subject
                         </Label>
@@ -86,18 +86,18 @@ export default function NewNoteForm({
                                 onChange({ subject: e.target.value })
                             }
                             placeholder="e.g., Biology, Math..."
-                            className="rounded-2xl h-12 bg-card/5 border-foreground/10"
+                            className="rounded-2xl h-12 bg-card border-border"
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold opacity-60">
+                        <Label className="text-xs font-bold text-muted-foreground">
                             Group
                         </Label>
                         <Select
                             value={draft.groupId}
                             onValueChange={(value) => onChange({ groupId: value })}
                         >
-                            <SelectTrigger className="rounded-2xl h-12 bg-card/5 border-foreground/10">
+                            <SelectTrigger className="rounded-2xl h-12 bg-card border-border">
                                 <SelectValue placeholder="No Group" />
                             </SelectTrigger>
                             <SelectContent>
@@ -125,7 +125,7 @@ export default function NewNoteForm({
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label className="text-xs font-bold opacity-60">
+                    <Label className="text-xs font-bold text-muted-foreground">
                         Content
                     </Label>
                     <RichTextEditor

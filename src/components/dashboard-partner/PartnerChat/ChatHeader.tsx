@@ -17,7 +17,7 @@ type ChatHeaderProps = {
 
 export default function ChatHeader({ partner, onEndPartnership }: ChatHeaderProps) {
     return (
-        <div className="flex items-center justify-between gap-3 p-4 border-b border-foreground/10">
+        <div className="flex items-center justify-between gap-3 p-4 border-b border-border">
             <div className="flex items-center gap-3 min-w-0">
                 <Avatar className="h-9 w-9 border border-primary/20">
                     <AvatarImage src={partner?.profilePicturePath} />

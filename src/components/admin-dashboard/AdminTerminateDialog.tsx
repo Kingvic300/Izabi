@@ -30,17 +30,17 @@ export default function AdminTerminateDialog({
 }: AdminTerminateDialogProps) {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="glass border-red-500/20 rounded-xl p-0 overflow-hidden max-w-[92vw] sm:max-w-md">
-                <div className="border-b border-red-500/20 bg-red-500/5 px-5 py-4">
+            <AlertDialogContent className="glass border-destructive/20 rounded-xl p-0 overflow-hidden max-w-[92vw] sm:max-w-md">
+                <div className="border-b border-destructive/20 bg-destructive/5 px-5 py-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+                        <div className="w-10 h-10 rounded-2xl bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive">
                             <ShieldAlert size={18} />
                         </div>
                         <div>
-                            <p className="text-[11px] uppercase tracking-[0.16em] font-bold text-red-300/70">
+                            <p className="text-[11px] font-bold text-destructive/70">
                                 Security Action
                             </p>
-                            <h3 className="font-bold text-base text-red-100">
+                            <h3 className="font-bold text-base text-destructive">
                                 Terminate User Access
                             </h3>
                         </div>
@@ -62,8 +62,8 @@ export default function AdminTerminateDialog({
                 </AlertDialogHeader>
 
                 {userEmail && (
-                    <div className="mx-5 mt-4 rounded-2xl border border-foreground/10 bg-card/30 px-4 py-3">
-                        <p className="text-[11px] uppercase tracking-[0.12em] font-bold opacity-50 mb-1">
+                    <div className="mx-5 mt-4 rounded-2xl border border-border bg-card px-4 py-3">
+                        <p className="text-[11px] font-bold mb-1 text-muted-foreground">
                             Account Email
                         </p>
                         <p className="font-medium break-all">{userEmail}</p>
@@ -73,7 +73,7 @@ export default function AdminTerminateDialog({
                 <AlertDialogFooter className="px-5 pb-5 pt-5 gap-2">
                     <AlertDialogCancel
                         disabled={isTerminating}
-                        className="rounded-xl border-foreground/10"
+                        className="rounded-xl border-border"
                     >
                         Cancel
                     </AlertDialogCancel>
@@ -81,7 +81,7 @@ export default function AdminTerminateDialog({
                         type="button"
                         onClick={onConfirm}
                         disabled={isTerminating}
-                        className="rounded-xl bg-red-600 hover:bg-red-600/90 text-white font-bold min-w-40"
+                        className="rounded-xl bg-destructive hover:bg-destructive/90 text-background font-bold min-w-40"
                     >
                         {isTerminating ? (
                             <>

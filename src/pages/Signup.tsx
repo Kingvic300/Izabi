@@ -1,33 +1,22 @@
 'use client';
 
 import type React from 'react';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    Check,
-    X,
-    Mail,
-    Lock,
-    Sparkles,
-    Loader2,
-    ArrowLeft,
-    ShieldCheck,
-    Eye,
-    EyeOff,
-    Star,
-} from 'lucide-react';
-import { Logo } from '@/components/Logo';
+import { Check, Loader2, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import { BASE_URL } from '@/constants';
 import { useAppToast } from '@/hooks/useAppToast';
 import { formValidation } from '@/lib/formValidation';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import {
+    AuthDivider,
+    AuthField,
+    AuthLayout,
+    authInputClass,
+} from '@/components/auth/AuthLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import GoogleAuthButton from '@/components/GoogleAuthButton';
 
@@ -40,7 +29,6 @@ const Signup = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const selectedPlan = queryParams.get('plan');
-    const cardRef = useRef<HTMLDivElement>(null);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -54,15 +42,6 @@ const Signup = () => {
     const appToast = useAppToast();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-    useGSAP(() => {
-        gsap.from(cardRef.current, {
-            opacity: 0,
-            y: 40,
-            duration: 1,
-            ease: 'expo.out',
-        });
-    });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -234,290 +213,172 @@ const Signup = () => {
         }
     };
 
+    const passwordToggle = (shown: boolean, toggle: () => void, label: string) => (
+        <button
+            type="button"
+            onClick={toggle}
+            aria-label={shown ? `Hide ${label}` : `Show ${label}`}
+            className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
+        >
+            {shown ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+    );
+
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6">
-            <Link
-                to="/"
-                className="absolute top-4 left-4 sm:top-8 sm:left-8 group z-20"
-            >
-                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold opacity-60 group-hover:opacity-100 transition-all text-foreground">
-                    <ArrowLeft
-                        size={16}
-                        className="group-hover:-translate-x-1 transition-transform"
-                    />
-                    <span className="hidden sm:inline">Return Home</span>
-                    <span className="sm:hidden">Back</span>
+        <AuthLayout
+            title={t('auth.signup')}
+            subtitle="Free to start. No card needed."
+            aside={
+                <div className="max-w-sm">
+                    <p className="font-display text-[2rem] leading-tight">
+                        By tonight you could have:
+                    </p>
+                    <ul className="mt-8 space-y-4">
+                        {[
+                            'A summary of tomorrow’s topic',
+                            'Practice questions, marked as you go',
+                            'Flashcards for the bus ride home',
+                            'Your first day of a study streak',
+                        ].map((item) => (
+                            <li key={item} className="flex gap-3">
+                                <Check className="mt-1 h-4 w-4 shrink-0 text-reward" />
+                                {item}
+                            </li>
+                        ))}
+                    </ul>
                 </div>
-            </Link>
+            }
+        >
+            {selectedPlan && (
+                <p className="-mt-4 mb-6 text-sm">
+                    <span className="text-muted-foreground">Plan: </span>
+                    <span className="mark-highlight font-bold capitalize">
+                        {selectedPlan.replace(/-scholar$/, '').replace(/-/g, ' ')}
+                    </span>
+                </p>
+            )}
 
-            <div
-                ref={cardRef}
-                className="w-full max-w-full sm:max-w-[520px] space-y-6 sm:space-y-8 relative z-10 px-1"
-            >
-                {/* Branding */}
-                <div className="text-center space-y-2 sm:space-y-3">
-                    <Logo size={168} height={48} className="justify-center mx-auto" />
-                    <div>
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-foreground">
-                            {t('auth.signup')}
-                        </h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium px-2">
-                            Create your account to start your learning journey.
-                        </p>
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                <div className="grid grid-cols-2 gap-3">
+                    <AuthField id="signup-first-name" label="First name">
+                        <Input
+                            id="signup-first-name"
+                            name="firstName"
+                            type="text"
+                            autoComplete="given-name"
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            required
+                            className={authInputClass()}
+                        />
+                    </AuthField>
+                    <AuthField id="signup-last-name" label="Last name">
+                        <Input
+                            id="signup-last-name"
+                            name="lastName"
+                            type="text"
+                            autoComplete="family-name"
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            required
+                            className={authInputClass()}
+                        />
+                    </AuthField>
+                </div>
 
-                        {selectedPlan && (
-                            <div className="mt-3 sm:mt-4 inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg glass border border-primary/20 bg-primary/5">
-                                <Star
-                                    size={12}
-                                    className="text-primary fill-primary"
-                                />
-                                <span className="text-xs font-semibold text-primary">
-                                    Selected plan:{' '}
-                                    {selectedPlan.replace(/-/g, ' ')}
-                                </span>
-                            </div>
+                <AuthField id="signup-email" label={t('auth.email')} error={errors.email}>
+                    <Input
+                        id="signup-email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        aria-invalid={!!errors.email}
+                        className={authInputClass(!!errors.email)}
+                    />
+                </AuthField>
+
+                <AuthField
+                    id="signup-password"
+                    label={t('auth.password')}
+                    error={errors.password}
+                    hint="At least 6 characters, with a capital letter and a number."
+                >
+                    <div className="relative">
+                        <Input
+                            id="signup-password"
+                            name="password"
+                            type={showPassword ? 'text' : 'password'}
+                            autoComplete="new-password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            aria-invalid={!!errors.password}
+                            className={authInputClass(!!errors.password) + ' pr-12'}
+                        />
+                        {passwordToggle(showPassword, () => setShowPassword(!showPassword), 'password')}
+                    </div>
+                </AuthField>
+
+                <AuthField
+                    id="signup-confirm-password"
+                    label="Confirm password"
+                    error={errors.confirmPassword}
+                >
+                    <div className="relative">
+                        <Input
+                            id="signup-confirm-password"
+                            name="confirmPassword"
+                            type={showConfirmPassword ? 'text' : 'password'}
+                            autoComplete="new-password"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            aria-invalid={!!errors.confirmPassword}
+                            className={authInputClass(!!errors.confirmPassword) + ' pr-12'}
+                        />
+                        {passwordToggle(
+                            showConfirmPassword,
+                            () => setShowConfirmPassword(!showConfirmPassword),
+                            'confirmed password',
                         )}
                     </div>
-                </div>
+                </AuthField>
 
-                <Card className="glass shadow-2xl border-foreground/10 rounded-xl overflow-hidden">
-                    <CardContent className="p-5 sm:p-8 md:p-10 space-y-5 sm:space-y-6">
-                        <form
-                            onSubmit={handleSubmit}
-                            className="space-y-4 sm:space-y-6"
-                        >
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label
-                                        htmlFor="signup-first-name"
-                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
-                                    >
-                                        First Name
-                                    </Label>
-                                    <Input
-                                        id="signup-first-name"
-                                        name="firstName"
-                                        type="text"
-                                        placeholder="John"
-                                        value={formData.firstName}
-                                        onChange={handleChange}
-                                        required
-                                        className="h-12 sm:h-14 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label
-                                        htmlFor="signup-last-name"
-                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
-                                    >
-                                        Last Name
-                                    </Label>
-                                    <Input
-                                        id="signup-last-name"
-                                        name="lastName"
-                                        type="text"
-                                        placeholder="Doe"
-                                        value={formData.lastName}
-                                        onChange={handleChange}
-                                        required
-                                        className="h-12 sm:h-14 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground"
-                                    />
-                                </div>
-                            </div>
+                <Button type="submit" disabled={isLoading} size="lg" className="w-full">
+                    {isLoading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                        'Create account'
+                    )}
+                </Button>
+            </form>
 
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="signup-email"
-                                    className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
-                                >
-                                    {t('auth.email')}
-                                </Label>
-                                <div className="relative">
-                                    <Mail
-                                        className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40"
-                                        size={18}
-                                    />
-                                    <Input
-                                        id="signup-email"
-                                        name="email"
-                                        type="email"
-                                        placeholder="scholar@example.com"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        className={`h-12 sm:h-14 pl-11 sm:pl-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.email ? 'border-destructive/50' : ''}`}
-                                    />
-                                </div>
-                                {errors.email && (
-                                    <p className="text-xs text-destructive font-bold px-1">
-                                        {errors.email}
-                                    </p>
-                                )}
-                            </div>
+            <AuthDivider>or</AuthDivider>
 
-                            <div className="grid grid-cols-1 gap-4 sm:gap-6">
-                                <div className="space-y-2">
-                                    <Label
-                                        htmlFor="signup-password"
-                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
-                                    >
-                                        {t('auth.password')}
-                                    </Label>
-                                    <div className="relative">
-                                        <Lock
-                                            className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40"
-                                            size={18}
-                                        />
-                                        <Input
-                                            id="signup-password"
-                                            name="password"
-                                            type={
-                                                showPassword
-                                                    ? 'text'
-                                                    : 'password'
-                                            }
-                                            placeholder="••••••••"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.password ? 'border-destructive/50' : ''}`}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setShowPassword(!showPassword)
-                                            }
-                                            aria-label={
-                                                showPassword
-                                                    ? 'Hide password'
-                                                    : 'Show password'
-                                            }
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
-                                        >
-                                            {showPassword ? (
-                                                <EyeOff size={18} />
-                                            ) : (
-                                                <Eye size={18} />
-                                            )}
-                                        </button>
-                                    </div>
-                                    {errors.password && (
-                                        <p className="text-xs text-destructive font-bold px-1">
-                                            {errors.password}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label
-                                        htmlFor="signup-confirm-password"
-                                        className="text-[10px] uppercase font-bold tracking-widest opacity-40 px-1"
-                                    >
-                                        Confirm
-                                    </Label>
-                                    <div className="relative">
-                                        <ShieldCheck
-                                            className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40"
-                                            size={18}
-                                        />
-                                        <Input
-                                            id="signup-confirm-password"
-                                            name="confirmPassword"
-                                            type={
-                                                showConfirmPassword
-                                                    ? 'text'
-                                                    : 'password'
-                                            }
-                                            placeholder="••••••••"
-                                            value={formData.confirmPassword}
-                                            onChange={handleChange}
-                                            className={`h-12 sm:h-14 pl-11 sm:pl-12 pr-11 sm:pr-12 rounded-lg sm:rounded-xl bg-card/5 border-foreground/10 focus:border-primary transition-all text-base sm:text-lg font-medium text-foreground ${errors.confirmPassword ? 'border-destructive/50' : ''}`}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setShowConfirmPassword(
-                                                    !showConfirmPassword,
-                                                )
-                                            }
-                                            aria-label={
-                                                showConfirmPassword
-                                                    ? 'Hide confirm password'
-                                                    : 'Show confirm password'
-                                            }
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
-                                        >
-                                            {showConfirmPassword ? (
-                                                <EyeOff size={18} />
-                                            ) : (
-                                                <Eye size={18} />
-                                            )}
-                                        </button>
-                                    </div>
-                                    {errors.confirmPassword && (
-                                        <p className="text-xs text-destructive font-bold px-1">
-                                            {errors.confirmPassword}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <Button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full h-14 sm:h-16 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg sm:text-xl transition-all active:scale-95 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden group"
-                            >
-                                {isLoading ? (
-                                    <Loader2 className="h-6 w-6 animate-spin" />
-                                ) : (
-                                    <>
-                                        <Sparkles className="group-hover:rotate-12 transition-transform" />
-                                        <span>Create Account</span>
-                                    </>
-                                )}
-                            </Button>
-
-                            <div className="relative my-6">
-                                <div className="absolute inset-0 flex items-center">
-                                    <span className="w-full border-t border-border"></span>
-                                </div>
-                                <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
-                                    <span className="bg-background px-4 text-muted-foreground/40">
-                                        Or continue with Google
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-center w-full">
-                                <GoogleAuthButton
-                                    onSuccess={handleGoogleSuccess}
-                                    onError={() => {
-                                        appToast.error({
-                                            title: t(
-                                                'signup.toast_google_error_title',
-                                            ),
-                                            description: t(
-                                                'signup.toast_google_error_desc',
-                                            ),
-                                        });
-                                    }}
-                                    label="signup_with"
-                                />
-                            </div>
-                        </form>
-
-                        <div className="pt-6 border-t border-border text-center">
-                            <p className="text-xs sm:text-sm font-bold text-muted-foreground">
-                                Already have an account?{' '}
-                                <Link
-                                    to="/login"
-                                    className="text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/50"
-                                >
-                                    {t('auth.login')}
-                                </Link>
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
+            <div className="flex w-full justify-center">
+                <GoogleAuthButton
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => {
+                        appToast.error({
+                            title: t('signup.toast_google_error_title'),
+                            description: t('signup.toast_google_error_desc'),
+                        });
+                    }}
+                    label="signup_with"
+                />
             </div>
-        </div>
+
+            <p className="mt-8 border-t border-border pt-6 text-sm text-muted-foreground">
+                Already have an account?{' '}
+                <Link
+                    to="/login"
+                    className="font-bold text-foreground underline decoration-sheet decoration-2 underline-offset-4"
+                >
+                    {t('auth.login')}
+                </Link>
+            </p>
+        </AuthLayout>
     );
 };
 

@@ -37,9 +37,9 @@ export default function HistoryDetailModal({
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="bg-card glass border border-foreground/10 w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-xl sm:rounded-xl shadow-sm relative z-10 flex flex-col"
+                        className="bg-card glass border border-border w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-xl sm:rounded-xl shadow-sm relative z-10 flex flex-col"
                     >
-                        <div className="p-4 sm:p-8 border-b border-foreground/5 flex justify-between items-start sm:items-center gap-3 sm:gap-4 bg-primary/5">
+                        <div className="p-4 sm:p-8 border-b border-border flex justify-between items-start sm:items-center gap-3 sm:gap-4 bg-primary/5">
                             <div className="min-w-0">
                                 <Badge className="mb-2 bg-primary text-primary-foreground font-semibold ">
                                     {item.hType}
@@ -96,7 +96,7 @@ export default function HistoryDetailModal({
 
                                         {item.keyPoints?.length > 0 && (
                                             <div className="space-y-4">
-                                                <h4 className="text-xs font-semibold opacity-40">
+                                                <h4 className="text-xs font-semibold text-muted-foreground">
                                                     {t('history.key_insights')}
                                                 </h4>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
@@ -111,7 +111,7 @@ export default function HistoryDetailModal({
                                                             >
                                                                 <Zap
                                                                     size={16}
-                                                                    className="text-yellow-500 shrink-0 mt-1"
+                                                                    className="text-urgent shrink-0 mt-1"
                                                                 />
                                                                 <p className="text-sm font-medium">
                                                                     {p}
@@ -127,7 +127,7 @@ export default function HistoryDetailModal({
 
                                 {item.hType === 'note' && (
                                     <div className="prose prose-invert max-w-none">
-                                        <div className="p-4 sm:p-8 bg-card/50 border border-foreground/5 rounded-xl sm:rounded-xl">
+                                        <div className="p-4 sm:p-8 bg-card/50 border border-border rounded-xl sm:rounded-xl">
                                             <p className="whitespace-pre-wrap text-lg leading-relaxed font-medium">
                                                 {item.content}
                                             </p>
@@ -153,10 +153,10 @@ export default function HistoryDetailModal({
                                             </p>
                                         </div>
                                         <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-                                            <div className="px-4 sm:px-6 py-3 bg-green-500/10 rounded-2xl border border-green-500/20 text-green-500 font-bold text-sm sm:text-base">
+                                            <div className="px-4 sm:px-6 py-3 bg-reward/10 rounded-2xl border border-reward/20 text-reward font-bold text-sm sm:text-base">
                                                 {item.correctAnswers} {t('history.correct_suffix')}
                                             </div>
-                                            <div className="px-4 sm:px-6 py-3 bg-red-500/10 rounded-2xl border border-red-500/20 text-red-500 font-bold text-sm sm:text-base">
+                                            <div className="px-4 sm:px-6 py-3 bg-destructive/10 rounded-2xl border border-destructive/20 text-destructive font-bold text-sm sm:text-base">
                                                 {item.totalQuestions -
                                                     item.correctAnswers}{' '}
                                                 {t('history.wrong_suffix')}
@@ -190,7 +190,7 @@ export default function HistoryDetailModal({
                             </div>
                         </div>
 
-                        <div className="p-4 sm:p-6 border-t border-foreground/5 flex flex-col-reverse sm:flex-row justify-end gap-3 bg-card/50">
+                        <div className="p-4 sm:p-6 border-t border-border flex flex-col-reverse sm:flex-row justify-end gap-3 bg-card/50">
                             <Button
                                 variant="ghost"
                                 onClick={onClose}

@@ -62,7 +62,7 @@ export const ValidationSignal: React.FC<ValidationSignalProps> = ({
                             {title}
                         </span>
                         {timestamp && (
-                            <span className="text-xs font-mono text-muted-foreground tabular-nums">
+                            <span className="text-xs tabular text-muted-foreground tabular-nums">
                                 {timestamp}
                             </span>
                         )}
@@ -81,9 +81,9 @@ export const ValidationSignal: React.FC<ValidationSignalProps> = ({
                     <div className="h-[1px] w-full bg-border my-3" />
 
                     <div className="flex items-center justify-between gap-3 pt-1">
-                        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
+                        <div className="flex items-center gap-2 text-xs tabular text-muted-foreground">
                             <Terminal className="w-3.5 h-3.5" />
-                            <span className="uppercase tracking-wider font-medium text-foreground/80">
+                            <span className="font-medium text-foreground/80">
                                 {secondaryLabel}
                             </span>
                         </div>

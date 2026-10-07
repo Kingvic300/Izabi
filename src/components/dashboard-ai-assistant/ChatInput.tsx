@@ -43,16 +43,16 @@ export default function ChatInput({
 }: ChatInputProps) {
     const { t } = useLanguage();
     return (
-        <div className="shrink-0 p-0">
-            <div className="w-full space-y-2 md:space-y-3">
+        <div className="shrink-0 border-t border-border px-4 py-3 sm:px-6">
+            <div className="mx-auto w-full max-w-3xl space-y-2">
                 {activeDocuments.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         {activeDocuments.map((doc) => (
                             <div
                                 key={doc.documentId}
-                                className="flex items-center justify-between gap-2 rounded-xl border border-primary/20 bg-primary/5 px-2 py-1"
+                                className="flex items-center justify-between gap-2 rounded-md border border-border bg-muted/50 px-2 py-1"
                             >
-                                <div className="flex items-center gap-2 text-xs text-primary font-medium min-w-0">
+                                <div className="flex min-w-0 items-center gap-2 text-sm">
                                     <FileText className="h-3 w-3" />
                                     <span className="truncate max-w-[120px] sm:max-w-[180px]">
                                         {doc.fileName}
@@ -61,7 +61,7 @@ export default function ChatInput({
                                 <button
                                     type="button"
                                     onClick={() => onRemoveDocument(doc.documentId)}
-                                    className="text-primary/70 hover:text-primary transition-colors font-bold text-xs"
+                                    className="text-sm text-muted-foreground hover:text-foreground"
                                 >
                                     &times;
                                 </button>
@@ -72,7 +72,7 @@ export default function ChatInput({
 
                 {/* Smart Suggestions */}
                 {!inputValue && !isLoading && (
-                    <div className="flex gap-2 overflow-x-auto pb-0 animate-in fade-in slide-in-from-bottom-1.5 duration-500">
+                    <div className="no-scrollbar flex gap-2 overflow-x-auto">
                         {[
                             {
                                 label: t('assistant.suggestion_flashcards'),
@@ -97,7 +97,7 @@ export default function ChatInput({
                                 onClick={() =>
                                     onSuggestionClick(s.feature)
                                 }
-                                className="h-8 shrink-0 rounded-full bg-primary/5 border-primary/20 text-primary hover:bg-primary/10 text-xs font-bold gap-2 transition-all hover:scale-105"
+                                className="h-8 shrink-0 rounded-full font-normal"
                             >
                                 {s.icon} {s.label}
                             </Button>
@@ -105,7 +105,7 @@ export default function ChatInput({
                     </div>
                 )}
 
-                <div className="relative group glass flex items-center rounded-2xl p-1 px-2 border-foreground/10 ring-offset-background focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-card/5 ">
+                <div className="relative flex items-center gap-1 rounded-lg border border-input bg-card px-2 transition-colors focus-within:border-foreground">
                     <Input
                         placeholder={
                             activeDocuments.length > 0
@@ -116,7 +116,8 @@ export default function ChatInput({
                         onChange={(e) => onInputChange(e.target.value)}
                         onKeyPress={onKeyPress}
                         disabled={isLoading || isUploadingPdf}
-                        className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent py-4 md:py-6 text-base md:text-lg"
+                        aria-label="Message"
+                        className="h-12 border-0 bg-transparent px-2 text-base shadow-none focus-visible:border-0 focus-visible:ring-0"
                     />
                     <Button
                         type="button"
@@ -124,25 +125,26 @@ export default function ChatInput({
                         size="icon"
                         onClick={onUploadClick}
                         disabled={isUploadingPdf || isLoading}
-                        className="h-8 w-8 md:h-9 md:w-9 rounded-lg"
+                        className="h-9 w-9 text-muted-foreground"
+                        aria-label={t('assistant.upload_files_aria')}
                     >
                         {isUploadingPdf ? (
                             <Loader className="h-4 w-4 animate-spin" />
                         ) : (
-                            <Paperclip className="h-3 w-3" />
+                            <Paperclip />
                         )}
                     </Button>
                     <Button
                         onClick={onSend}
                         disabled={isLoading || isUploadingPdf || !inputValue.trim()}
                         size="icon"
-                        className="h-9 w-9 md:h-10 md:w-10 rounded-xl transition-transform hover:scale-110 active:scale-95 bg-primary hover:bg-primary/90 relative overflow-hidden group/btn"
+                        className="h-9 w-9"
+                        aria-label="Send message"
                     >
-                        <Send className="h-4 w-4 md:h-5 md:w-5 relative z-10" />
-                        <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:animate-shimmer" />
+                        <Send />
                     </Button>
                 </div>
-                <p className="text-xs md:text-[10px] text-center mt-1 md:mt-2 text-muted-foreground/60 font-medium">
+                <p className="text-center text-xs text-muted-foreground">
                     {t('assistant.disclaimer')}
                 </p>
             </div>

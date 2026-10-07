@@ -1,8 +1,6 @@
 'use client';
 
 import { useRef } from 'react';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import { useDashboardSettings } from '@/components/dashboard-settings/useDashboardSettings';
 import SettingsHeader from '@/components/dashboard-settings/SettingsHeader';
 import AppearanceSection from '@/components/dashboard-settings/AppearanceSection';
@@ -25,44 +23,13 @@ const DashboardSettings = () => {
         handleDownloadData,
     } = useDashboardSettings();
 
-    useGSAP(
-        () => {
-            const tl = gsap.timeline();
-            tl.from('.settings-header', {
-                y: -20,
-                opacity: 0,
-                duration: 0.8,
-                ease: 'expo.out',
-            }).from(
-                '.settings-card',
-                {
-                    y: 30,
-                    opacity: 0,
-                    stagger: 0.1,
-                    duration: 0.8,
-                    ease: 'expo.out',
-                },
-                '-=0.4',
-            );
-        },
-        { scope: containerRef },
-    );
 
     return (
         <div
             ref={containerRef}
-            className="space-y-8 md:space-y-12 w-full min-w-0 pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
+            className="w-full min-w-0 space-y-8 pb-16"
         >
-            <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-xs sm:text-xs font-semibold text-primary">
-                        {t('settings.eyebrow')}
-                    </span>
-                </div>
-                <div className="glass-card border-foreground/10 rounded-xl p-5 sm:p-6">
-                    <SettingsHeader />
-                </div>
-            </div>
+            <SettingsHeader />
 
             <AppearanceSection
                 currentTheme={settings.theme}

@@ -1,5 +1,6 @@
 import { Image, Plus, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/components/dashboard/PageHeader';
 
 type NotesHeaderProps = {
     isAddingNote: boolean;
@@ -15,41 +16,27 @@ export default function NotesHeader({
     onCreate,
 }: NotesHeaderProps) {
     return (
-        <header className="notes-header flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-24">
-            <div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-2 text-gradient">
-                    My Notes
-                </h1>
-                <p className="text-muted-foreground text-base sm:text-lg">
-                    Manage and organize all your study notes in one place.
-                </p>
-            </div>
-            {!isAddingNote && (
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto md:mt-0 mt-6">
-                    <Button
-                        variant="outline"
-                        onClick={onImport}
-                        className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl w-full sm:w-auto"
-                    >
-                        <Upload className="h-4 w-4 mr-2" />
-                        Import Note
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={onScan}
-                        className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl w-full sm:w-auto"
-                    >
-                        <Image className="h-4 w-4 mr-2" />
-                        Scan Note (Image)
-                    </Button>
-                    <Button
-                        onClick={onCreate}
-                        className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl w-full sm:w-auto"
-                    >
-                        <Plus className="h-5 w-5 mr-2" /> Create New Note
-                    </Button>
-                </div>
-            )}
-        </header>
+        <PageHeader
+            title="Notes"
+            description="Everything you have written or imported, sorted into folders."
+            actions={
+                !isAddingNote && (
+                    <>
+                        <Button variant="outline" onClick={onImport}>
+                            <Upload />
+                            Import
+                        </Button>
+                        <Button variant="outline" onClick={onScan}>
+                            <Image />
+                            Scan a photo
+                        </Button>
+                        <Button onClick={onCreate}>
+                            <Plus />
+                            New note
+                        </Button>
+                    </>
+                )
+            }
+        />
     );
 }

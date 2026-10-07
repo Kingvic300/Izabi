@@ -47,7 +47,7 @@ export default function ChatMessages({ messages, currentUserId }: ChatMessagesPr
                             className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                                 isMe
                                     ? 'bg-primary text-primary-foreground rounded-br-none'
-                                    : 'bg-muted/50 border border-foreground/5 rounded-bl-none'
+                                    : 'bg-muted/50 border border-border rounded-bl-none'
                             } ${isNudge ? 'font-semibold' : ''}`}
                         >
                             {isNudge && (
@@ -58,7 +58,7 @@ export default function ChatMessages({ messages, currentUserId }: ChatMessagesPr
                             <p className="whitespace-pre-wrap break-words">
                                 {message.content}
                             </p>
-                            <span className="block text-xs mt-1 opacity-50 font-bold">
+                            <span className="block text-xs mt-1 font-bold text-muted-foreground">
                                 {new Date(message.createdAt).toLocaleTimeString([], {
                                     hour: '2-digit',
                                     minute: '2-digit',

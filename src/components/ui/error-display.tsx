@@ -62,7 +62,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
     return (
         <Card
             className={cn(
-                'overflow-hidden border border-border rounded-xl shadow-card transition-all duration-200',
+                'overflow-hidden border border-border rounded-md shadow-card transition-all duration-200',
                 getErrorBg(),
             )}
         >
@@ -78,7 +78,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
                                 {error.message}
                             </p>
                             <div className="flex items-center gap-2 mt-2">
-                                <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest px-2 py-0.5 rounded-2xl bg-card/5">
+                                <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest px-2 py-0.5 rounded-md bg-card/5">
                                     {new Date(
                                         error.timestamp,
                                     ).toLocaleTimeString([], {
@@ -96,7 +96,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
                                 variant="ghost"
                                 size="sm"
                                 onClick={onRetry}
-                                className="h-10 w-10 p-0 rounded-2xl hover:bg-card/10 transition-colors"
+                                className="h-10 w-10 p-0 rounded-md hover:bg-card/10 transition-colors"
                             >
                                 <RotateCcw className="h-4 w-4" />
                             </Button>
@@ -106,7 +106,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
                                 variant="ghost"
                                 size="sm"
                                 onClick={onDismiss}
-                                className="h-10 w-10 p-0 rounded-2xl hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
+                                className="h-10 w-10 p-0 rounded-md hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
                             >
                                 <X className="h-4 w-4" />
                             </Button>

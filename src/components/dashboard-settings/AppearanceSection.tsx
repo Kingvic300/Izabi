@@ -1,5 +1,5 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Monitor, Moon, Palette, Sun } from 'lucide-react';
+import { Monitor, Moon, Sun } from 'lucide-react';
+import SettingsSection from './SettingsSection';
 import ThemeOption from './ThemeOption';
 import type { SettingsState } from './settingsTypes';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -15,39 +15,33 @@ export default function AppearanceSection({
 }: AppearanceSectionProps) {
     const { t } = useLanguage();
     return (
-        <Card className="settings-card glass border-foreground/5 rounded-2xl shadow-sm overflow-hidden">
-            <CardHeader className="px-6 py-4 md:px-8 md:py-6 border-b border-foreground/5">
-                <CardTitle className="flex items-center gap-3 text-xl font-bold">
-                    <Palette className="text-primary" />
-                    {t('settings.appearance_title')}
-                </CardTitle>
-                <CardDescription>{t('settings.appearance_desc')}</CardDescription>
-            </CardHeader>
-            <CardContent className="p-6 md:p-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <SettingsSection
+            title={t('settings.appearance_title')}
+            description={t('settings.appearance_desc')}
+        >
+                <div role="radiogroup" aria-label={t('settings.appearance_title')} className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                     <ThemeOption
                         value="light"
                         current={currentTheme}
                         onClick={() => onThemeChange('light')}
-                        icon={<Sun size={24} />}
+                        icon={<Sun size={18} />}
                         title={t('settings.theme_light')}
                     />
                     <ThemeOption
                         value="dark"
                         current={currentTheme}
                         onClick={() => onThemeChange('dark')}
-                        icon={<Moon size={24} />}
+                        icon={<Moon size={18} />}
                         title={t('settings.theme_dark')}
                     />
                     <ThemeOption
                         value="system"
                         current={currentTheme === 'system' ? 'system' : 'auto'}
                         onClick={() => onThemeChange('auto')}
-                        icon={<Monitor size={24} />}
+                        icon={<Monitor size={18} />}
                         title={t('settings.theme_system')}
                     />
                 </div>
-            </CardContent>
-        </Card>
+        </SettingsSection>
     );
 }

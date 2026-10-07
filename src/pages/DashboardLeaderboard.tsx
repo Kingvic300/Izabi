@@ -1,12 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Trophy, Flame, Zap, BadgeCheck } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { api } from '@/lib/apiClient';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import { PageHeader } from '@/components/dashboard/PageHeader';
 import { LeaderboardData, LeaderboardType } from '@/components/dashboard-leaderboard/types';
 import { YourRankCard } from '@/components/dashboard-leaderboard/YourRankCard';
 import { Podium } from '@/components/dashboard-leaderboard/Podium';
@@ -66,23 +63,11 @@ export default function DashboardLeaderboard() {
         };
     }, [fetchLeaderboard]);
 
-    useGSAP(() => {
-        if (!isLoading) {
-            gsap.from('.leaderboard-item', {
-                y: 20,
-                opacity: 1,
-                duration: 0.4,
-                stagger: 0.02,
-                ease: 'power2.out',
-                clearProps: 'opacity',
-            });
-        }
-    }, [isLoading, activeTab]);
 
     return (
         <div
             ref={containerRef}
-            className="space-y-8 md:space-y-12 pb-20 w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 md:pt-12"
+            className="w-full space-y-10 pb-16"
         >
             {!isAdmin ? (
                 <ShareRankDialog
@@ -93,31 +78,10 @@ export default function DashboardLeaderboard() {
                 />
             ) : null}
 
-            <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-xs sm:text-xs font-semibold text-primary">
-                        {t('leaderboard.eyebrow')}
-                    </span>
-                </div>
-                <header className="glass-card border-foreground/10 rounded-xl p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
-                    <div className="space-y-2">
-                        <Badge
-                            variant="outline"
-                            className="text-primary border-primary/20 bg-primary/5 px-3 py-1 font-bold text-xs mb-1"
-                        >
-                            {t('leaderboard.badge')}
-                        </Badge>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-none">
-                            {t('leaderboard.title_top')}{' '}
-                            <span className="text-gradient">
-                                {t('leaderboard.title_gradient')}
-                            </span>
-                        </h1>
-                        <p className="text-muted-foreground text-sm sm:text-base font-medium max-w-none">
-                            {t('leaderboard.subtitle')}
-                        </p>
-                    </div>
-
+            <PageHeader
+                title={t('leaderboard.eyebrow')}
+                description={t('leaderboard.subtitle')}
+                actions={
                     <YourRankCard
                         activeTab={activeTab}
                         isLoading={isLoading}
@@ -126,88 +90,62 @@ export default function DashboardLeaderboard() {
                         onShare={() => handleShare(activeTab)}
                         showShare={!isAdmin}
                     />
-                </header>
-            </div>
+                }
+            />
 
-            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
-                <Tabs
-                    defaultValue="xp"
-                    className="w-full"
-                    onValueChange={(value) =>
-                        setActiveTab(value as LeaderboardType)
-                    }
-                >
-                    <div className="flex justify-center mb-6 sm:mb-10 overflow-x-auto pb-2 scrollbar-none">
-                        <TabsList className="bg-card/5 border border-foreground/10 p-1 rounded-full h-12 sm:h-14">
-                            <TabsTrigger
-                                value="xp"
-                                className="rounded-full px-4 sm:px-8 h-full font-bold text-xs sm:text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
-                            >
-                                <Zap
-                                    size={14}
-                                    className="sm:w-4 sm:h-4"
-                                />{' '}
-                                {t('leaderboard.tab_xp')}
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="streak"
-                                className="rounded-full px-4 sm:px-8 h-full font-bold text-xs sm:text-xs data-[state=active]:bg-orange-500 data-[state=active]:text-foreground transition-all gap-1.5 sm:gap-2 whitespace-nowrap"
-                            >
-                                <Flame
-                                    size={14}
-                                    className="sm:w-4 sm:h-4"
-                                />{' '}
-                                {t('leaderboard.tab_streak')}
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
+            <Tabs
+                defaultValue="xp"
+                className="w-full"
+                onValueChange={(value) => setActiveTab(value as LeaderboardType)}
+            >
+                <TabsList>
+                    <TabsTrigger value="xp" className="px-5">
+                        {t('leaderboard.tab_xp')}
+                    </TabsTrigger>
+                    <TabsTrigger value="streak" className="px-5">
+                        {t('leaderboard.tab_streak')}
+                    </TabsTrigger>
+                </TabsList>
 
-                    <TabsContent value="xp" className="space-y-6 sm:space-y-10">
-                        <Podium
-                            users={leaderboardData.topStudents || []}
-                            type="xp"
-                            currentUserId={currentUserId}
-                        />
+                {!isLoading &&
+                    (leaderboardData.topStudents?.length ?? 0) === 0 &&
+                    (leaderboardData.topStreaks?.length ?? 0) === 0 && (
+                        <div className="mt-6 rounded-lg border border-dashed border-sheet/45 px-6 py-10">
+                            <p className="font-display text-xl">No rankings yet</p>
+                            <p className="mt-1 text-muted-foreground">
+                                Finish a quiz or answer today’s Brain Drop to get on the board.
+                            </p>
+                        </div>
+                    )}
 
-                        <LeaderboardTable
-                            users={leaderboardData.topStudents || []}
-                            type="xp"
-                            currentUserId={currentUserId}
-                            title={t('leaderboard.standings_title')}
-                            icon={
-                                <Trophy
-                                    className="text-primary sm:w-5 sm:h-5"
-                                    size={18}
-                                />
-                            }
-                        />
-                    </TabsContent>
+                <TabsContent value="xp" className="mt-6 space-y-6">
+                    <Podium
+                        users={leaderboardData.topStudents || []}
+                        type="xp"
+                        currentUserId={currentUserId}
+                    />
+                    <LeaderboardTable
+                        users={leaderboardData.topStudents || []}
+                        type="xp"
+                        currentUserId={currentUserId}
+                        title={t('leaderboard.standings_title')}
+                    />
+                </TabsContent>
 
-                    <TabsContent
-                        value="streak"
-                        className="space-y-6 sm:space-y-10"
-                    >
-                        <Podium
-                            users={leaderboardData.topStreaks || []}
-                            type="streak"
-                            currentUserId={currentUserId}
-                        />
-
-                        <LeaderboardTable
-                            users={leaderboardData.topStreaks || []}
-                            type="streak"
-                            currentUserId={currentUserId}
-                            title={t('leaderboard.persistence_title')}
-                            icon={
-                                <Flame
-                                    className="text-orange-500 sm:w-5 sm:h-5"
-                                    size={18}
-                                />
-                            }
-                        />
-                    </TabsContent>
-                </Tabs>
-            </div>
+                <TabsContent value="streak" className="mt-6 space-y-6">
+                    <Podium
+                        users={leaderboardData.topStreaks || []}
+                        type="streak"
+                        currentUserId={currentUserId}
+                    />
+                    <LeaderboardTable
+                        users={leaderboardData.topStreaks || []}
+                        type="streak"
+                        currentUserId={currentUserId}
+                        title={t('leaderboard.persistence_title')}
+                    />
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

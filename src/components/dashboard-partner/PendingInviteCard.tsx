@@ -28,7 +28,7 @@ export default function PendingInviteCard({
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-1">
-                    <h3 className="text-lg font-bold">
+                    <h3 className="text-xl">
                         {name} wants to be your Accountability Partner
                     </h3>
                     <p className="text-sm text-muted-foreground">

@@ -7,87 +7,83 @@ interface LoadingSpinnerProps {
     className?: string;
 }
 
+const dotSize = { sm: 'h-2 w-2', md: 'h-3 w-3', lg: 'h-4 w-4' };
+
+// Four answer bubbles shading in turn.
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     size = 'sm',
     text,
     className,
-}) => {
-    const sizeClasses = {
-        sm: 'h-4 w-4',
-        md: 'h-8 w-8',
-        lg: 'h-12 w-12',
-    };
-
-    return (
-        <div
-            className={cn(
-                'flex flex-col items-center justify-center gap-4',
-                className,
-            )}
-        >
-            <div
-                className={cn(
-                    'animate-spin rounded-full border-2 border-primary/20 border-t-primary',
-                    sizeClasses[size],
-                )}
-            />
-
-            {text && (
-                <div className="flex flex-col items-center gap-1">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60 text-center max-w-[200px]">
-                        {text}
-                    </p>
-                </div>
-            )}
-        </div>
-    );
-};
+}) => (
+    <div
+        role="status"
+        className={cn('flex flex-col items-center justify-center gap-3', className)}
+    >
+        <span className="flex gap-1.5" aria-hidden>
+            {[0, 1, 2, 3].map((i) => (
+                <span
+                    key={i}
+                    className={cn(
+                        'animate-pulse rounded-full border border-foreground/60 bg-foreground',
+                        dotSize[size],
+                    )}
+                    style={{ animationDelay: `${i * 0.18}s` }}
+                />
+            ))}
+        </span>
+        {text ? (
+            <p className="max-w-[16rem] text-center text-sm text-muted-foreground">
+                {text}
+            </p>
+        ) : (
+            <span className="sr-only">Loading</span>
+        )}
+    </div>
+);
 
 interface SkeletonLoaderProps {
     variant?: 'card' | 'list-item' | 'text-block' | 'image';
     className?: string;
 }
 
+const bar = 'rounded bg-muted';
+
 export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
     variant = 'card',
     className,
 }) => {
-    const baseClasses =
-        'animate-pulse rounded-2xl bg-card/[0.03] dark:bg-card/[0.03] border border-foreground/5';
+    const shell = 'animate-pulse rounded-lg border border-border bg-card';
 
     const variants = {
         card: (
-            <div className={cn('p-8', baseClasses)}>
-                <div className="space-y-6">
-                    <div className="h-44 bg-card/[0.05] dark:bg-card/[0.05] rounded-xl"></div>
-                    <div className="space-y-3">
-                        <div className="h-6 bg-card/[0.05] dark:bg-card/[0.05] rounded-xl w-2/3"></div>
-                        <div className="h-4 bg-card/[0.05] dark:bg-card/[0.05] rounded-xl w-full opacity-60"></div>
-                    </div>
-                </div>
+            <div className={cn('space-y-4 p-5', shell)}>
+                <div className={cn('h-5 w-2/3', bar)} />
+                <div className={cn('h-4 w-full', bar)} />
+                <div className={cn('h-4 w-5/6', bar)} />
+                <div className={cn('h-4 w-1/2', bar)} />
             </div>
         ),
         'list-item': (
-            <div className={cn('flex items-center gap-6 p-6', baseClasses)}>
-                <div className="rounded-xl bg-card/[0.05] dark:bg-card/[0.05] h-14 w-14 shrink-0"></div>
-                <div className="flex-1 space-y-3">
-                    <div className="h-5 bg-card/[0.05] dark:bg-card/[0.05] rounded-xl w-1/3"></div>
-                    <div className="h-4 bg-card/[0.05] dark:bg-card/[0.05] rounded-xl w-3/4 opacity-60"></div>
+            <div className={cn('flex items-center gap-4 p-4', shell)}>
+                <div className="h-10 w-10 shrink-0 rounded-full bg-muted" />
+                <div className="flex-1 space-y-2">
+                    <div className={cn('h-4 w-1/3', bar)} />
+                    <div className={cn('h-3 w-3/4', bar)} />
                 </div>
             </div>
         ),
         'text-block': (
-            <div className="space-y-4">
-                <div className="h-5 bg-card/[0.03] dark:bg-card/[0.03] rounded-xl w-full"></div>
-                <div className="h-5 bg-card/[0.03] dark:bg-card/[0.03] rounded-xl w-full"></div>
-                <div className="h-5 bg-card/[0.03] dark:bg-card/[0.03] rounded-xl w-4/5"></div>
+            <div className="animate-pulse space-y-3">
+                <div className={cn('h-4 w-full', bar)} />
+                <div className={cn('h-4 w-full', bar)} />
+                <div className={cn('h-4 w-4/5', bar)} />
             </div>
         ),
-        image: <div className={cn('h-64', baseClasses)}></div>,
+        image: <div className={cn('h-64', shell)} />,
     };
 
     return (
-        <div className={cn('overflow-hidden', className)}>
+        <div className={cn('overflow-hidden', className)} aria-hidden>
             {variants[variant]}
         </div>
     );

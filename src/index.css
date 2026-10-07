@@ -1,163 +1,160 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Izabi visual language: the exam answer sheet.
+ * Paper surfaces, graphite (HB pencil) for text and primary actions,
+ * drop-out red ink for rules and bubble outlines, highlighter for key terms.
+ * Light is the base; dark is the same sheet under exam-hall lamps.
+ */
 @layer base {
     :root {
-        --font-sans: 'Inter', sans-serif;
-        --font-display: 'Space Grotesk', sans-serif;
-        --font-mono: 'Space Grotesk', sans-serif;
+        --font-sans: 'Andika', 'Noto Sans', system-ui, sans-serif;
+        --font-display: 'Gentium Book Plus', 'Andika', Georgia, serif;
 
-        /* Izabi dark theme: cool navy base, blue-violet primary, mint for
-           growth/reward states, coral reserved for time-pressure moments. */
-        color-scheme: dark;
-        --background: 220 29% 6%;
-        --foreground: 225 21% 93%;
+        color-scheme: light;
+        --background: 222 22% 97%;
+        --foreground: 222 14% 13%;
 
-        --card: 224 28% 10%;
-        --card-foreground: 225 21% 93%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 14% 13%;
 
-        --popover: 224 28% 9%;
-        --popover-foreground: 225 21% 93%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222 14% 13%;
 
-        --primary: 224 100% 74%;
-        --primary-foreground: 224 28% 10%;
-        --primary-glow: 224 100% 80%;
-        --secondary: 224 20% 18%;
-        --secondary-foreground: 225 21% 93%;
-        --secondary-glow: 224 20% 26%;
+        --primary: 222 14% 13%;
+        --primary-foreground: 222 22% 97%;
+        --primary-glow: 222 10% 26%;
 
-        --muted: 224 22% 13%;
-        --muted-foreground: 222 14% 65%;
+        --secondary: 222 16% 93%;
+        --secondary-foreground: 222 14% 13%;
+        --secondary-glow: 222 16% 88%;
 
-        --accent: 156 73% 64%;
-        --accent-foreground: 224 28% 10%;
-        --accent-glow: 156 73% 70%;
-        --destructive: 0 72% 58%;
+        --muted: 222 16% 93%;
+        --muted-foreground: 222 8% 39%;
+
+        --accent: 222 16% 92%;
+        --accent-foreground: 222 14% 13%;
+        --accent-glow: 222 16% 86%;
+
+        --destructive: 4 72% 46%;
         --destructive-foreground: 0 0% 100%;
 
-        /* Gamification accents, used sparingly and only where their meaning applies */
-        --reward: 156 73% 64%;
-        --reward-foreground: 224 28% 10%;
-        --urgent: 13 100% 71%;
-        --urgent-foreground: 224 28% 10%;
+        --sheet: 344 62% 50%;
+        --sheet-foreground: 0 0% 100%;
+        --highlight: 49 94% 62%;
+        --highlight-foreground: 222 14% 13%;
 
-        --border: 224 20% 16%;
-        --input: 224 20% 16%;
-        --ring: 224 100% 74%;
+        --reward: 152 62% 31%;
+        --reward-foreground: 0 0% 100%;
+        --urgent: 22 86% 46%;
+        --urgent-foreground: 0 0% 100%;
 
-        /* Shadows */
-        --shadow-soft: 0 6px 16px -12px rgba(0, 0, 0, 0.45);
-        --shadow-elevated: 0 16px 32px -24px rgba(0, 0, 0, 0.55);
-        --shadow-card: 0 8px 30px -14px rgba(0, 0, 0, 0.5);
-        --shadow-float: 0 20px 60px -20px rgba(0, 0, 0, 0.6);
+        --border: 222 16% 88%;
+        --input: 222 13% 80%;
+        --ring: 222 14% 13%;
 
-        --radius: 0.75rem;
+        --shadow-soft: 0 1px 2px rgba(29, 32, 39, 0.06);
+        --shadow-elevated: 0 1px 2px rgba(29, 32, 39, 0.06),
+            0 4px 12px -6px rgba(29, 32, 39, 0.1);
+        --shadow-card: 0 1px 2px rgba(29, 32, 39, 0.05);
+        --shadow-float: 0 18px 40px -16px rgba(29, 32, 39, 0.22);
 
-        --sidebar-background: 220 29% 5%;
-        --sidebar-foreground: 225 21% 88%;
-        --sidebar-primary: 224 100% 74%;
-        --sidebar-primary-foreground: 224 28% 10%;
-        --sidebar-accent: 224 22% 13%;
-        --sidebar-accent-foreground: 225 21% 93%;
-        --sidebar-border: 224 20% 14%;
-        --sidebar-ring: 224 100% 74%;
+        --radius: 0.5rem;
 
-        /* Subject/category tags used across notes, exams, and progress views */
-        --learning-blue: 224 100% 74%;
-        --learning-green: 156 73% 64%;
-        --learning-purple: 262 83% 76%;
-        --learning-orange: 13 100% 71%;
+        --sidebar-background: 222 22% 95%;
+        --sidebar-foreground: 222 14% 13%;
+        --sidebar-primary: 222 14% 13%;
+        --sidebar-primary-foreground: 222 22% 97%;
+        --sidebar-accent: 222 16% 90%;
+        --sidebar-accent-foreground: 222 14% 13%;
+        --sidebar-border: 222 16% 87%;
+        --sidebar-ring: 222 14% 13%;
+
+        --learning-blue: 220 62% 46%;
+        --learning-green: 152 62% 31%;
+        --learning-purple: 268 42% 50%;
+        --learning-orange: 22 86% 46%;
     }
 
     .light {
         color-scheme: light;
-        --background: 225 67% 99%;
-        --foreground: 224 37% 12%;
-
-        --card: 0 0% 100%;
-        --card-foreground: 224 37% 12%;
-
-        --popover: 0 0% 100%;
-        --popover-foreground: 224 37% 12%;
-
-        --primary: 228 92% 63%;
-        --primary-foreground: 0 0% 100%;
-        --primary-glow: 228 92% 72%;
-        --secondary: 225 36% 96%;
-        --secondary-foreground: 224 37% 12%;
-        --secondary-glow: 225 36% 90%;
-
-        --muted: 225 36% 96%;
-        --muted-foreground: 222 14% 41%;
-
-        --accent: 158 73% 39%;
-        --accent-foreground: 0 0% 100%;
-        --accent-glow: 158 73% 46%;
-        --destructive: 0 72% 51%;
-        --destructive-foreground: 0 0% 100%;
-
-        --reward: 158 73% 39%;
-        --reward-foreground: 0 0% 100%;
-        --urgent: 12 79% 57%;
-        --urgent-foreground: 0 0% 100%;
-
-        --border: 223 32% 91%;
-        --input: 223 32% 91%;
-        --ring: 228 92% 63%;
-
-        --shadow-soft: 0 6px 16px -12px rgba(15, 23, 42, 0.12);
-        --shadow-elevated: 0 16px 32px -18px rgba(15, 23, 42, 0.16);
-        --shadow-card: 0 8px 30px -16px rgba(15, 23, 42, 0.12);
-        --shadow-float: 0 20px 60px -20px rgba(15, 23, 42, 0.18);
-
-        --sidebar-background: 225 36% 97%;
-        --sidebar-foreground: 224 37% 12%;
-        --sidebar-primary: 228 92% 63%;
-        --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 223 32% 93%;
-        --sidebar-accent-foreground: 224 37% 12%;
-        --sidebar-border: 223 32% 91%;
-        --sidebar-ring: 228 92% 63%;
-
-        --learning-blue: 228 92% 63%;
-        --learning-green: 158 73% 39%;
-        --learning-purple: 262 60% 58%;
-        --learning-orange: 12 79% 57%;
     }
-}
 
-/* Utility: force edge-to-edge on mobile, revert to normal on sm+ */
-.full-bleed {
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
-}
-@media (min-width: 640px) {
-    .full-bleed {
-        width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-    }
-}
+    .dark {
+        color-scheme: dark;
+        --background: 222 12% 10%;
+        --foreground: 222 16% 91%;
 
-/* Remove mobile side gutters so layouts can stretch edge-to-edge */
-@media (max-width: 640px) {
-    nav > .w-full,
-    header > .w-full,
-    main > .w-full,
-    section > .w-full,
-    footer > .w-full {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        --card: 222 11% 13%;
+        --card-foreground: 222 16% 91%;
+
+        --popover: 222 11% 14%;
+        --popover-foreground: 222 16% 91%;
+
+        --primary: 222 16% 91%;
+        --primary-foreground: 222 12% 10%;
+        --primary-glow: 222 16% 80%;
+
+        --secondary: 222 10% 18%;
+        --secondary-foreground: 222 16% 91%;
+        --secondary-glow: 222 10% 24%;
+
+        --muted: 222 10% 16%;
+        --muted-foreground: 222 8% 64%;
+
+        --accent: 222 10% 19%;
+        --accent-foreground: 222 16% 91%;
+        --accent-glow: 222 10% 25%;
+
+        --destructive: 4 74% 60%;
+        --destructive-foreground: 222 12% 10%;
+
+        --sheet: 344 72% 67%;
+        --sheet-foreground: 222 12% 10%;
+        --highlight: 49 88% 60%;
+        --highlight-foreground: 222 14% 13%;
+
+        --reward: 152 50% 52%;
+        --reward-foreground: 222 12% 10%;
+        --urgent: 24 90% 61%;
+        --urgent-foreground: 222 12% 10%;
+
+        --border: 222 9% 21%;
+        --input: 222 9% 28%;
+        --ring: 222 16% 91%;
+
+        --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3);
+        --shadow-elevated: 0 1px 2px rgba(0, 0, 0, 0.3),
+            0 6px 16px -8px rgba(0, 0, 0, 0.5);
+        --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.25);
+        --shadow-float: 0 20px 44px -18px rgba(0, 0, 0, 0.7);
+
+        --sidebar-background: 222 12% 8.5%;
+        --sidebar-foreground: 222 16% 88%;
+        --sidebar-primary: 222 16% 91%;
+        --sidebar-primary-foreground: 222 12% 10%;
+        --sidebar-accent: 222 10% 16%;
+        --sidebar-accent-foreground: 222 16% 91%;
+        --sidebar-border: 222 9% 18%;
+        --sidebar-ring: 222 16% 91%;
+
+        --learning-blue: 218 80% 70%;
+        --learning-green: 152 50% 52%;
+        --learning-purple: 268 60% 74%;
+        --learning-orange: 24 90% 61%;
     }
 }
 
 @layer base {
     * {
-        @apply border-border selection:bg-primary/30;
+        @apply border-border;
+    }
+
+    ::selection {
+        background: hsl(var(--highlight) / 0.55);
+        color: hsl(var(--highlight-foreground));
     }
 
     html,
@@ -172,14 +169,22 @@
         min-height: 100dvh;
     }
 
+    html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+    }
+
     body {
         @apply bg-background text-foreground;
         font-family: var(--font-sans);
+        font-size: 1rem;
+        line-height: 1.55;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         font-feature-settings:
-            'liga' 1,
-            'kern' 1;
+            'kern' 1,
+            'liga' 1;
+        text-rendering: optimizeLegibility;
         overflow-x: hidden;
     }
 
@@ -205,24 +210,35 @@
     li,
     td,
     th {
-        overflow-wrap: anywhere;
+        overflow-wrap: break-word;
     }
 
     h1,
     h2,
     h3,
-    h4,
+    h4 {
+        font-family: var(--font-display);
+        font-weight: 700;
+        letter-spacing: 0;
+        line-height: 1.15;
+        text-wrap: balance;
+    }
+
     h5,
     h6 {
-        font-family: var(--font-display);
-        letter-spacing: -0.01em;
+        font-family: var(--font-sans);
+        font-weight: 700;
     }
 
-    html {
-        scroll-behavior: smooth;
+    p {
+        text-wrap: pretty;
     }
 
-    /* Remove yellow background from autofilled inputs */
+    :focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+    }
+
     input:-webkit-autofill,
     input:-webkit-autofill:hover,
     input:-webkit-autofill:focus,
@@ -232,29 +248,90 @@
         transition: background-color 5000s ease-in-out 0s;
         box-shadow: inset 0 0 20px 20px transparent !important;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
 }
 
 @layer components {
-    /* Plain opaque surface; kept as "glass" to avoid renaming ~75 call sites,
-       but no longer applies blur/translucency. */
+    /* "glass" survives as a class name across ~75 call sites; it is a plain sheet surface. */
     .glass {
         background-color: hsl(var(--card));
         border: 1px solid hsl(var(--border));
     }
 
     .glass-card {
-        @apply glass rounded-xl;
+        @apply glass rounded-lg;
         box-shadow: var(--shadow-card);
     }
 
+    .sheet-surface {
+        background-color: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: var(--radius);
+    }
+
+    /* Drop-out red ruling, as printed on answer sheets. */
+    .rule-sheet {
+        border-color: hsl(var(--sheet) / 0.35);
+    }
+
+    .mark-highlight {
+        background-image: linear-gradient(
+            transparent 12%,
+            hsl(var(--highlight) / 0.55) 12%,
+            hsl(var(--highlight) / 0.55) 88%,
+            transparent 88%
+        );
+        color: inherit;
+        padding-inline: 0.12em;
+        margin-inline: -0.06em;
+        border-radius: 2px;
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    .dark .mark-highlight {
+        background-image: linear-gradient(
+            transparent 12%,
+            hsl(var(--highlight) / 0.28) 12%,
+            hsl(var(--highlight) / 0.28) 88%,
+            transparent 88%
+        );
+    }
+
+    /* Scanner timing marks along an answer sheet's edge. */
+    .timing-track {
+        background-image: repeating-linear-gradient(
+            to bottom,
+            hsl(var(--foreground) / 0.7) 0 4px,
+            transparent 4px 40px
+        );
+        width: 12px;
+    }
+
+    .page-gutter {
+        padding-inline: clamp(1rem, 4vw, 3.5rem);
+    }
+
     .ai-readable {
-        color: hsl(var(--foreground) / 0.9);
-        line-height: 1.8;
-        font-size: 0.95rem;
+        color: hsl(var(--foreground) / 0.92);
+        line-height: 1.75;
+        font-size: 1rem;
     }
 
     .ai-readable > * + * {
-        margin-top: 0.8rem;
+        margin-top: 0.85rem;
     }
 
     .ai-readable p {
@@ -267,14 +344,24 @@
     .ai-readable h4 {
         color: hsl(var(--foreground));
         font-weight: 700;
-        line-height: 1.35;
-        margin-top: 1rem;
+        line-height: 1.3;
+        margin-top: 1.25rem;
         margin-bottom: 0.2rem;
+    }
+
+    .ai-readable h1 {
+        font-size: 1.5rem;
+    }
+    .ai-readable h2 {
+        font-size: 1.3rem;
+    }
+    .ai-readable h3 {
+        font-size: 1.125rem;
     }
 
     .ai-readable ul,
     .ai-readable ol {
-        padding-left: 1.2rem;
+        padding-left: 1.25rem;
     }
 
     .ai-readable ul {
@@ -286,7 +373,11 @@
     }
 
     .ai-readable li {
-        margin-top: 0.25rem;
+        margin-top: 0.3rem;
+    }
+
+    .ai-readable li::marker {
+        color: hsl(var(--sheet));
     }
 
     .ai-readable strong {
@@ -295,32 +386,34 @@
     }
 
     .ai-readable a {
-        color: hsl(var(--primary));
+        color: hsl(var(--foreground));
         text-decoration: underline;
-        text-underline-offset: 2px;
+        text-decoration-color: hsl(var(--sheet));
+        text-underline-offset: 3px;
     }
 
     .ai-readable blockquote {
-        margin: 0.8rem 0;
-        border-left: 3px solid hsl(var(--primary) / 0.5);
-        padding-left: 0.8rem;
+        margin: 0.85rem 0;
+        border-left: 2px solid hsl(var(--sheet) / 0.6);
+        padding-left: 0.9rem;
         color: hsl(var(--muted-foreground));
     }
 
     .ai-readable code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-size: 0.85em;
         padding: 0.12rem 0.35rem;
-        border-radius: 0.35rem;
-        background: hsl(var(--primary) / 0.12);
+        border-radius: 0.25rem;
+        background: hsl(var(--muted));
         color: hsl(var(--foreground));
     }
 
     .ai-readable pre {
-        margin: 0.8rem 0;
+        margin: 0.85rem 0;
         padding: 0.9rem;
-        border-radius: 0.75rem;
+        border-radius: var(--radius);
         border: 1px solid hsl(var(--border));
-        background: hsl(var(--card));
+        background: hsl(var(--muted));
         overflow-x: auto;
     }
 
@@ -331,7 +424,7 @@
 
     .ai-readable table {
         width: 100%;
-        margin: 0.8rem 0;
+        margin: 0.85rem 0;
         border-collapse: collapse;
         display: block;
         overflow-x: auto;
@@ -340,28 +433,20 @@
     .ai-readable th,
     .ai-readable td {
         border: 1px solid hsl(var(--border));
-        padding: 0.45rem 0.55rem;
+        padding: 0.45rem 0.6rem;
         text-align: left;
         white-space: nowrap;
     }
 
     .ai-readable th {
         color: hsl(var(--foreground));
-        background: hsl(var(--card));
+        background: hsl(var(--muted));
         font-weight: 700;
     }
 
+    /* Legacy hook: headline words used to get a gradient. Now plain text. */
     .text-gradient {
-        background-image: linear-gradient(
-            135deg,
-            hsl(var(--primary)) 0%,
-            hsl(var(--accent)) 100%
-        );
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        -webkit-text-fill-color: transparent;
-        @apply font-bold;
+        color: inherit;
     }
 
     .shadow-soft {
@@ -373,17 +458,36 @@
     }
 
     .hover-lift {
-        @apply transition-all duration-200 hover:-translate-y-0.5;
-        box-shadow: var(--shadow-elevated);
+        @apply transition-colors duration-150;
+    }
+
+    .hover-lift:hover {
+        border-color: hsl(var(--foreground) / 0.3);
     }
 }
 
-/* Animations */
 @layer utilities {
     .container-clean {
-        width: min(1200px, 100%);
-        margin-inline: auto;
-        padding-inline: clamp(1rem, 2vw, 2.5rem);
+        width: 100%;
+        padding-inline: clamp(1rem, 4vw, 3.5rem);
+    }
+
+    .full-bleed {
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+    }
+
+    @media (min-width: 640px) {
+        .full-bleed {
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+
+    .tabular {
+        font-variant-numeric: tabular-nums;
     }
 
     .custom-scrollbar::-webkit-scrollbar {
@@ -393,14 +497,13 @@
         background: transparent;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: hsl(var(--foreground) / 0.12);
+        background: hsl(var(--foreground) / 0.14);
         border-radius: 10px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: hsl(var(--foreground) / 0.2);
+        background: hsl(var(--foreground) / 0.24);
     }
 
-    /* 3D Flip Utilities */
     .perspective-1000 {
         perspective: 1000px;
     }

@@ -271,7 +271,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                 {isSinglePDF ? (
                     <>
                         <div>
-                            <p className="font-medium">Choose pages</p>
+                            <p className="font-display text-lg">Choose pages</p>
                             <p className="text-sm text-muted-foreground">
                                 Tap a page to add or remove it. Up to{' '}
                                 {MAX_SELECTED_PAGES} pages.
@@ -341,17 +341,17 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
             />
             <label
                 htmlFor="file-upload-redesign"
-                className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border px-4 py-10 text-center cursor-pointer transition-colors hover:border-primary/50 hover:bg-primary/5"
+                className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-[1.5px] border-dashed border-sheet/45 px-4 py-12 text-center transition-colors hover:border-foreground/50 hover:bg-muted/40 focus-within:border-foreground"
             >
-                <Upload size={24} className="text-primary" />
-                <span className="font-medium">
+                <Upload size={22} className="text-muted-foreground" />
+                <span className="font-display text-lg">
                     {uploadedFiles.length > 0
                         ? 'Add more files'
                         : 'Click to choose files'}
                 </span>
-                <span className="text-xs text-muted-foreground">
-                    PDF, Word, text, or images · up to 5 files ·{' '}
-                    {UPLOAD_LIMIT_MB} MB each
+                <span className="text-sm text-muted-foreground">
+                    PDF, Word, text or images. Up to 5 files,{' '}
+                    {UPLOAD_LIMIT_MB} MB each.
                 </span>
             </label>
 
@@ -361,17 +361,17 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                         {uploadedFiles.map((file, idx) => (
                             <li
                                 key={`${file.name}-${idx}`}
-                                className="flex items-center justify-between gap-2 rounded-lg bg-muted/50 px-3 py-2"
+                                className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2"
                             >
                                 <div className="flex items-center gap-2 min-w-0">
                                     <FileText
                                         size={16}
-                                        className="text-primary shrink-0"
+                                        className="shrink-0 text-muted-foreground"
                                     />
                                     <span className="text-sm truncate">
                                         {file.name}
                                     </span>
-                                    <span className="text-xs text-muted-foreground shrink-0">
+                                    <span className="tabular shrink-0 text-sm text-muted-foreground">
                                         {formatSize(file.size)}
                                     </span>
                                 </div>
@@ -409,7 +409,7 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
 
             {uploadedFiles.length === 0 && (
                 <div className="space-y-2">
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <div className="h-px flex-1 bg-border" />
                         or type a topic
                         <div className="h-px flex-1 bg-border" />
@@ -421,13 +421,15 @@ const PDFUploadSection: React.FC<PDFUploadSectionProps> = ({
                             onKeyDown={handleKeyDown}
                             placeholder="e.g. Photosynthesis"
                             maxLength={500}
+                            aria-label="Topic"
+                            className="h-11"
                         />
                         <Button
-                            variant="secondary"
                             onClick={handleTopicSubmit}
                             disabled={topicText.trim().length < 3}
+                            className="h-11 shrink-0"
                         >
-                            Go
+                            Study this
                         </Button>
                     </div>
                 </div>

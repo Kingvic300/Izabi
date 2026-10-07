@@ -8,7 +8,6 @@ import GoalPanel from '@/components/dashboard-partner/GoalPanel';
 import PartnerStudyActivity from '@/components/dashboard-partner/PartnerStudyActivity';
 import PartnerChat from '@/components/dashboard-partner/PartnerChat';
 import { AccountabilityPartnerView } from '@/components/dashboard-partner/AccountabilityPartnerView';
-import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { getPartnerDisplayName } from '@/components/dashboard-partner/partnerUtils';
 
@@ -34,10 +33,8 @@ const DashboardPartner = () => {
 
     if (isLoading) {
         return (
-            <div className="space-y-6">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                    Accountability Partner
-                </h1>
+            <div className="space-y-8">
+                <PartnerHeader />
                 <PageLoader
                     variant="skeleton-cards"
                     itemCount={3}
@@ -48,7 +45,7 @@ const DashboardPartner = () => {
     }
 
     return (
-        <div className="space-y-8 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12">
+        <div className="w-full space-y-12 pb-16">
             <PartnerHeader />
 
             {!partnership && (
@@ -64,23 +61,19 @@ const DashboardPartner = () => {
             )}
 
             {partnership?.status === 'pending' && !partnership.awaitingYourResponse && (
-                <Card className="glass-card border-foreground/10 rounded-xl">
-                    <CardContent className="p-8 text-center space-y-3">
-                        <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
-                        <p className="text-sm text-muted-foreground">
-                            Waiting for {getPartnerDisplayName(partnership.partner)}{' '}
-                            to accept your invite...
-                        </p>
-                    </CardContent>
-                </Card>
+                <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-5">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                    <p>
+                        Waiting for {getPartnerDisplayName(partnership.partner)} to
+                        accept your invite.
+                    </p>
+                </div>
             )}
 
             {partnership?.status === 'active' && (
                 <>
                     <section className="space-y-4">
-                        <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                            Co-Working & Nudges
-                        </div>
+                        <h3 className="text-2xl">Today</h3>
                         <AccountabilityPartnerView
                             partnership={partnership}
                             streaks={streaks}
@@ -93,16 +86,12 @@ const DashboardPartner = () => {
                     </section>
 
                     <section className="space-y-4">
-                        <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                            Streaks
-                        </div>
+                        <h3 className="text-2xl">Streaks</h3>
                         <PartnerStatCards streaks={streaks} />
                     </section>
 
                     <section className="space-y-4">
-                        <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                            Shared Goal
-                        </div>
+                        <h3 className="text-2xl">Shared goal</h3>
                         <GoalPanel
                             goal={goal}
                             checkInStatus={checkInStatus}
@@ -115,9 +104,7 @@ const DashboardPartner = () => {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <section className="space-y-4">
-                            <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                                Study Activity
-                            </div>
+                            <h3 className="text-2xl">Their study activity</h3>
                             <PartnerStudyActivity
                                 partner={partnership.partner}
                                 studySummary={studySummary}
@@ -125,9 +112,7 @@ const DashboardPartner = () => {
                         </section>
 
                         <section className="space-y-4">
-                            <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                                Chat
-                            </div>
+                            <h3 className="text-2xl">Chat</h3>
                             <PartnerChat
                                 partner={partnership.partner}
                                 messages={messages}

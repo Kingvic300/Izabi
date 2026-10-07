@@ -18,19 +18,19 @@ const Toaster = ({ ...props }: ToasterProps) => {
             toastOptions={{
                 duration: 5000,
                 classNames: {
-                    toast: 'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-foreground/10 group-[.toaster]:shadow-2xl group-[.toaster]:rounded-xl group-[.toaster]:font-bold',
+                    toast: 'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-float group-[.toaster]:rounded-lg group-[.toaster]:font-sans',
                     description:
                         'group-[.toast]:text-muted-foreground group-[.toast]:text-sm group-[.toast]:font-medium',
                     actionButton:
-                        'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground group-[.toast]:rounded-xl group-[.toast]:font-bold',
+                        'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground group-[.toast]:rounded-md group-[.toast]:font-bold',
                     cancelButton:
-                        'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground group-[.toast]:rounded-xl group-[.toast]:font-bold',
+                        'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground group-[.toast]:rounded-md group-[.toast]:font-bold',
                     success:
-                        'group-[.toast]:border-primary/50 group-[.toast]:bg-primary/5',
-                    error: 'group-[.toast]:border-destructive/50 group-[.toast]:bg-destructive/5',
+                        'group-[.toast]:border-reward/40 group-[.toast]:bg-card',
+                    error: 'group-[.toast]:border-destructive/40 group-[.toast]:bg-card',
                     warning:
-                        'group-[.toast]:border-primary/30 group-[.toast]:bg-primary/5',
-                    info: 'group-[.toast]:border-primary/50 group-[.toast]:bg-primary/5',
+                        'group-[.toast]:border-urgent/40 group-[.toast]:bg-card',
+                    info: 'group-[.toast]:border-border group-[.toast]:bg-card',
                 },
             }}
             {...props}

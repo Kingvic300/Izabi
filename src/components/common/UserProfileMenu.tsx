@@ -49,7 +49,7 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
                 aria-label="User Profile Menu"
                 aria-expanded={isOpen}
             >
-                <div className="w-7 h-7 rounded-lg border border-primary/40 bg-primary/10 shrink-0 flex items-center justify-center text-[10px] font-bold text-primary">
+                <div className="w-7 h-7 rounded-lg border border-primary/40 bg-primary/10 shrink-0 flex items-center justify-center text-xs font-bold text-primary">
                     {initials || 'U'}
                 </div>
 
@@ -78,18 +78,18 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
                             {userName}
                         </span>
                         {userEmail && (
-                            <span className="text-[11px] text-muted-foreground block truncate font-mono mt-0.5">
+                            <span className="text-[11px] text-muted-foreground block truncate tabular mt-0.5">
                                 {userEmail}
                             </span>
                         )}
 
                         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2.5 pt-2 border-t border-border">
-                            <span className="flex items-center gap-1 text-amber-500 font-mono font-medium">
-                                <Flame className="w-3.5 h-3.5 fill-amber-500" />
+                            <span className="flex items-center gap-1 text-urgent tabular font-medium">
+                                <Flame className="w-3.5 h-3.5 fill-urgent" />
                                 {streak}
                             </span>
                             <span className="text-muted-foreground">·</span>
-                            <span className="flex items-center gap-1 text-primary font-mono font-medium">
+                            <span className="flex items-center gap-1 text-primary tabular font-medium">
                                 <Star className="w-3.5 h-3.5" />
                                 {totalPoints} XP
                             </span>
@@ -117,7 +117,7 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
                             }}
                             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer text-left font-medium group"
                         >
-                            <LogOut className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                            <LogOut className="w-4 h-4 transition-transform" />
                             <span>Log Out</span>
                         </button>
                     </div>

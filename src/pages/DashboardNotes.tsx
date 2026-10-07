@@ -2,14 +2,12 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, FileText, FolderOpen, Filter } from 'lucide-react';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formValidation } from '@/lib/formValidation';
 import { api } from '@/lib/apiClient';
 import { PageLoader } from '@/components/PageLoader';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import { PageHeader } from '@/components/dashboard/PageHeader';
 import NotesHeader from '@/components/dashboard-notes/NotesHeader';
 import GroupFilterBar from '@/components/dashboard-notes/GroupFilterBar';
 import NewNoteForm from '@/components/dashboard-notes/NewNoteForm';
@@ -84,28 +82,6 @@ export default function DashboardNotes() {
         {},
     );
 
-    useGSAP(
-        () => {
-            if (!isLoading) {
-                gsap.from('.notes-header', {
-                    opacity: 0,
-                    y: -20,
-                    duration: 0.6,
-                    ease: 'power2.out',
-                });
-                if (notes.length > 0) {
-                    gsap.from('.note-card', {
-                        opacity: 0,
-                        y: 20,
-                        stagger: 0.1,
-                        duration: 0.5,
-                        ease: 'power2.out',
-                    });
-                }
-            }
-        },
-        { scope: containerRef, dependencies: [isLoading, notes.length] },
-    );
 
     useEffect(() => {
         const fetchGroups = async () => {
@@ -664,13 +640,11 @@ export default function DashboardNotes() {
 
     if (isLoading) {
         return (
-            <div className="space-y-6">
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                    My Notes
-                </h1>
-                <p className="text-muted-foreground">
-                    Organize, search, and create study notes with ease.
-                </p>
+            <div className="space-y-8">
+                <PageHeader
+                    title="Notes"
+                    description="Everything you have written or imported, sorted into folders."
+                />
                 <PageLoader
                     variant="skeleton-cards"
                     itemCount={3}
@@ -681,106 +655,61 @@ export default function DashboardNotes() {
     }
 
     return (
-        <div
-            ref={containerRef}
-            className="space-y-8 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
-        >
-            <div className="notes-header space-y-6">
-                <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs sm:text-xs font-semibold text-primary">
-                            Notes
-                        </span>
-                    </div>
-                    <NotesHeader
-                        isAddingNote={isAddingNote}
-                        onImport={() => openImportModal('import')}
-                        onScan={() => openImportModal('scan')}
-                        onCreate={() => setIsAddingNote(true)}
-                    />
+        <div ref={containerRef} className="w-full space-y-10 pb-16">
+            <NotesHeader
+                isAddingNote={isAddingNote}
+                onImport={() => openImportModal('import')}
+                onScan={() => openImportModal('scan')}
+                onCreate={() => setIsAddingNote(true)}
+            />
+
+            <dl className="grid grid-cols-1 overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-3">
+                <div className="px-5 py-4 sm:px-6">
+                    <dt className="text-sm text-muted-foreground">Notes</dt>
+                    <dd className="tabular mt-1 font-display text-[1.75rem] leading-none">
+                        {totalNotes}
+                    </dd>
                 </div>
-
-                <StudyToolsGrid
-                    onSelectTool={(toolId) => {
-                        if (toolId === 'upload-notes') {
-                            openImportModal('import');
-                            return;
-                        }
-                        setActiveStudyTool(toolId);
-                    }}
-                    selectedToolId={activeStudyTool}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="glass-card border-foreground/10 rounded-2xl p-5">
-                        <div className="flex items-center justify-between">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                <FileText size={18} />
-                            </div>
-                            <span className="text-xs font-semibold text-muted-foreground/60">
-                                Total Notes
-                            </span>
-                        </div>
-                        <div className="mt-4 text-2xl font-semibold tracking-tight">
-                            {totalNotes}
-                        </div>
-                        <p className="text-xs text-muted-foreground font-medium">
-                            Notes saved in your workspace
-                        </p>
-                    </div>
-
-                    <div className="glass-card border-foreground/10 rounded-2xl p-5">
-                        <div className="flex items-center justify-between">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                <FolderOpen size={18} />
-                            </div>
-                            <span className="text-xs font-semibold text-muted-foreground/60">
-                                Folders
-                            </span>
-                        </div>
-                        <div className="mt-4 text-2xl font-semibold tracking-tight">
-                            {totalGroups}
-                        </div>
-                        <p className="text-xs text-muted-foreground font-medium">
-                            Organize notes into groups
-                        </p>
-                    </div>
-
-                    <div className="glass-card border-foreground/10 rounded-2xl p-5">
-                        <div className="flex items-center justify-between">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                <Clock size={18} />
-                            </div>
-                            <span className="text-xs font-semibold text-muted-foreground/60">
-                                Recent Updates
-                            </span>
-                        </div>
-                        <div className="mt-4 space-y-2">
-                            {recentNotes.length === 0 ? (
-                                <p className="text-xs text-muted-foreground font-medium">
-                                    No notes updated yet.
-                                </p>
-                            ) : (
-                                recentNotes.map((note) => (
-                                    <div
-                                        key={note.id}
-                                        className="text-xs text-foreground/80 font-semibold truncate"
-                                    >
-                                        {note.title}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
+                <div className="border-t border-border px-5 py-4 sm:border-l sm:border-t-0 sm:px-6">
+                    <dt className="text-sm text-muted-foreground">Folders</dt>
+                    <dd className="tabular mt-1 font-display text-[1.75rem] leading-none">
+                        {totalGroups}
+                    </dd>
                 </div>
-            </div>
+                <div className="border-t border-border px-5 py-4 sm:border-l sm:border-t-0 sm:px-6">
+                    <dt className="text-sm text-muted-foreground">Recently edited</dt>
+                    <dd className="mt-1.5 space-y-0.5 text-sm">
+                        {recentNotes.length === 0 ? (
+                            <span className="text-muted-foreground">
+                                Nothing yet.
+                            </span>
+                        ) : (
+                            recentNotes.map((note) => (
+                                <span key={note.id} className="block truncate">
+                                    {note.title}
+                                </span>
+                            ))
+                        )}
+                    </dd>
+                </div>
+            </dl>
 
-            <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6 space-y-6">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground">
-                        <Filter size={12} className="text-primary" />
+            <StudyToolsGrid
+                onSelectTool={(toolId) => {
+                    if (toolId === 'upload-notes') {
+                        openImportModal('import');
+                        return;
+                    }
+                    setActiveStudyTool(toolId);
+                }}
+                selectedToolId={activeStudyTool}
+            />
+
+            <section aria-labelledby="all-notes-title" className="space-y-5">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <h3 id="all-notes-title" className="text-2xl">
                         {activeGroupLabel}
-                    </div>
+                    </h3>
                     <GroupFilterBar
                         groups={groups}
                         groupFilter={groupFilter}
@@ -831,7 +760,7 @@ export default function DashboardNotes() {
                     }
                     onCreateNote={() => setIsAddingNote(true)}
                 />
-            </div>
+            </section>
 
             <GroupManagerDialog
                 open={groupModalOpen}

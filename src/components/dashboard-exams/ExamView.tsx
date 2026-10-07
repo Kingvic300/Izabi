@@ -1,8 +1,6 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AnswerOption } from '@/components/ui/answer-option';
+import { Bubble } from '@/components/ui/bubble';
 import { cn } from '@/lib/utils';
 import type { Exam } from '@/types/api';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -27,6 +25,8 @@ const formatTime = (seconds: number) => {
     return `${m}:${s < 10 ? '0' : ''}${s}`;
 };
 
+const letter = (i: number) => String.fromCharCode(65 + i);
+
 export default function ExamView({
     activeTab,
     currentExam,
@@ -45,149 +45,152 @@ export default function ExamView({
 
     const totalQuestions = currentExam.questions.length;
     const currentQuestion = currentExam.questions[currentQuestionIndex];
+    const answeredCount = Object.keys(answers).length;
+    const isLast = currentQuestionIndex === totalQuestions - 1;
+    const lowTime = timeLeft < 60;
 
     return (
-        <div className="w-full min-h-screen flex flex-col pb-16 sm:pb-20">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6 sm:mb-8 sticky top-2 sm:top-4 z-50 bg-background/80 p-3 sm:p-4 rounded-2xl border border-foreground/10 shadow-sm">
+        <div className="w-full pb-16">
+            <div className="sticky top-14 z-30 -mx-4 mb-8 flex items-center justify-between gap-4 border-b border-border bg-background/95 px-4 py-3 supports-[backdrop-filter]:bg-background/85 supports-[backdrop-filter]:backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
                 <div className="min-w-0">
-                    <h2 className="text-base sm:text-xl font-bold truncate max-w-[140px] sm:max-w-[200px] md:max-w-md">
+                    <h2 className="truncate text-xl leading-tight sm:text-2xl">
                         {currentExam.subject}
                     </h2>
-                    <p className="text-xs font-bold opacity-60 ">
-                        {activeTab} • {t('quiz.question_label')} {currentQuestionIndex + 1} {t('quiz.of_label')}{' '}
+                    <p className="tabular text-sm text-muted-foreground">
+                        {activeTab}, {t('quiz.question_label').toLowerCase()}{' '}
+                        {currentQuestionIndex + 1} {t('quiz.of_label')}{' '}
                         {totalQuestions}
                     </p>
                 </div>
-                <div
-                    className={`px-3 sm:px-4 py-2 rounded-xl font-mono font-semibold text-lg sm:text-2xl ${timeLeft < 60 ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-blue-500/10 text-blue-500'}`}
-                >
-                    {formatTime(timeLeft)}
-                </div>
-            </div>
-
-            {/* CBT Question Navigator */}
-            <div className="sticky top-[78px] sm:top-[96px] z-40 mb-4 sm:mb-6 rounded-2xl border border-foreground/10 bg-card/80 p-3 sm:p-4 shadow-lg">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-xs sm:text-xs font-semibold opacity-80">
-                        {t('exams.question_navigator')}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs sm:text-xs font-bold">
-                        <span className="rounded-md bg-foreground/5 px-2 py-1">
-                            {t('exams.total_label')} {totalQuestions}
-                        </span>
-                        <span className="rounded-md bg-green-500/15 px-2 py-1 text-green-500">
-                            {t('exams.answered_label')} {Object.keys(answers).length}
-                        </span>
-                        <span className="rounded-md bg-foreground/5 px-2 py-1">
-                            {t('exams.left_label')} {totalQuestions - Object.keys(answers).length}
-                        </span>
-                    </div>
-                </div>
-                <div className="mb-2 text-xs sm:text-xs font-bold opacity-50">
-                    {t('exams.tap_to_jump')}
-                </div>
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
-                    {currentExam.questions.map((_, index) => {
-                        const isCurrent = index === currentQuestionIndex;
-                        const isAnswered = answers[index] !== undefined;
-                        const isVisited = visitedQuestions.includes(index);
-
-                        return (
-                            <button
-                                key={index}
-                                type="button"
-                                onClick={() => onNavigate(index)}
-                                aria-label={`Go to question ${index + 1}`}
-                                className={cn(
-                                    'h-9 sm:h-10 rounded-lg border text-xs sm:text-sm font-semibold transition-all',
-                                    isAnswered
-                                        ? 'border-green-500 bg-green-500 text-white'
-                                        : isCurrent
-                                          ? 'border-foreground/50 ring-2 ring-foreground/20 bg-background text-foreground'
-                                          : isVisited
-                                            ? 'border-foreground/20 bg-background text-foreground hover:bg-card/80'
-                                            : 'border-foreground/10 bg-background/60 text-foreground hover:bg-card/80',
-                                )}
-                            >
-                                {index + 1}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Question Card */}
-            <motion.div
-                key={currentQuestionIndex}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="flex-1"
-            >
-                <Card className="glass border-foreground/10 shadow-sm p-6 md:p-10 rounded-xl">
-                    <div className="mb-8">
-                        <p className="text-lg md:text-2xl font-medium leading-relaxed">
-                            {currentQuestion.question}
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                        {currentQuestion.options.map((option, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => onAnswer(option)}
-                                className={`text-left p-6 rounded-2xl transition-all border-2 flex items-start gap-4 group whitespace-normal ${
-                                    answers[currentQuestionIndex] === option
-                                        ? 'border-blue-500 bg-blue-500/10'
-                                        : 'border-foreground/5 bg-card/5 hover:bg-card/10 hover:border-foreground/10'
-                                }`}
-                            >
-                                <div
-                                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs shrink-0 ${
-                                        answers[currentQuestionIndex] === option
-                                            ? 'border-blue-500 bg-blue-500 text-white'
-                                            : 'border-foreground/20'
-                                    }`}
-                                >
-                                    {String.fromCharCode(65 + idx)}
-                                </div>
-                                <span className="text-sm sm:text-base font-medium leading-snug break-words">
-                                    {option}
-                                </span>
-                            </button>
-                        ))}
-                    </div>
-                </Card>
-
-                {/* Footer Navigation */}
-                <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pb-12 w-full max-w-md mx-auto">
-                    <Button
-                        variant="ghost"
-                        onClick={onPrev}
-                        disabled={currentQuestionIndex === 0}
-                        className="w-full sm:w-32 h-12 rounded-xl font-bold border border-foreground/5 hover:bg-card"
+                <div className="text-right" role="timer" aria-live="off">
+                    <p className="text-xs text-muted-foreground">Time left</p>
+                    <p
+                        className={cn(
+                            'tabular font-display text-2xl leading-none sm:text-3xl',
+                            lowTime && 'text-urgent',
+                        )}
                     >
-                        {t('exams.previous')}
-                    </Button>
-
-                    {currentQuestionIndex === totalQuestions - 1 ? (
-                        <Button
-                            onClick={onSubmit}
-                            className="w-full sm:w-48 h-14 rounded-2xl font-semibold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-600/20 active:scale-95 transition-all"
-                        >
-                            {t('exams.final_submission')}
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={onNext}
-                            className="w-full sm:w-32 h-12 rounded-xl font-semibold text-xs bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm transition-all active:scale-95"
-                        >
-                            {t('exams.next')}
-                        </Button>
-                    )}
+                        {formatTime(timeLeft)}
+                    </p>
                 </div>
-            </motion.div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] xl:gap-12">
+                <section aria-labelledby="exam-question">
+                    <div className="flex gap-4">
+                        <span className="tabular w-8 shrink-0 pt-1 text-right text-lg font-bold text-sheet">
+                            {currentQuestionIndex + 1}.
+                        </span>
+                        <div className="min-w-0 flex-1">
+                            <p
+                                id="exam-question"
+                                className="break-words font-display text-xl leading-relaxed sm:text-2xl"
+                            >
+                                {currentQuestion.question}
+                            </p>
+                            <div
+                                role="radiogroup"
+                                aria-labelledby="exam-question"
+                                className="mt-6 grid grid-cols-1 gap-2"
+                            >
+                                {currentQuestion.options.map((option, idx) => (
+                                    <AnswerOption
+                                        key={idx}
+                                        letter={letter(idx)}
+                                        state={
+                                            answers[currentQuestionIndex] === option
+                                                ? 'selected'
+                                                : 'idle'
+                                        }
+                                        onClick={() => onAnswer(option)}
+                                        className="min-h-14 break-words py-3 text-base"
+                                    >
+                                        {option}
+                                    </AnswerOption>
+                                ))}
+                            </div>
+
+                            <div className="mt-8 flex items-center justify-between gap-3">
+                                <Button
+                                    variant="outline"
+                                    onClick={onPrev}
+                                    disabled={currentQuestionIndex === 0}
+                                >
+                                    {t('exams.previous')}
+                                </Button>
+                                {isLast ? (
+                                    <Button onClick={onSubmit}>
+                                        {t('exams.final_submission')}
+                                    </Button>
+                                ) : (
+                                    <Button onClick={onNext}>
+                                        {t('exams.next')}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside
+                    aria-label={t('exams.question_navigator')}
+                    className="lg:sticky lg:top-36 lg:self-start"
+                >
+                    <div className="relative overflow-hidden rounded-lg border border-border bg-card">
+                        <div className="flex items-baseline justify-between border-b border-sheet/35 px-4 py-3">
+                            <p className="font-display text-lg">Answer sheet</p>
+                            <p className="tabular text-sm text-muted-foreground">
+                                {answeredCount}/{totalQuestions}
+                            </p>
+                        </div>
+                        <ol className="max-h-[50vh] overflow-y-auto py-1 lg:max-h-[calc(100vh-16rem)]">
+                            {currentExam.questions.map((q, index) => {
+                                const isCurrent = index === currentQuestionIndex;
+                                const chosen = answers[index];
+                                const chosenIdx =
+                                    chosen !== undefined ? q.options.indexOf(chosen) : -1;
+                                const isVisited = visitedQuestions.includes(index);
+                                return (
+                                    <li key={index}>
+                                        <button
+                                            type="button"
+                                            onClick={() => onNavigate(index)}
+                                            aria-current={isCurrent ? 'step' : undefined}
+                                            aria-label={`Question ${index + 1}${chosenIdx >= 0 ? `, answered ${letter(chosenIdx)}` : isVisited ? ', seen, not answered' : ''}`}
+                                            className={cn(
+                                                'flex w-full items-center gap-3 px-4 py-1.5 transition-colors hover:bg-muted/60',
+                                                isCurrent && 'bg-highlight/25 hover:bg-highlight/30',
+                                            )}
+                                        >
+                                            <span
+                                                className={cn(
+                                                    'tabular w-7 text-right text-sm font-bold',
+                                                    isCurrent ? 'text-foreground' : 'text-sheet',
+                                                )}
+                                            >
+                                                {index + 1}
+                                            </span>
+                                            <span className="flex gap-1.5">
+                                                {q.options.map((_, oi) => (
+                                                    <Bubble
+                                                        key={oi}
+                                                        size="xs"
+                                                        label={letter(oi)}
+                                                        state={oi === chosenIdx ? 'filled' : 'empty'}
+                                                    />
+                                                ))}
+                                            </span>
+                                        </button>
+                                    </li>
+                                );
+                            })}
+                        </ol>
+                    </div>
+                    <p className="mt-3 text-sm text-muted-foreground">
+                        {t('exams.tap_to_jump')}
+                    </p>
+                </aside>
+            </div>
         </div>
     );
 }

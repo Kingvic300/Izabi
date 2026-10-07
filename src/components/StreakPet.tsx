@@ -342,15 +342,12 @@ const StreakPet: React.FC<PetProps> = ({
         return { offsetY: 0, scale: 1 };
     }, [moodState]);
 
-    const baseFloat = moodState === 'excited' ? 14 : 10;
-    const baseBreath = moodState === 'sleepy' ? 0.02 : 0.035;
-
     return (
         <div
             id="streak-pet-container"
             ref={containerRef}
             className={cn(
-                'fixed bottom-8 right-8 z-[300] group pointer-events-auto',
+                'fixed bottom-5 right-5 z-[300] group pointer-events-auto sm:bottom-6 sm:right-6',
                 className,
             )}
         >
@@ -386,12 +383,6 @@ const StreakPet: React.FC<PetProps> = ({
                             : 'scale-100',
                     )}
                     whileTap={{ scale: 0.94 }}
-                    animate={{ y: [0, -baseFloat, 0], scale: [1, 1 + baseBreath, 1] }}
-                    transition={{
-                        duration: moodState === 'excited' ? 2.8 : 3.6,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                    }}
                     style={
                         {
                             '--pet-body': evolvedTheme.body,
@@ -475,11 +466,11 @@ const StreakPet: React.FC<PetProps> = ({
                             />
                         </div>
 
-                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-2.5 h-2 rounded-[50%_50%_60%_60%] bg-amber-300/90 rotate-[5deg]" />
+                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-2.5 h-2 rounded-[50%_50%_60%_60%] bg-urgent/90 rotate-[5deg]" />
 
                         {moodState === 'excited' && (
                             <motion.div
-                                className="absolute -top-1 -right-1 text-amber-200 drop-shadow"
+                                className="absolute -top-1 -right-1 text-urgent drop-shadow"
                                 animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
                                 transition={{ duration: 1.6, repeat: Infinity }}
                             >
@@ -490,7 +481,7 @@ const StreakPet: React.FC<PetProps> = ({
                         {moodState === 'sad' && (
                             <Ghost
                                 size={26}
-                                className="absolute -bottom-1 right-1 text-white/50"
+                                className="absolute -bottom-1 right-1 text-background/50"
                             />
                         )}
                     </motion.div>
@@ -500,7 +491,7 @@ const StreakPet: React.FC<PetProps> = ({
                             initial={{ y: 0, opacity: 0 }}
                             animate={{ y: -20, opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="absolute -top-12 left-1/2 -translate-x-1/2 text-green-200 font-bold text-xs whitespace-nowrap"
+                            className="absolute -top-12 left-1/2 -translate-x-1/2 text-reward font-bold text-xs whitespace-nowrap"
                         >
                             +XP Yummy!
                         </motion.div>
@@ -513,42 +504,42 @@ const StreakPet: React.FC<PetProps> = ({
                         'absolute bottom-full right-0 mb-4 transition-all duration-300 w-64',
                         isOpen
                             ? 'opacity-100 translate-y-0 pointer-events-auto'
-                            : 'opacity-0 translate-y-4 pointer-events-none md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto',
+                            : 'opacity-0 translate-y-4 pointer-events-none md:group-hover:opacity-100 md:group-hover:pointer-events-auto',
                     )}
                 >
-                    <div className="glass border-primary/20 p-5 rounded-xl shadow-sm space-y-3">
+                    <div className="space-y-3 rounded-lg border border-border bg-popover p-5 shadow-float">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-primary/60">
+                            <span className="text-sm text-muted-foreground">
                                 Companion
                             </span>
-                            <div className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[8px] font-semibold ">
+                            <div className="rounded-full bg-muted px-2 py-0.5 text-xs font-bold">
                                 {evolution.badge}
                             </div>
                         </div>
 
                         <div>
-                            <h3 className="font-bold text-lg leading-tight">
+                            <h3 className="text-xl leading-tight">
                                 {evolution.label}
                             </h3>
-                            <p className="text-xs font-medium opacity-50 ">
+                            <p className="text-sm text-muted-foreground">
                                 {evolution.subtitle}
                             </p>
                         </div>
 
-                        <div className="text-xs font-semibold text-primary/70">
+                        <div className="text-sm text-muted-foreground">
                             Personality: Encouraging, Slightly Dramatic
                         </div>
 
-                        <div className="h-1.5 w-full bg-card/10 rounded-full overflow-hidden">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
                             <div
-                                className="h-full bg-primary"
+                                className="h-full bg-foreground"
                                 style={{ width: `${(streak % 5) * 20 || 20}%` }}
                             />
                         </div>
 
                         <div className="flex items-center justify-between pt-1">
                             <div className="flex items-center gap-1.5">
-                                <div className="p-1 rounded-lg bg-orange-500/20 text-orange-500">
+                                <div className="p-1 rounded-lg bg-urgent/20 text-urgent">
                                     <Flame size={10} fill="currentColor" />
                                 </div>
                                 <span className="text-xs font-bold">
@@ -559,7 +550,7 @@ const StreakPet: React.FC<PetProps> = ({
                             {onFeed && (
                                 <div className="flex items-center gap-2">
                                     {streakFreezes > 0 && (
-                                        <div className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-500 text-xs font-semibold flex items-center gap-1">
+                                        <div className="px-2 py-0.5 rounded-full bg-learning-blue/20 text-learning-blue text-xs font-semibold flex items-center gap-1">
                                             ❄️ {streakFreezes}
                                         </div>
                                     )}
@@ -568,8 +559,8 @@ const StreakPet: React.FC<PetProps> = ({
                                         disabled={userPoints < 50 || isFeeding}
                                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                                             userPoints >= 50
-                                                ? 'bg-amber-500 text-black hover:bg-amber-400'
-                                                : 'bg-card/5 text-foreground/30 cursor-not-allowed'
+                                                ? 'bg-urgent text-black hover:bg-urgent'
+                                                : 'bg-card text-foreground/30 cursor-not-allowed'
                                         }`}
                                     >
                                         <Utensils size={10} />
@@ -581,7 +572,7 @@ const StreakPet: React.FC<PetProps> = ({
                     </div>
 
                     {/* Speech Bubble Tail */}
-                    <div className="absolute -bottom-2 right-8 w-4 h-4 bg-[#0a0a0a]/50 rotate-45 border-r border-b border-primary/20 " />
+                    <div className="absolute -bottom-2 right-8 h-4 w-4 rotate-45 border-b border-r border-border bg-popover" />
                 </div>
             </motion.div>
         </div>

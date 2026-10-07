@@ -1,95 +1,30 @@
-import { Activity, ArrowDownRight, ArrowUpRight, Database, Key, Users } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import type { AdminStats } from './adminTypes';
+import { StatStrip } from '@/components/dashboard/StatStrip';
 
 type AdminQuickStatsProps = {
     stats: AdminStats;
 };
 
-const STAT_CONFIG: Array<{
-    key: keyof AdminStats;
-    label: string;
-    sub: (stats: AdminStats) => string;
-    icon: typeof Users;
-    color: string;
-    trend: 'up' | 'down';
-}> = [
-    {
-        key: 'totalUsers',
-        label: 'Total Users',
-        sub: (stats: AdminStats) => `+${stats.growth}% this month`,
-        icon: Users,
-        color: 'text-primary',
-        trend: 'up',
-    },
-    {
-        key: 'activeNow',
-        label: 'Active Users',
-        sub: () => 'Live connected users',
-        icon: Activity,
-        color: 'text-primary',
-        trend: 'up',
-    },
-    {
-        key: 'totalNotes',
-        label: 'Notes Generated',
-        sub: () => 'Student notes indexed',
-        icon: Database,
-        color: 'text-primary',
-        trend: 'up',
-    },
- 
-] as const;
-
 export default function AdminQuickStats({ stats }: AdminQuickStatsProps) {
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-            {STAT_CONFIG.map((stat) => {
-                const Icon = stat.icon;
-                const value = stats[stat.key];
-                return (
-                    <Card
-                        key={stat.key}
-                        className="admin-card glass border-foreground/5 shadow-xl hover-lift group overflow-hidden"
-                    >
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-xs font-medium text-muted-foreground">
-                                {stat.label}
-                            </CardTitle>
-                            <Icon
-                                size={18}
-                                className={cn(
-                                    stat.color,
-                                    'group-hover:scale-110 transition-transform',
-                                )}
-                            />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl md:text-3xl font-bold tracking-tighter mb-1">
-                                {Number(value).toLocaleString()}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                {stat.trend === 'up' ? (
-                                    <ArrowUpRight
-                                        size={14}
-                                        className="text-primary"
-                                    />
-                                ) : (
-                                    <ArrowDownRight
-                                        size={14}
-                                        className="text-destructive"
-                                    />
-                                )}
-                                <p className="text-xs font-medium text-muted-foreground">
-                                    {stat.sub(stats)}
-                                </p>
-                            </div>
-                        </CardContent>
-                        <div className="absolute bottom-0 left-0 h-1 w-full bg-primary/20" />
-                    </Card>
-                );
-            })}
-        </div>
+        <StatStrip
+            items={[
+                {
+                    label: 'Users',
+                    value: Number(stats.totalUsers).toLocaleString(),
+                    note: `+${stats.growth}% this month`,
+                },
+                {
+                    label: 'Active now',
+                    value: Number(stats.activeNow).toLocaleString(),
+                    note: 'Connected right now',
+                },
+                {
+                    label: 'Notes',
+                    value: Number(stats.totalNotes).toLocaleString(),
+                    note: 'Saved by students',
+                },
+            ]}
+        />
     );
 }

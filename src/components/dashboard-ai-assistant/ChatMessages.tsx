@@ -4,7 +4,7 @@ import type React from 'react';
 
 import { AIMarkdown } from '@/components/ui/ai-markdown';
 import { Button } from '@/components/ui/button';
-import { Brain, Check, Copy, Loader, Share2, User } from 'lucide-react';
+import { Check, Copy, Share2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { Message } from './types';
 
@@ -26,122 +26,82 @@ export default function ChatMessages({
     messagesEndRef,
 }: ChatMessagesProps) {
     const { t } = useLanguage();
+    const typing = (
+        <span className="flex gap-1 py-2" aria-label="Izabi is writing">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground" />
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground [animation-delay:0.2s]" />
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground [animation-delay:0.4s]" />
+        </span>
+    );
+    const time = (d: Date) =>
+        d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     return (
-        <div className="flex-1 min-h-0 overflow-y-auto space-y-4 md:space-y-6 p-4 md:p-6 scrollbar-thin scrollbar-thumb-primary/10">
-            <div className="mx-auto w-full max-w-[1500px] space-y-4 md:space-y-6">
-                {messages.map((message) => (
-                    <div
-                        key={message.id}
-                        className={`flex items-start gap-4 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
-                    >
-                        <div
-                            className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 border 
-                                    ${
-                                        message.role === 'user'
-                                            ? 'bg-primary/20 border-primary/30 text-primary'
-                                            : 'bg-accent/20 border-accent/30 text-accent'
-                                    }`}
-                        >
-                            {message.role === 'user' ? (
-                                <User className="h-4 w-4 md:h-5 md:w-5" />
-                            ) : (
-                                <Brain className="h-4 w-4 md:h-5 md:w-5" />
-                            )}
+        <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+            <div className="mx-auto w-full max-w-3xl space-y-8" aria-live="polite">
+                {messages.map((message) =>
+                    message.role === 'user' ? (
+                        <div key={message.id} className="flex flex-col items-end">
+                            <div className="max-w-[85%] rounded-lg rounded-br-sm bg-muted px-4 py-3">
+                                <p className="whitespace-pre-wrap break-words leading-relaxed">
+                                    {message.content}
+                                </p>
+                            </div>
+                            <span className="tabular mt-1 text-xs text-muted-foreground">
+                                {time(message.timestamp)}
+                            </span>
                         </div>
-                        <div
-                            className={`max-w-[92%] sm:max-w-[85%] lg:max-w-[72%] xl:max-w-[65%] px-4 md:px-5 pt-3 md:pt-4 pb-1 rounded-2xl shadow-sm leading-relaxed relative group
-                                        ${
-                                            message.role === 'user'
-                                                ? 'bg-primary text-primary-foreground rounded-tr-none'
-                                                : 'bg-muted/50 border border-foreground/5 rounded-tl-none'
-                                        }`}
-                        >
-                            <div className="text-sm md:text-base max-w-none break-words">
-                                {message.content === '' ? (
-                                    <div className="flex gap-0.5 py-1">
-                                        <div className="w-1.5 h-1.5 bg-accent animate-bounce" />
-                                        <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.2s]" />
-                                        <div className="w-1.5 h-1.5 bg-accent animate-bounce [animation-delay:0.4s]" />
+                    ) : (
+                        <div key={message.id} className="group flex gap-3">
+                            <img
+                                src="/logo-mark-light.png"
+                                alt=""
+                                className="mt-0.5 h-7 w-7 shrink-0 rounded-full border border-border bg-card object-contain p-0.5 dark:hidden"
+                            />
+                            <img
+                                src="/logo-mark-dark.png"
+                                alt=""
+                                className="mt-0.5 hidden h-7 w-7 shrink-0 rounded-full border border-border bg-card object-contain p-0.5 dark:block"
+                            />
+                            <div className="min-w-0 flex-1">
+                                <div className="break-words">
+                                    {message.content === '' ? (
+                                        typing
+                                    ) : (
+                                        <AIMarkdown content={message.content} className="text-base" />
+                                    )}
+                                </div>
+                                {message.content && String(message.content).trim() && (
+                                    <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+                                        <span className="tabular mr-1">{time(message.timestamp)}</span>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => onCopyMessage(message.id, message.content)}
+                                            className="h-7 w-7 text-muted-foreground md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
+                                            aria-label={t('assistant.copy_message_aria')}
+                                        >
+                                            {copiedMessageId === message.id ? <Check /> : <Copy />}
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => onShareMessage(message.content)}
+                                            className="h-7 w-7 text-muted-foreground md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
+                                            aria-label={t('assistant.share_message_aria')}
+                                        >
+                                            <Share2 />
+                                        </Button>
                                     </div>
-                                ) : message.role === 'assistant' ? (
-                                    <AIMarkdown
-                                        content={message.content}
-                                        className="text-sm md:text-base"
-                                    />
-                                ) : (
-                                    <p className="whitespace-pre-wrap leading-relaxed">
-                                        {message.content}
-                                    </p>
                                 )}
                             </div>
-                            <div
-                                className={`text-xs mt-2 opacity-40 font-bold 
-                                            ${message.role === 'user' ? 'text-right' : 'text-left'}`}
-                            >
-                                {message.timestamp.toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                })}
-                                {message.content &&
-                                    String(message.content).trim() && (
-                                        <div
-                                            className={`absolute ${
-                                                message.role === 'user'
-                                                    ? 'left-2 '
-                                                    : 'right-2'
-                                            } bottom-0.02 flex items-center gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-xs`}
-                                        >
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                onClick={() =>
-                                                    onCopyMessage(
-                                                        message.id,
-                                                        message.content,
-                                                    )
-                                                }
-                                                className="h-6 w-6 rounded-md hover:bg-foreground/5"
-                                                aria-label={t(
-                                                    'assistant.copy_message_aria',
-                                                )}
-                                            >
-                                                {copiedMessageId ===
-                                                message.id ? (
-                                                    <Check className="h-3 w-3" />
-                                                ) : (
-                                                    <Copy className="h-3 w-3" />
-                                                )}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                onClick={() =>
-                                                    onShareMessage(
-                                                        message.content,
-                                                    )
-                                                }
-                                                className="h-6 w-6 rounded-md hover:bg-foreground/5"
-                                                aria-label={t(
-                                                    'assistant.share_message_aria',
-                                                )}
-                                            >
-                                                <Share2 className="h-3 w-3" />
-                                            </Button>
-                                        </div>
-                                    )}
-                            </div>
                         </div>
-                    </div>
-                ))}
-                {isLoading && messages[messages.length - 1].content !== '' && (
-                    <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-accent/20 border border-accent/30 text-accent">
-                            <Brain className="h-5 w-5" />
-                        </div>
-                        <div className="bg-muted/50 border border-foreground/5 px-5 py-4 rounded-2xl rounded-tl-none">
-                            <Loader className="h-4 w-4 animate-spin text-accent" />
-                        </div>
-                    </div>
+                    ),
+                )}
+                {isLoading && messages[messages.length - 1]?.content !== '' && (
+                    <div className="flex gap-3 pl-10">{typing}</div>
                 )}
                 <div ref={messagesEndRef} />
             </div>

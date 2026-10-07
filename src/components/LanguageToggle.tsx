@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Globe } from 'lucide-react';
+import { Check, Languages } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,7 +12,7 @@ const languages = [
     { code: 'en', label: 'English' },
     { code: 'pidgin', label: 'Pidgin' },
     { code: 'igbo', label: 'Igbo' },
-    { code: 'yoruba', label: 'Yoruba' },
+    { code: 'yoruba', label: 'Yorùbá' },
     { code: 'hausa', label: 'Hausa' },
 ] as const;
 
@@ -28,31 +28,25 @@ export function LanguageToggle() {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="h-9 px-2.5 gap-1.5"
+                    className="h-9 gap-1.5 px-2.5 font-normal text-muted-foreground hover:text-foreground"
                 >
-                    <Globe size={16} />
-                    <span className="text-sm hidden xl:inline">
-                        {currentLabel}
-                    </span>
+                    <Languages size={16} />
+                    <span className="text-sm">{currentLabel}</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-                align="end"
-               
-            >
+            <DropdownMenuContent align="end" className="min-w-[10rem]">
                 {languages.map((lang) => (
                     <DropdownMenuItem
                         key={lang.code}
                         onClick={() => {
                             setLanguage(lang.code).catch(() => {});
                         }}
-                        className={`font-medium cursor-pointer ${
-                            language === lang.code
-                                ? 'bg-primary/10 text-primary'
-                                : ''
-                        }`}
+                        className="cursor-pointer justify-between"
                     >
                         {lang.label}
+                        {language === lang.code && (
+                            <Check className="h-4 w-4" />
+                        )}
                     </DropdownMenuItem>
                 ))}
             </DropdownMenuContent>

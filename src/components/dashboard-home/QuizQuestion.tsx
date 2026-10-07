@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, XCircle, Lightbulb } from 'lucide-react';
+import { Check, X, Lightbulb } from 'lucide-react';
+import { AnswerOption, type AnswerOptionState } from '@/components/ui/answer-option';
 import { Question } from '@/components/dashboard-home/types';
 import { cn } from '@/lib/utils';
 import { resolveCorrectOptionText } from '@/lib/quizUtils';
@@ -53,123 +53,114 @@ export const QuizQuestion = ({
         return null;
     })();
 
+    const correctOptionText = !isShort ? resolveCorrectOptionText(question) : '';
+
+    const optionState = (opt: string): AnswerOptionState => {
+        const isSelected = userAnswer === opt;
+        if (!showResults) return isSelected ? 'selected' : 'idle';
+        if (isSelected) return opt === correctOptionText ? 'correct' : 'wrong';
+        if (opt === correctOptionText) return 'missed';
+        return 'dimmed';
+    };
+
+    const labelId = `quiz-q-${index}`;
+
     return (
-        <Card className="bg-card/[0.02] border-foreground/5 rounded-2xl md:rounded-xl p-4 md:p-8 space-y-4 md:space-y-6 relative overflow-hidden group">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-3 md:gap-6">
-                <div className="space-y-2 md:space-y-3">
-                    <div className="text-xs font-bold text-primary">
-                        {t('quiz.question_label')} {index + 1}
-                    </div>
-                    <h4 className="text-base md:text-xl font-bold leading-tight text-foreground break-words">
+        <div className="flex gap-4 border-b border-sheet/25 pb-7 last-of-type:border-b-0">
+            <span className="tabular w-7 shrink-0 pt-1 text-right font-bold text-sheet">
+                {index + 1}.
+            </span>
+            <div className="min-w-0 flex-1 space-y-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <h4
+                        id={labelId}
+                        className="break-words text-lg leading-snug sm:text-xl"
+                    >
                         {question.question}
                     </h4>
+                    {hintText && !showResults && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="shrink-0 self-start text-muted-foreground"
+                            onClick={() => setShowHint((v) => !v)}
+                            aria-expanded={showHint}
+                        >
+                            <Lightbulb />
+                            {showHint ? t('quiz.hide_hint') : t('quiz.hint')}
+                        </Button>
+                    )}
+                    {showResults && (
+                        <span
+                            className={cn(
+                                'inline-flex shrink-0 items-center gap-1.5 self-start text-sm font-bold',
+                                isCorrect ? 'text-reward' : 'text-destructive',
+                            )}
+                        >
+                            {isCorrect ? <Check size={16} /> : <X size={16} />}
+                            {isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
+                        </span>
+                    )}
                 </div>
-                {hintText && !showResults && (
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="rounded-full gap-2 text-xs font-bold"
-                        onClick={() => setShowHint((v) => !v)}
-                    >
-                        <Lightbulb size={14} />
-                        {showHint ? t('quiz.hide_hint') : t('quiz.hint')}
-                    </Button>
-                )}
-                {showResults && (
+
+                {!isShort ? (
                     <div
-                        className={cn(
-                            "w-fit px-4 py-1.5 md:px-5 md:py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all",
-                            isCorrect
-                                ? 'bg-primary text-foreground'
-                                : 'bg-destructive text-primary-foreground shadow-destructive/20'
-                        )}
+                        role="radiogroup"
+                        aria-labelledby={labelId}
+                        className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2"
                     >
-                        {isCorrect ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                        {isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
+                        {question.options?.map((opt, idx) => (
+                            <AnswerOption
+                                key={idx}
+                                letter={String.fromCharCode(65 + idx)}
+                                state={optionState(opt)}
+                                disabled={showResults}
+                                onClick={() => onAnswerSelect(opt)}
+                                className="break-words"
+                            >
+                                {opt}
+                            </AnswerOption>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                        <Input
+                            value={userAnswer || ''}
+                            placeholder={t('quiz.type_answer_placeholder')}
+                            onChange={(e) => onShortAnswerChange(e.target.value)}
+                            disabled={showResults}
+                            aria-labelledby={labelId}
+                            className="h-12 text-base"
+                        />
+                        {showResults && !isCorrect && (
+                            <p className="text-[15px]">
+                                <span className="font-bold">
+                                    {t('quiz.correct_answer_label')}:
+                                </span>{' '}
+                                {question.answer}
+                            </p>
+                        )}
+                    </div>
+                )}
+
+                {showHint && hintText && !showResults && (
+                    <p className="text-[15px]">
+                        <span className="mark-highlight">{hintText}</span>
+                    </p>
+                )}
+
+                {showResults && showExplanations && question.explanation && (
+                    <div className="border-l-2 border-sheet/60 pl-4">
+                        <p className="text-sm font-bold">
+                            {t('quiz.explanation_label')}
+                        </p>
+                        <p className="mt-1 text-[15px] leading-relaxed text-muted-foreground">
+                            {question.explanation}
+                        </p>
                     </div>
                 )}
             </div>
-
-            {!isShort ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 w-full">
-                    {question.options?.map((opt, idx) => {
-                        const correctOptionText = resolveCorrectOptionText(question);
-                        const isSelected = userAnswer === opt;
-                        const isCorrect = showResults && opt === correctOptionText;
-                        const isWrong = showResults && isSelected && opt !== correctOptionText;
-
-                        return (
-                            <Button
-                                key={idx}
-                                onClick={() => onAnswerSelect(opt)}
-                                disabled={showResults}
-                                className={cn(
-                                    "h-auto min-h-[72px] py-4 md:py-6 px-4 md:px-6 justify-start text-left rounded-2xl md:rounded-xl transition-all duration-300 font-bold border border-foreground/5 w-full touch-manipulation",
-                                    "whitespace-normal break-words",
-                                    isSelected && 'bg-primary text-primary-foreground',
-                                    !isSelected && 'bg-card/5 hover:bg-card/10 text-primary-foreground/70',
-                                    isCorrect && 'bg-primary/20 border-primary/50 text-primary !bg-opacity-20',
-                                    isWrong && 'bg-destructive/20 border-destructive/50 text-destructive-foreground !bg-opacity-20'
-                                )}
-                            >
-                                <div className="flex items-start gap-3 md:gap-4 w-full">
-                                    <div className={cn(
-                                        "w-7 h-7 md:w-8 md:h-8 rounded-2xl md:rounded-xl flex items-center justify-center font-bold text-xs transition-opacity flex-shrink-0",
-                                        isSelected ? 'bg-background/10' : 'bg-card/10 opacity-30'
-                                    )}>
-                                        {String.fromCharCode(65 + idx)}
-                                    </div>
-                                    <span className="text-[15px] sm:text-base leading-snug break-words flex-1">
-                                        {opt}
-                                    </span>
-                                </div>
-                            </Button>
-                        );
-                    })}
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    <Input
-                        value={userAnswer || ''}
-                        placeholder={t('quiz.type_answer_placeholder')}
-                        onChange={(e) => onShortAnswerChange(e.target.value)}
-                        disabled={showResults}
-                        className="rounded-2xl md:rounded-xl h-14 md:h-16 bg-card/5 border-foreground/5 focus:bg-card/10 transition-all font-bold px-4 md:px-8 text-[15px] sm:text-base text-foreground w-full"
-                    />
-                    {showHint && hintText && !showResults && (
-                        <div className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-2xl px-4 py-3">
-                            {hintText}
-                        </div>
-                    )}
-                    {showResults && !isCorrect && (
-                        <div className="p-6 rounded-xl glass border-primary/20 bg-primary/5">
-                            <div className="text-xs font-bold text-primary mb-2">
-                                {t('quiz.correct_answer_label')}
-                            </div>
-                            <p className="text-sm font-bold opacity-80">
-                                {question.answer}
-                            </p>
-                        </div>
-                    )}
-                </div>
-            )}
-            {!isShort && showHint && hintText && !showResults && (
-                <div className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-2xl px-4 py-3">
-                    {hintText}
-                </div>
-            )}
-            
-            {showResults && showExplanations && question.explanation && (
-                <div className="p-6 rounded-xl glass border-primary/20 bg-primary/5 mt-4">
-                    <div className="text-xs font-bold text-primary mb-2">
-                        {t('quiz.explanation_label')}
-                    </div>
-                    <p className="text-sm font-bold opacity-80 ">
-                        "{question.explanation}"
-                    </p>
-                </div>
-            )}
-        </Card>
+        </div>
     );
 };

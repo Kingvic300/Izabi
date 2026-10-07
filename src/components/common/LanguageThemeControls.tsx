@@ -60,7 +60,7 @@ export const LanguageThemeControls: React.FC<LanguageThemeControlsProps> = ({ cl
                 {dropdownOpen && (
                     <div className="absolute right-0 sm:left-0 sm:right-auto mt-2 w-64 rounded-2xl p-1.5 shadow-float z-50 border bg-card border-border text-foreground">
                         <div className="px-3 py-2 border-b border-border mb-1">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                            <span className="text-[11px] font-bold text-muted-foreground block">
                                 Select Language
                             </span>
                         </div>
@@ -105,7 +105,7 @@ export const LanguageThemeControls: React.FC<LanguageThemeControlsProps> = ({ cl
                 title={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
             >
                 {isLight ? (
-                    <Sun className="w-4 h-4 text-amber-500 transition-transform hover:rotate-45" />
+                    <Sun className="w-4 h-4 text-urgent transition-transform hover:rotate-45" />
                 ) : (
                     <Moon className="w-4 h-4 text-foreground/80 hover:text-foreground transition-transform hover:-rotate-12" />
                 )}

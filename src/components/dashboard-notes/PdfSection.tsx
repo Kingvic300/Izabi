@@ -124,7 +124,7 @@ export const PdfSection: React.FC<PdfSectionProps> = ({
                     />
                 </div>
 
-                <span className="text-xs font-mono text-muted-foreground">
+                <span className="text-xs tabular text-muted-foreground">
                     {filteredPdfs.length} {filteredPdfs.length === 1 ? 'Document' : 'Documents'}
                 </span>
             </div>
@@ -144,7 +144,7 @@ export const PdfSection: React.FC<PdfSectionProps> = ({
                             <div>
                                 <div className="flex items-start justify-between gap-3 mb-3">
                                     <div className="flex items-start gap-3 min-w-0">
-                                        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0 font-mono mt-0.5">
+                                        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0 tabular mt-0.5">
                                             <FileText className="w-5 h-5" />
                                         </div>
                                         <div className="min-w-0">
@@ -172,7 +172,7 @@ export const PdfSection: React.FC<PdfSectionProps> = ({
                                     )}
                                 </div>
 
-                                <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground mb-4 pt-1 border-t border-border">
+                                <div className="flex items-center gap-2 text-xs tabular text-muted-foreground mb-4 pt-1 border-t border-border">
                                     <span>{pdf.size}</span>
                                     <span>·</span>
                                     <span>{pdf.pages} Pages</span>
@@ -205,7 +205,7 @@ export const PdfSection: React.FC<PdfSectionProps> = ({
                                         e.stopPropagation();
                                         onOpenPagePicker(pdf, 'reader');
                                     }}
-                                    className="text-xs font-semibold text-amber-600 hover:text-amber-500 transition-colors cursor-pointer py-1.5 px-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 flex items-center gap-1.5"
+                                    className="text-xs font-semibold text-urgent hover:text-urgent transition-colors cursor-pointer py-1.5 px-2.5 rounded-lg bg-urgent/10 hover:bg-urgent/20 border border-urgent/30 flex items-center gap-1.5"
                                 >
                                     <Highlighter className="w-3.5 h-3.5" />
                                     <span>Annotate & Review</span>

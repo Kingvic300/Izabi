@@ -5,13 +5,12 @@ import {
     History,
     User,
     LogOut,
-    Brain,
-    LayoutDashboard,
+    House,
     FileText,
-    Zap,
+    MessagesSquare,
     TrendingUp,
     Settings,
-    GraduationCap,
+    ClipboardCheck,
     ShieldCheck,
     ChevronUp,
     Trophy,
@@ -49,6 +48,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 import {
     ACCOUNTABILITY_PARTNER_ENABLED,
     SUBSCRIPTIONS_ENABLED,
@@ -56,9 +56,9 @@ import {
 
 export const navigationItems = [
     {
-        title: 'Dashboard',
+        title: 'Home',
         url: '/dashboard',
-        icon: LayoutDashboard,
+        icon: House,
         description: 'Overview and quick access',
     },
     {
@@ -68,9 +68,9 @@ export const navigationItems = [
         description: 'Manage your notes',
     },
     {
-        title: 'AI Assistant',
+        title: 'Assistant',
         url: '/dashboard/ai-assistant',
-        icon: Zap,
+        icon: MessagesSquare,
         description: 'Interactive learning with AI',
     },
     {
@@ -88,7 +88,7 @@ export const navigationItems = [
     {
         title: 'Exams',
         url: '/dashboard/exams',
-        icon: GraduationCap,
+        icon: ClipboardCheck,
         description: 'Practice past questions',
     },
     {
@@ -100,7 +100,7 @@ export const navigationItems = [
     ...(ACCOUNTABILITY_PARTNER_ENABLED
         ? [
               {
-                  title: 'Accountability Partner',
+                  title: 'Study partner',
                   url: '/dashboard/partner',
                   icon: Users2,
                   description: 'Study together, stay consistent',
@@ -133,7 +133,7 @@ export const settingsItems = [
         description: 'Preferences and configuration',
     },
     {
-        title: 'Help & Support',
+        title: 'Help',
         url: '/dashboard/contact',
         icon: MessageCircle,
         description: 'Get help',
@@ -252,176 +252,106 @@ export function AppSidebar() {
         }
     };
 
+    const itemClass = (active: boolean) =>
+        cn(
+            'relative h-10 rounded-md px-3 transition-colors',
+            active
+                ? 'bg-card font-bold text-foreground shadow-soft ring-1 ring-sidebar-border hover:bg-card'
+                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground',
+        );
+
+    const renderItem = (item: (typeof navigationItems)[number], withId = false) => {
+        const active = isActive(item.url);
+        return (
+            <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                    asChild
+                    isActive={active}
+                    tooltip={item.title}
+                    className={itemClass(active)}
+                >
+                    <Link
+                        to={item.url}
+                        id={
+                            withId
+                                ? `nav-item-${item.title.toLowerCase().replace(/\s+/g, '-')}`
+                                : undefined
+                        }
+                        aria-current={active ? 'page' : undefined}
+                        className="flex items-center gap-3"
+                    >
+                        <item.icon className="h-[18px] w-[18px] shrink-0" />
+                        {!collapsed && (
+                            <span className="truncate text-[15px]">
+                                {item.title}
+                            </span>
+                        )}
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+        );
+    };
+
     return (
         <Sidebar
             collapsible="icon"
             className="border-r border-sidebar-border bg-sidebar"
         >
-            {/* Header */}
             <SidebarHeader
-                className={`border-b border-sidebar-border ${collapsed ? 'p-3' : 'p-5'}`}
+                className={cn(
+                    'flex h-14 justify-center border-b border-sidebar-border',
+                    collapsed ? 'items-center px-2' : 'px-5',
+                )}
             >
-                <Logo
-                    size={collapsed ? 40 : 136}
-                    height={collapsed ? 40 : 40}
-                    className={collapsed ? 'justify-center' : ''}
-                />
+                <Link to="/dashboard" aria-label="Izabi dashboard" className="rounded-md">
+                    <Logo variant={collapsed ? 'mark' : 'full'} height={collapsed ? 26 : 26} />
+                </Link>
             </SidebarHeader>
 
-            {/* Navigation */}
-            <SidebarContent className="flex-1 px-3 py-5">
-                {/* Main Navigation Group */}
-                <SidebarGroup>
-                    <SidebarGroupLabel className="text-[11px] font-semibold tracking-wide mb-2 px-3 text-muted-foreground/70">
+            <SidebarContent className="flex-1 px-3 py-4">
+                <SidebarGroup className="p-0">
+                    <SidebarGroupLabel className="mb-1 px-3 text-xs font-normal text-muted-foreground">
                         Study
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="gap-0.5">
-                            {navigationItems.map((item) => {
-                                const active = isActive(item.url);
-                                return (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={active}
-                                            className={`relative h-10 rounded-md px-3 transition-colors
-                                                ${active ? 'bg-sidebar-accent text-primary' : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60'}
-                                            `}
-                                        >
-                                            <Link
-                                                to={item.url}
-                                                id={`nav-item-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
-                                                onClick={(e) => {
-                                                    if (
-                                                        (item as any).status ===
-                                                        'unavailable'
-                                                    ) {
-                                                        e.preventDefault();
-                                                        return;
-                                                    }
-                                                }}
-                                                className="flex items-center gap-3"
-                                            >
-                                                {active && (
-                                                    <span
-                                                        aria-hidden="true"
-                                                        className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-primary"
-                                                    />
-                                                )}
-                                                <item.icon
-                                                    className="h-[18px] w-[18px] shrink-0"
-                                                />
-                                                {!collapsed && (
-                                                    <div className="flex flex-1 items-center justify-between">
-                                                        <span
-                                                            className="text-sm font-medium"
-                                                        >
-                                                            {item.title}
-                                                        </span>
-                                                        {(item as any)
-                                                            .status ===
-                                                            'unavailable' && (
-                                                            <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md bg-urgent/15 text-urgent">
-                                                                Soon
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                );
-                            })}
+                            {navigationItems.map((item) => renderItem(item, true))}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                {/* Settings Group */}
-                <SidebarGroup className="mt-auto">
-                    <SidebarGroupLabel className="text-[11px] font-semibold tracking-wide mb-2 px-3 text-muted-foreground/70">
+                <SidebarGroup className="mt-auto p-0 pt-4">
+                    <SidebarGroupLabel className="mb-1 px-3 text-xs font-normal text-muted-foreground">
                         Account
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="gap-0.5">
-                            {settingsItems.map((item) => {
-                                const active = isActive(item.url);
-                                return (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={active}
-                                            className={`relative h-10 rounded-md px-3 transition-colors
-                                                ${active ? 'bg-sidebar-accent text-primary' : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60'}
-                                            `}
-                                        >
-                                            <Link
-                                                to={item.url}
-                                                className="flex items-center gap-3"
-                                            >
-                                                {active && (
-                                                    <span
-                                                        aria-hidden="true"
-                                                        className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-primary"
-                                                    />
-                                                )}
-                                                <item.icon className="h-[18px] w-[18px] shrink-0" />
-                                                {!collapsed && (
-                                                    <span className="text-sm font-medium">
-                                                        {item.title}
-                                                    </span>
-                                                )}
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                );
-                            })}
-
-                            {normalizeRole(userInfo.role) === 'ADMIN' && (
-                                <SidebarMenuItem>
-                                    <SidebarMenuButton
-                                        isActive={isActive('/dashboard/admin')}
-                                        className={`relative h-10 rounded-md px-3 transition-colors
-                                            ${isActive('/dashboard/admin') ? 'bg-sidebar-accent text-primary' : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60'}
-                                        `}
-                                        onClick={() =>
-                                            navigate('/dashboard/admin')
-                                        }
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            {isActive('/dashboard/admin') && (
-                                                <span
-                                                    aria-hidden="true"
-                                                    className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-primary"
-                                                />
-                                            )}
-                                            <ShieldCheck className="h-[18px] w-[18px] shrink-0" />
-                                            {!collapsed && (
-                                                <span className="text-sm font-medium">
-                                                    Admin
-                                                </span>
-                                            )}
-                                        </div>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            )}
+                            {settingsItems.map((item) => renderItem(item))}
+                            {normalizeRole(userInfo.role) === 'ADMIN' &&
+                                renderItem({
+                                    title: 'Admin',
+                                    url: '/dashboard/admin',
+                                    icon: ShieldCheck,
+                                    description: 'Admin tools',
+                                })}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
 
-            {/* Footer / User Profile */}
-            <SidebarFooter className="p-3 border-t border-sidebar-border">
+            <SidebarFooter className="border-t border-sidebar-border p-3">
                 {impersonating && (
-                    <div className="mb-3 rounded-lg border border-urgent/30 bg-urgent/10 p-3">
-                        <p className="text-xs font-medium text-urgent mb-2">
-                            Impersonating
+                    <div className="mb-2 rounded-md border border-urgent/40 bg-urgent/10 p-3">
+                        <p className="mb-2 text-sm font-bold text-urgent">
+                            You are viewing as another user
                         </p>
                         <Button
                             variant="outline"
-                            className="w-full rounded-md border-urgent/30 bg-urgent/10 text-urgent hover:bg-urgent/20"
+                            size="sm"
+                            className="w-full"
                             onClick={handleStopImpersonation}
                         >
-                            Stop Impersonation
+                            Stop viewing as user
                         </Button>
                     </div>
                 )}
@@ -429,38 +359,41 @@ export function AppSidebar() {
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton
                             size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-12 rounded-md"
+                            className="h-12 rounded-md data-[state=open]:bg-sidebar-accent"
                         >
-                            <Avatar className="h-9 w-9 rounded-md border border-sidebar-border">
-                                <AvatarImage
-                                    src={userInfo.avatar}
-                                    alt={userInfo.email}
-                                />
-                                <AvatarFallback className="rounded-md font-semibold bg-primary/15 text-primary">
+                            <Avatar className="h-8 w-8 border border-sidebar-border">
+                                <AvatarImage src={userInfo.avatar} alt="" />
+                                <AvatarFallback className="text-sm font-bold">
                                     {userInfo.initial}
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-medium">
+                            <div className="grid flex-1 text-left leading-tight">
+                                <span className="truncate text-sm font-bold">
                                     {userInfo.name}
                                 </span>
                                 <span className="truncate text-xs text-muted-foreground">
                                     {userInfo.email}
                                 </span>
                             </div>
-                            <ChevronUp className="ml-auto size-4 opacity-50" />
+                            <ChevronUp className="ml-auto size-4 text-muted-foreground" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         side="top"
-                        className="w-[--radix-popper-anchor-width] rounded-md p-1"
+                        className="w-[--radix-popper-anchor-width] p-1"
                     >
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link to="/dashboard/profile">
+                                <User className="mr-2 h-4 w-4" />
+                                Profile
+                            </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={handleLogout}
-                            className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 rounded-md"
+                            className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
                         >
                             <LogOut className="mr-2 h-4 w-4" />
-                            <span>Sign out</span>
+                            Log out
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

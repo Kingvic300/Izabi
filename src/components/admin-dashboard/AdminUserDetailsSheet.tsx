@@ -102,7 +102,7 @@ export default function AdminUserDetailsSheet({
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent
                 side="right"
-                className="w-full sm:max-w-2xl lg:max-w-3xl p-0 glass border-l border-foreground/10 gap-0 overflow-hidden flex flex-col h-[100svh]"
+                className="w-full sm:max-w-2xl lg:max-w-3xl p-0 glass border-l border-border gap-0 overflow-hidden flex flex-col h-[100svh]"
             >
                 <SheetHeader className="sr-only">
                     <SheetTitle>User details</SheetTitle>
@@ -118,15 +118,15 @@ export default function AdminUserDetailsSheet({
                                 <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
                                     <div className="flex items-start gap-4 md:gap-6">
                                         <div className="relative">
-                                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl md:rounded-xl bg-card/10 border border-foreground/10 shadow-xl flex items-center justify-center text-2xl md:text-3xl font-bold text-foreground/70">
+                                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl md:rounded-xl bg-card border border-border flex items-center justify-center text-2xl md:text-3xl font-bold text-foreground/70">
                                                 {selectedUserInitial.toUpperCase()}
                                             </div>
                                             <div
                                                 className={cn(
-                                                    'absolute -bottom-2 -right-2 h-8 w-8 rounded-xl border border-foreground/10 flex items-center justify-center shadow-lg',
+                                                    'absolute -bottom-2 -right-2 h-8 w-8 rounded-xl border border-border flex items-center justify-center shadow-lg',
                                                     hasSignals
                                                         ? 'bg-destructive/20 text-destructive'
-                                                        : 'bg-emerald-500/20 text-emerald-300',
+                                                        : 'bg-reward/20 text-reward',
                                                 )}
                                             >
                                                 {hasSignals ? (
@@ -137,7 +137,7 @@ export default function AdminUserDetailsSheet({
                                             </div>
                                         </div>
                                         <div className="space-y-3">
-                                            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-foreground/40 font-semibold">
+                                            <p className="text-xs md:text-[11px] text-foreground/40 font-semibold">
                                                 User Dossier
                                             </p>
                                             <div className="flex flex-wrap items-center gap-3">
@@ -149,10 +149,10 @@ export default function AdminUserDetailsSheet({
                                                         variant={impersonationTargetId === userDetails.user.id ? "destructive" : "outline"}
                                                         size="sm"
                                                         className={cn(
-                                                            "rounded-xl text-[10px] font-bold uppercase tracking-wider",
+                                                            "rounded-xl text-xs font-bold",
                                                             impersonationTargetId === userDetails.user.id 
                                                                 ? "bg-destructive/20 hover:bg-destructive/30 border-destructive/50"
-                                                                : "border-foreground/10 bg-card/5 hover:bg-card/10"
+                                                                : "border-border bg-card hover:bg-muted"
                                                         )}
                                                         onClick={() => {
                                                             if (impersonationTargetId === userDetails.user.id) {
@@ -180,13 +180,13 @@ export default function AdminUserDetailsSheet({
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-foreground/10 bg-card/5 text-[11px] font-medium"
+                                                    className="border-border bg-card text-[11px] font-medium"
                                                 >
                                                     {selectedUserEmail}
                                                 </Badge>
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-foreground/10 bg-card/5 text-[11px] font-bold uppercase tracking-widest"
+                                                    className="border-border bg-card text-[11px] font-bold"
                                                 >
                                                     {selectedUserRole}
                                                 </Badge>
@@ -195,8 +195,8 @@ export default function AdminUserDetailsSheet({
                                                     className={cn(
                                                         'text-[11px] font-semibold',
                                                         isVerified
-                                                            ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
-                                                            : 'border-amber-500/30 bg-amber-500/10 text-amber-200',
+                                                            ? 'border-reward/30 bg-reward/10 text-reward'
+                                                            : 'border-urgent/30 bg-urgent/10 text-urgent',
                                                     )}
                                                 >
                                                     {isVerified
@@ -206,7 +206,7 @@ export default function AdminUserDetailsSheet({
                                                 {subscriptionStatus ? (
                                                     <Badge
                                                         variant="outline"
-                                                        className="border-foreground/10 bg-card/5 text-[11px] font-semibold capitalize"
+                                                        className="border-border bg-card text-[11px] font-semibold capitalize"
                                                     >
                                                         {subscriptionStatus}
                                                     </Badge>
@@ -219,10 +219,10 @@ export default function AdminUserDetailsSheet({
                                                 <Badge
                                                     variant="outline"
                                                     className={cn(
-                                                        'text-[10px] uppercase tracking-widest font-bold',
+                                                        'text-xs font-bold',
                                                         hasSignals
                                                             ? 'border-destructive/30 bg-destructive/10 text-destructive'
-                                                            : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
+                                                            : 'border-reward/30 bg-reward/10 text-reward',
                                                     )}
                                                 >
                                                     {hasSignals
@@ -235,10 +235,10 @@ export default function AdminUserDetailsSheet({
                                     <div className="flex flex-wrap items-center gap-2 md:justify-end">
                                         <Badge
                                             variant="outline"
-                                            className="border-foreground/10 bg-card/5 text-[10px] uppercase tracking-widest font-bold"
+                                            className="border-border bg-card text-xs font-bold"
                                         >
                                             ID:{' '}
-                                            <span className="font-mono">
+                                            <span className="tabular">
                                                 {userDetails.user.id
                                                     ?.slice(0, 8)
                                                     ?.toUpperCase() || '—'}
@@ -246,7 +246,7 @@ export default function AdminUserDetailsSheet({
                                         </Badge>
                                         <Badge
                                             variant="outline"
-                                            className="border-foreground/10 bg-card/5 text-[10px] uppercase tracking-widest font-bold"
+                                            className="border-border bg-card text-xs font-bold"
                                         >
                                             Login Streak:{' '}
                                             {userDetails.user.streaks?.login ||
@@ -256,49 +256,49 @@ export default function AdminUserDetailsSheet({
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                                    <div className="p-3 md:p-4 rounded-xl bg-card/10 border border-foreground/10">
+                                    <div className="p-3 md:p-4 rounded-xl bg-card border border-border">
                                         <div className="flex items-center gap-2 mb-2 text-foreground/60">
                                             <Calendar size={14} />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider">
+                                            <span className="text-xs font-bold">
                                                 Joined
                                             </span>
                                         </div>
-                                        <p className="font-mono font-bold text-sm">
+                                        <p className="tabular font-bold text-sm">
                                             {joinedLabel}
                                         </p>
                                     </div>
-                                    <div className="p-3 md:p-4 rounded-xl bg-card/10 border border-foreground/10">
+                                    <div className="p-3 md:p-4 rounded-xl bg-card border border-border">
                                         <div className="flex items-center gap-2 mb-2 text-foreground/60">
                                             <Activity size={14} />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider">
+                                            <span className="text-xs font-bold">
                                                 Last Activity
                                             </span>
                                         </div>
-                                        <p className="font-mono font-bold text-sm">
+                                        <p className="tabular font-bold text-sm">
                                             {lastActivityLabel}
                                         </p>
                                     </div>
-                                    <div className="p-3 md:p-4 rounded-xl bg-card/10 border border-foreground/10">
+                                    <div className="p-3 md:p-4 rounded-xl bg-card border border-border">
                                         <div className="flex items-center gap-2 mb-2 text-foreground/60">
                                             <Award size={14} />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider">
+                                            <span className="text-xs font-bold">
                                                 Global Streak
                                             </span>
                                         </div>
-                                        <p className="font-mono font-bold text-sm">
+                                        <p className="tabular font-bold text-sm">
                                             {userDetails.user.streaks?.global ||
                                                 0}{' '}
                                             days
                                         </p>
                                     </div>
-                                    <div className="p-3 md:p-4 rounded-xl bg-card/10 border border-foreground/10">
+                                    <div className="p-3 md:p-4 rounded-xl bg-card border border-border">
                                         <div className="flex items-center gap-2 mb-2 text-foreground/60">
                                             <ShieldCheck size={14} />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider">
+                                            <span className="text-xs font-bold">
                                                 Longest Streak
                                             </span>
                                         </div>
-                                        <p className="font-mono font-bold text-sm">
+                                        <p className="tabular font-bold text-sm">
                                             {userDetails.user.streaks
                                                 ?.longest || 0}{' '}
                                             days
@@ -312,9 +312,9 @@ export default function AdminUserDetailsSheet({
                             <div className="p-4 md:p-8 space-y-6 md:space-y-8">
                                 <div className="grid xl:grid-cols-[1fr_1.2fr] gap-6 md:gap-8">
                                     <div className="space-y-6">
-                                        <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(15,23,42,0.4),_rgba(59,130,246,0.06))] p-5 md:p-6">
+                                        <div className="rounded-xl border border-border bg-[linear-gradient(135deg,_rgba(15,23,42,0.4),_rgba(59,130,246,0.06))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">
-                                                <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50 flex items-center gap-2">
+                                                <h3 className="text-xs font-bold text-foreground/50 flex items-center gap-2">
                                                     <ShieldCheck
                                                         size={14}
                                                         className="text-primary"
@@ -323,13 +323,13 @@ export default function AdminUserDetailsSheet({
                                                 </h3>
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-foreground/10 bg-card/10 text-[10px] uppercase tracking-widest"
+                                                    className="border-border bg-card text-xs"
                                                 >
                                                     Profile
                                                 </Badge>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3">
-                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                <div className="rounded-xl border border-border bg-card p-3">
                                                     <p className="text-[11px] font-medium text-muted-foreground mb-2">
                                                         Level
                                                     </p>
@@ -337,7 +337,7 @@ export default function AdminUserDetailsSheet({
                                                         {studyLevel}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                <div className="rounded-xl border border-border bg-card p-3">
                                                     <p className="text-[11px] font-medium text-muted-foreground mb-2">
                                                         Daily XP
                                                     </p>
@@ -345,7 +345,7 @@ export default function AdminUserDetailsSheet({
                                                         {dailyPoints}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                <div className="rounded-xl border border-border bg-card p-3">
                                                     <p className="text-[11px] font-medium text-muted-foreground mb-2">
                                                         Study Time
                                                     </p>
@@ -353,7 +353,7 @@ export default function AdminUserDetailsSheet({
                                                         {formattedMinutes}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                <div className="rounded-xl border border-border bg-card p-3">
                                                     <p className="text-[11px] font-medium text-muted-foreground mb-2">
                                                         Streak Freezes
                                                     </p>
@@ -364,9 +364,9 @@ export default function AdminUserDetailsSheet({
                                             </div>
                                         </div>
 
-                                        <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(239,68,68,0.05),_rgba(15,23,42,0.2))] p-5 md:p-6">
+                                        <div className="rounded-xl border border-border bg-[linear-gradient(135deg,_rgba(239,68,68,0.05),_rgba(15,23,42,0.2))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">
-                                                <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50 flex items-center gap-2">
+                                                <h3 className="text-xs font-bold text-foreground/50 flex items-center gap-2">
                                                     <XCircle
                                                         size={14}
                                                         className="text-destructive"
@@ -376,10 +376,10 @@ export default function AdminUserDetailsSheet({
                                                 <Badge
                                                     variant="outline"
                                                     className={cn(
-                                                        'text-[10px] uppercase tracking-widest',
+                                                        'text-xs',
                                                         hasSignals
                                                             ? 'border-destructive/30 bg-destructive/10 text-destructive'
-                                                            : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
+                                                            : 'border-reward/30 bg-reward/10 text-reward',
                                                     )}
                                                 >
                                                     {signalCount} flags
@@ -407,12 +407,12 @@ export default function AdminUserDetailsSheet({
                                                     )}
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
+                                                <div className="flex items-center gap-3 rounded-xl border border-reward/20 bg-reward/10 px-4 py-3">
                                                     <CheckCircle2
                                                         size={16}
-                                                        className="text-emerald-400"
+                                                        className="text-reward"
                                                     />
-                                                    <p className="text-sm font-medium text-emerald-200/80">
+                                                    <p className="text-sm font-medium text-reward/80">
                                                         All clear. No
                                                         outstanding actions
                                                         detected.
@@ -421,20 +421,20 @@ export default function AdminUserDetailsSheet({
                                             )}
                                         </div>
 
-                                        <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(59,130,246,0.08),_rgba(15,23,42,0.3))] p-5 md:p-6">
+                                        <div className="rounded-xl border border-border bg-[linear-gradient(135deg,_rgba(59,130,246,0.08),_rgba(15,23,42,0.3))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">
-                                                <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50">
+                                                <h3 className="text-xs font-bold text-foreground/50">
                                                     Study Mix
                                                 </h3>
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-foreground/10 bg-card/10 text-[10px] uppercase tracking-widest"
+                                                    className="border-border bg-card text-xs"
                                                 >
                                                     Totals
                                                 </Badge>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3">
-                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                <div className="rounded-xl border border-border bg-card p-3">
                                                     <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground mb-2">
                                                         <FileText size={12} />
                                                         Summaries
@@ -444,7 +444,7 @@ export default function AdminUserDetailsSheet({
                                                             0}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                <div className="rounded-xl border border-border bg-card p-3">
                                                     <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground mb-2">
                                                         <BrainCircuit
                                                             size={12}
@@ -456,7 +456,7 @@ export default function AdminUserDetailsSheet({
                                                             0}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                <div className="rounded-xl border border-border bg-card p-3">
                                                     <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground mb-2">
                                                         <TrendingUp
                                                             size={12}
@@ -468,7 +468,7 @@ export default function AdminUserDetailsSheet({
                                                             0}
                                                     </p>
                                                 </div>
-                                                <div className="rounded-xl border border-foreground/10 bg-card/10 p-3">
+                                                <div className="rounded-xl border border-border bg-card p-3">
                                                     <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground mb-2">
                                                         <Key size={12} />
                                                         Flashcards
@@ -481,14 +481,14 @@ export default function AdminUserDetailsSheet({
                                             </div>
                                         </div>
 
-                                        <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(16,185,129,0.08),_rgba(15,23,42,0.3))] p-5 md:p-6">
+                                        <div className="rounded-xl border border-border bg-[linear-gradient(135deg,_rgba(16,185,129,0.08),_rgba(15,23,42,0.3))] p-5 md:p-6">
                                             <div className="flex items-center justify-between mb-4">
-                                                <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50">
+                                                <h3 className="text-xs font-bold text-foreground/50">
                                                     Companion
                                                 </h3>
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-foreground/10 bg-card/10 text-[10px] uppercase tracking-widest"
+                                                    className="border-border bg-card text-xs"
                                                 >
                                                     {petProfile?.level
                                                         ? `Level ${petProfile.level}`
@@ -496,8 +496,8 @@ export default function AdminUserDetailsSheet({
                                                 </Badge>
                                             </div>
                                             {petProfile ? (
-                                                <div className="flex items-center gap-4 rounded-xl border border-foreground/10 bg-card/10 px-4 py-3">
-                                                    <div className="h-10 w-10 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-300">
+                                                <div className="flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3">
+                                                    <div className="h-10 w-10 rounded-xl bg-reward/15 border border-reward/20 flex items-center justify-center text-reward">
                                                         <ShieldCheck
                                                             size={16}
                                                         />
@@ -517,7 +517,7 @@ export default function AdminUserDetailsSheet({
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <p className="text-sm opacity-50">
+                                                <p className="text-sm text-muted-foreground">
                                                     No companion data is linked
                                                     to this account yet.
                                                 </p>
@@ -525,22 +525,22 @@ export default function AdminUserDetailsSheet({
                                         </div>
                                     </div>
 
-                                    <div className="rounded-xl border border-foreground/10 bg-[linear-gradient(135deg,_rgba(59,130,246,0.05),_rgba(15,23,42,0.35))] p-5 md:p-6">
+                                    <div className="rounded-xl border border-border bg-[linear-gradient(135deg,_rgba(59,130,246,0.05),_rgba(15,23,42,0.35))] p-5 md:p-6">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-xs font-bold uppercase tracking-[0.35em] text-foreground/50 flex items-center gap-2">
+                                            <h3 className="text-xs font-bold text-foreground/50 flex items-center gap-2">
                                                 <Clock size={14} />
                                                 Intelligence Timeline
                                             </h3>
                                             <Badge
                                                 variant="outline"
-                                                className="border-foreground/10 bg-card/10 text-[10px] uppercase tracking-widest"
+                                                className="border-border bg-card text-xs"
                                             >
                                                 {userDetails.history?.length ||
                                                     0}{' '}
                                                 Events
                                             </Badge>
                                         </div>
-                                        <div className="relative pl-4 space-y-6 border-l border-foreground/10 ml-2">
+                                        <div className="relative pl-4 space-y-6 border-l border-border ml-2">
                                             {userDetails.history &&
                                             userDetails.history.length > 0 ? (
                                                 userDetails.history.map(
@@ -554,7 +554,7 @@ export default function AdminUserDetailsSheet({
                                                         >
                                                             <div className="absolute -left-[6px] top-2 w-3 h-3 rounded-full bg-primary ring-4 ring-background" />
                                                             <div className="space-y-2">
-                                                                <p className="text-[10px] font-bold opacity-40 uppercase tracking-[0.3em]">
+                                                                <p className="text-xs font-bold text-muted-foreground">
                                                                     {new Date(
                                                                         event.date,
                                                                     ).toLocaleString(
@@ -567,7 +567,7 @@ export default function AdminUserDetailsSheet({
                                                                         },
                                                                     )}
                                                                 </p>
-                                                                <div className="rounded-xl bg-card/10 border border-foreground/10 p-4 hover:bg-card/20 transition-colors">
+                                                                <div className="rounded-xl bg-card border border-border p-4 hover:bg-muted transition-colors">
                                                                     <div className="flex flex-wrap items-center gap-3 mb-2">
                                                                         {getActivityIcon(
                                                                             event.type,
@@ -586,7 +586,7 @@ export default function AdminUserDetailsSheet({
                                                                         </span>
                                                                         <Badge
                                                                             variant="outline"
-                                                                            className="border-foreground/10 bg-card/5 text-[9px] uppercase tracking-[0.25em]"
+                                                                            className="border-border bg-card text-xs"
                                                                         >
                                                                             {String(
                                                                                 event.type,
@@ -603,7 +603,7 @@ export default function AdminUserDetailsSheet({
                                                                             undefined && (
                                                                             <Badge
                                                                                 variant="secondary"
-                                                                                className="bg-card/10"
+                                                                                className="bg-card"
                                                                             >
                                                                                 Score:{' '}
                                                                                 {
@@ -620,7 +620,7 @@ export default function AdminUserDetailsSheet({
                                                     ),
                                                 )
                                             ) : (
-                                                <div className="pl-6 text-sm opacity-40 italic">
+                                                <div className="pl-6 text-sm italic text-muted-foreground">
                                                     No recorded history
                                                     available.
                                                 </div>

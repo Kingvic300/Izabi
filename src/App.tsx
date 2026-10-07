@@ -30,7 +30,7 @@ const App = () => (
         }
     >
         <ErrorBoundary>
-            <ThemeProvider defaultTheme="dark" storageKey="izabi-theme-v3">
+            <ThemeProvider defaultTheme="system" storageKey="izabi-theme-v3">
                 <LanguageProvider>
                     <StudyProvider>
                         <ErrorProvider>

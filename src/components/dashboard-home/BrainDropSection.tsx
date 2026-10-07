@@ -1,7 +1,6 @@
-'use client';
-
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Bubble } from '@/components/ui/bubble';
 import BrainDrop from '@/components/BrainDrop';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -19,19 +18,31 @@ export const BrainDropSection = ({
     onUploadClick,
 }: BrainDropSectionProps) => {
     const { t } = useLanguage();
-    if (isCompleted) return null;
 
     return (
         <div id="brain-drop-section" className="h-full">
-            {question ? (
+            {isCompleted ? (
+                <div className="flex h-full items-start gap-4">
+                    <Bubble state="filled" size="lg" />
+                    <div>
+                        <p className="font-display text-xl">
+                            Done for today.
+                        </p>
+                        <p className="mt-1 text-muted-foreground">
+                            Your next Brain Drop question arrives tomorrow
+                            morning.
+                        </p>
+                    </div>
+                </div>
+            ) : question ? (
                 <BrainDrop question={question} onAnswer={onAnswer} />
             ) : (
-                <div className="h-full flex flex-col justify-between gap-4">
-                    <div className="space-y-2">
-                        <p className="font-medium">
+                <div className="flex h-full flex-col justify-between gap-4">
+                    <div>
+                        <p className="font-display text-xl">
                             {t('module.activate_brain_drop')}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="mt-1 text-muted-foreground">
                             {t('module.brain_drop_desc')}
                         </p>
                     </div>
@@ -39,9 +50,9 @@ export const BrainDropSection = ({
                         onClick={onUploadClick}
                         variant="outline"
                         size="sm"
-                        className="gap-2 self-start"
+                        className="self-start"
                     >
-                        <Upload size={14} />
+                        <Upload />
                         {t('module.ingest_document')}
                     </Button>
                 </div>

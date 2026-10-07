@@ -202,7 +202,7 @@ export const ShareProfileDialog = ({
                                     <span className="text-muted-foreground">XP</span>
                                 </div>
                                 <div className="flex items-center gap-1 text-xs">
-                                    <span className="font-bold text-orange-500">{profileData.studyStreak || 0}</span>
+                                    <span className="font-bold text-urgent">{profileData.studyStreak || 0}</span>
                                     <span className="text-muted-foreground">streak</span>
                                 </div>
                             </div>
@@ -232,7 +232,7 @@ export const ShareProfileDialog = ({
                                 Profile Link
                             </label>
                             <div className="flex items-center gap-2">
-                                <code className="flex-1 p-3 rounded-xl bg-muted/50 text-xs font-mono truncate border border-foreground/5">
+                                <code className="flex-1 p-3 rounded-xl bg-muted/50 text-xs tabular truncate border border-border">
                                     {profileUrl}
                                 </code>
                                 <Button
@@ -338,7 +338,7 @@ export const ShareProfileDialog = ({
                             </Button>
                         </div>
 
-                        <div className="p-3 rounded-xl bg-muted/30 border border-foreground/5">
+                        <div className="p-3 rounded-xl bg-muted/30 border border-border">
                             <p className="text-xs text-muted-foreground text-center">
                                 Sharing via social media will open a new window.
                             </p>

@@ -67,7 +67,7 @@ export const AccountabilityPartnerView: React.FC<AccountabilityPartnerViewProps>
             <div className="rounded-xl bg-card border border-border p-5 sm:p-6 shadow-card">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center font-bold text-lg text-primary shrink-0 font-mono shadow-sm">
+                        <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center font-bold text-lg text-primary shrink-0 tabular shadow-sm">
                             {partnerName.slice(0, 2).toUpperCase()}
                         </div>
 
@@ -75,9 +75,9 @@ export const AccountabilityPartnerView: React.FC<AccountabilityPartnerViewProps>
                             <h3 className="text-lg font-bold text-foreground tracking-tight">
                                 {partnerName}
                             </h3>
-                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2 font-mono">
-                                <span className="text-amber-500 flex items-center gap-1 font-semibold">
-                                    <Flame className="w-3.5 h-3.5 fill-amber-500" />
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2 tabular">
+                                <span className="text-urgent flex items-center gap-1 font-semibold">
+                                    <Flame className="w-3.5 h-3.5 fill-urgent" />
                                     {streaks?.sharedStreak ?? 0}-Day Pact Streak
                                 </span>
                             </div>
@@ -108,13 +108,13 @@ export const AccountabilityPartnerView: React.FC<AccountabilityPartnerViewProps>
                 <div className="lg:col-span-5 rounded-2xl bg-card border border-border p-5 sm:p-6 shadow-card flex flex-col justify-between">
                     <div>
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                            <span className="text-xs tabular text-muted-foreground">
                                 Synchronized Co-Working Sprint
                             </span>
                         </div>
 
                         <div className="text-center py-6">
-                            <div className="text-5xl sm:text-6xl font-extrabold font-mono tracking-tight text-foreground tabular-nums">
+                            <div className="text-5xl sm:text-6xl font-extrabold tabular tracking-tight text-foreground tabular-nums">
                                 {formatTimer(timerSeconds)}
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">
@@ -171,7 +171,7 @@ export const AccountabilityPartnerView: React.FC<AccountabilityPartnerViewProps>
                     </div>
 
                     <div className="p-3.5 rounded-xl bg-muted/30 border border-border flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 font-mono text-[11px]">
+                        <div className="flex items-center gap-3 tabular text-[11px]">
                             <span
                                 className={`px-2 py-0.5 rounded text-[10px] ${
                                     checkInStatus?.youCheckedInToday

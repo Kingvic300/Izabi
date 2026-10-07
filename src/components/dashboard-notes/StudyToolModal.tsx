@@ -1,3 +1,5 @@
+import { AnswerOption } from '@/components/ui/answer-option';
+import { Button } from '@/components/ui/button';
 import React, { useState, useEffect, useCallback } from 'react';
 import { X, Clock, Award, CheckCircle2, ChevronRight, Brain, Lightbulb, Zap, Sparkles, Loader2 } from 'lucide-react';
 import type { StudyToolId } from './StudyToolsGrid';
@@ -192,35 +194,25 @@ export const StudyToolModal: React.FC<StudyToolModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-background/85 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-card border border-border rounded-xl max-w-xl w-full p-6 shadow-float relative overflow-hidden">
-                <div className="flex items-center justify-between pb-4 border-b border-border mb-5">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
-                            {toolId === 'quick-test' ? (
-                                <Zap className="w-5 h-5" />
-                            ) : toolId === 'practice' ? (
-                                <Brain className="w-5 h-5" />
-                            ) : (
-                                <Lightbulb className="w-5 h-5" />
-                            )}
-                        </div>
-                        <div>
-                            <h3 className="text-base font-bold text-foreground capitalize">
-                                {toolId === 'quick-test'
-                                    ? 'Quick Test (Timed 5-Min)'
-                                    : toolId === 'practice'
-                                      ? 'Practice Skills: Deep Recall'
-                                      : 'Study Tricks & Memory Mnemonics'}
-                            </h3>
-                            <p className="text-xs text-muted-foreground font-mono">Topic: {currentTopic}</p>
-                        </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div role="dialog" aria-modal="true" aria-labelledby="study-tool-title" className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-lg border border-border bg-card p-6 shadow-float">
+                <div className="mb-5 flex items-start justify-between gap-4 border-b border-border pb-4">
+                    <div>
+                        <h3 id="study-tool-title" className="text-xl">
+                            {toolId === 'quick-test'
+                                ? 'Quick test'
+                                : toolId === 'practice'
+                                  ? 'Practice skills'
+                                  : 'Study tricks'}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">Topic: {currentTopic}</p>
                     </div>
 
                     <button
                         type="button"
                         onClick={onClose}
-                        className="w-8 h-8 rounded-lg bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center cursor-pointer transition-colors"
+                        aria-label="Close"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                         <X className="w-4 h-4" />
                     </button>
@@ -230,88 +222,55 @@ export const StudyToolModal: React.FC<StudyToolModalProps> = ({
                     <div>
                         {quizLoading ? (
                             <div className="flex flex-col items-center justify-center py-10 gap-3 text-muted-foreground">
-                                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                                <p className="text-xs">Generating your Quick Test...</p>
+                                <Loader2 className="h-6 w-6 animate-spin" />
+                                <p className="text-sm">Writing your quick test…</p>
                             </div>
                         ) : quizError ? (
                             <div className="text-center py-8">
                                 <p className="text-sm text-destructive mb-4">{quizError}</p>
-                                <button
-                                    type="button"
-                                    onClick={loadQuickTest}
-                                    className="px-4 py-2 rounded-xl bg-primary text-xs font-semibold text-primary-foreground cursor-pointer"
-                                >
-                                    Try Again
-                                </button>
+                                <Button onClick={loadQuickTest}>Try again</Button>
                             </div>
                         ) : !quizFinished && quizQuestions.length > 0 ? (
                             <div>
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2 text-xs font-mono px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-600">
-                                        <Clock className="w-3.5 h-3.5" />
-                                        <span className="tabular-nums font-bold">{formatTimer(timeLeft)}</span>
-                                    </div>
-                                    <span className="text-xs text-muted-foreground font-mono">
+                                    <span className="tabular font-display text-2xl">{formatTimer(timeLeft)}</span>
+                                    <span className="tabular text-sm text-muted-foreground">
                                         Question {currentQuizIndex + 1} of {quizQuestions.length}
                                     </span>
                                 </div>
 
-                                <div className="bg-muted/30 p-4 rounded-xl border border-border mb-4">
-                                    <h4 className="text-sm font-semibold text-foreground">
-                                        {quizQuestions[currentQuizIndex]?.text}
-                                    </h4>
-                                </div>
+                                <h4 className="mb-4 font-display text-lg leading-snug">
+                                    {quizQuestions[currentQuizIndex]?.text}
+                                </h4>
 
-                                <div className="space-y-2">
-                                    {(quizQuestions[currentQuizIndex]?.options || []).map((opt, idx) => {
-                                        const isSelected = selectedAnswer === opt;
-                                        return (
-                                            <button
-                                                key={idx}
-                                                type="button"
-                                                disabled={selectedAnswer !== null}
-                                                onClick={() => handleQuizAnswer(opt)}
-                                                className={`w-full text-left p-3.5 rounded-xl border text-xs font-medium transition-all cursor-pointer flex items-center justify-between ${
-                                                    isSelected
-                                                        ? 'bg-primary border-primary text-primary-foreground shadow-md'
-                                                        : 'bg-muted/30 border-border hover:border-primary/40 text-foreground/90'
-                                                }`}
-                                            >
-                                                <span>{opt}</span>
-                                                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
-                                            </button>
-                                        );
-                                    })}
+                                <div role="radiogroup" className="grid gap-2">
+                                    {(quizQuestions[currentQuizIndex]?.options || []).map((opt, idx) => (
+                                        <AnswerOption
+                                            key={idx}
+                                            letter={String.fromCharCode(65 + idx)}
+                                            state={selectedAnswer === opt ? 'selected' : selectedAnswer !== null ? 'dimmed' : 'idle'}
+                                            disabled={selectedAnswer !== null}
+                                            onClick={() => handleQuizAnswer(opt)}
+                                        >
+                                            {opt}
+                                        </AnswerOption>
+                                    ))}
                                 </div>
                             </div>
                         ) : quizFinished && quizResult ? (
-                            <div className="text-center py-6">
-                                <div className="w-14 h-14 rounded-2xl bg-learning-green/10 border border-learning-green/30 text-learning-green flex items-center justify-center mx-auto mb-3">
-                                    <CheckCircle2 className="w-8 h-8" />
-                                </div>
-                                <h4 className="text-lg font-bold text-foreground mb-1">Challenge Completed!</h4>
-                                <p className="text-xs text-muted-foreground mb-4">
-                                    You scored {quizResult.correctCount} / {quizResult.totalQuestions} correct ({quizResult.score}%)!
+                            <div className="py-4">
+                                <p className="tabular font-display text-5xl leading-none">
+                                    {quizResult.correctCount}
+                                    <span className="text-muted-foreground">/{quizResult.totalQuestions}</span>
                                 </p>
-                                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 font-mono text-sm mb-6">
-                                    <Award className="w-4 h-4" />
-                                    <span>+{quizResult.pointsEarned} Total XP Awarded</span>
-                                </div>
-                                <div className="flex justify-center gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={loadQuickTest}
-                                        className="px-4 py-2 rounded-xl bg-muted text-foreground/80 text-xs font-semibold cursor-pointer"
-                                    >
-                                        Retake Test
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={onClose}
-                                        className="px-5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold cursor-pointer"
-                                    >
-                                        Done
-                                    </button>
+                                <p className="mt-3 text-muted-foreground">
+                                    {quizResult.score}% correct. You earned {quizResult.pointsEarned} points.
+                                </p>
+                                <div className="mt-6 flex gap-2">
+                                    <Button variant="outline" onClick={loadQuickTest}>
+                                        Try again
+                                    </Button>
+                                    <Button onClick={onClose}>Done</Button>
                                 </div>
                             </div>
                         ) : (
@@ -326,8 +285,8 @@ export const StudyToolModal: React.FC<StudyToolModalProps> = ({
                     <div>
                         {practiceLoading ? (
                             <div className="flex flex-col items-center justify-center py-10 gap-3 text-muted-foreground">
-                                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                                <p className="text-xs">Loading practice questions...</p>
+                                <Loader2 className="h-6 w-6 animate-spin" />
+                                <p className="text-sm">Loading practice questions…</p>
                             </div>
                         ) : practiceError ? (
                             <div className="text-center py-8">
@@ -346,22 +305,22 @@ export const StudyToolModal: React.FC<StudyToolModalProps> = ({
                             </div>
                         ) : (
                             <>
-                                <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
-                                    <span>Card {cardIndex + 1} of {practiceQuestions.length}</span>
-                                    <span className="font-mono text-primary">Critical Thinking Drill</span>
-                                </div>
+                                <p className="tabular mb-3 text-sm text-muted-foreground">
+                                    Card {cardIndex + 1} of {practiceQuestions.length}
+                                </p>
 
-                                <div
+                                <button
+                                    type="button"
                                     onClick={() => setCardFlipped(!cardFlipped)}
-                                    className="min-h-[160px] bg-muted/30 border border-border hover:border-primary/40 rounded-2xl p-5 flex flex-col justify-between cursor-pointer transition-all mb-4"
+                                    className="mb-4 flex min-h-[180px] w-full flex-col justify-between rounded-lg border border-border bg-card text-left transition-colors hover:border-foreground/40"
                                 >
-                                    <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground uppercase">
-                                        <span>{cardFlipped ? 'Answer / Solution' : 'Prompt / Question'}</span>
-                                        <span className="text-primary">Tap to flip</span>
+                                    <div className="flex w-full items-center justify-between border-b border-sheet/40 px-4 py-2 text-sm text-muted-foreground">
+                                        <span>{cardFlipped ? 'Answer' : 'Question'}</span>
+                                        <span>Tap to flip</span>
                                     </div>
 
-                                    <div className="my-3">
-                                        <p className="text-sm font-medium text-foreground leading-relaxed">
+                                    <div className="px-4 py-4">
+                                        <p className="font-display text-lg leading-snug">
                                             {cardFlipped
                                                 ? practiceQuestions[cardIndex]?.answer ||
                                                   practiceQuestions[cardIndex]?.explanation ||
@@ -369,12 +328,12 @@ export const StudyToolModal: React.FC<StudyToolModalProps> = ({
                                                 : practiceQuestions[cardIndex]?.question}
                                         </p>
                                         {cardFlipped && practiceQuestions[cardIndex]?.explanation && (
-                                            <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                                            <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
                                                 {practiceQuestions[cardIndex].explanation}
                                             </p>
                                         )}
                                     </div>
-                                </div>
+                                </button>
 
                                 <div className="flex items-center justify-between pt-2">
                                     <button
@@ -383,7 +342,7 @@ export const StudyToolModal: React.FC<StudyToolModalProps> = ({
                                             setCardFlipped(false);
                                             setCardIndex((i) => (i > 0 ? i - 1 : practiceQuestions.length - 1));
                                         }}
-                                        className="px-3.5 py-1.5 rounded-lg bg-muted border border-border text-xs font-medium text-foreground/80 hover:text-foreground cursor-pointer"
+                                        className="inline-flex h-10 items-center rounded-md border border-input bg-card px-4 text-sm font-bold hover:border-foreground/40"
                                     >
                                         Previous
                                     </button>
@@ -395,10 +354,10 @@ export const StudyToolModal: React.FC<StudyToolModalProps> = ({
                                             setCardFlipped(false);
                                             setCardIndex((i) => (i + 1) % practiceQuestions.length);
                                         }}
-                                        className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-xs font-semibold text-primary-foreground cursor-pointer flex items-center gap-1.5"
+                                        className="inline-flex h-10 items-center gap-1.5 rounded-md bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/85"
                                     >
-                                        <span>Mastered (+10 XP)</span>
-                                        <ChevronRight className="w-3.5 h-3.5" />
+                                        I know this one
+                                        <ChevronRight className="h-4 w-4" />
                                     </button>
                                 </div>
                             </>
@@ -407,14 +366,11 @@ export const StudyToolModal: React.FC<StudyToolModalProps> = ({
                 )}
 
                 {toolId === 'study-tricks' && (
-                    <div className="space-y-3">
+                    <div className="space-y-5">
                         {studyTricks.map((trick, idx) => (
-                            <div key={idx} className="bg-muted/30 border border-border p-4 rounded-xl text-left">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <Sparkles className="w-4 h-4 text-primary" />
-                                    <h4 className="text-xs sm:text-sm font-bold text-foreground">{trick.title}</h4>
-                                </div>
-                                <p className="text-xs text-muted-foreground leading-relaxed">{trick.summary}</p>
+                            <div key={idx} className="border-l-2 border-sheet/50 pl-4">
+                                <h4 className="font-bold">{trick.title}</h4>
+                                <p className="mt-0.5 text-[15px] leading-relaxed text-muted-foreground">{trick.summary}</p>
                             </div>
                         ))}
 
@@ -425,9 +381,9 @@ export const StudyToolModal: React.FC<StudyToolModalProps> = ({
                                     onEarnPoints(5);
                                     onClose();
                                 }}
-                                className="px-4 py-2 rounded-xl bg-primary text-xs font-semibold text-primary-foreground cursor-pointer"
+                                className="inline-flex h-10 items-center rounded-md bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/85"
                             >
-                                Save Tricks to Notes (+5 XP)
+                                Done
                             </button>
                         </div>
                     </div>

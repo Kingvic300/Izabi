@@ -53,8 +53,8 @@ export default function ImportNoteDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="glass border-foreground/10 rounded-2xl sm:rounded-xl sm:max-w-2xl w-[95vw] p-0 overflow-hidden">
-                <DialogHeader className="p-5 sm:p-6 border-b border-foreground/10 bg-card/5">
+            <DialogContent className="glass border-border rounded-2xl sm:rounded-xl sm:max-w-2xl w-[95vw] p-0 overflow-hidden">
+                <DialogHeader className="p-5 sm:p-6 border-b border-border bg-card">
                     <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
                         {importMode === 'scan'
                             ? 'Scan Note (Image)'
@@ -68,11 +68,11 @@ export default function ImportNoteDialog({
                 </DialogHeader>
                 <div className="p-5 sm:p-6 space-y-5">
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold opacity-60">
+                        <Label className="text-xs font-bold text-muted-foreground">
                             File Upload
                         </Label>
                         <div
-                            className="border-2 border-dashed border-foreground/10 rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-all cursor-pointer relative bg-background/50"
+                            className="border-2 border-dashed border-border rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-all cursor-pointer relative bg-background/50"
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={(e) => {
                                 e.preventDefault();
@@ -101,7 +101,7 @@ export default function ImportNoteDialog({
                                     <p className="text-xs font-bold text-primary truncate max-w-[220px]">
                                         {importFile.name}
                                     </p>
-                                    <p className="text-xs font-semibold opacity-40 mt-1">
+                                    <p className="text-xs font-semibold mt-1 text-muted-foreground">
                                         Click to change
                                     </p>
                                 </div>
@@ -113,10 +113,10 @@ export default function ImportNoteDialog({
                                             className="text-muted-foreground"
                                         />
                                     </div>
-                                    <p className="text-xs font-semibold opacity-40 text-center">
+                                    <p className="text-xs font-semibold text-center text-muted-foreground">
                                         Drag & drop or browse
                                     </p>
-                                    <p className="text-xs opacity-40 text-center">
+                                    <p className="text-xs text-center text-muted-foreground">
                                         {importMode === 'scan'
                                             ? 'JPG, JPEG, PNG'
                                             : 'TXT, PDF, DOCX, JPG, JPEG, PNG'}
@@ -130,7 +130,7 @@ export default function ImportNoteDialog({
                         <div className="space-y-2">
                             <Label
                                 htmlFor="import-title"
-                                className="text-xs font-bold opacity-60"
+                                className="text-xs font-bold text-muted-foreground"
                             >
                                 Title (optional)
                             </Label>
@@ -139,13 +139,13 @@ export default function ImportNoteDialog({
                                 value={importTitle}
                                 onChange={(e) => onTitleChange(e.target.value)}
                                 placeholder="Auto-generate if left blank"
-                                className="rounded-2xl h-11 bg-card/5 border-foreground/10"
+                                className="rounded-2xl h-11 bg-card border-border"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label
                                 htmlFor="import-subject"
-                                className="text-xs font-bold opacity-60"
+                                className="text-xs font-bold text-muted-foreground"
                             >
                                 Subject (optional)
                             </Label>
@@ -156,7 +156,7 @@ export default function ImportNoteDialog({
                                     onSubjectChange(e.target.value)
                                 }
                                 placeholder="e.g., Biology"
-                                className="rounded-2xl h-11 bg-card/5 border-foreground/10"
+                                className="rounded-2xl h-11 bg-card border-border"
                             />
                         </div>
                     </div>

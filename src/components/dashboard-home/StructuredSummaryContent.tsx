@@ -58,7 +58,7 @@ export const StructuredSummaryContent = ({
                         {summary.definitions.map((item, index) => (
                             <div
                                 key={`${item.term}-${index}`}
-                                className="rounded-2xl border border-foreground/10 bg-background/60 p-4"
+                                className="rounded-2xl border border-border bg-background/60 p-4"
                             >
                                 <p className="text-sm font-bold text-primary">
                                     {item.term}
@@ -96,7 +96,7 @@ export const StructuredSummaryContent = ({
                             {summary.quiz.map((question, index) => (
                                 <div
                                     key={`${question.question}-${index}`}
-                                    className="rounded-2xl border border-foreground/10 bg-card/40 p-4"
+                                    className="rounded-2xl border border-border bg-card p-4"
                                 >
                                     <p className="text-sm font-semibold">
                                         {index + 1}. {question.question}

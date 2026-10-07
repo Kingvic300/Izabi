@@ -26,7 +26,7 @@ const ContextCard: React.FC<ContextCardProps> = ({ onSelect, onDismiss }) => {
             {/* Dismiss button */}
             <button
                 onClick={onDismiss}
-                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-card/10 dark:bg-card/10 hover:bg-card/20 dark:hover:bg-card/20 flex items-center justify-center transition-colors"
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-card dark:bg-card hover:bg-muted dark:hover:bg-muted flex items-center justify-center transition-colors"
                 aria-label="Dismiss"
             >
                 <X
@@ -39,9 +39,6 @@ const ContextCard: React.FC<ContextCardProps> = ({ onSelect, onDismiss }) => {
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-start gap-4 pr-8">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center flex-shrink-0">
-                        <GraduationCap size={24} className="text-primary" />
-                    </div>
                     <div className="flex-1">
                         <h3 className="text-xl md:text-2xl font-bold mb-2 leading-tight text-foreground">
                             What are you studying for?
@@ -58,14 +55,14 @@ const ContextCard: React.FC<ContextCardProps> = ({ onSelect, onDismiss }) => {
                         <button
                             key={type.id}
                             onClick={() => onSelect(type.id)}
-                            className="px-6 py-3 rounded-xl bg-card/10 dark:bg-card/10 hover:bg-primary/20 border border-foreground/20 dark:border-foreground/20 hover:border-primary/40 font-bold text-sm text-primary-foreground transition-all hover:scale-105 active:scale-95"
+                            className="px-6 py-3 rounded-xl bg-card dark:bg-card hover:bg-primary/20 border border-foreground/20 dark:border-foreground/20 hover:border-primary/40 font-bold text-sm text-primary-foreground transition-all"
                         >
                             {type.label}
                         </button>
                     ))}
                     <button
                         onClick={onDismiss}
-                        className="px-6 py-3 rounded-xl bg-transparent border border-foreground/10 dark:border-foreground/10 hover:border-foreground/30 dark:hover:border-foreground/30 font-bold text-sm text-foreground/50 dark:text-foreground/60 hover:text-foreground dark:hover:text-foreground/80 transition-all"
+                        className="px-6 py-3 rounded-xl bg-transparent border border-border dark:border-border hover:border-foreground/30 dark:hover:border-foreground/30 font-bold text-sm text-foreground/50 dark:text-foreground/60 hover:text-foreground dark:hover:text-foreground/80 transition-all"
                     >
                         Skip
                     </button>

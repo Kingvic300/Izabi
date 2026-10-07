@@ -2,16 +2,13 @@
 
 import { useRef } from 'react';
 import { PageLoader } from '@/components/PageLoader';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import { PageHeader, SectionTitle } from '@/components/dashboard/PageHeader';
 import { useDashboardProgress } from '@/components/dashboard-progress/useDashboardProgress';
-import ProgressHeader from '@/components/dashboard-progress/ProgressHeader';
 import UsageBanner from '@/components/dashboard-progress/UsageBanner';
 import ProgressStatCards from '@/components/dashboard-progress/ProgressStatCards';
 import ActivityStreaks from '@/components/dashboard-progress/ActivityStreaks';
 import ProgressCharts from '@/components/dashboard-progress/ProgressCharts';
 import AchievementsSection from '@/components/dashboard-progress/AchievementsSection';
-import { LearningVelocityWidget } from '@/components/dashboard-home/LearningVelocityWidget';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const DashboardProgress = () => {
@@ -26,42 +23,14 @@ const DashboardProgress = () => {
         subjectData,
     } = useDashboardProgress();
 
-    useGSAP(
-        () => {
-            if (!isLoading) {
-                gsap.from('.prog-header', {
-                    opacity: 0,
-                    y: -20,
-                    duration: 0.6,
-                });
-                gsap.from('.stat-card', {
-                    opacity: 0,
-                    scale: 0.9,
-                    stagger: 0.1,
-                    duration: 0.5,
-                    ease: 'back.out(1.7)',
-                });
-                gsap.from('.chart-card', {
-                    opacity: 0,
-                    y: 30,
-                    stagger: 0.2,
-                    duration: 0.8,
-                    ease: 'power2.out',
-                });
-            }
-        },
-        { scope: containerRef, dependencies: [isLoading] },
-    );
 
     if (isLoading) {
         return (
-            <div className="space-y-6">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                    {t('progress.title')}
-                </h1>
-                <p className="text-muted-foreground">
-                    {t('progress.loading_subtitle')}
-                </p>
+            <div className="space-y-8">
+                <PageHeader
+                    title={t('progress.title')}
+                    description={t('progress.loading_subtitle')}
+                />
                 <PageLoader
                     variant="skeleton-cards"
                     itemCount={4}
@@ -72,79 +41,35 @@ const DashboardProgress = () => {
     }
 
     return (
-        <div
-            ref={containerRef}
-            className="space-y-8 md:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
-        >
-            <div className="prog-header space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-xs sm:text-xs font-semibold text-primary">
-                        {t('progress.eyebrow')}
-                    </span>
-                </div>
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div className="space-y-2">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                            {t('progress.title')}
-                        </h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl">
-                            {t('progress.main_subtitle')}
-                        </p>
-                    </div>
-                </div>
-                <div className="glass-card border-foreground/10 rounded-xl p-5 sm:p-6">
-                    <ProgressHeader studyStreak={progressData.studyStreak} />
-                </div>
-            </div>
+        <div ref={containerRef} className="w-full space-y-12 pb-16">
+            <PageHeader
+                title={t('progress.title')}
+                description={t('progress.main_subtitle')}
+            />
 
-            {/* Usage & Subscription Banner */}
             {usage && (
-                <div className="glass-card border-foreground/10 rounded-xl p-4 sm:p-6">
+                <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
                     <UsageBanner usage={usage} subscription={subscription} />
                 </div>
             )}
 
-            <section className="space-y-4">
-                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                    {t('progress.snapshot_label')}
-                </div>
+            <section>
+                <SectionTitle title={t('progress.snapshot_label')} />
                 <ProgressStatCards progressData={progressData} />
             </section>
 
-            <section className="space-y-4">
-                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                    Learning Velocity
-                </div>
-                <LearningVelocityWidget
-                    streak={`${progressData.studyStreak ?? 0} Days`}
-                    totalPoints={progressData.totalQuizzes ?? 0}
-                    retentionPercent={Math.round(progressData.averageScore ?? 0)}
-                />
+            <section>
+                <SectionTitle title={t('progress.streaks_label')} />
+                <ActivityStreaks activityStreaks={progressData.activityStreaks} />
             </section>
 
-            <section className="space-y-4">
-                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                    {t('progress.streaks_label')}
-                </div>
-                <ActivityStreaks
-                    activityStreaks={progressData.activityStreaks}
-                />
+            <section>
+                <SectionTitle title={t('progress.insights_label')} />
+                <ProgressCharts chartData={chartData} subjectData={subjectData} />
             </section>
 
-            <section className="space-y-4">
-                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                    {t('progress.insights_label')}
-                </div>
-                <ProgressCharts
-                    chartData={chartData}
-                    subjectData={subjectData}
-                />
-            </section>
-
-            <section className="space-y-4">
-                <div className="text-xs sm:text-xs font-semibold text-muted-foreground">
-                    {t('progress.achievements_label')}
-                </div>
+            <section>
+                <SectionTitle title={t('progress.achievements_label')} />
                 <AchievementsSection progressData={progressData} />
             </section>
         </div>

@@ -462,7 +462,7 @@ const DashboardAIAssistant = () => {
     return (
         <div
             ref={containerRef}
-            className="w-full px-3 md:px-6 xl:px-8 pt-4 md:pt-6 pb-0 flex flex-col h-full min-h-0 overflow-hidden"
+            className="flex h-[calc(100dvh-3.5rem)] min-h-0 w-full flex-col overflow-hidden px-4 pt-5 sm:px-6 lg:px-10 lg:pt-7"
         >
             <div className="flex flex-col min-h-0 gap-4 md:gap-6 flex-1">
                 <ChatHeader
@@ -479,8 +479,7 @@ const DashboardAIAssistant = () => {
                     onSelectSession={handleSelectSession}
                 />
 
-                <Card className="chat-card flex-1 min-h-0 flex flex-col overflow-hidden glass-card border-foreground/10 rounded-2xl shadow-sm md:shadow-2xl relative">
-                    {/* Background decorative element */}
+                <Card className="relative mb-4 flex min-h-0 flex-1 flex-col overflow-hidden">
 
                     <CardContent className="flex-1 min-h-0 flex flex-col overflow-hidden p-0">
                         <ChatMessages

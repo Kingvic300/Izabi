@@ -21,32 +21,27 @@ export default function HistoryHeader({
 }: HistoryHeaderProps) {
     const { t } = useLanguage();
     return (
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
-            <div>
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                    {t('history.title')}
-                </h1>
-                <p className="text-muted-foreground mt-2 font-medium">
-                    {t('history.header_subtitle')}
-                </p>
-            </div>
-
-            <div className="flex bg-card/5 border border-foreground/5 p-1 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar">
-                {HISTORY_TYPES.map(({ type, labelKey }) => (
-                    <button
-                        key={type}
-                        onClick={() => onTypeChange(type)}
-                        className={cn(
-                            'px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-bold capitalize transition-all whitespace-nowrap',
-                            activeType === type
-                                ? 'bg-primary text-primary-foreground shadow-lg'
-                                : 'text-muted-foreground hover:bg-foreground/5',
-                        )}
-                    >
-                        {t(labelKey)}
-                    </button>
-                ))}
-            </div>
+        <div
+            role="tablist"
+            aria-label="Filter history"
+            className="no-scrollbar flex w-full overflow-x-auto rounded-md bg-muted p-1 md:w-auto"
+        >
+            {HISTORY_TYPES.map(({ type, labelKey }) => (
+                <button
+                    key={type}
+                    role="tab"
+                    aria-selected={activeType === type}
+                    onClick={() => onTypeChange(type)}
+                    className={cn(
+                        'whitespace-nowrap rounded-[5px] px-3.5 py-2 text-sm font-bold transition-colors',
+                        activeType === type
+                            ? 'bg-card text-foreground shadow-soft'
+                            : 'text-muted-foreground hover:text-foreground',
+                    )}
+                >
+                    {t(labelKey)}
+                </button>
+            ))}
         </div>
     );
 }

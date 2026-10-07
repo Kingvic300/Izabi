@@ -158,7 +158,7 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
                 className="w-full max-w-4xl max-h-[90vh] overflow-y-auto"
             >
                 <Card className="glass border-primary/20 shadow-sm">
-                    <CardHeader className="border-b border-foreground/5 pb-6">
+                    <CardHeader className="border-b border-border pb-6">
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -187,17 +187,17 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
 
                         {/* Document Stats */}
                         <div className="flex flex-wrap gap-3 mt-6">
-                            <Badge className="bg-card/5 text-foreground border-foreground/10 px-4 py-2 text-sm">
+                            <Badge className="bg-card text-foreground border-border px-4 py-2 text-sm">
                                 <FileText size={14} className="mr-2" />
                                 {analysis.pageCount} Pages
                             </Badge>
-                            <Badge className="bg-card/5 text-foreground border-foreground/10 px-4 py-2 text-sm">
+                            <Badge className="bg-card text-foreground border-border px-4 py-2 text-sm">
                                 <Layers size={14} className="mr-2" />~
                                 {Math.round(analysis.estimatedChars / 1000)}K
                                 chars
                             </Badge>
                             {analysis.fileSizeMB && (
-                                <Badge className="bg-card/5 text-foreground border-foreground/10 px-4 py-2 text-sm">
+                                <Badge className="bg-card text-foreground border-border px-4 py-2 text-sm">
                                     {analysis.fileSizeMB.toFixed(1)} MB
                                 </Badge>
                             )}
@@ -317,7 +317,7 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
                                     animate={{ opacity: 1, y: 0 }}
                                     className="space-y-4"
                                 >
-                                    <div className="p-6 rounded-2xl bg-card/5 border border-foreground/10">
+                                    <div className="p-6 rounded-2xl bg-card border border-border">
                                         <h3 className="text-lg font-bold mb-4">
                                             Custom Page Range
                                         </h3>
@@ -336,7 +336,7 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
                                                             ) || 1,
                                                         )
                                                     }
-                                                    className="bg-card/5 border-foreground/10 h-12"
+                                                    className="bg-card border-border h-12"
                                                 />
                                             </div>
                                             <div className="space-y-2">
@@ -354,7 +354,7 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
                                                                 analysis.pageCount,
                                                         )
                                                     }
-                                                    className="bg-card/5 border-foreground/10 h-12"
+                                                    className="bg-card border-border h-12"
                                                 />
                                             </div>
                                         </div>
@@ -369,12 +369,12 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
                         </AnimatePresence>
 
                         {/* Info Banner */}
-                        <div className="flex items-start gap-3 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                        <div className="flex items-start gap-3 p-4 rounded-xl bg-learning-blue/10 border border-learning-blue/20">
                             <Info
                                 size={18}
-                                className="text-blue-500 mt-0.5 shrink-0"
+                                className="text-learning-blue mt-0.5 shrink-0"
                             />
-                            <p className="text-sm font-medium text-blue-200">
+                            <p className="text-sm font-medium text-learning-blue">
                                 Each section will be processed separately and
                                 appear in your study history. You'll receive
                                 notifications when processing completes.
@@ -382,7 +382,7 @@ export const PDFSplitterModal: React.FC<PDFSplitterModalProps> = ({
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex gap-4 pt-4 border-t border-foreground/5">
+                        <div className="flex gap-4 pt-4 border-t border-border">
                             <Button
                                 variant="outline"
                                 onClick={onCancel}
@@ -435,7 +435,7 @@ const SuggestionCard: React.FC<{
                 'p-4 rounded-2xl border-2 cursor-pointer transition-all group',
                 selected
                     ? 'border-primary bg-primary/10'
-                    : 'border-foreground/5 bg-card/[0.02] hover:bg-card/5 hover:border-foreground/10',
+                    : 'border-border bg-card hover:bg-muted hover:border-border',
             )}
         >
             <div className="flex items-start gap-4">
@@ -458,21 +458,21 @@ const SuggestionCard: React.FC<{
                             {suggestion.label}
                         </h4>
                         {suggestion.detectedTitle && (
-                            <Badge className="bg-green-500/20 text-green-400 border-none text-xs">
+                            <Badge className="bg-reward/20 text-reward border-none text-xs">
                                 Auto-detected
                             </Badge>
                         )}
                     </div>
 
                     <div className="flex flex-wrap gap-3 mb-2">
-                        <span className="text-xs font-mono bg-card/5 px-2 py-1 rounded">
+                        <span className="text-xs tabular bg-card px-2 py-1 rounded">
                             Pages {suggestion.pageStart}–{suggestion.pageEnd}
                         </span>
-                        <span className="text-xs font-mono bg-card/5 px-2 py-1 rounded">
+                        <span className="text-xs tabular bg-card px-2 py-1 rounded">
                             ~{Math.round(suggestion.estimatedChars / 1000)}K
                             chars
                         </span>
-                        <span className="text-xs font-mono bg-card/5 px-2 py-1 rounded">
+                        <span className="text-xs tabular bg-card px-2 py-1 rounded">
                             {suggestion.pageEnd - suggestion.pageStart + 1}{' '}
                             pages
                         </span>

@@ -1,8 +1,5 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { StatStrip } from '@/components/dashboard/StatStrip';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 type ExamResultProps = {
@@ -20,52 +17,36 @@ export default function ExamResult({
     const correctCount = Math.round((score / 100) * totalQuestions);
 
     return (
-        <div className="w-full text-center space-y-8 sm:space-y-12 pt-8 sm:pt-10 px-4 md:px-8 lg:px-10">
-            <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="w-40 h-40 sm:w-56 sm:h-56 mx-auto rounded-full bg-blue-600 flex items-center justify-center mb-6 sm:mb-8 border-4 border-white/10"
-            >
-                <div className="text-5xl sm:text-7xl font-semibold text-white">
+        <div className="w-full max-w-3xl space-y-10 pb-16 pt-4">
+            <div>
+                <p className="text-muted-foreground">Your score</p>
+                <p className="tabular mt-1 font-display text-7xl leading-none sm:text-8xl">
                     {Math.round(score)}%
-                </div>
-            </motion.div>
-
-            <h2 className="text-2xl sm:text-4xl font-bold ">
-                {score >= 70
-                    ? t('exams.result_excellent')
-                    : score >= 50
-                      ? t('exams.result_good')
-                      : t('exams.result_keep_practicing')}
-            </h2>
-            <p className="text-base sm:text-xl text-muted-foreground">
-                {t('exams.you_answered')} {correctCount} {t('quiz.out_of')} {totalQuestions}{' '}
-                {t('exams.questions_correctly')}
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <Card className="p-6 sm:p-10 bg-blue-500/5 border-blue-500/20 rounded-xl sm:rounded-xl shadow-inner group">
-                    <div className="font-semibold text-blue-500 text-sm mb-2 group-hover:translate-x-1 transition-transform">
-                        {t('exams.correct_responses')}
-                    </div>
-                    <div className="text-4xl sm:text-5xl font-semibold">
-                        {correctCount}
-                    </div>
-                </Card>
-                <Card className="p-6 sm:p-10 bg-destructive/5 border-destructive/20 rounded-xl sm:rounded-xl shadow-inner group">
-                    <div className="font-semibold text-destructive/60 text-sm mb-2 group-hover:translate-x-1 transition-transform">
-                        {t('exams.incorrect_responses')}
-                    </div>
-                    <div className="text-4xl sm:text-5xl font-semibold">
-                        {totalQuestions - correctCount}
-                    </div>
-                </Card>
+                </p>
+                <h2 className="mt-6 text-[2rem] leading-tight">
+                    {score >= 70
+                        ? t('exams.result_excellent')
+                        : score >= 50
+                          ? t('exams.result_good')
+                          : t('exams.result_keep_practicing')}
+                </h2>
+                <p className="mt-2 text-lg text-muted-foreground">
+                    {t('exams.you_answered')} {correctCount} {t('quiz.out_of')}{' '}
+                    {totalQuestions} {t('exams.questions_correctly')}
+                </p>
             </div>
 
-            <Button
-                onClick={onReturn}
-                className="h-14 sm:h-16 px-8 sm:px-12 rounded-xl font-semibold sm:tracking-[0.2em] text-xs bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all active:scale-95"
-            >
+            <StatStrip
+                items={[
+                    { label: t('exams.correct_responses'), value: correctCount },
+                    {
+                        label: t('exams.incorrect_responses'),
+                        value: totalQuestions - correctCount,
+                    },
+                ]}
+            />
+
+            <Button onClick={onReturn} size="lg">
                 {t('exams.return_to_lobby')}
             </Button>
         </div>

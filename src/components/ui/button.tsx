@@ -5,29 +5,32 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-    'inline-flex min-h-11 min-w-11 touch-manipulation items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+    'inline-flex touch-manipulation items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
     {
         variants: {
             variant: {
                 default:
-                    'bg-primary text-primary-foreground hover:bg-primary/90',
+                    'bg-primary text-primary-foreground hover:bg-primary/85',
                 destructive:
                     'bg-destructive text-destructive-foreground hover:bg-destructive/90',
                 outline:
-                    'border border-primary text-primary hover:bg-primary hover:text-primary-foreground',
+                    'border border-input bg-card text-foreground hover:border-foreground/40 hover:bg-muted/60',
                 secondary:
-                    'bg-secondary text-secondary-foreground hover:bg-secondary/90',
+                    'bg-secondary text-secondary-foreground hover:bg-secondary/70',
                 ghost: 'text-foreground hover:bg-muted',
-                link: 'text-primary underline-offset-4 hover:underline',
-                hero: 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg transform hover:scale-105 transition-all duration-200',
+                link: 'text-foreground underline decoration-sheet decoration-2 underline-offset-4 hover:decoration-foreground',
+                hero: 'bg-primary text-primary-foreground hover:bg-primary/85',
             },
             size: {
-                default: 'h-11 px-4 py-2',
-                sm: 'h-11 rounded-2xl px-3',
-                lg: 'h-12 rounded-2xl px-8',
-                icon: 'h-11 w-11',
+                default: 'h-11 px-4',
+                sm: 'h-9 px-3',
+                lg: 'h-12 px-6 text-base',
+                icon: 'h-10 w-10',
             },
         },
+        compoundVariants: [
+            { variant: 'link', className: 'h-auto px-0 py-1' },
+        ],
         defaultVariants: {
             variant: 'default',
             size: 'default',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Brain, Zap, Upload, Lightbulb } from 'lucide-react';
+import { Brain, Timer, Upload, Lightbulb, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface IntentCard {
@@ -37,7 +37,7 @@ const IntentCards: React.FC<IntentCardsProps> = ({
         },
         {
             id: 'test',
-            icon: Zap,
+            icon: Timer,
             label: t('intent.test_label'),
             description: t('intent.test_desc'),
             badge: t('intent.test_badge'),
@@ -63,36 +63,36 @@ const IntentCards: React.FC<IntentCardsProps> = ({
     ];
 
     return (
-        <div className="grid grid-cols-2 gap-2">
+        <ul className="divide-y divide-border">
             {cards.map((card) => {
                 const Icon = card.icon;
                 return (
-                    <button
-                        key={card.id}
-                        id={`intent-card-${card.id}`}
-                        onClick={card.onClick}
-                        className="flex items-start gap-3 rounded-lg p-3 text-left transition-colors hover:bg-muted"
-                    >
-                        <div className="h-9 w-9 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                            <Icon size={18} />
-                        </div>
-                        <div className="min-w-0">
-                            <p className="text-sm font-medium flex items-center gap-2">
-                                {card.label}
-                                {card.badge && (
-                                    <span className="text-[11px] font-normal text-muted-foreground">
-                                        {card.badge}
-                                    </span>
-                                )}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                {card.description}
-                            </p>
-                        </div>
-                    </button>
+                    <li key={card.id}>
+                        <button
+                            id={`intent-card-${card.id}`}
+                            onClick={card.onClick}
+                            className="group flex w-full items-center gap-4 px-4 py-4 text-left transition-colors hover:bg-muted/60 sm:px-5"
+                        >
+                            <Icon className="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-foreground" />
+                            <span className="min-w-0 flex-1">
+                                <span className="flex items-baseline gap-2 font-bold">
+                                    {card.label}
+                                    {card.badge && (
+                                        <span className="text-sm font-normal text-muted-foreground">
+                                            {card.badge}
+                                        </span>
+                                    )}
+                                </span>
+                                <span className="block text-sm text-muted-foreground">
+                                    {card.description}
+                                </span>
+                            </span>
+                            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                        </button>
+                    </li>
                 );
             })}
-        </div>
+        </ul>
     );
 };
 

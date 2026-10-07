@@ -14,6 +14,8 @@ import { useStudy } from '@/contexts/StudyContext';
 import { cn } from '@/lib/utils';
 import JobStatusToast from '@/components/JobStatusToast';
 import { AnimatePresence } from 'framer-motion';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageToggle } from '@/components/LanguageToggle';
 
 const Dashboard = () => {
     const location = useLocation();
@@ -69,16 +71,19 @@ const Dashboard = () => {
     return (
         <ErrorBoundary>
             <SidebarProvider>
-                <div className="min-h-screen flex w-full bg-background relative overflow-hidden text-foreground">
-
+                <div className="relative flex min-h-screen w-full overflow-hidden bg-background text-foreground">
                     <AppSidebar />
                     <div className="flex-1 min-w-0 flex flex-col relative z-10">
-                        <header className="h-14 border-b border-border bg-background px-4 sm:px-6 flex items-center gap-3 shrink-0 relative z-20">
-                            <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+                        <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/95 px-3 supports-[backdrop-filter]:bg-background/85 supports-[backdrop-filter]:backdrop-blur-md sm:px-5">
+                            <SidebarTrigger className="h-9 w-9 text-muted-foreground hover:text-foreground" />
                             <Separator orientation="vertical" className="h-5" />
-                            <h1 className="text-sm font-medium truncate">
+                            <h1 className="truncate font-display text-lg">
                                 {pageTitle}
                             </h1>
+                            <div className="ml-auto flex items-center gap-1">
+                                <LanguageToggle />
+                                <ThemeToggle />
+                            </div>
                         </header>
 
 
@@ -88,7 +93,7 @@ const Dashboard = () => {
                                 'flex-1 min-w-0',
                                 isAIAssistantRoute
                                     ? 'overflow-hidden p-0'
-                                    : 'overflow-y-auto px-4 py-6 sm:px-6 lg:px-8',
+                                    : 'overflow-y-auto px-4 pb-10 pt-6 sm:px-6 lg:px-10 lg:pt-8',
                             )}
                         >
                             <div className="w-full h-full min-w-0">

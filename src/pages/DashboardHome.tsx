@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-import { useGSAP } from '@gsap/react';
 import {
     Share2,
     FileText,
@@ -31,7 +30,6 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import PDFPreview from '@/components/pdf/PDFPreview';
-import { FloatingAssistant } from '@/components/dashboard-home/FloatingAssistant';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useDashboardData } from '@/hooks/useDashboardData';
@@ -86,7 +84,6 @@ export default function DashboardHome() {
     const [practiceQuestions, setPracticeQuestions] = useState<any[]>([]);
     const [userExamType, setUserExamType] = useState<string | null>(null);
     const [previewFile, setPreviewFile] = useState<File | null>(null);
-    const [isAssistantOpen, setIsAssistantOpen] = useState(false);
     const streakValue =
         userStats?.data?.streakData?.academicStreak ??
         userStats?.data?.studyStreak ??
@@ -111,19 +108,6 @@ export default function DashboardHome() {
         shareUrl,
         shareText,
     } = useProfileShare();
-
-    useGSAP(
-        () => {
-            gsap.from('.stagger-card', {
-                opacity: 0,
-                y: 16,
-                stagger: 0.06,
-                duration: 0.5,
-                ease: 'power2.out',
-            });
-        },
-        { scope: containerRef },
-    );
 
     useEffect(() => {
         const savedExamType = localStorage.getItem('user_exam_type');
@@ -577,20 +561,18 @@ export default function DashboardHome() {
 
     return (
         <ErrorBoundary>
-            <div
-                ref={containerRef}
-                className="w-full max-w-6xl mx-auto space-y-8 pb-24"
-            >
-                <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 stagger-card">
-                    <div className="space-y-1">
+            <div ref={containerRef} className="w-full space-y-10 pb-16">
+                <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
                         <p className="text-sm text-muted-foreground">
                             {todayLabel}
                         </p>
-                        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-                            {t('dashboard.greeting')}{' '}
-                            {userStats?.data?.firstName || ''}
+                        <h2 className="mt-1 text-[2rem] leading-tight sm:text-[2.5rem]">
+                            {userStats?.data?.firstName
+                                ? `${t('dashboard.greeting')} ${userStats.data.firstName}`
+                                : t('dashboard.greeting').replace(/,\s*$/, '')}
                         </h2>
-                        <p className="text-sm text-muted-foreground max-w-xl">
+                        <p className="mt-1 text-muted-foreground">
                             {t('home.subtitle')}
                         </p>
                     </div>
@@ -598,49 +580,43 @@ export default function DashboardHome() {
                         {userStats?.data && userId && (
                             <Button
                                 variant="outline"
-                                size="sm"
-                                className="gap-2"
                                 onClick={handleShareProfile}
                                 disabled={isSharing}
                             >
-                                <Share2 size={14} />
+                                <Share2 />
                                 {isSharing
                                     ? t('home.preparing')
                                     : t('home.share_profile')}
                             </Button>
                         )}
                         <Button
-                            size="sm"
-                            className="gap-2"
                             onClick={() => navigate('/dashboard/ai-assistant')}
                         >
-                            <MessageCircle size={14} />
+                            <MessageCircle />
                             {t('home.ai_assistant')}
                         </Button>
                     </div>
                 </header>
 
-                <div className="stagger-card">
-                    <StatsRow
-                        streak={streakValue}
-                        totalPoints={totalPoints}
-                        dailyPoints={dailyPoints}
-                        studyHours={totalStudyHours}
-                    />
-                </div>
+                <StatsRow
+                    streak={streakValue}
+                    totalPoints={totalPoints}
+                    dailyPoints={dailyPoints}
+                    studyHours={totalStudyHours}
+                />
 
-                <section className="space-y-4 stagger-card">
-                    <div>
-                        <h3 className="text-lg font-semibold">
+                <section aria-labelledby="study-title">
+                    <div className="mb-4">
+                        <h3 id="study-title" className="text-2xl">
                             {t('home.study_workspace')}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="mt-0.5 text-muted-foreground">
                             {t('home.upload_then_generate')}
                         </p>
                     </div>
                     {session.pdfSelections.length > 0 ? (
-                        <>
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                                 <div className="lg:col-span-1">
                                     <DocumentInfo
                                         fileNames={session.fileNames}
@@ -691,7 +667,7 @@ export default function DashboardHome() {
                                 onDownloadQuiz={downloadQuiz}
                                 onSubmitQuiz={handleQuizSubmit}
                             />
-                        </>
+                        </div>
                     ) : (
                         <UploadPrompt
                             onSelectionComplete={handleSelectionComplete}
@@ -700,12 +676,12 @@ export default function DashboardHome() {
                     )}
                 </section>
 
-                <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 stagger-card">
-                    <div className="space-y-3">
-                        <h3 className="text-lg font-semibold">
+                <section className="grid grid-cols-1 gap-x-6 gap-y-10 lg:grid-cols-5">
+                    <div className="lg:col-span-3">
+                        <h3 className="mb-4 text-2xl">
                             {t('home.daily_pulse')}
                         </h3>
-                        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+                        <div className="rounded-lg border border-border bg-card p-5 sm:p-7">
                             <BrainDropSection
                                 isCompleted={isBrainDropCompleted}
                                 question={brainDropQuestion}
@@ -714,11 +690,11 @@ export default function DashboardHome() {
                             />
                         </div>
                     </div>
-                    <div className="space-y-3">
-                        <h3 className="text-lg font-semibold">
+                    <div className="lg:col-span-2">
+                        <h3 className="mb-4 text-2xl">
                             {t('home.quick_actions')}
                         </h3>
-                        <div className="rounded-xl border border-border bg-card p-2">
+                        <div className="overflow-hidden rounded-lg border border-border bg-card">
                             <IntentCards
                                 onPracticeSkills={handlePracticeSkills}
                                 onQuickTest={handleQuickTest}
@@ -765,10 +741,10 @@ export default function DashboardHome() {
 
             {/* Document Preview Dialog */}
             <Dialog open={!!previewFile} onOpenChange={() => setPreviewFile(null)}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 glass border-foreground/10 rounded-2xl">
-                    <DialogHeader className="p-6 border-b border-foreground/5 shrink-0 bg-card/60 ">
+                <DialogContent className="flex max-h-[90vh] max-w-4xl flex-col overflow-hidden p-0">
+                    <DialogHeader className="shrink-0 border-b border-border p-5">
                         <DialogTitle className="flex items-center gap-3">
-                            <FileText className="text-primary" />
+                            <FileText className="text-muted-foreground" />
                             <div className="flex flex-col">
                                 <span className="text-base font-medium truncate max-w-[300px] sm:max-w-md">
                                     {previewFile?.name}
@@ -783,7 +759,7 @@ export default function DashboardHome() {
                         {previewFile && (
                             <div className="w-full flex justify-center">
                                 {previewFile.type.startsWith('image/') ? (
-                                    <div className="relative group rounded-xl overflow-hidden shadow-sm border border-foreground/5">
+                                    <div className="relative group rounded-xl overflow-hidden shadow-sm border border-border">
                                         <img 
                                             src={URL.createObjectURL(previewFile)} 
                                             alt={previewFile.name}
@@ -791,14 +767,14 @@ export default function DashboardHome() {
                                         />
                                     </div>
                                 ) : previewFile.type === 'application/pdf' ? (
-                                    <div className="w-full h-[600px] rounded-xl overflow-hidden shadow-sm border border-foreground/5">
+                                    <div className="w-full h-[600px] rounded-xl overflow-hidden shadow-sm border border-border">
                                         <PDFPreview 
                                             file={previewFile}
                                             className="w-full h-full"
                                         />
                                     </div>
                                 ) : (
-                                    <div className="w-full p-8 rounded-2xl border border-dashed border-foreground/10 flex flex-col items-center justify-center gap-4 text-center">
+                                    <div className="w-full p-8 rounded-2xl border border-dashed border-border flex flex-col items-center justify-center gap-4 text-center">
                                         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
                                             <FileText size={40} className="text-primary" />
                                         </div>
@@ -815,12 +791,6 @@ export default function DashboardHome() {
                     </div>
                 </DialogContent>
             </Dialog>
-
-            <FloatingAssistant
-                isOpen={isAssistantOpen}
-                onToggle={() => setIsAssistantOpen((prev) => !prev)}
-                currentTopic={session.fileNames[0]}
-            />
         </ErrorBoundary>
     );
 }

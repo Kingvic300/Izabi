@@ -3,18 +3,23 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/theme-provider';
 
 export function ThemeToggle() {
-    const { theme, setTheme } = useTheme();
+    const { setTheme } = useTheme();
+
+    const toggle = () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        setTheme(isDark ? 'light' : 'dark');
+    };
 
     return (
         <Button
             variant="ghost"
             size="icon"
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            className="h-9 w-9"
+            onClick={toggle}
+            className="relative h-9 w-9 text-muted-foreground hover:text-foreground"
         >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
+            <Sun className="h-[18px] w-[18px] dark:hidden" />
+            <Moon className="hidden h-[18px] w-[18px] dark:block" />
+            <span className="sr-only">Switch light or dark theme</span>
         </Button>
     );
 }

@@ -11,6 +11,7 @@ import {
     AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AnswerOption } from '@/components/ui/answer-option';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/apiClient';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -127,22 +128,19 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 ">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-background rounded-xl shadow-sm border border-primary/20"
+                    className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg border border-border bg-card shadow-float"
                 >
                     {/* Header */}
-                    <div className="sticky top-0 z-10 bg-background/95 border-b border-foreground/10 p-6">
+                    <div className="sticky top-0 z-10 border-b border-border bg-card p-5 sm:p-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center">
-                                    <Zap size={24} className="text-primary" />
-                                </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold">
+                                    <h2 className="text-2xl">
                                         {testData?.title || t('quiz.default_title')}
                                     </h2>
                                     <p className="text-sm text-muted-foreground">
@@ -156,10 +154,8 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                 {!results && testData && (
                                     <div
                                         className={cn(
-                                            'flex items-center gap-2 px-4 py-2 rounded-full font-bold',
-                                            timeLeft < 60
-                                                ? 'bg-red-500/20 text-red-500'
-                                                : 'bg-primary/20 text-primary',
+                                            'tabular flex items-center gap-2 font-display text-2xl',
+                                            timeLeft < 60 && 'text-urgent',
                                         )}
                                     >
                                         <Clock size={18} />
@@ -168,7 +164,8 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                 )}
                                 <button
                                     onClick={handleClose}
-                                    className="w-10 h-10 rounded-full hover:bg-card/10 flex items-center justify-center transition-colors"
+                                    className="flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-muted"
+                                    aria-label="Close"
                                 >
                                     <X size={20} />
                                 </button>
@@ -180,7 +177,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                     <div className="p-6 space-y-6">
                         {loading && (
                             <div className="flex flex-col items-center justify-center py-20 space-y-4">
-                                <Loader2 className="w-12 h-12 animate-spin text-primary" />
+                                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                                 <p className="text-lg font-medium text-muted-foreground">
                                     {t('quiz.generating_test')}
                                 </p>
@@ -188,13 +185,13 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                         )}
 
                         {error && (
-                            <div className="flex items-center gap-3 p-6 rounded-2xl bg-red-500/10 border border-red-500/20">
+                            <div className="flex items-center gap-3 p-6 rounded-2xl bg-destructive/10 border border-destructive/20">
                                 <AlertCircle
-                                    className="text-red-500"
+                                    className="text-destructive"
                                     size={24}
                                 />
                                 <div>
-                                    <p className="font-bold text-red-500">
+                                    <p className="font-bold text-destructive">
                                         {t('quiz.error_label')}
                                     </p>
                                     <p className="text-sm text-muted-foreground">
@@ -213,13 +210,13 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                     ) => (
                                         <div
                                             key={question.id}
-                                            className="p-6 rounded-2xl bg-card/5 border border-foreground/10"
+                                            className="border-b border-sheet/25 pb-6 last:border-b-0"
                                         >
-                                            <div className="flex items-start gap-4 mb-4">
-                                                <div className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">
-                                                    {index + 1}
-                                                </div>
-                                                <p className="text-lg font-medium flex-1">
+                                            <div className="mb-4 flex items-start gap-4">
+                                                <span className="tabular w-7 shrink-0 pt-0.5 text-right font-bold text-sheet">
+                                                    {index + 1}.
+                                                </span>
+                                                <p className="flex-1 font-display text-lg leading-snug">
                                                     {question.text}
                                                 </p>
                                             </div>
@@ -227,73 +224,32 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                             {question.type ===
                                                 'multiple_choice' &&
                                                 question.options && (
-                                                    <div className="space-y-2 ml-12">
-                                                        {question.options.map(
-                                                            (
-                                                                option,
-                                                                optIndex,
-                                                            ) => (
-                                                                <button
-                                                                    key={
-                                                                        optIndex
-                                                                    }
-                                                                    onClick={() =>
-                                                                        handleAnswerChange(
-                                                                            question.id,
-                                                                            option,
-                                                                        )
-                                                                    }
-                                                                    className={cn(
-                                                                        'w-full text-left px-4 py-3 rounded-xl border-2 transition-all font-medium',
-                                                                        answers[
-                                                                            question
-                                                                                .id
-                                                                        ] ===
-                                                                            option
-                                                                            ? 'bg-primary/20 border-primary/50 text-primary'
-                                                                            : 'bg-background border-foreground/10 hover:border-primary/30',
-                                                                    )}
-                                                                >
-                                                                    <span className="mr-3 font-bold opacity-60">
-                                                                        {String.fromCharCode(
-                                                                            65 +
-                                                                                optIndex,
-                                                                        )}
-                                                                        .
-                                                                    </span>
-                                                                    {option}
-                                                                </button>
-                                                            ),
-                                                        )}
+                                                    <div role="radiogroup" className="ml-11 grid gap-2">
+                                                        {question.options.map((option, optIndex) => (
+                                                            <AnswerOption
+                                                                key={optIndex}
+                                                                letter={String.fromCharCode(65 + optIndex)}
+                                                                state={answers[question.id] === option ? 'selected' : 'idle'}
+                                                                onClick={() => handleAnswerChange(question.id, option)}
+                                                            >
+                                                                {option}
+                                                            </AnswerOption>
+                                                        ))}
                                                     </div>
                                                 )}
 
                                             {question.type === 'true_false' && (
-                                                <div className="flex gap-3 ml-12">
-                                                    {['True', 'False'].map(
-                                                        (option) => (
-                                                            <button
-                                                                key={option}
-                                                                onClick={() =>
-                                                                    handleAnswerChange(
-                                                                        question.id,
-                                                                        option,
-                                                                    )
-                                                                }
-                                                                className={cn(
-                                                                    'flex-1 px-6 py-3 rounded-xl border-2 transition-all font-bold',
-                                                                    answers[
-                                                                        question
-                                                                            .id
-                                                                    ] === option
-                                                                        ? 'bg-primary/20 border-primary/50 text-primary'
-                                                                        : 'bg-background border-foreground/10 hover:border-primary/30',
-                                                                )}
-                                                            >
-                                                                {option === 'True' ? t('quiz.true') : t('quiz.false')}
-                                                            </button>
-                                                        ),
-                                                    )}
+                                                <div role="radiogroup" className="ml-11 grid grid-cols-2 gap-2">
+                                                    {['True', 'False'].map((option) => (
+                                                        <AnswerOption
+                                                            key={option}
+                                                            letter={option[0]}
+                                                            state={answers[question.id] === option ? 'selected' : 'idle'}
+                                                            onClick={() => handleAnswerChange(question.id, option)}
+                                                        >
+                                                            {option === 'True' ? t('quiz.true') : t('quiz.false')}
+                                                        </AnswerOption>
+                                                    ))}
                                                 </div>
                                             )}
 
@@ -312,7 +268,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                         )
                                                     }
                                                     placeholder={t('quiz.type_answer_ellipsis')}
-                                                    className="w-full ml-12 px-4 py-3 rounded-xl border-2 border-foreground/10 bg-background focus:border-primary/50 focus:outline-none transition-colors"
+                                                    className="ml-11 h-11 w-[calc(100%-2.75rem)] rounded-md border border-input bg-card px-3 text-base focus:border-foreground focus:outline-none"
                                                 />
                                             )}
                                         </div>
@@ -326,7 +282,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                         Object.keys(answers).length <
                                             testData.questions.length
                                     }
-                                    className="w-full h-14 rounded-2xl text-lg font-bold"
+                                    className="w-full sm:w-auto" size="lg"
                                 >
                                     {isSubmitting ? (
                                         <>
@@ -382,21 +338,21 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                             <div
                                                 key={result.id}
                                                 className={cn(
-                                                    'p-6 rounded-2xl border-2',
+                                                    'border-l-2 py-1 pl-4',
                                                     result.isCorrect
-                                                        ? 'bg-green-500/10 border-green-500/30'
-                                                        : 'bg-red-500/10 border-red-500/30',
+                                                        ? 'border-reward'
+                                                        : 'border-destructive',
                                                 )}
                                             >
                                                 <div className="flex items-start gap-3 mb-3">
                                                     {result.isCorrect ? (
                                                         <CheckCircle
-                                                            className="text-green-500 flex-shrink-0"
+                                                            className="text-reward flex-shrink-0"
                                                             size={24}
                                                         />
                                                     ) : (
                                                         <XCircle
-                                                            className="text-red-500 flex-shrink-0"
+                                                            className="text-destructive flex-shrink-0"
                                                             size={24}
                                                         />
                                                     )}
@@ -411,8 +367,8 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                             <span
                                                                 className={
                                                                     result.isCorrect
-                                                                        ? 'text-green-500'
-                                                                        : 'text-red-500'
+                                                                        ? 'text-reward'
+                                                                        : 'text-destructive'
                                                                 }
                                                             >
                                                                 {result.userAnswer ||
@@ -424,7 +380,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                                 <span className="opacity-60">
                                                                     {t('quiz.correct_answer_colon')}
                                                                 </span>{' '}
-                                                                <span className="text-green-500">
+                                                                <span className="text-reward">
                                                                     {
                                                                         result.correctAnswer
                                                                     }
@@ -432,7 +388,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
                                                             </p>
                                                         )}
                                                         {result.explanation && (
-                                                            <p className="text-sm mt-3 p-3 rounded-lg bg-card/5">
+                                                            <p className="text-sm mt-3 p-3 rounded-lg bg-card">
                                                                 {
                                                                     result.explanation
                                                                 }
@@ -447,7 +403,7 @@ const QuickTestModal: React.FC<QuickTestModalProps> = ({
 
                                 <Button
                                     onClick={handleClose}
-                                    className="w-full h-14 rounded-2xl text-lg font-bold"
+                                    className="w-full sm:w-auto" size="lg"
                                 >
                                     {t('quiz.close')}
                                 </Button>

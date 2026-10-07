@@ -134,7 +134,7 @@ export const StudyGenerationHub: React.FC<StudyGenerationHubProps> = ({
                             <Icon className="w-3.5 h-3.5" />
                             <span>{tab.label}</span>
                             {typeof tab.count === 'number' && (
-                                <span className="text-[10px] font-mono opacity-80">({tab.count})</span>
+                                <span className="text-xs tabular opacity-80">({tab.count})</span>
                             )}
                         </button>
                     );
@@ -145,7 +145,7 @@ export const StudyGenerationHub: React.FC<StudyGenerationHubProps> = ({
                 <div className="rounded-2xl bg-card border border-border p-6 sm:p-7 shadow-card space-y-6">
                     <div className="flex items-center justify-between border-b border-border pb-4">
                         <div>
-                            <span className="text-xs font-mono uppercase text-primary tracking-wide">
+                            <span className="text-xs tabular text-primary tracking-wide">
                                 Document Synthesis
                             </span>
                             <h3 className="text-lg font-bold text-foreground mt-0.5 truncate max-w-sm">
@@ -165,7 +165,7 @@ export const StudyGenerationHub: React.FC<StudyGenerationHubProps> = ({
 
                     {summaryText ? (
                         <div className="bg-muted/30 p-4.5 rounded-xl border border-border text-xs sm:text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono mb-2 flex items-center gap-1.5">
+                            <h4 className="text-xs font-bold text-foreground tabular mb-2 flex items-center gap-1.5">
                                 <Sparkles className="w-3.5 h-3.5 text-primary" />
                                 <span>
                                     Executive Summary
@@ -191,7 +191,7 @@ export const StudyGenerationHub: React.FC<StudyGenerationHubProps> = ({
                     ) : !quizDone ? (
                         <div>
                             <div className="flex items-center justify-between pb-3 border-b border-border mb-4">
-                                <span className="text-xs font-mono text-primary">
+                                <span className="text-xs tabular text-primary">
                                     Question {currentQuizIdx + 1} of {questions.length}
                                 </span>
                             </div>
@@ -224,7 +224,7 @@ export const StudyGenerationHub: React.FC<StudyGenerationHubProps> = ({
                                             className={`w-full text-left p-3.5 sm:p-4 rounded-xl border text-xs sm:text-sm font-medium transition-all cursor-pointer flex items-center justify-between gap-3 ${style}`}
                                         >
                                             <div className="flex items-center gap-3">
-                                                <span className="w-5 h-5 rounded-md bg-card border border-border flex items-center justify-center text-[10px] font-mono text-muted-foreground">
+                                                <span className="w-5 h-5 rounded-md bg-card border border-border flex items-center justify-center text-xs tabular text-muted-foreground">
                                                     {String.fromCharCode(65 + idx)}
                                                 </span>
                                                 <span>{opt}</span>
@@ -246,7 +246,7 @@ export const StudyGenerationHub: React.FC<StudyGenerationHubProps> = ({
                             <p className="text-xs text-muted-foreground mb-4">
                                 You correctly answered {quizScore} out of {questions.length} questions.
                             </p>
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 font-mono text-xs mb-6">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-urgent/10 border border-urgent/30 text-urgent tabular text-xs mb-6">
                                 <span>+{quizScore * 10} XP Awarded</span>
                             </div>
                             <button
@@ -275,10 +275,10 @@ export const StudyGenerationHub: React.FC<StudyGenerationHubProps> = ({
                     ) : (
                         <>
                             <div className="flex items-center justify-between pb-3 border-b border-border text-xs">
-                                <span className="font-mono text-primary">
+                                <span className="tabular text-primary">
                                     Card {currentCardIndex + 1} of {flashcards.length}
                                 </span>
-                                <span className="font-mono text-muted-foreground">
+                                <span className="tabular text-muted-foreground">
                                     Mastered: {Object.keys(masteredCards).length} of {flashcards.length}
                                 </span>
                             </div>
@@ -287,7 +287,7 @@ export const StudyGenerationHub: React.FC<StudyGenerationHubProps> = ({
                                 onClick={() => setIsCardFlipped(!isCardFlipped)}
                                 className="min-h-[220px] sm:min-h-[240px] rounded-2xl bg-muted/30 border border-border hover:border-primary/30 p-6 flex flex-col justify-between cursor-pointer transition-all duration-200"
                             >
-                                <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
+                                <div className="flex items-center justify-between text-xs text-muted-foreground tabular">
                                     <span className="text-primary">
                                         {isCardFlipped ? 'Answer · Back' : 'Question · Front'}
                                     </span>
@@ -309,7 +309,7 @@ export const StudyGenerationHub: React.FC<StudyGenerationHubProps> = ({
                             <div className="grid grid-cols-4 gap-2 pt-2">
                                 {[
                                     { id: 'again', label: 'Again', color: 'hover:bg-destructive/15 text-destructive' },
-                                    { id: 'hard', label: 'Hard', color: 'hover:bg-amber-500/15 text-amber-600' },
+                                    { id: 'hard', label: 'Hard', color: 'hover:bg-urgent/15 text-urgent' },
                                     { id: 'good', label: 'Good', color: 'hover:bg-primary/15 text-primary' },
                                     { id: 'easy', label: 'Easy', color: 'hover:bg-learning-green/15 text-learning-green' },
                                 ].map((btn) => (

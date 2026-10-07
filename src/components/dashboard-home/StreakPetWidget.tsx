@@ -80,7 +80,7 @@ export const StreakPetWidget: React.FC<StreakPetWidgetProps> = ({
                     <div className="relative shrink-0">
                         <div
                             className={`w-16 h-16 sm:w-18 sm:h-18 rounded-2xl p-1 bg-muted border-2 border-primary overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105 flex items-center justify-center ${
-                                justFed ? 'animate-bounce' : ''
+                                justFed ? '' : ''
                             }`}
                         >
                             {pet.image ? (
@@ -95,19 +95,19 @@ export const StreakPetWidget: React.FC<StreakPetWidgetProps> = ({
                             )}
                         </div>
 
-                        <span className="absolute -bottom-1.5 -right-1 bg-primary text-primary-foreground text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full border border-background shadow">
+                        <span className="absolute -bottom-1.5 -right-1 bg-primary text-primary-foreground text-xs tabular font-bold px-1.5 py-0.5 rounded-full border border-background shadow">
                             Lv.{pet.level}
                         </span>
                     </div>
 
                     <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 text-xs">
-                            <span className="font-mono uppercase tracking-wider text-primary font-semibold">
+                            <span className="tabular text-primary font-semibold">
                                 Streak Pet · Stage {pet.stage}/4
                             </span>
                             <span className="text-muted-foreground">·</span>
-                            <span className="font-mono text-amber-500 font-medium flex items-center gap-1">
-                                <Flame className="w-3.5 h-3.5 fill-amber-500" />
+                            <span className="tabular text-urgent font-medium flex items-center gap-1">
+                                <Flame className="w-3.5 h-3.5 fill-urgent" />
                                 {pet.totalStreak}d Streak
                             </span>
                         </div>
@@ -119,13 +119,13 @@ export const StreakPetWidget: React.FC<StreakPetWidgetProps> = ({
                         <div className="mt-2 space-y-1">
                             <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                                 <span>Growth to Stage {Math.min(pet.stage + 1, 4)}</span>
-                                <span className="font-mono text-foreground/80 tabular-nums">
+                                <span className="tabular text-foreground/80 tabular-nums">
                                     {pet.xpTowardsNextStage}%
                                 </span>
                             </div>
                             <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden border border-border">
                                 <div
-                                    className="bg-gradient-to-r from-primary to-learning-blue h-full rounded-full transition-all duration-300"
+                                    className="h-full rounded-full bg-foreground transition-all duration-300"
                                     style={{ width: `${pet.xpTowardsNextStage}%` }}
                                 />
                             </div>
@@ -139,7 +139,7 @@ export const StreakPetWidget: React.FC<StreakPetWidgetProps> = ({
                         onClick={handleFeed}
                         className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow cursor-pointer ${
                             justFed
-                                ? 'bg-learning-green text-white'
+                                ? 'bg-learning-green text-background'
                                 : 'bg-muted hover:bg-primary text-foreground/80 hover:text-primary-foreground border border-border'
                         }`}
                         title="Feed pet study XP"
@@ -149,7 +149,7 @@ export const StreakPetWidget: React.FC<StreakPetWidgetProps> = ({
                     </button>
 
                     <div className="w-7 h-7 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-foreground group-hover:border-primary/40 transition-colors">
-                        <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                        <ChevronRight className="w-4 h-4 transition-transform" />
                     </div>
                 </div>
             </div>

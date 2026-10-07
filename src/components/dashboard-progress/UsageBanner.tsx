@@ -25,7 +25,7 @@ export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
                                     : t('progress.free_tier')
                                 : t('progress.unlimited_active')}
                         </h2>
-                        <p className="text-sm opacity-60 font-medium">
+                        <p className="text-sm font-medium text-muted-foreground">
                             {USAGE_LIMITS_ENABLED
                                 ? subscription?.status === 'premium'
                                     ? `${t('progress.unlimited_until')} ${new Date(
@@ -39,7 +39,7 @@ export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
 
                 <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
                     <div className="text-center">
-                        <p className="text-xs font-semibold opacity-40 mb-1">
+                        <p className="text-xs font-semibold mb-1 text-muted-foreground">
                             {t('progress.uploads_label')}
                         </p>
                         <div className="text-2xl font-semibold">
@@ -59,7 +59,7 @@ export default function UsageBanner({ usage, subscription }: UsageBannerProps) {
                         )}
                     </div>
                     <div className="text-center">
-                        <p className="text-xs font-semibold opacity-40 mb-1">
+                        <p className="text-xs font-semibold mb-1 text-muted-foreground">
                             {t('progress.ai_chats_label')}
                         </p>
                         <div className="text-2xl font-semibold">

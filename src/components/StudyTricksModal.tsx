@@ -24,8 +24,8 @@ const studyTricks = [
         title: 'Active Recall',
         description:
             'Test yourself frequently instead of re-reading. Close your notes and try to explain the concept from memory.',
-        color: 'bg-blue-500/10',
-        iconColor: 'text-blue-500',
+        color: 'bg-learning-blue/10',
+        iconColor: 'text-learning-blue',
     },
     {
         id: 2,
@@ -33,8 +33,8 @@ const studyTricks = [
         title: 'Pomodoro Technique',
         description:
             'Study for 25 minutes, then take a 5-minute break. After 4 sessions, take a longer 15-30 minute break.',
-        color: 'bg-red-500/10',
-        iconColor: 'text-red-500',
+        color: 'bg-destructive/10',
+        iconColor: 'text-destructive',
     },
     {
         id: 3,
@@ -42,8 +42,8 @@ const studyTricks = [
         title: 'Spaced Repetition',
         description:
             'Review material at increasing intervals: 1 day, 3 days, 1 week, 2 weeks, 1 month. This fights the forgetting curve.',
-        color: 'bg-green-500/10',
-        iconColor: 'text-green-500',
+        color: 'bg-reward/10',
+        iconColor: 'text-reward',
     },
     {
         id: 4,
@@ -51,8 +51,8 @@ const studyTricks = [
         title: 'Feynman Technique',
         description:
             'Explain the concept in simple terms as if teaching a child. Identify gaps in your understanding and review them.',
-        color: 'bg-yellow-500/10',
-        iconColor: 'text-yellow-500',
+        color: 'bg-highlight/10',
+        iconColor: 'text-urgent',
     },
     {
         id: 5,
@@ -60,8 +60,8 @@ const studyTricks = [
         title: 'Interleaving',
         description:
             'Mix different subjects or topics in one study session instead of focusing on just one. This improves retention.',
-        color: 'bg-purple-500/10',
-        iconColor: 'text-purple-500',
+        color: 'bg-learning-purple/10',
+        iconColor: 'text-learning-purple',
     },
     {
         id: 6,
@@ -69,8 +69,8 @@ const studyTricks = [
         title: 'SQ3R Method',
         description:
             'Survey, Question, Read, Recite, Review. A systematic approach to reading and understanding textbooks.',
-        color: 'bg-indigo-500/10',
-        iconColor: 'text-indigo-500',
+        color: 'bg-learning-blue/10',
+        iconColor: 'text-learning-blue',
     },
     {
         id: 7,
@@ -78,8 +78,8 @@ const studyTricks = [
         title: 'Mind Palace',
         description:
             'Associate information with specific locations in a familiar place. Walk through mentally to recall information.',
-        color: 'bg-orange-500/10',
-        iconColor: 'text-orange-500',
+        color: 'bg-urgent/10',
+        iconColor: 'text-urgent',
     },
     {
         id: 8,
@@ -87,8 +87,8 @@ const studyTricks = [
         title: 'Elaborative Interrogation',
         description:
             'Ask yourself "why" and "how" questions about the material. Connect new information to what you already know.',
-        color: 'bg-pink-500/10',
-        iconColor: 'text-pink-500',
+        color: 'bg-learning-purple/10',
+        iconColor: 'text-learning-purple',
     },
 ];
 
@@ -99,22 +99,19 @@ const StudyTricksModal: React.FC<StudyTricksModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card/60 ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-background rounded-xl shadow-sm border border-primary/20"
+                className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-lg border border-border bg-card shadow-float"
             >
                 {/* Header */}
-                <div className="sticky top-0 z-10 bg-background/95 border-b border-foreground/10 p-6">
+                <div className="sticky top-0 z-10 border-b border-border bg-card p-5 sm:p-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center">
-                                <Lightbulb size={24} className="text-primary" />
-                            </div>
                             <div>
-                                <h2 className="text-2xl font-bold">
+                                <h2 className="text-2xl">
                                     Study Tricks
                                 </h2>
                                 <p className="text-sm text-muted-foreground">
@@ -125,7 +122,7 @@ const StudyTricksModal: React.FC<StudyTricksModalProps> = ({
                         </div>
                         <button
                             onClick={onClose}
-                            className="w-10 h-10 rounded-full hover:bg-card/10 flex items-center justify-center transition-colors"
+                            className="w-10 h-10 rounded-full hover:bg-muted flex items-center justify-center transition-colors"
                         >
                             <X size={20} />
                         </button>
@@ -143,11 +140,11 @@ const StudyTricksModal: React.FC<StudyTricksModalProps> = ({
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className={`p-6 rounded-2xl ${trick.color} border border-foreground/10 hover:border-foreground/20 transition-all group`}
+                                    className={`p-6 rounded-2xl ${trick.color} border border-border hover:border-foreground/20 transition-all group`}
                                 >
                                     <div className="flex items-start gap-4">
                                         <div
-                                            className={`w-12 h-12 rounded-xl bg-background/50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform ${trick.iconColor}`}
+                                            className={`w-12 h-12 rounded-xl bg-background/50 flex items-center justify-center flex-shrink-0 transition-transform ${trick.iconColor}`}
                                         >
                                             <Icon size={24} />
                                         </div>

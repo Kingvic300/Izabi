@@ -21,11 +21,11 @@ export const DocumentInfo = ({
     const { t } = useLanguage();
 
     return (
-        <div className="rounded-xl border border-border bg-card p-5 space-y-4 h-full">
+        <div className="h-full space-y-4 rounded-lg border border-border bg-card p-5">
             <div>
-                <h4 className="font-medium">{t('doc.your_files')}</h4>
-                <p className="text-sm text-muted-foreground">
-                    {fileNames.length} / 5
+                <h4 className="font-display text-lg">{t('doc.your_files')}</h4>
+                <p className="tabular text-sm text-muted-foreground">
+                    {fileNames.length} of 5
                 </p>
             </div>
 
@@ -33,19 +33,19 @@ export const DocumentInfo = ({
                 {fileNames.map((name, idx) => (
                     <li
                         key={idx}
-                        className="flex items-center justify-between gap-2 rounded-lg bg-muted/50 px-3 py-2"
+                        className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-1.5"
                     >
                         <div className="flex items-center gap-2 min-w-0">
                             <FileText
                                 size={16}
-                                className="text-primary shrink-0"
+                                className="shrink-0 text-muted-foreground"
                             />
                             <span className="text-sm truncate">{name}</span>
                         </div>
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 shrink-0"
+                            className="h-8 w-8 shrink-0"
                             onClick={() => onPreview(idx)}
                             aria-label={`Preview ${name}`}
                         >

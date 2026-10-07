@@ -1,161 +1,53 @@
-'use client';
-
-import { useRef } from 'react';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import {
-    Mail,
-    MessageCircle,
-    HelpCircle,
-    ExternalLink,
-} from 'lucide-react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
 import { Link } from 'react-router-dom';
+import { Mail, MessageCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/components/dashboard/PageHeader';
+
+const SUPPORT_EMAIL = 'victor7ishola@gmail.com';
+const WHATSAPP_LINK = 'https://wa.me/2348144782521';
 
 export default function DashboardSupport() {
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    useGSAP(
-        () => {
-            const tl = gsap.timeline();
-            tl.fromTo(
-                '.page-header',
-                { opacity: 0, y: -20 },
-                { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out' },
-            ).fromTo(
-                '.contact-card',
-                { opacity: 0, y: 30 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    stagger: 0.1,
-                    duration: 1,
-                    ease: 'expo.out',
-                },
-                '-=0.4',
-            );
-        },
-        { scope: containerRef },
-    );
-
     return (
-        <div
-            ref={containerRef}
-            className="space-y-8 sm:space-y-12 w-full pb-20 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-10 pt-6 md:pt-12"
-        >
-            {/* Header Section */}
-            <div className="page-header space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-xl border border-foreground/10">
-                    <span className="text-xs sm:text-xs font-semibold text-primary">
-                        Support
-                    </span>
-                </div>
-                <div className="glass-card border-foreground/10 rounded-xl p-5 sm:p-6 space-y-2">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight">
-                        We’ve got you <span className="text-gradient">covered</span>
-                    </h1>
-                    <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium max-w-none leading-relaxed">
-                        Need help or have questions? Reach out to our support
-                        team directly. We are here to assist you.
+        <div className="w-full space-y-10 pb-16">
+            <PageHeader
+                title="Help"
+                description="Stuck on something? Message us. WhatsApp is usually fastest."
+            />
+
+            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-2">
+                <section className="bg-card p-6 sm:p-7">
+                    <MessageCircle className="h-5 w-5 text-muted-foreground" />
+                    <h3 className="mt-4 text-2xl">WhatsApp</h3>
+                    <p className="tabular mt-1 text-muted-foreground">
+                        +234 814 478 2521
                     </p>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Email Support Card */}
-                <Card className="contact-card glass border-foreground/5 rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all group">
-                    <CardHeader className="p-5 sm:p-8 pb-3 sm:pb-4">
-                        <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
-                            <Mail size={28} />
-                        </div>
-                        <CardTitle className="text-2xl font-bold">
-                            Email Support
-                        </CardTitle>
-                        <CardDescription className="text-base font-medium">
-                            Send us a detailed message and we'll get back to you
-                            shortly.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-8 pt-2 space-y-4">
-                        <p className="text-sm text-muted-foreground font-medium">
-                            Reach us directly by email for account, billing, or
-                            study assistance.
-                        </p>
-                        <Button
-                            className="w-full h-12 rounded-xl font-bold gap-2"
-                            onClick={() =>
-                                window.open('mailto:victor7ishola@gmail.com')
-                            }
-                        >
-                            <Mail size={16} />
-                            Send Email
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* WhatsApp Support Card */}
-                <Card className="contact-card glass border-foreground/5 rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all group">
-                    <CardHeader className="p-5 sm:p-8 pb-3 sm:pb-4">
-                        <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 text-green-500 group-hover:scale-110 transition-transform">
-                            <MessageCircle size={28} />
-                        </div>
-                        <CardTitle className="text-2xl font-bold">
-                            WhatsApp Support
-                        </CardTitle>
-                        <CardDescription className="text-base font-medium">
-                            Chat with us directly on WhatsApp for quicker
-                            responses.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-8 pt-2 space-y-4">
-                        <p className="text-sm text-muted-foreground font-medium">
-                            Chat with support on WhatsApp for faster responses.
-                        </p>
-                        <Button
-                            className="w-full h-12 rounded-xl font-bold gap-2 bg-green-600 hover:bg-green-500 text-white"
-                            onClick={() =>
-                                window.open(
-                                    'https://wa.me/2348144782521',
-                                    '_blank',
-                                )
-                            }
-                        >
-                            <MessageCircle size={16} />
+                    <Button asChild className="mt-6">
+                        <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer">
                             Chat on WhatsApp
-                        </Button>
-                    </CardContent>
-                </Card>
+                        </a>
+                    </Button>
+                </section>
+                <section className="bg-card p-6 sm:p-7">
+                    <Mail className="h-5 w-5 text-muted-foreground" />
+                    <h3 className="mt-4 text-2xl">Email</h3>
+                    <p className="mt-1 break-all text-muted-foreground">
+                        {SUPPORT_EMAIL}
+                    </p>
+                    <Button asChild variant="outline" className="mt-6">
+                        <a href={`mailto:${SUPPORT_EMAIL}`}>Send an email</a>
+                    </Button>
+                </section>
             </div>
 
-            {/* Additional Info / FAQ Link could go here */}
-            <div className="contact-card glass-card border-foreground/10 rounded-xl sm:rounded-xl p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
-                <div className="space-y-2 text-center md:text-left">
-                    <h3 className="text-2xl font-bold flex items-center justify-center md:justify-start gap-3">
-                        <HelpCircle className="text-primary" />
-                        Common Questions
-                    </h3>
-                    <p className="text-muted-foreground font-medium">
-                        Check our FAQ section for quick answers to common
-                        questions about accounts, exams, and AI features.
-                    </p>
-                </div>
-                <Button
-                    asChild
-                    variant="outline"
-                    className="h-14 px-8 rounded-2xl text-base font-bold gap-2 hover:bg-card/10 border-foreground/10 shrink-0"
-                >
-                    <Link to="/faq">
-                        Visit FAQ Center <ExternalLink size={16} />
-                    </Link>
+            <section>
+                <h3 className="text-2xl">Quick answers</h3>
+                <p className="mt-1 text-muted-foreground">
+                    Uploads, languages, plans and accounts.
+                </p>
+                <Button asChild variant="link" className="mt-3">
+                    <Link to="/faq">Read the questions and answers</Link>
                 </Button>
-            </div>
+            </section>
         </div>
     );
 }

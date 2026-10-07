@@ -14,14 +14,9 @@ export const UploadPrompt = ({ onSelectionComplete }: UploadPromptProps) => {
     return (
         <div
             id="upload-section"
-            className="rounded-xl border border-border bg-card p-4 sm:p-6 space-y-4"
+            className="rounded-lg border border-border bg-card p-4 sm:p-6"
         >
-            <div>
-                <h4 className="font-medium">{t('dashboard.upload_title')}</h4>
-                <p className="text-sm text-muted-foreground">
-                    {t('dashboard.upload_desc')}
-                </p>
-            </div>
+            <h4 className="sr-only">{t('dashboard.upload_title')}</h4>
             <PDFUploadSection onSelectionComplete={onSelectionComplete} />
         </div>
     );

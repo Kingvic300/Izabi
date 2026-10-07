@@ -61,7 +61,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
                                 {process.env.NODE_ENV === 'development' &&
                                     this.state.error && (
                                         <div className="bg-muted/50 rounded p-3 text-left">
-                                            <p className="text-xs font-mono text-muted-foreground break-words">
+                                            <p className="text-xs tabular text-muted-foreground break-words">
                                                 {this.state.error.message}
                                             </p>
                                         </div>

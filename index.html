@@ -1,10 +1,38 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Izabi — Your AI Study Buddy</title>
-        <meta property="og:title" content="Izabi — Your AI Study Buddy" />
+        <title>Izabi — Turn your notes into practice</title>
+        <meta
+            name="description"
+            content="Upload your notes, textbook pages or a topic. Izabi writes the summary, quiz and flashcards in English, Pidgin, Yoruba, Igbo or Hausa."
+        />
+        <meta property="og:title" content="Izabi — Turn your notes into practice" />
+        <meta name="theme-color" content="#F5F6F9" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#17191E" media="(prefers-color-scheme: dark)" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&display=swap"
+        />
+        <script>
+            (function () {
+                try {
+                    var stored = localStorage.getItem('izabi-theme-v3');
+                    var theme =
+                        stored === 'light' || stored === 'dark'
+                            ? stored
+                            : window.matchMedia('(prefers-color-scheme: dark)').matches
+                              ? 'dark'
+                              : 'light';
+                    document.documentElement.classList.add(theme);
+                } catch (e) {
+                    document.documentElement.classList.add('light');
+                }
+            })();
+        </script>
     </head>
 
     <body>

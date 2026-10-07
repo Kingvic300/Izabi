@@ -1,6 +1,6 @@
 import type React from 'react';
-
-import { Check } from 'lucide-react';
+import { Bubble } from '@/components/ui/bubble';
+import { cn } from '@/lib/utils';
 
 type ThemeOptionProps = {
     value: string;
@@ -22,29 +22,21 @@ export default function ThemeOption({
     return (
         <button
             type="button"
+            role="radio"
+            aria-checked={isActive}
             onClick={onClick}
-            className={`
-                group relative p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-4
-                ${
-                    isActive
-                        ? 'bg-primary/20 border-primary text-primary'
-                        : 'bg-foreground/5 border-foreground/5 hover:bg-foreground/10 opacity-60 hover:opacity-100'
-                }
-            `}
-        >
-            {isActive && (
-                <div className="absolute top-4 right-4">
-                    <div className="w-6 h-6 bg-primary rounded-xl flex items-center justify-center text-white">
-                        <Check size={14} strokeWidth={4} />
-                    </div>
-                </div>
+            className={cn(
+                'flex items-center gap-3 rounded-md border bg-card px-4 py-3.5 text-left transition-colors',
+                isActive
+                    ? 'border-foreground'
+                    : 'border-border hover:border-foreground/40',
             )}
-            <div
-                className={`p-4 rounded-xl ${isActive ? 'bg-primary text-white' : 'bg-foreground/10'}`}
-            >
+        >
+            <Bubble size="sm" state={isActive ? 'filled' : 'empty'} />
+            <span className="flex-1 font-bold">{title}</span>
+            <span className="text-muted-foreground [&>svg]:h-[18px] [&>svg]:w-[18px]">
                 {icon}
-            </div>
-            <span className="font-bold tracking-tight">{title}</span>
+            </span>
         </button>
     );
 }

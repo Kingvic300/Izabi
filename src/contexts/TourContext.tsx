@@ -68,14 +68,14 @@ export const TOUR_STEPS: TourStep[] = [
         position: 'right',
     },
     {
-        targetId: 'nav-item-exam-center',
+        targetId: 'nav-item-exams',
         title: 'Exam Center',
         content:
             'Prepare for the real thing. Practice with past questions and timed mock exams.',
         position: 'right',
     },
     {
-        targetId: 'nav-item-learning-progress',
+        targetId: 'nav-item-progress',
         title: 'Track Progress',
         content:
             "See how much you've learned. Track your mastery over time and identify areas for improvement.",

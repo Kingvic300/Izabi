@@ -236,7 +236,7 @@ export const SummaryViewer = ({ content, audioLabel = 'Listen to Summary' }: Sum
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="flex-1 min-w-[180px] rounded-2xl border border-foreground/10 bg-background/60 px-3 py-2">
+                        <div className="flex-1 min-w-[180px] rounded-2xl border border-border bg-background/60 px-3 py-2">
                             <div className="flex items-center justify-between text-xs font-bold text-muted-foreground">
                                 <span>Speed</span>
                                 <span>{playbackRate.toFixed(2)}x</span>

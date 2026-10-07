@@ -293,7 +293,7 @@ export function TourOverlay() {
                                             className={cn(
                                                 'rounded-xl font-bold',
                                                 isCenter
-                                                    ? 'w-full h-11 border-foreground/10 text-muted-foreground hover:text-foreground'
+                                                    ? 'w-full h-11 border-border text-muted-foreground hover:text-foreground'
                                                     : 'h-8 px-2 text-muted-foreground hover:text-foreground hover:bg-transparent',
                                             )}
                                         >
@@ -306,7 +306,7 @@ export function TourOverlay() {
                                         size="sm"
                                         onClick={nextStep}
                                         className={cn(
-                                            'rounded-xl font-bold bg-primary hover:bg-primary/90 text-primary-foreground transition-all active:scale-95',
+                                            'rounded-xl font-bold bg-primary hover:bg-primary/90 text-primary-foreground transition-all',
                                             isCenter
                                                 ? 'w-full h-11 text-base'
                                                 : 'h-8 px-4 text-xs ml-auto',
