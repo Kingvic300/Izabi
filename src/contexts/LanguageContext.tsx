@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import { api } from '@/lib/apiClient';
 import { translations, type Language } from './translations';
 
@@ -19,7 +19,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         () => (localStorage.getItem('izabi-lang') as Language) || 'en',
     );
 
-    const setLanguage = async (lang: Language, persist = true) => {
+    // Stable identity: consumers list it in effect deps.
+    const setLanguage = useCallback(async (lang: Language, persist = true) => {
         localStorage.setItem('izabi-lang', lang);
         setLanguageState(lang);
 
@@ -29,7 +30,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         // sync with the visible language switch, since the backend resolves
         // language from the saved user profile, not from this client state.
         await api.updateUserProfile({ preferredLanguage: lang });
-    };
+    }, []);
 
     const t = (key: string) => {
         return translations[language][key] || translations.en[key] || key;

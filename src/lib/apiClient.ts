@@ -10,6 +10,22 @@ import { clearImpersonationSession } from '@/lib/impersonation';
 const apiCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+// Data that changes on the server without an axios write from this tab (job
+// progress, streamed chat replies, points, live rankings) must never be served
+// from the cache.
+const NEVER_CACHE = [
+    /\/api\/study\/job-status\//,
+    /\/api\/ai\/jobs\//,
+    /\/api\/ai\/history/,
+    /\/api\/ai\/sessions/,
+    /\/api\/user\/stats/,
+    /\/api\/study\/leaderboard/,
+    /\/api\/quiz\/daily-challenge/,
+];
+
+const isUncacheable = (url?: string) =>
+    !!url && NEVER_CACHE.some((pattern) => pattern.test(url));
+
 export const clearApiCache = () => {
     apiCache.clear();
 };
@@ -121,7 +137,8 @@ apiClient.interceptors.request.use((config) => {
 
     const skipCache =
         (config.headers as any)?.['x-skip-cache'] ||
-        (config as any).skipCache;
+        (config as any).skipCache ||
+        isUncacheable(config.url);
 
     // Only cache GET requests
     if (!skipCache && config.method?.toLowerCase() === 'get') {
@@ -153,10 +170,18 @@ apiClient.interceptors.request.use((config) => {
  */
 apiClient.interceptors.response.use(
     (response) => {
+        const method = response.config.method?.toLowerCase();
+        // Any successful write can change what earlier GETs returned
+        // (notes list, results, profile, groups), so drop the whole cache.
+        if (method && method !== 'get') {
+            apiCache.clear();
+        }
+
         // Cache successful GET responses
         const skipCache =
             (response.config.headers as any)?.['x-skip-cache'] ||
-            (response.config as any).skipCache;
+            (response.config as any).skipCache ||
+            isUncacheable(response.config.url);
         if (
             !skipCache &&
             response.config.method?.toLowerCase() === 'get' &&
