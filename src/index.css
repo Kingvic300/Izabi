@@ -286,30 +286,6 @@
         border-color: hsl(var(--sheet) / 0.35);
     }
 
-    .mark-highlight {
-        background-image: linear-gradient(
-            transparent 12%,
-            hsl(var(--highlight) / 0.55) 12%,
-            hsl(var(--highlight) / 0.55) 88%,
-            transparent 88%
-        );
-        color: inherit;
-        padding-inline: 0.12em;
-        margin-inline: -0.06em;
-        border-radius: 2px;
-        -webkit-box-decoration-break: clone;
-        box-decoration-break: clone;
-    }
-
-    .dark .mark-highlight {
-        background-image: linear-gradient(
-            transparent 12%,
-            hsl(var(--highlight) / 0.28) 12%,
-            hsl(var(--highlight) / 0.28) 88%,
-            transparent 88%
-        );
-    }
-
     /* Scanner timing marks along an answer sheet's edge. */
     .timing-track {
         background-image: repeating-linear-gradient(
@@ -536,4 +512,34 @@
     textarea {
         min-height: 44px;
     }
+}
+
+/*
+ * Highlighter stroke over the lower part of the line, like a real marker swipe.
+ * Kept outside @layer: Tailwind purges layered rules whose selectors it can't see
+ * in source, and `.dark` is only added at runtime. `mark` also carries a UA
+ * background-color that must be cleared or it paints a solid block.
+ */
+.mark-highlight {
+    background-color: transparent;
+    color: inherit;
+    background-image: linear-gradient(
+        transparent 48%,
+        hsl(var(--highlight) / 0.6) 48%,
+        hsl(var(--highlight) / 0.6) 90%,
+        transparent 90%
+    );
+    padding-inline: 0.1em;
+    margin-inline: -0.05em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.dark .mark-highlight {
+    background-image: linear-gradient(
+        transparent 52%,
+        hsl(var(--highlight) / 0.32) 52%,
+        hsl(var(--highlight) / 0.32) 92%,
+        transparent 92%
+    );
 }

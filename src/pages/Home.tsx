@@ -306,7 +306,7 @@ const Home = () => {
                                 {steps.map((step, i) => (
                                     <li
                                         key={step.title}
-                                        className="relative md:pr-10"
+                                        className="relative"
                                     >
                                         <div className="flex items-center">
                                             <span data-step-bubble className="inline-flex">
@@ -321,14 +321,14 @@ const Home = () => {
                                                 <span
                                                     aria-hidden
                                                     data-step-line
-                                                    className="ml-4 hidden h-px flex-1 origin-left bg-sheet/40 md:block"
+                                                    className="mx-3 hidden h-px flex-1 origin-left bg-sheet/50 md:block"
                                                 />
                                             )}
                                         </div>
-                                        <h3 data-step-text className="mt-6 text-2xl">
+                                        <h3 data-step-text className="mt-6 text-2xl md:pr-10">
                                             {step.title}
                                         </h3>
-                                        <p className="mt-2 max-w-[22rem] text-muted-foreground">
+                                        <p className="mt-2 max-w-[22rem] text-muted-foreground md:pr-10">
                                             {step.desc}
                                         </p>
                                     </li>

@@ -4,7 +4,7 @@ import type React from 'react';
 
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight } from 'lucide-react';
 import { api } from '@/lib/apiClient';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -24,6 +24,13 @@ import type {
     ChatSession,
     Message,
 } from '@/components/dashboard-ai-assistant/types';
+
+const STARTER_PROMPTS = [
+    'Explain osmosis the way my SS2 teacher would',
+    'Quiz me with five questions on cell structure',
+    'What is the difference between mitosis and meiosis?',
+    'Help me plan revision for JAMB Biology in two weeks',
+];
 
 const DashboardAIAssistant = () => {
     const navigate = useNavigate();
@@ -242,8 +249,9 @@ const DashboardAIAssistant = () => {
      * How: Appends user message to UI state, then initiates an event stream for the AI response. Updates the assistant's placeholder message chunk-by-chunk.
      * Why: Provides a responsive, real-time typing experience typical of modern LLM interfaces.
      */
-    const handleSendMessage = async () => {
-        if (!inputValue.trim() || isUploadingPdf) return;
+    const handleSendMessage = async (textOverride?: string) => {
+        const text = (textOverride ?? inputValue).trim();
+        if (!text || isUploadingPdf || isLoading) return;
 
         let sessionIdToUse = activeSessionId;
         if (!sessionIdToUse) {
@@ -268,7 +276,7 @@ const DashboardAIAssistant = () => {
         const userMessage: Message = {
             id: Date.now().toString(),
             role: 'user',
-            content: inputValue,
+            content: text,
             timestamp: new Date(),
         };
 
@@ -289,7 +297,7 @@ const DashboardAIAssistant = () => {
         try {
             let fullResponse = '';
             api.getAIStream(
-                inputValue,
+                text,
                 (chunk) => {
                     fullResponse += chunk;
                     setMessages((prev) =>
@@ -447,13 +455,14 @@ const DashboardAIAssistant = () => {
         }
     };
 
-    const redirectToDashboardUpload = (feature: string) => {
-        appToast.info({
-            title: `${feature} ${t('assistant.toast_requires_pdf_title_suffix')}`,
-            description: t('assistant.toast_requires_pdf_desc'),
-        });
-        navigate('/dashboard');
-    };
+
+    const removeDocument = (id: string) =>
+        setActiveDocuments((prev) => prev.filter((d) => d.documentId !== id));
+
+    const isEmptyChat =
+        !isLoading &&
+        activeDocuments.length === 0 &&
+        messages.every((m) => m.role === 'assistant' && m.id === '1');
 
     const handlePdfTrigger = () => {
         pdfInputRef.current?.click();
@@ -462,9 +471,9 @@ const DashboardAIAssistant = () => {
     return (
         <div
             ref={containerRef}
-            className="flex h-[calc(100dvh-3.5rem)] min-h-0 w-full flex-col overflow-hidden px-4 pt-5 sm:px-6 lg:px-10 lg:pt-7"
+            className="flex h-[calc(100dvh-3.5rem)] min-h-0 w-full flex-col overflow-hidden"
         >
-            <div className="flex flex-col min-h-0 gap-4 md:gap-6 flex-1">
+            <div className="flex min-h-0 flex-1 flex-col">
                 <ChatHeader
                     isUploadingPdf={isUploadingPdf}
                     isLoading={isLoading}
@@ -477,25 +486,68 @@ const DashboardAIAssistant = () => {
                     chatSessions={chatSessions}
                     activeSessionId={activeSessionId}
                     onSelectSession={handleSelectSession}
+                    compact={!isEmptyChat}
                 />
 
-                <Card className="relative mb-4 flex min-h-0 flex-1 flex-col overflow-hidden">
-
-                    <CardContent className="flex-1 min-h-0 flex flex-col overflow-hidden p-0">
+                {isEmptyChat ? (
+                    <div className="custom-scrollbar flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 pb-8 pt-10 sm:pt-16">
+                        <div className="w-full max-w-2xl">
+                            <h2 className="text-center text-[2rem] leading-tight sm:text-[2.5rem]">
+                                What are you studying?
+                            </h2>
+                            <p className="mt-2 text-center text-muted-foreground">
+                                Ask a question, paste a passage, or add your notes
+                                and ask about them.
+                            </p>
+                            <div className="mt-8">
+                                <ChatInput
+                                    variant="hero"
+                                    activeDocuments={activeDocuments}
+                                    inputValue={inputValue}
+                                    isLoading={isLoading}
+                                    isUploadingPdf={isUploadingPdf}
+                                    onInputChange={setInputValue}
+                                    onKeyPress={handleKeyPress}
+                                    onSend={() => handleSendMessage()}
+                                    onUploadClick={handlePdfTrigger}
+                                    onRemoveDocument={removeDocument}
+                                />
+                            </div>
+                            <div className="mt-10">
+                                <p className="text-sm text-muted-foreground">
+                                    Try one of these
+                                </p>
+                                <ul className="mt-2 divide-y divide-border border-y border-border">
+                                    {STARTER_PROMPTS.map((prompt) => (
+                                        <li key={prompt}>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSendMessage(prompt)}
+                                                className="group flex w-full items-center justify-between gap-4 py-3 text-left transition-colors hover:text-foreground"
+                                            >
+                                                <span className="font-display text-lg leading-snug">
+                                                    {prompt}
+                                                </span>
+                                                <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <>
                         <ChatMessages
                             messages={messages}
                             isLoading={isLoading}
                             copiedMessageId={copiedMessageId}
                             onCopyMessage={handleCopyMessage}
                             onShareMessage={(content) =>
-                                handleShareText(
-                                    content,
-                                    t('assistant.message_title'),
-                                )
+                                handleShareText(content, t('assistant.message_title'))
                             }
                             messagesEndRef={messagesEndRef}
                         />
-
                         <ChatInput
                             activeDocuments={activeDocuments}
                             inputValue={inputValue}
@@ -503,19 +555,12 @@ const DashboardAIAssistant = () => {
                             isUploadingPdf={isUploadingPdf}
                             onInputChange={setInputValue}
                             onKeyPress={handleKeyPress}
-                            onSend={handleSendMessage}
+                            onSend={() => handleSendMessage()}
                             onUploadClick={handlePdfTrigger}
-                            onRemoveDocument={(id) =>
-                                setActiveDocuments((prev) =>
-                                    prev.filter(
-                                        (d) => d.documentId !== id,
-                                    ),
-                                )
-                            }
-                            onSuggestionClick={redirectToDashboardUpload}
+                            onRemoveDocument={removeDocument}
                         />
-                    </CardContent>
-                </Card>
+                    </>
+                )}
             </div>
         </div>
     );

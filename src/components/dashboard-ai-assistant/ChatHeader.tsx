@@ -3,7 +3,7 @@
 import type React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Copy, Loader, Paperclip, Plus, Share2 } from 'lucide-react';
+import { Copy, Plus, Share2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ChatHistorySheet from './ChatHistorySheet';
 import type { ChatSession } from './types';
@@ -20,6 +20,7 @@ type ChatHeaderProps = {
     chatSessions: ChatSession[];
     activeSessionId: string | null;
     onSelectSession: (sessionId: string) => void;
+    compact?: boolean;
 };
 
 export default function ChatHeader({
@@ -34,86 +35,46 @@ export default function ChatHeader({
     chatSessions,
     activeSessionId,
     onSelectSession,
+    compact = false,
 }: ChatHeaderProps) {
     const { t } = useLanguage();
-    const handleUploadClick = () => {
-        pdfInputRef.current?.click();
-    };
 
     return (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="min-w-0">
-                <h2 className="text-[1.75rem] leading-tight sm:text-[2rem]">
-                    Assistant
-                </h2>
-                <p className="text-muted-foreground">
-                    {t('assistant.subtitle')}
-                </p>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-4 py-2.5 sm:px-6">
+            <p className="min-w-0 truncate text-sm text-muted-foreground">
+                {compact ? t('assistant.subtitle') : ''}
+            </p>
+            <div className="flex shrink-0 items-center gap-1">
+                {compact && (
+                    <>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={onCopyTranscript}
+                            className="h-9 w-9 text-muted-foreground"
+                            aria-label={t('assistant.copy_transcript_aria')}
+                        >
+                            <Copy />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={onShareTranscript}
+                            className="h-9 w-9 text-muted-foreground"
+                            aria-label={t('assistant.share_transcript_aria')}
+                        >
+                            <Share2 />
+                        </Button>
+                    </>
+                )}
                 <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={onStartNewChat}
-                    className="sm:hidden h-9 w-9"
-                    aria-label={t('assistant.new_chat_aria')}
-                >
-                    <Plus />
-                </Button>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={onCopyTranscript}
-                    className="h-9 w-9"
-                    aria-label={t('assistant.copy_transcript_aria')}
-                >
-                    <Copy />
-                </Button>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={onShareTranscript}
-                    className="h-9 w-9"
-                    aria-label={t('assistant.share_transcript_aria')}
-                >
-                    <Share2 />
-                </Button>
-                <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     onClick={onStartNewChat}
-                    className="hidden sm:inline-flex"
+                    disabled={isLoading || isUploadingPdf}
                 >
                     <Plus />
                     {t('assistant.new_chat')}
-                </Button>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleUploadClick}
-                    disabled={isUploadingPdf || isLoading}
-                    className="sm:hidden h-9 w-9"
-                    aria-label={t('assistant.upload_files_aria')}
-                >
-                    {isUploadingPdf ? (
-                        <Loader className="h-4 w-4 animate-spin" />
-                    ) : (
-                        <Paperclip />
-                    )}
-                </Button>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleUploadClick}
-                    disabled={isUploadingPdf || isLoading}
-                    className="hidden sm:inline-flex"
-                >
-                    {isUploadingPdf ? (
-                        <Loader className="h-4 w-4 animate-spin" />
-                    ) : (
-                        <Paperclip />
-                    )}
-                    {t('assistant.upload_materials')}
                 </Button>
                 <input
                     ref={pdfInputRef}

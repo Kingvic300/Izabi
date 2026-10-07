@@ -655,7 +655,7 @@ export const en: Record<string, string> = {
         'assistant.suggestion_flashcards': 'Generate Flashcards',
         'assistant.suggestion_study_guide': 'Study Guide',
         'assistant.suggestion_practice_quiz': 'Practice Quiz',
-        'assistant.history_title': 'Chat History',
+        'assistant.history_title': 'History',
         'assistant.history_desc':
             'Browse your past interactions with Izabi.',
         'assistant.history_empty': 'No history recorded yet',

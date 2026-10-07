@@ -32,12 +32,8 @@ export default function ChatHistorySheet({
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-2 glass-card font-bold hover:bg-muted"
-                >
-                    <History className="h-3 w-3" />
+                <Button variant="ghost" size="sm">
+                    <History />
                     <span className="hidden sm:inline">
                         {t('assistant.history_title')}
                     </span>

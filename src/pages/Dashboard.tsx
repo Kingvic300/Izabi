@@ -133,7 +133,7 @@ const Dashboard = () => {
                         </AnimatePresence>
                     </div>
 
-                    {userStats?.data && (
+                    {userStats?.data && !isAIAssistantRoute && (
                         <StreakPet
                             streak={
                                 userStats.data.streakData?.academicStreak ||
